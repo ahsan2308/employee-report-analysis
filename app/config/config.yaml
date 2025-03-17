@@ -1,0 +1,9 @@
+database:
+  url: "postgresql://user:password@localhost:5432/employees_db"
+
+llm:
+  api_url: "http://localhost:11434/api/generate"
+  model: "llama.31:8b"  
+
+app:
+  debug: true
