@@ -1,9 +1,14 @@
 database:
-  url: "postgresql://user:password@localhost:5432/employees_db"
+  user: myuser
+  password: mypassword
+  host: localhost
+  port: 5432
+  name: employee_reports
+  url: postgresql://myuser:mypassword@localhost:5432/employee_reports
 
 llm:
-  api_url: "http://localhost:11434/api/generate"
-  model: "llama.31:8b"  
+  api_url: http://localhost:11434/api/generate
+  model: llama3.1:8b
 
 app:
   debug: true

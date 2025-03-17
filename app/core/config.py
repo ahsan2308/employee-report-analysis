@@ -5,9 +5,15 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Load configurations from YAML file
-CONFIG_PATH = os.path.join(os.path.dirname(__file__), "../../config/config.yaml")
+# Get the absolute path to config.yaml
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # Moves one level up from 'core'
+CONFIG_PATH = os.path.join(BASE_DIR, "config", "config.yaml")
 
+# Ensure the config file exists
+if not os.path.exists(CONFIG_PATH):
+    raise FileNotFoundError(f"Config file not found at: {CONFIG_PATH}")
+
+# Load configurations from YAML file
 with open(CONFIG_PATH, "r") as file:
     config = yaml.safe_load(file)
 
