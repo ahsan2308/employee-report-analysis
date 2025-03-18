@@ -6,6 +6,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
 from uuid import uuid4  # For generating unique document IDs
 from qdrant_client.models import Filter, FieldCondition, MatchValue
+from qdrant_client.models import Filter, FieldCondition, MatchValue, NamedVector
 
 # Ensure project root is accessible
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
@@ -100,19 +101,22 @@ def search_reports(query: str, employee_id: int, top_k: int = 5):
             ]
         )
 
-        results = qdrant.search(
+        response = qdrant.query_points(
             collection_name=COLLECTION_NAME,
-            query_vector=query_embedding,
+            query=query_embedding,   # Pass the vector directly as a list of floats
             limit=top_k,
             query_filter=query_filter  # Apply the filter
         )
 
+        points = response.points
+
         logger.info(f"Search completed for query: {query}")
-        return [hit.payload for hit in results]
+        return [hit.payload for hit in points]
     
     except Exception as e:
         logger.error(f"Search failed: {e}")
         return []
+
 
 def check_collection_size():
     try:
