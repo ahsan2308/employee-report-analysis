@@ -37,8 +37,6 @@ def get_embedding_size():
     sample_embedding = get_embedding(sample_text)
     return len(sample_embedding)
 
-# Delete the existing collection
-qdrant.delete_collection(COLLECTION_NAME)
 
 # Ensure collection exists
 def setup_qdrant_collection():
@@ -65,9 +63,7 @@ def add_to_vector_store(doc_id: str, text: str, employee_id: int):
     :param employee_id: ID of the employee the document belongs to
     """
     try:
-        setup_qdrant_collection()
         embedding = get_embedding(text)
-        logger.info(f"Expected embedding dimension: {expected_dim}")
         qdrant.upsert(
             collection_name=COLLECTION_NAME,
             points=[
@@ -118,7 +114,17 @@ def search_reports(query: str, employee_id: int, top_k: int = 5):
         logger.error(f"Search failed: {e}")
         return []
 
+def check_collection_size():
+    try:
+        collection_info = qdrant.get_collection(COLLECTION_NAME)
+        print(f"Collection '{COLLECTION_NAME}' contains {collection_info.points_count} points.")
+    except Exception as e:
+        print(f"Error retrieving collection size: {e}")
+
 if __name__ == "__main__":
+
+    setup_qdrant_collection()
+
     # Test storing & searching
     test_documents = [
         (1, "Employee John Doe exceeded targets this quarter.", 3211),
@@ -129,6 +135,8 @@ if __name__ == "__main__":
     for doc_id, text, emp_id in test_documents:
         add_to_vector_store(doc_id, text, emp_id)
     
+    check_collection_size()  # Check if documents were added
+
     search_results = search_reports("John Doe", 3211)
     print("Search Results:")
     for result in search_results:

@@ -25,4 +25,4 @@ pip-delete-this-directory.txt
 ai-eval/
 
 # Ignore VectorDB Content
-vector_db/
+qdrant_data/
