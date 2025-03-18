@@ -14,5 +14,7 @@ app:
   debug: true
 
 vector_db:
-  path: ./vector_db  # Path where ChromaDB will store embeddings
-  collection_name: employee_reports  # Collection name for storing vectorss
+  host: localhost  # Change to 'qdrant' if running in Docker
+  port: 6333
+  storage_path: ./qdrant_data  # Change to '/qdrant/storage' in Docker
+  collection_name: employee_reports  # Collection name for storing vectors

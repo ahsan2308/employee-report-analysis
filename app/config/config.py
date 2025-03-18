@@ -16,5 +16,4 @@ with open(CONFIG_PATH, "r") as file:
 # Test if config values are loading properly
 print("Database URL:", config["database"]["url"])
 print("LLM API URL:", config["llm"]["api_url"])
-print("Vector DB Path:", config["vector_db"]["path"])
 print("Debug Mode:", config["app"]["debug"])

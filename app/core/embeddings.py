@@ -1,6 +1,12 @@
 import ollama
 import os
 from dotenv import load_dotenv
+import sys
+
+
+# Ensure project root is accessible
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+
 from app.config.config import config  # Import the dynamically loaded config
 
 # Load environment variables from .env
@@ -28,3 +34,7 @@ def get_embedding(text: str, model_name: str = OLLAMA_MODEL) -> list:
 if __name__ == "__main__":
     sample_text = "This is a test report on employee performance."
     print(get_embedding(sample_text))  # Test embedding output
+
+    sample_text = "Test text"
+    sample_embedding = get_embedding(sample_text)
+    print(len(sample_embedding))  # Prints the dimension of the vector

@@ -23,3 +23,6 @@ pip-delete-this-directory.txt
 
 # Ignore venv
 ai-eval/
+
+# Ignore VectorDB Content
+vector_db/
