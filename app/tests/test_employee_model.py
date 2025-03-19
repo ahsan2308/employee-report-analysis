@@ -4,8 +4,9 @@ from dotenv import load_dotenv
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from app.models.database import SessionLocal, engine
-from app.models.employee import Base, Employee
+from app.models.database_postgres import SessionLocal, engine
+from app.models.employee_postgres import Employee
+from app.models.database_postgres import Base
 
 # Load environment variables
 load_dotenv()
