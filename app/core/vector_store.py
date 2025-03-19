@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+from datetime import datetime
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
@@ -55,7 +56,7 @@ def setup_qdrant_collection():
         logging.error(f"Error checking/creating collection: {e}")
 
 
-def add_to_vector_store(doc_id: str, text: str, employee_id: int):
+def add_to_vector_store(doc_id: str, text: str, employee_id: int, report_date: str):
     """
     Adds a document to the vector store with its embedding.
     
@@ -71,11 +72,15 @@ def add_to_vector_store(doc_id: str, text: str, employee_id: int):
                 PointStruct(
                     id=doc_id or str(uuid4()),  # Generate ID if not provided
                     vector=embedding,
-                    payload={"text": text, "employee_id": employee_id}  # Metadata
+                    payload={
+                        "text": text, 
+                        "employee_id": employee_id, 
+                        "report_date": report_date
+                        }  # Metadata
                 )
             ]
         )
-        logger.info(f"Successfully added document {doc_id} for employee {employee_id}.")
+        logger.info(f"Successfully added document {doc_id} for employee {employee_id} on {report_date}.")
     except Exception as e:
         logger.error(f"Failed to add {doc_id}: {e}")
 
@@ -110,8 +115,16 @@ def search_reports(query: str, employee_id: int, top_k: int = 5):
 
         points = response.points
 
+        # Extract results and sort by report_date (most recent first)
+        sorted_results = sorted(
+            points, 
+            key=lambda hit: datetime.strptime(hit.payload.get("report_date", "1900-01-01"), "%Y-%m-%d"), 
+            reverse=True  # Sort descending (most recent first)
+        )
+
         logger.info(f"Search completed for query: {query}")
-        return [hit.payload for hit in points]
+        return [hit.payload for hit in sorted_results]
+
     
     except Exception as e:
         logger.error(f"Search failed: {e}")
@@ -125,23 +138,24 @@ def check_collection_size():
     except Exception as e:
         print(f"Error retrieving collection size: {e}")
 
+
 if __name__ == "__main__":
 
     setup_qdrant_collection()
 
     # Test storing & searching
     test_documents = [
-        (1, "Employee John Doe exceeded targets this quarter.", 3211),
-        (2, "Employee Jane Doe achieved 95% customer satisfaction.", 3212),
-        (3, "Employee John Doe led a successful project launch.", 3211)
+        (1, "Employee John Doe exceeded targets this quarter.", 3211, "2025-03-15"),
+        (2, "Employee Jane Doe achieved 95% customer satisfaction.", 3212, "2025-03-16"),
+        (3, "Employee John Doe led a successful project launch.", 3211, "2025-03-17")
     ]
     
-    for doc_id, text, emp_id in test_documents:
-        add_to_vector_store(doc_id, text, emp_id)
+    for doc_id, text, emp_id, report_date in test_documents:
+        add_to_vector_store(doc_id, text, emp_id, report_date)
     
     check_collection_size()  # Check if documents were added
 
     search_results = search_reports("John Doe", 3211)
-    print("Search Results:")
+    print("Search Results (Sorted by Date):")
     for result in search_results:
         print(result)
