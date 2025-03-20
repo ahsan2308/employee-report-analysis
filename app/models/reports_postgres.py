@@ -12,7 +12,7 @@ class Report(Base):
     employee_id = Column(Integer, ForeignKey("employees.id", ondelete="CASCADE"), nullable=False, index=True)
     report_date = Column(Date, nullable=False, index=True)  # Stores only the date
     report_text = Column(String, nullable=False)
-    qdrant_id = Column(String, unique=True, nullable=False)  # Stores the reference to Qdrant
+    qdrant_id = Column(String, unique=True, nullable=True)  # Stores the reference to Qdrant
 
 
     def __repr__(self):
