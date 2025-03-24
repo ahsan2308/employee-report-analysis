@@ -6,21 +6,23 @@ from dotenv import load_dotenv
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from app.models.database_postgres import SessionLocal, engine, Base
-from app.models.employee_postgres import Employee
-from app.models.reports_postgres import Report
+from app.database import get_database
+from app.models.db_models import Employee
+from app.models.db_models import Report
 
 # Load environment variables
 load_dotenv()
 
-# Ensure tables are created
-Base.metadata.create_all(engine)
+# Get the database instance
+db_instance = get_database()
+
+
 
 def test_report_operations():
     """Test inserting and retrieving a report record."""
     try:
         # Open a session
-        with SessionLocal() as session:
+        with db_instance.create_session() as session:
             # Ensure an employee exists (to satisfy the foreign key)
             new_employee = Employee(name="Ali", wing="Operations", position="Data Analyst")
             session.add(new_employee)
@@ -30,8 +32,7 @@ def test_report_operations():
             test_report = Report(
                 employee_id=new_employee.id,  # Use the newly created employee's ID
                 report_date=date(2025, 3, 14),
-                report_text="Ali completed a detailed market analysis.",
-                qdrant_id=str(uuid.uuid4())  # Generate a unique identifier
+                report_text="Ali completed a detailed market analysis."
             )
             session.add(test_report)
             session.commit()

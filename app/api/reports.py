@@ -1,20 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.models.database_postgres import SessionLocal
-from app.models.reports_postgres import Report
-from app.schemas.reports import ReportCreate
-from app.models.employee_postgres import Employee
+from app.database import get_database
+from app.models.db_models import Report
+from app.schemas.reports_schema import ReportCreate
+from app.models.db_models import Employee
 
 # Initialize Router
 router = APIRouter(prefix="/reports", tags=["Reports"])
 
 # Dependency to get database session
 def get_db():
-    db = SessionLocal()
+    db_instance = get_database()  
+    session = db_instance.create_session()
     try:
-        yield db
+        yield session
     finally:
-        db.close()
+        session.close()
 
 # Submit a new report
 @router.post("/")
@@ -24,7 +25,6 @@ def create_report(report: ReportCreate, db: Session = Depends(get_db)):
             employee_id=report.employee_id,
             report_date=report.report_date,
             report_text=report.report_text,
-            qdrant_id=report.qdrant_id
         )
         db.add(new_report)
         db.commit()

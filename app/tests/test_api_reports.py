@@ -8,8 +8,7 @@ def test_create_report():
     payload = {
         "employee_id": 1,
         "report_date": str(date.today()),  # Convert to string
-        "report_text": "Completed database migration and optimized queries.",
-        "qdrant_id": "NULL"
+        "report_text": "Completed database migration and optimized queries."
     }
 
     response = requests.post(f"{BASE_URL}/reports/", json=payload)
