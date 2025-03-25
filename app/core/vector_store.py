@@ -10,7 +10,6 @@ from qdrant_client.models import Filter, FieldCondition, MatchValue
 from qdrant_client.models import Filter, FieldCondition, MatchValue, NamedVector
 from sqlalchemy.sql import text
 import json 
-import uuid
 
 # Ensure project root is accessible
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
@@ -191,13 +190,14 @@ def add_report_to_qdrant(report_id, employee_id, report_date, report_text):
 
     
 
-def search_reports(query: str, employee_id: int, top_k: int = 5):
+def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold: float = 0.3):
     """
     Searches for the most relevant reports based on the query.
 
     :param query: The search query
     :param employee_id: Employee ID to filter results
     :param top_k: Number of top results to return
+    :param score_threshold: Minimum similarity score (0 to 1) to include a result
     :return: List of relevant report texts
     """
     try:
@@ -213,26 +213,41 @@ def search_reports(query: str, employee_id: int, top_k: int = 5):
             ]
         )
 
-        response = qdrant.query_points(
+        # Search with scores
+        logger.debug(f"Searching with query: '{query}' for employee: {employee_id}")
+        response = qdrant.search(
             collection_name=COLLECTION_NAME,
-            query=query_embedding,   # Pass the vector directly as a list of floats
+            query_vector=query_embedding,
             limit=top_k,
-            query_filter=query_filter  # Apply the filter
+            query_filter=query_filter,  # Changed back to query_filter which is the correct parameter name
+            with_payload=True,
+            with_vectors=False,
         )
 
-        points = response.points
+        # Log raw scores for debugging
+        logger.debug(f"Raw search results: {len(response)} items")
+        for i, point in enumerate(response):
+            logger.debug(f"Result {i+1}: Score = {point.score}, ID = {point.id}")
 
-        # Extract results and sort by report_date (most recent first)
+        # Filter out results with low similarity scores and add score to payload
+        filtered_results = []
+        for point in response:
+            if point.score >= score_threshold:
+                # Add the score to the payload for analysis
+                point_payload = point.payload.copy()
+                point_payload["score"] = point.score
+                filtered_results.append(point_payload)
+
+        # Sort by date (most recent first)
         sorted_results = sorted(
-            points, 
-            key=lambda hit: datetime.strptime(hit.payload.get("report_date", "1900-01-01"), "%Y-%m-%d"), 
-            reverse=True  # Sort descending (most recent first)
+            filtered_results, 
+            key=lambda hit: datetime.strptime(hit.get("report_date", "1900-01-01"), "%Y-%m-%d"), 
+            reverse=True
         )
 
-        logger.info(f"Search completed for query: {query}")
-        return [hit.payload for hit in sorted_results]
+        logger.info(f"Search completed for query '{query}', found {len(sorted_results)} relevant results")
+        return sorted_results
 
-    
     except Exception as e:
         logger.error(f"Search failed: {e}")
         return []
@@ -253,14 +268,6 @@ def get_report_chunks(report_id):
     :return: List of text chunks.
     """
     try:
-        # Ensure report_id is a UUID
-        if isinstance(report_id, str):
-            try:
-                report_id = uuid.UUID(report_id)
-            except ValueError:
-                logger.error(f"Invalid UUID format for report_id: {report_id}")
-                return []
-
         db_instance = get_database()
         with db_instance.create_session() as session:
             # Get Qdrant IDs for the report
