@@ -18,7 +18,7 @@ class Employee(Base):
 class Report(Base):
     __tablename__ = "reports"
 
-    report_id = Column(Integer, primary_key=True, autoincrement=True)
+    report_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     employee_id = Column(Integer, ForeignKey(f"{schema_name}.employees.id", ondelete="CASCADE"), nullable=False, index=True)
     report_date = Column(Date, nullable=False, index=True)
     report_text = Column(String, nullable=False)
@@ -35,7 +35,7 @@ class QdrantMapping(Base):
     __tablename__ = "qdrant_mappings"
 
     qdrant_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)  # Qdrant document ID
-    report_id = Column(Integer, ForeignKey(f"{schema_name}.reports.report_id", ondelete="CASCADE"), nullable=False)  # Foreign key to the reports table
+    report_id = Column(UUID(as_uuid=True), ForeignKey(f"{schema_name}.reports.report_id", ondelete="CASCADE"), nullable=False)  # Foreign key to the reports table
     chunk_index = Column(Integer, nullable=False)  # Index of the chunk
     meta_data = Column(JSONB, nullable=True)  # Optional metadata in JSON format
 

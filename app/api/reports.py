@@ -6,6 +6,7 @@ from app.schemas.reports_schema import ReportCreate
 from app.models.db_models import Employee
 from app.schemas.reports_schema import ReportForm
 from datetime import date
+from app.core.vector_store import add_report_to_qdrant  # Import the vector store function
 
 # Initialize Router
 router = APIRouter(prefix="/reports", tags=["Reports"])
@@ -32,6 +33,15 @@ def create_report(report: ReportCreate, db: Session = Depends(get_db)):
         db.add(new_report)
         db.commit()
         db.refresh(new_report)
+        
+        # Add the report to Qdrant for vector search
+        add_report_to_qdrant(
+            report_id=new_report.report_id,
+            employee_id=new_report.employee_id,
+            report_date=str(new_report.report_date),
+            report_text=new_report.report_text
+        )
+        
         return {"message": "Report added successfully", "report": new_report}
     except Exception as e:
         db.rollback()
@@ -48,23 +58,34 @@ def submit_report_form(report: ReportForm, db: Session = Depends(get_db)):
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found.")
 
+        # Format report text
+        report_text = (
+            f"Key Tasks: {report.key_tasks_completed}\n"
+            f"Impact: {report.impact_outcome}\n"
+            f"Challenges: {report.challenges_faced}\n"
+            f"Support: {report.support_required}\n"
+            f"Planned Tasks: {report.tasks_planned_next_week}\n"
+            f"Confidence Level: {report.confidence_level}\n"
+            f"Nothing to Report Reason: {report.nothing_to_report_reason}"
+        )
+        
         # Create a new report
         new_report = Report(
             employee_id=report.employee_id,
             report_date=date.today(),
-            report_text=(
-                f"Key Tasks: {report.key_tasks_completed}\n"
-                f"Impact: {report.impact_outcome}\n"
-                f"Challenges: {report.challenges_faced}\n"
-                f"Support: {report.support_required}\n"
-                f"Planned Tasks: {report.tasks_planned_next_week}\n"
-                f"Confidence Level: {report.confidence_level}\n"
-                f"Nothing to Report Reason: {report.nothing_to_report_reason}"
-            )
+            report_text=report_text
         )
         db.add(new_report)
         db.commit()
         db.refresh(new_report)
+        
+        # Add the report to Qdrant for vector search
+        add_report_to_qdrant(
+            report_id=new_report.report_id,
+            employee_id=new_report.employee_id,
+            report_date=str(new_report.report_date),
+            report_text=report_text
+        )
 
         return {"message": "Report submitted successfully.", "report_id": new_report.report_id}
     except Exception as e:
