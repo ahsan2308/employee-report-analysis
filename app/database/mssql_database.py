@@ -6,6 +6,7 @@ from app.models.base import Base
 # from sqlalchemy import MetaData
 from dotenv import load_dotenv
 import os
+
 # Load environment variables from .env
 load_dotenv()
 

@@ -4,6 +4,8 @@ from app.database import get_database
 from app.models.db_models import Report
 from app.schemas.reports_schema import ReportCreate
 from app.models.db_models import Employee
+from app.schemas.reports_schema import ReportForm
+from datetime import date
 
 # Initialize Router
 router = APIRouter(prefix="/reports", tags=["Reports"])
@@ -18,8 +20,9 @@ def get_db():
         session.close()
 
 # Submit a new report
-@router.post("/")
+@router.post("/create")
 def create_report(report: ReportCreate, db: Session = Depends(get_db)):
+    print("Request received at /reports/create")
     try:
         new_report = Report(
             employee_id=report.employee_id,
@@ -34,8 +37,41 @@ def create_report(report: ReportCreate, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating report: {str(e)}")
 
+# Submit a weekly report form
+@router.post("/form")
+def submit_report_form(report: ReportForm, db: Session = Depends(get_db)):
+    """Submit a weekly report form."""
+    print("Request received at /reports/form")
+    try:
+        # Check if the employee exists
+        employee = db.query(Employee).filter(Employee.id == report.employee_id).first()
+        if not employee:
+            raise HTTPException(status_code=404, detail="Employee not found.")
+
+        # Create a new report
+        new_report = Report(
+            employee_id=report.employee_id,
+            report_date=date.today(),
+            report_text=(
+                f"Key Tasks: {report.key_tasks_completed}\n"
+                f"Impact: {report.impact_outcome}\n"
+                f"Challenges: {report.challenges_faced}\n"
+                f"Support: {report.support_required}\n"
+                f"Planned Tasks: {report.tasks_planned_next_week}\n"
+                f"Confidence Level: {report.confidence_level}\n"
+                f"Nothing to Report Reason: {report.nothing_to_report_reason}"
+            )
+        )
+        db.add(new_report)
+        db.commit()
+        db.refresh(new_report)
+
+        return {"message": "Report submitted successfully.", "report_id": new_report.report_id}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error submitting report: {str(e)}")
+
 # Get reports for an employee
-# Get all reports for a specific employee
 @router.get("/{employee_id}")
 def get_employee_reports(employee_id: int, db: Session = Depends(get_db)):
     """Retrieve all reports for a given employee ID."""
