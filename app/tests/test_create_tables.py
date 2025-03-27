@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 
 # Add the project root to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from app.models.db_models import Employee, Report
 from app.database import get_database
 
 # Load environment variables
