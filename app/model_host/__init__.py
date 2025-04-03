@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 from app.base.base_llm import LLMProvider
 from app.model_host.ollama import OllamaProvider
+from app.core.logger import logger
 
 # Load environment variables
 load_dotenv()
@@ -32,7 +33,11 @@ def get_llm_provider(provider_type: Optional[str] = None, **kwargs) -> LLMProvid
     if "base_url" not in kwargs:
         kwargs["base_url"] = LLM_BASE_URL
     if "model" not in kwargs:
+        # Log the model being used to trace where gemini is coming from
+        logger.debug(f"Using model from environment: {LLM_MODEL}")
         kwargs["model"] = LLM_MODEL
+    else:
+        logger.debug(f"Using explicitly provided model: {kwargs['model']}")
     
     if provider_type.lower() == "ollama":
         return OllamaProvider(**kwargs)

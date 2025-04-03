@@ -6,7 +6,7 @@ from app.schemas.reports_schema import ReportCreate
 from app.models.db_models import Employee
 from app.schemas.reports_schema import ReportForm
 from datetime import date
-from app.core.vector_store import add_report_to_qdrant  # Import the vector store function
+from app.services.vector_store_service import add_report_to_vector_store  # Updated import
 
 # Initialize Router
 router = APIRouter(prefix="/reports", tags=["Reports"])
@@ -34,9 +34,9 @@ def create_report(report: ReportCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(new_report)
         
-        # Add the report to Qdrant for vector search
-        add_report_to_qdrant(
-            report_id=new_report.report_id,
+        # Add the report to vector store for semantic search
+        add_report_to_vector_store(
+            report_id=str(new_report.report_id),
             employee_id=new_report.employee_id,
             report_date=str(new_report.report_date),
             report_text=new_report.report_text
@@ -79,9 +79,9 @@ def submit_report_form(report: ReportForm, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(new_report)
         
-        # Add the report to Qdrant for vector search
-        add_report_to_qdrant(
-            report_id=new_report.report_id,
+        # Add the report to vector store for semantic search
+        add_report_to_vector_store(
+            report_id=str(new_report.report_id),
             employee_id=new_report.employee_id,
             report_date=str(new_report.report_date),
             report_text=report_text

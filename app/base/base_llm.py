@@ -34,4 +34,14 @@ class LLMProvider(ABC):
             List of floats representing the embedding vector
         """
         pass
+    
+    @abstractmethod
+    def get_model_info(self) -> Dict[str, Any]:
+        """
+        Get information about the model.
+        
+        Returns:
+            Dictionary containing model information
+        """
+        pass
 

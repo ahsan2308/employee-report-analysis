@@ -7,6 +7,7 @@ database:
   url: postgresql://myuser:mypassword@localhost:5432/employee_reports
 
 llm:
+  provider: ollama  # Options: ollama, openai (future)
   api_url: http://localhost:11434/api/generate
   model: llama3.1:8b
 

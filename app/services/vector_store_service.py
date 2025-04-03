@@ -200,24 +200,17 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
             filtered_results = [r for r in results if r.get("score", 0) >= score_threshold]
             logger.debug(f"After threshold filtering: {len(filtered_results)} results remain")
         
-        # Sort by date (most recent first)
-        sorted_results = []
-        for hit in filtered_results:
-            try:
-                report_date = hit.get("report_date", "1900-01-01")
-                # Keep the original payload data
-                sorted_results.append(hit)
-            except Exception as date_err:
-                logger.error(f"Date parsing error for result: {hit.get('report_date')}: {date_err}")
-        
-        sorted_results = sorted(
-            sorted_results,
-            key=lambda hit: datetime.strptime(hit.get("report_date", "1900-01-01"), "%Y-%m-%d"),
-            reverse=True
-        )
-        
-        logger.info(f"Search for '{query}' found {len(sorted_results)} results")
-        
+        try:
+            sorted_results = sorted(
+                filtered_results,
+                key=lambda hit: datetime.strptime(hit.get("report_date", "1900-01-01"), "%Y-%m-%d"),
+                reverse=True
+            )
+            logger.info(f"Search for '{query}' found {len(sorted_results)} results")
+        except Exception as date_err:
+            logger.error(f"Error sorting results by date: {date_err}")
+            sorted_results = filtered_results  # Fall back to unsorted results if sorting fails
+                
         # Log the first result if available for debugging
         if sorted_results:
             logger.debug(f"Top result: {sorted_results[0]}")
