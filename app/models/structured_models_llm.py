@@ -5,12 +5,30 @@ This module contains all the Pydantic models used for structured data
 generation with LLM services. Import these models when you need to
 define a structured output format for LLM responses.
 """
-from typing import List, Optional, Literal
+from typing import List, Optional, Literal, Dict, Any
 from pydantic import BaseModel, Field
 
+# Simplified EmployeeAnalysis model matching our simplified DB model
+class EmployeeAnalysis(BaseModel):
+    """Simplified model for employee report analysis."""
+    sentiment: Literal["positive", "negative", "neutral"] = Field(
+        description="Overall sentiment of the report"
+    )
+    risk_level: Literal["low", "medium", "high"] = Field(
+        description="Overall risk assessment level"
+    )
+    risk_explanation: str = Field(
+        description="Explanation for the assigned risk level"
+    )
+    # Additional fields that will be stored in full_analysis_json
+    topics: List[str] = Field(
+        description="Key topics covered in the report"
+    )
 
+"""
+# More detailed models commented out for future use
 class Achievement(BaseModel):
-    """Model representing an employee achievement."""
+    # Model representing an employee achievement
     description: str = Field(
         description="Detailed description of the achievement"
     )
@@ -20,7 +38,7 @@ class Achievement(BaseModel):
 
 
 class Challenge(BaseModel):
-    """Model representing a challenge faced by an employee."""
+    # Model representing a challenge faced by an employee
     description: str = Field(
         description="Detailed description of the challenge faced"
     )
@@ -30,8 +48,8 @@ class Challenge(BaseModel):
     )
 
 
-class EmployeeAnalysis(BaseModel):
-    """Model for comprehensive employee report analysis."""
+class FullEmployeeAnalysis(BaseModel):
+    # Full model for comprehensive employee report analysis
     achievements: List[Achievement] = Field(
         description="Key achievements mentioned in the report"
     )
@@ -53,8 +71,9 @@ class EmployeeAnalysis(BaseModel):
     risk_explanation: str = Field(
         description="Explanation for the assigned risk level"
     )
+"""
 
-
+# Other utility models remain unchanged
 class ContactInfo(BaseModel):
     """Model for contact information."""
     email: str = Field(description="Email address")
@@ -105,6 +124,3 @@ class Pet(BaseModel):
 class PetList(BaseModel):
     """Model for a list of pets."""
     pets: List[Pet] = Field(description="List of pets")
-
-
-# You can add more models as needed for your application

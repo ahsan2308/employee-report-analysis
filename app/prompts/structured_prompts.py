@@ -23,8 +23,6 @@ class StructuredPrompts:
     @staticmethod
     def format_schema_prompt(schema: Dict[str, Any], example_format: Dict[str, Any]) -> str:
         """Format a prompt for JSON schema with example."""
-        
-        
         return (
             f"\n{StructuredPrompts.general_json_instruction()}\n\n"
             f"Here's the schema your response should conform to:\n{json.dumps(schema, indent=2)}\n\n"
@@ -34,8 +32,6 @@ class StructuredPrompts:
     @staticmethod
     def format_simple_prompt(example_format: Dict[str, Any]) -> str:
         """Format a prompt for simple JSON with example."""
-        import json
-        
         return (
             f"\n{StructuredPrompts.general_json_instruction()}\n\n"
             f"Follow this exact format:\n{json.dumps(example_format, indent=2)}\n"
@@ -50,6 +46,18 @@ class StructuredPrompts:
         if similar_reports and len(similar_reports) > 0:
             context = "Previous reports for context:\n\n" + "\n---\n".join(similar_reports) + "\n\n"
         
+        # Simplified prompt focused on core fields needed for the simplified model
+        return (
+            f"{context}Please analyze the following employee report:\n\n{report_text}\n\n"
+            "Provide the following analysis focusing on these key required aspects:\n"
+            "1. Overall sentiment (must be exactly one of: positive, negative, neutral)\n"
+            "2. Risk assessment (must be exactly one of: low, medium, high)\n"
+            "3. Detailed explanation for the risk assessment\n"
+            "4. Key topics covered in the report (as a list)"
+        )
+        
+        # Original detailed prompt (commented out)
+        """
         return (
             f"{context}Please analyze the following employee report:\n\n{report_text}\n\n"
             "Provide the following analysis:\n"
@@ -60,6 +68,7 @@ class StructuredPrompts:
             "5. Recommended action items\n"
             "6. Risk assessment (low, medium, high) with explanation"
         )
+        """
     
     @staticmethod
     def developer_profile_prompt(developer_info: str = "") -> str:

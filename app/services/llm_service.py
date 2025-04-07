@@ -9,7 +9,7 @@ import re
 from app.model_host import get_llm_provider
 from app.core.logger import logger
 from app.core.config_provider import get_config_provider
-from app.models.structured_models import EmployeeAnalysis
+from app.models.structured_models_llm import EmployeeAnalysis
 from app.prompts.structured_prompts import StructuredPrompts
 
 config = get_config_provider()
