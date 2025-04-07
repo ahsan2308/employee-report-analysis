@@ -1,13 +1,13 @@
 import sys
 import os
-from dotenv import load_dotenv
+from app.utils.env_loader import load_env_from_file
 
 # Add the project root to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from app.database import get_database
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from specific .env file
+load_env_from_file()
 
 def test_create_tables():
     """Test creating tables in the database."""

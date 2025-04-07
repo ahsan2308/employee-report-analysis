@@ -1,11 +1,11 @@
 import os
 import yaml
-from dotenv import load_dotenv
 from typing import Any, Dict, Optional
 from functools import lru_cache
+from app.utils.env_loader import load_env_from_file
 
 # Load environment variables
-load_dotenv()
+load_env_from_file()
 
 class ConfigProvider:
     """

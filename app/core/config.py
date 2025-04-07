@@ -1,9 +1,9 @@
 import os
 import yaml
-from dotenv import load_dotenv
+from app.utils.env_loader import load_env_from_file
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from specific .env file
+load_env_from_file()
 
 # Get the absolute path to config.yaml
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # Moves one level up from 'core'

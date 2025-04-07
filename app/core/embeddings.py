@@ -1,6 +1,6 @@
 import os
 import sys
-from dotenv import load_dotenv
+from app.utils.env_loader import load_env_from_file
 
 # Ensure project root is accessible
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
@@ -9,8 +9,8 @@ from app.config.config import config
 from app.model_host import get_llm_provider
 from app.core.logger import logger
 
-# Load environment variables from .env
-load_dotenv()
+# Load environment variables from specific .env file
+load_env_from_file()
 
 
 def get_embedding(text: str, model_name: str = None) -> list:

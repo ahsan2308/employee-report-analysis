@@ -1,13 +1,13 @@
 import os
 from typing import Optional
-from dotenv import load_dotenv
+from app.utils.env_loader import load_env_from_file
 
 from app.base.base_vector_store import BaseVectorStore
 from app.vector_store.qdrant_provider import QdrantProvider
 from app.core.config_provider import get_config_provider
 
 # Load environment variables
-load_dotenv()
+load_env_from_file()
 
 # Get configuration
 config = get_config_provider()

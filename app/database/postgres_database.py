@@ -1,13 +1,12 @@
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from app.base.base_db import BaseDatabase
-# from sqlalchemy.orm import declarative_base
 from app.models.base import Base
-# from sqlalchemy import MetaData
-from dotenv import load_dotenv
 import os
-# Load environment variables from .env
-load_dotenv()
+from app.utils.env_loader import load_env_from_file
+
+# Load environment variables from specific .env file
+load_env_from_file()
 
 # Get the schema name from the .env file
 schema_name = os.getenv("SCHEMA_NAME", "public")

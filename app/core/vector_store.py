@@ -3,7 +3,7 @@ import sys
 import logging
 from datetime import datetime
 import warnings
-from dotenv import load_dotenv
+from app.utils.env_loader import load_env_from_file
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
 from uuid import uuid4  
@@ -22,8 +22,8 @@ from app.database import get_database
 from app.models.base import schema_name
 from app.core.config_provider import get_config_provider
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from specific .env file
+load_env_from_file()
 
 # Get configuration using the new config provider
 config = get_config_provider()

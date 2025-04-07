@@ -1,13 +1,13 @@
 import os
 from typing import Optional
-from dotenv import load_dotenv
+from app.utils.env_loader import load_env_from_file
 
 from app.base.base_llm import LLMProvider
 from app.model_host.ollama import OllamaProvider
 from app.core.logger import logger
 
 # Load environment variables
-load_dotenv()
+load_env_from_file()
 
 # Get LLM settings from environment
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()

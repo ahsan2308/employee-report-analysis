@@ -6,7 +6,7 @@ from app.schemas.reports_schema import ReportCreate
 from app.models.db_models import Employee
 from app.schemas.reports_schema import ReportForm
 from datetime import date
-from app.services.vector_store_service import add_report_to_vector_store  # Updated import
+from app.services.vector_store_service import add_report_to_vector_store  
 
 # Initialize Router
 router = APIRouter(prefix="/reports", tags=["Reports"])
