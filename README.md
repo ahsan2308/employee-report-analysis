@@ -1,3 +1,64 @@
+Employee Report Analysis System
+A robust AI-powered system for analyzing employee reports to extract valuable insights, identify trends, and facilitate data-driven management decisions through natural language processing.
+
+📋 Overview
+Employee Report Analysis is an intelligent application that leverages Large Language Models (LLMs) and vector search to automatically analyze employee reports. The system extracts key information like achievements, challenges, sentiment, and risk assessments, providing actionable insights for management teams.
+
+✨ Key Features
+Automated Report Analysis: Extract structured insights from unstructured employee reports
+Semantic Search: Find relevant reports based on context, not just keywords
+Risk Assessment: Automatically identify potential issues requiring attention
+Sentiment Analysis: Track employee sentiment over time
+Historical Context: Analyze reports in the context of previous submissions
+Data Visualization: (Coming soon) Visual dashboards to track employee performance trends
+🏗️ System Architecture
+API Layer: RESTful endpoints for employees, reports and analyses
+Services Layer: Business logic for report processing and analysis
+Storage: Dual storage system with PostgreSQL for structured data and Qdrant for vector embeddings
+LLM Integration: Ollama for natural language understanding and structured output generation
+🛠️ Technologies Used
+Backend: FastAPI (Python)
+Database: PostgreSQL/MSSQL
+Vector Store: Qdrant
+LLM Provider: Ollama with Llama 3.1
+Embeddings: Sentence transformers
+Documentation: Swagger/OpenAPI
+📦 Setup and Installation
+Prerequisites
+Python 3.10+
+PostgreSQL database
+Ollama with the Llama 3.1 model
+Visual C++ build tools (Windows only)
+Installation Steps
+Clone the repository
+
+Create a virtual environment
+
+Install dependencies
+
+Configure the environment
+
+Copy .env.example to .env and update the settings
+Ensure database connection details are correct in config.yaml
+Initialize the database
+
+Start the application
+
+🚀 Usage
+Creating Employees
+Submitting Reports
+Analyzing Reports
+🔮 Future Enhancements
+Background Processing: Asynchronous analysis for improved performance
+Batched Operations: Process multiple reports in a single request
+Caching Layer: Optimize frequent queries and expensive computations
+User Interface: Web dashboard for report submission and visualization
+Extended Analysis: Trend analysis and comparative performance metrics
+Export Functionality: Generate PDF and Excel reports for stakeholders
+📝 License
+MIT License
+
+
 # employee-report-analysis
 
 Install https://visualstudio.microsoft.com/visual-cpp-build-tools/ before installing from requirements.txt
