@@ -15,6 +15,7 @@ def load_env_from_file():
     env_path = os.path.join(project_root, ".env")
     
     # Load environment variables from the specified file
-    load_dotenv(dotenv_path=env_path)
+    # Add override=True to ensure project .env variables take precedence over any existing ones
+    load_dotenv(dotenv_path=env_path, override=True)
     
     return True

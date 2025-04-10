@@ -39,7 +39,7 @@ class QdrantMapping(Base):
     qdrant_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)  # Qdrant document ID
     report_id = Column(UUID(as_uuid=True), ForeignKey(f"{schema_name}.reports.report_id", ondelete="CASCADE"), nullable=False)  # Foreign key to the reports table
     chunk_index = Column(Integer, nullable=False)  # Index of the chunk
-    meta_data = Column(JSONB, nullable=True)  # Optional metadata in JSON format
+    # meta_data = Column(JSONB, nullable=True)  # Optional metadata in JSON format
 
     def __repr__(self):
         return f"<QdrantMapping(qdrant_id={self.qdrant_id}, report_id={self.report_id}, chunk_index={self.chunk_index})>"
@@ -65,7 +65,7 @@ class EmployeeAnalysis(Base):
     # Core analysis fields
     sentiment_score = Column(Float, nullable=True)
     risk_level = Column(String, nullable=True)  # "low", "medium", "high"
-    risk_explanation = Column(String, nullable=True)  # Add this line
+    risk_explanation = Column(String, nullable=True)  
     
     # Complete analysis output
     full_analysis_json = Column(JSONB, nullable=False)

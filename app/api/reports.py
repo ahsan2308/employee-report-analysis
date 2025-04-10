@@ -7,6 +7,7 @@ from app.models.db_models import Employee
 from app.schemas.reports_schema import ReportForm
 from datetime import date
 from app.services.vector_store_service import add_report_to_vector_store  
+from app.core.logger import logger  # Import the existing logger
 
 # Initialize Router
 router = APIRouter(prefix="/reports", tags=["Reports"])
@@ -23,8 +24,13 @@ def get_db():
 # Submit a new report
 @router.post("/create")
 def create_report(report: ReportCreate, db: Session = Depends(get_db)):
-    print("Request received at /reports/create")
+    logger.info("Request received at /reports/create")
     try:
+        # Check if the employee exists
+        employee = db.query(Employee).filter(Employee.id == report.employee_id).first()
+        if not employee:
+            raise HTTPException(status_code=404, detail="Employee not found.")
+            
         new_report = Report(
             employee_id=report.employee_id,
             report_date=report.report_date,
@@ -34,24 +40,33 @@ def create_report(report: ReportCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(new_report)
         
-        # Add the report to vector store for semantic search
-        add_report_to_vector_store(
-            report_id=str(new_report.report_id),
-            employee_id=new_report.employee_id,
-            report_date=str(new_report.report_date),
-            report_text=new_report.report_text
-        )
+        try:
+            # Add the report to vector store for semantic search
+            add_report_to_vector_store(
+                report_id=str(new_report.report_id),
+                employee_id=new_report.employee_id,
+                report_date=str(new_report.report_date),
+                report_text=new_report.report_text
+            )
+        except Exception as vector_error:
+            # Log the vector store error but don't fail the entire operation
+            logger.warning(f"Failed to add report to vector store: {str(vector_error)}")
         
         return {"message": "Report added successfully", "report": new_report}
+    except HTTPException as he:
+        # Re-raise HTTP exceptions as-is
+        raise he
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Error creating report: {str(e)}")
+        error_message = f"Error creating report: {str(e)}"
+        logger.error(error_message)  # Use logger instead of print
+        raise HTTPException(status_code=500, detail=error_message)
 
 # Submit a weekly report form
 @router.post("/form")
 def submit_report_form(report: ReportForm, db: Session = Depends(get_db)):
     """Submit a weekly report form."""
-    print("Request received at /reports/form")
+    logger.info("Request received at /reports/form")
     try:
         # Check if the employee exists
         employee = db.query(Employee).filter(Employee.id == report.employee_id).first()
@@ -79,18 +94,27 @@ def submit_report_form(report: ReportForm, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(new_report)
         
-        # Add the report to vector store for semantic search
-        add_report_to_vector_store(
-            report_id=str(new_report.report_id),
-            employee_id=new_report.employee_id,
-            report_date=str(new_report.report_date),
-            report_text=report_text
-        )
+        try:
+            # Add the report to vector store for semantic search
+            add_report_to_vector_store(
+                report_id=str(new_report.report_id),
+                employee_id=new_report.employee_id,
+                report_date=str(new_report.report_date),
+                report_text=report_text
+            )
+        except Exception as vector_error:
+            # Log the vector store error but don't fail the entire operation
+            logger.warning(f"Failed to add report to vector store: {str(vector_error)}")
 
         return {"message": "Report submitted successfully.", "report_id": new_report.report_id}
+    except HTTPException as he:
+        # Re-raise HTTP exceptions as-is
+        raise he
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Error submitting report: {str(e)}")
+        error_message = f"Error submitting report: {str(e)}"
+        logger.error(error_message)
+        raise HTTPException(status_code=500, detail=error_message)
 
 # Get reports for an employee
 @router.get("/{employee_id}")

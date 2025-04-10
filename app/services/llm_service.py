@@ -5,6 +5,7 @@ from typing import Dict, List, Any, Optional, Type, Union
 import time
 import json
 import re
+import os
 
 from app.model_host import get_llm_provider
 from app.core.logger import logger
@@ -13,7 +14,8 @@ from app.models.structured_models_llm import EmployeeAnalysis
 from app.prompts.structured_prompts import StructuredPrompts
 
 config = get_config_provider()
-DEFAULT_MODEL = config.get("model", "llama3.1:8b", section="llm")
+# Prioritize environment variable over config
+DEFAULT_MODEL = os.getenv("MODEL_LLM") or config.get("model", "llama3.1:8b", section="llm")
 
 class LLMService:
     """Service for interacting with LLM models for text generation and inference."""

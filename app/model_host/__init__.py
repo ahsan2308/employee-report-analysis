@@ -12,7 +12,7 @@ load_env_from_file()
 # Get LLM settings from environment
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "http://localhost:11434")
-LLM_MODEL = os.getenv("LLM_MODEL", "llama3.1:8b")
+LLM_MODEL = os.getenv("MODEL_LLM", "llama3.1:8b")
 
 def get_llm_provider(provider_type: Optional[str] = None, **kwargs) -> LLMProvider:
     """
