@@ -24,7 +24,9 @@ This provides **actionable insights** for management teams.
 - **Risk Assessment**: Automatically identify potential issues requiring attention  
 - **Sentiment Analysis**: Track employee sentiment over time  
 - **Historical Context**: Analyze reports in the context of previous submissions  
-- **Data Visualization**: *(Coming soon)* Visual dashboards to track employee performance trends  
+- **Web Interface**: User-friendly frontend for submitting reports and viewing analyses  
+- **Interactive Dashboards**: View and manage employees, reports, and analyses through an intuitive UI  
+- **Data Visualization**: Visual representation of sentiment, risk levels, and key topics  
 
 ---
 
@@ -36,6 +38,7 @@ This provides **actionable insights** for management teams.
   - PostgreSQL for structured data  
   - Qdrant for vector embeddings  
 - **LLM Integration**: Ollama for natural language understanding and structured output generation  
+- **Frontend Layer**: HTML, CSS, and JavaScript for user interaction  
 
 ---
 
@@ -47,6 +50,8 @@ This provides **actionable insights** for management teams.
 - **LLM Provider**: Ollama with LLaMA 3.1  
 - **Embeddings**: Sentence Transformers  
 - **Documentation**: Swagger / OpenAPI  
+- **Frontend**: HTML5, CSS3, JavaScript (vanilla)  
+- **UI Framework**: Custom responsive design  
 
 ---
 
@@ -62,21 +67,76 @@ This provides **actionable insights** for management teams.
 ### Installation Steps
 
 1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/employee-report-analysis.git
+   cd employee-report-analysis
+   ```
+
 2. **Create a virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
 3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
 4. **Configure the environment**  
    - Copy `.env.example` to `.env` and update the settings  
    - Ensure database connection details are correct in `config.yaml`
+
 5. **Initialize the database**
-6. **Start the application**
+   ```bash
+   alembic upgrade head
+   ```
+
+6. **Start the backend application**
+   ```bash
+   uvicorn app.main:app --reload
+   ```
+
+7. **Access the frontend**
+   - Open `frontend/index.html` in your web browser  
+   - Alternatively, use a simple HTTP server:
+     ```bash
+     cd frontend
+     python -m http.server 8080
+     ```
+   - Then navigate to `http://localhost:8080` in your browser  
 
 ---
 
 ## 🚀 Usage
 
-- **Creating Employees**  
-- **Submitting Reports**  
-- **Analyzing Reports**
+### Using the Web Interface
+
+- **Home Page**: Navigate to the main dashboard for an overview of the system  
+- **Employees Page**: Create, view, and manage employee profiles  
+- **Reports Page**: Submit new employee reports with structured fields for:
+  - Tasks completed  
+  - Impact/outcome  
+  - Challenges faced  
+  - Support required  
+  - Tasks planned for next week  
+  - Confidence level  
+- **Analysis Page**: Request and view AI-generated analyses of submitted reports, including:
+  - Sentiment analysis  
+  - Risk assessment  
+  - Key achievements  
+  - Major challenges  
+  - Recommended actions  
+
+### Using the API
+
+For programmatic access, use the REST API:
+
+- **Creating Employees**: `POST /api/employees`  
+- **Submitting Reports**: `POST /api/reports`  
+- **Analyzing Reports**: `POST /api/analyses`  
+
+API documentation is available at `/docs` when running the application.
 
 ---
 
@@ -85,9 +145,10 @@ This provides **actionable insights** for management teams.
 - **Background Processing**: Asynchronous analysis for improved performance  
 - **Batched Operations**: Process multiple reports in a single request  
 - **Caching Layer**: Optimize frequent queries and expensive computations  
-- **User Interface**: Web dashboard for report submission and visualization  
+- **Enhanced UI**: Additional visualizations and interactive elements  
 - **Extended Analysis**: Trend analysis and comparative performance metrics  
 - **Export Functionality**: Generate PDF and Excel reports for stakeholders  
+- **Mobile Responsiveness**: Optimize frontend for mobile devices  
 
 ---
 
