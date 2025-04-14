@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 import os
 import sys
@@ -16,6 +17,15 @@ db_instance.create_tables()
 print("✅ Database tables created successfully!")
 # Initialize FastAPI app
 app = FastAPI(title="Employee Report Analysis API")
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with specific origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Include routers
 app.include_router(employee_router)

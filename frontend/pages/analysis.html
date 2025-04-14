@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis - Employee Evaluation System</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Employee Evaluation System</h1>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="employees.html">Employees</a></li>
+                    <li><a href="reports.html">Reports</a></li>
+                    <li><a href="analysis.html" class="active">Analysis</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main>
+            <section>
+                <h2>Report Analysis</h2>
+                <div id="statusMessage"></div>
+                
+                <form id="analysisForm">
+                    <div class="form-group">
+                        <label for="reportId">Report ID:</label>
+                        <input type="text" id="reportId" name="reportId" required>
+                    </div>
+                    
+                    <button type="submit" class="button">Analyze Report</button>
+                </form>
+            </section>
+            
+            <section id="analysisResultsSection" style="display: none;">
+                <h3>Analysis Results</h3>
+                <div id="loadingAnalysis" class="loading">Loading analysis...</div>
+                <div id="analysisResults">
+                    <!-- Analysis results will be displayed here -->
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Employee Evaluation System</p>
+        </footer>
+    </div>
+    
+    <script src="../js/api.js"></script>
+    <script src="../js/analysis.js"></script>
+</body>
+</html>

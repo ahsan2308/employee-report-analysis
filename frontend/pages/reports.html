@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Reports - Employee Evaluation System</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Employee Evaluation System</h1>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="employees.html">Employees</a></li>
+                    <li><a href="reports.html" class="active">Reports</a></li>
+                    <li><a href="analysis.html">Analysis</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main>
+            <section id="selectEmployeeSection">
+                <h2>Select Employee</h2>
+                <div class="form-group">
+                    <label for="employeeSelect">Choose an employee:</label>
+                    <select id="employeeSelect" class="form-control">
+                        <option value="">-- Select Employee --</option>
+                    </select>
+                </div>
+                <div class="action-buttons">
+                    <button id="viewReportsBtn" class="button">View Reports</button>
+                    <button id="addReportBtn" class="button">Add Report</button>
+                </div>
+            </section>
+            
+            <section id="reportsSection" style="display:none;">
+                <h2>Submit Weekly Report</h2>
+                <div id="employeeInfo" class="employee-info"></div>
+                <div id="statusMessage"></div>
+                <button id="backToListBtn" class="button secondary-button">Back to Reports List</button>
+                
+                <form id="reportForm">
+                    <input type="hidden" id="employeeId" name="employeeId">
+                    
+                    <div class="form-group">
+                        <label for="keyTasksCompleted">Key Tasks Completed This Week:</label>
+                        <textarea id="keyTasksCompleted" name="keyTasksCompleted" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="impactOutcome">Impact or Outcome:</label>
+                        <textarea id="impactOutcome" name="impactOutcome" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="challengesFaced">Challenges Faced:</label>
+                        <textarea id="challengesFaced" name="challengesFaced" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="supportRequired">Support Required:</label>
+                        <textarea id="supportRequired" name="supportRequired" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tasksPlannedNextWeek">Tasks Planned for Next Week:</label>
+                        <textarea id="tasksPlannedNextWeek" name="tasksPlannedNextWeek" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confidenceLevel">Confidence Level (1-5):</label>
+                        <select id="confidenceLevel" name="confidenceLevel">
+                            <option value="1">1 - Very Low</option>
+                            <option value="2">2 - Low</option>
+                            <option value="3" selected>3 - Moderate</option>
+                            <option value="4">4 - High</option>
+                            <option value="5">5 - Very High</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nothingToReportReason">If Nothing to Report, Reason:</label>
+                        <textarea id="nothingToReportReason" name="nothingToReportReason" rows="2"></textarea>
+                        <small class="form-text text-muted">Only fill this if you have nothing to report for this week.</small>
+                    </div>
+                    
+                    <button type="submit" class="button">Submit Report</button>
+                </form>
+            </section>
+            
+            <section id="reportsListSection" style="display:none;">
+                <h3>Reports List</h3>
+                <div id="employeeInfoHeader" class="employee-info"></div>
+                <div class="action-buttons">
+                    <button id="newReportBtn" class="button primary-button">Add New Report</button>
+                    <button id="selectAnotherEmployeeBtn" class="button secondary-button">Select Another Employee</button>
+                </div>
+                <div id="loadingReports" class="loading">Loading reports...</div>
+                <div id="reportList">
+                    <table id="reportsTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Preview</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Report data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Employee Evaluation System</p>
+        </footer>
+    </div>
+    
+    <script src="../js/api.js"></script>
+    <script src="../js/reports.js"></script>
+</body>
+</html>
