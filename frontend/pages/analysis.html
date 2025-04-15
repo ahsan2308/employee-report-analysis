@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analysis - Employee Evaluation System</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/analysis.css">
 </head>
 <body>
     <div class="container">
@@ -21,26 +22,34 @@
         </header>
         
         <main>
-            <section>
+            <section class="selection-panel">
                 <h2>Report Analysis</h2>
-                <div id="statusMessage"></div>
+                <div id="statusMessage" style="display: none;"></div>
                 
-                <form id="analysisForm">
+                <div class="analysis-controls">
                     <div class="form-group">
-                        <label for="reportId">Report ID:</label>
-                        <input type="text" id="reportId" name="reportId" required>
+                        <label for="employeeSelect">Select Employee:</label>
+                        <select id="employeeSelect" class="form-control">
+                            <option value="">-- Select Employee --</option>
+                        </select>
                     </div>
-                    
-                    <button type="submit" class="button">Analyze Report</button>
-                </form>
+                    <div class="form-group">
+                        <label for="reportSelect">Select Report:</label>
+                        <select id="reportSelect" class="form-control">
+                            <option value="">-- First Select Employee --</option>
+                        </select>
+                    </div>
+                    <button id="analyzeButton" class="button primary-button" disabled>Analyze Report</button>
+                </div>
+                
+                <div id="loadingIndicator" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Analyzing report... This may take a moment.</p>
+                </div>
             </section>
             
-            <section id="analysisResultsSection" style="display: none;">
-                <h3>Analysis Results</h3>
-                <div id="loadingAnalysis" class="loading">Loading analysis...</div>
-                <div id="analysisResults">
-                    <!-- Analysis results will be displayed here -->
-                </div>
+            <section id="analysisResults" style="display: none;">
+                <!-- Analysis results will be dynamically inserted here -->
             </section>
         </main>
         

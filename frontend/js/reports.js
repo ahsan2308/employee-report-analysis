@@ -222,10 +222,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${report.report_date || 'N/A'}</td>
                     <td>${truncatedText}</td>
                     <td>
-                        <a href="analysis.html?report_id=${report.report_id}" class="button">Analyze</a>
+                        <button class="button analyze-report" data-id="${report.report_id}">Analyze</button>
                     </td>
                 `;
                 tableBody.appendChild(row);
+            });
+
+            // Add event listeners to the analyze buttons
+            document.querySelectorAll('.analyze-report').forEach(button => {
+                button.addEventListener('click', analyzeReport);
             });
 
             // Show table
@@ -274,6 +279,21 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             // Handle errors
             showError('Error submitting report: ' + error.message);
+        }
+    }
+
+    // Analyze report
+    async function analyzeReport(event) {
+        const reportId = event.target.getAttribute('data-id');
+        showStatus(`Initiating analysis for report ${reportId}...`, 'loading');
+        
+        try {
+            // Immediately redirect to the analysis page with the report ID
+            // We'll let the analysis page handle the API call
+            window.location.href = `analysis.html?report_id=${reportId}&auto_analyze=true`;
+        } catch (error) {
+            console.error('Error redirecting to analysis:', error);
+            showError('Failed to navigate to analysis page. Please try again later.');
         }
     }
 

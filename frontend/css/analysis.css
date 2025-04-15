@@ -1,0 +1,184 @@
+/* Analysis-specific styles */
+
+/* Selection panel */
+.selection-panel {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.analysis-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.analysis-controls .form-group:last-child {
+    grid-column: span 2;
+}
+
+#analyzeButton {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: #2980b9;
+    width: 100%;
+    max-width: 200px;
+    justify-self: start;
+}
+
+#analyzeButton:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+/* Loading indicator */
+.loading {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: #3498db;
+    animation: spin 1s ease-in-out infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Analysis results */
+.analysis-container {
+    background-color: white;
+    border-radius: 5px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.analysis-header {
+    border-bottom: 1px solid #e6e6e6;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.analysis-meta {
+    display: flex;
+    gap: 2rem;
+    margin-top: 0.5rem;
+}
+
+.analysis-section {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.analysis-section h5 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+/* Topics display */
+.topics-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.topic-tag {
+    background-color: #3498db;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+/* Items lists */
+.achievements-list,
+.challenges-list,
+.action-items-list {
+    padding-left: 1.5rem;
+}
+
+.achievements-list li,
+.challenges-list li,
+.action-items-list li {
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+/* Sentiment and risk level colors */
+.sentiment-positive {
+    color: #27ae60;
+}
+
+.sentiment-neutral {
+    color: #f39c12;
+}
+
+.sentiment-negative {
+    color: #e74c3c;
+}
+
+.risk-low {
+    color: #27ae60;
+}
+
+.risk-medium {
+    color: #f39c12;
+}
+
+.risk-high {
+    color: #e74c3c;
+}
+
+/* Challenge severity indicators */
+.severity-low {
+    color: #27ae60;
+}
+
+.severity-medium {
+    color: #f39c12;
+}
+
+.severity-high {
+    color: #e74c3c;
+}
+
+/* Achievement and challenge items */
+.achievement-item, .challenge-item {
+    margin-bottom: 1rem;
+}
+
+.achievement-impact, .challenge-severity {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin-top: 0.25rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .analysis-controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .analysis-controls .form-group:last-child {
+        grid-column: span 1;
+    }
+    
+    .analysis-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

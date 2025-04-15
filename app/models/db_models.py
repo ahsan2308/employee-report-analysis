@@ -70,6 +70,12 @@ class EmployeeAnalysis(Base):
     # Complete analysis output
     full_analysis_json = Column(JSONB, nullable=False)
     
+    # Additional structured fields for common queries
+    achievements_json = Column(JSONB, nullable=True)  # JSON array of achievements with description and impact
+    challenges_json = Column(JSONB, nullable=True)   # JSON array of challenges with description and severity
+    topics = Column(JSONB, nullable=True)  # JSON array of key topics 
+    action_items = Column(JSONB, nullable=True)  # JSON array of recommended actions
+    
     # Auditing fields
     created_at = Column(DateTime, default=func.now(), nullable=False)
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
@@ -80,25 +86,6 @@ class EmployeeAnalysis(Base):
     
     def __repr__(self):
         return f"<EmployeeAnalysis(analysis_id={self.analysis_id}, report_id={self.report_id}, date={self.analysis_date})>"
-
-    # Commented out advanced fields for simplicity during initial testing
-    """
-    # Additional structured fields for common queries
-    achievements_summary = Column(String, nullable=True)
-    challenges_summary = Column(String, nullable=True)
-    opportunities_text = Column(String, nullable=True)
-    
-    # Semi-structured data
-    action_items_json = Column(JSONB, nullable=True)  # JSON array of recommended actions
-    
-    # Notes on full_analysis_json benefits:
-    # 1. Schema flexibility: Can store any structure the LLM generates without database migrations
-    # 2. Future-proofing: New analysis metrics can be added without schema changes
-    # 3. Rich data: Can store nested objects and arrays that would be complex in relational format
-    # 4. Queryable: Modern databases allow querying into JSON structures (e.g., full_analysis_json->>'technical_score')
-    # 5. Full context: Preserves complete analysis even if we only extract specific fields to structured columns
-    # 6. Visualization flexibility: Frontend can access all data dimensions for advanced visualizations
-    """
 
 # Add relationship backref to existing models
 Report.analyses = relationship("EmployeeAnalysis", back_populates="report", cascade="all, delete-orphan")

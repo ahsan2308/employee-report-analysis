@@ -81,5 +81,20 @@ const analysisApi = {
                 'Content-Type': 'application/json'
             }
         });
+    },
+    
+    // Get analysis results for a specific report
+    getAnalysisResults: async (reportId) => {
+        return await fetchApi(`/analyses/results/${reportId}`);
+    },
+    
+    // Get all analyses for an employee
+    getEmployeeAnalyses: async (employeeId) => {
+        return await fetchApi(`/analyses/employee/${employeeId}`);
+    },
+    
+    // Get detailed analysis by ID
+    getAnalysisDetails: async (analysisId) => {
+        return await fetchApi(`/analyses/${analysisId}`);
     }
 };

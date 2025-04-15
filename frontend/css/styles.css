@@ -89,40 +89,16 @@ p {
     text-decoration: none;
     border-radius: 5px;
     transition: background-color 0.3s ease;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    font-family: inherit;
-    margin-right: 10px;
-    margin-bottom: 10px;
 }
 
 .button:hover {
     background-color: #2980b9;
 }
 
-.primary-button {
-    background-color: #2ecc71;
-}
-
-.primary-button:hover {
-    background-color: #27ae60;
-}
-
-.secondary-button {
-    background-color: #95a5a6;
-}
-
-.secondary-button:hover {
-    background-color: #7f8c8d;
-}
-
 .action-buttons {
     display: flex;
     gap: 15px;
     flex-wrap: wrap;
-    margin-top: 20px;
-    margin-bottom: 20px;
 }
 
 /* Form Styles */
@@ -211,33 +187,6 @@ footer {
     padding: 10px;
     border-radius: 4px;
     margin-bottom: 1rem;
-}
-
-/* Employee Info Header */
-.employee-info {
-    margin-bottom: 20px;
-    padding: 10px 15px;
-    background-color: #f8f9fa;
-    border-left: 4px solid #3498db;
-    border-radius: 0 4px 4px 0;
-}
-
-.employee-info h3 {
-    margin-bottom: 0;
-    color: #2c3e50;
-}
-
-/* No Reports Message */
-.no-reports-message {
-    text-align: center;
-    padding: 30px 20px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    margin-top: 20px;
-}
-
-.no-reports-message p {
-    margin-bottom: 10px;
 }
 
 /* Analysis Results Styles */

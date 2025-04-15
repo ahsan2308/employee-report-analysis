@@ -5,7 +5,7 @@ This module contains templates for prompting LLMs to generate
 structured outputs in specific JSON formats. Import these when
 you need consistent prompt templates for structured data generation.
 """
-from typing import Dict, Any
+from typing import Dict, Any, List
 import json
 
 class StructuredPrompts:
@@ -40,53 +40,88 @@ class StructuredPrompts:
     # Specific prompt templates for different use cases
     
     @staticmethod
-    def employee_analysis_prompt(report_text: str, similar_reports: list = None) -> str:
-        """Generate prompt for employee report analysis."""
-        context = ""
+    def employee_analysis_prompt(report_text: str, similar_reports: List[str] = None) -> str:
+        """
+        Generate a prompt for analyzing an employee report.
+        
+        Args:
+            report_text: The report text to analyze
+            similar_reports: Optional list of similar previous reports for context
+            
+        Returns:
+            Prompt for employee report analysis
+        """
+        prompt = f"""
+You are an expert HR analyst reviewing employee reports. Your task is to analyze the following weekly/monthly report from an employee and extract key information in a structured format.
+
+Please provide a comprehensive analysis with the following elements:
+
+1. ACHIEVEMENTS: Identify key accomplishments mentioned in the report. For each achievement:
+   - Provide a detailed description of what was accomplished
+   - Rate its impact on a scale from 1-10 (where 10 is highest impact)
+
+2. CHALLENGES: Identify obstacles or issues the employee faced. For each challenge:
+   - Provide a detailed description of the challenge
+   - Rate its severity as "low", "medium", or "high"
+
+3. SENTIMENT: Determine if the overall tone is "positive", "negative", or "neutral"
+
+4. TOPICS: Extract the main discussion points or project areas (as a list of key phrases)
+
+5. ACTION ITEMS: Recommend specific follow-up actions based on the report content (as a list)
+
+6. RISK ASSESSMENT: Determine if there are any concerns requiring management attention
+   - Rate the overall risk as "low", "medium", or "high"
+   - Provide detailed reasoning for your risk assessment
+
+Analyze only the content provided and stay objective. Your response should be structured in a format suitable for JSON conversion.
+
+EMPLOYEE REPORT:
+---
+{report_text}
+---"""
+
+        # Add context from similar reports if provided
         if similar_reports and len(similar_reports) > 0:
-            context = "Previous reports for context:\n\n" + "\n---\n".join(similar_reports) + "\n\n"
-        
-        # Simplified prompt focused on core fields needed for the simplified model
-        return (
-            f"{context}Please analyze the following employee report:\n\n{report_text}\n\n"
-            "Provide the following analysis focusing on these key required aspects:\n"
-            "1. Overall sentiment (must be exactly one of: positive, negative, neutral)\n"
-            "2. Risk assessment (must be exactly one of: low, medium, high)\n"
-            "3. Detailed explanation for the risk assessment\n"
-            "4. Key topics covered in the report (as a list)"
-        )
-        
-        # Original detailed prompt (commented out)
-        """
-        return (
-            f"{context}Please analyze the following employee report:\n\n{report_text}\n\n"
-            "Provide the following analysis:\n"
-            "1. Key achievements with their measurable impact\n"
-            "2. Challenges mentioned and their severity\n"
-            "3. Overall sentiment (positive, negative, neutral)\n"
-            "4. Key topics covered\n"
-            "5. Recommended action items\n"
-            "6. Risk assessment (low, medium, high) with explanation"
-        )
-        """
-    
-    @staticmethod
-    def developer_profile_prompt(developer_info: str = "") -> str:
-        """Generate prompt for developer profile information."""
-        return (
-            f"Generate a detailed developer profile based on the following information:\n\n{developer_info}\n\n"
-            "Include personal information, technical skills, projects they've worked on, "
-            "years of experience, specialization, programming languages, and frameworks they know."
-        )
-    
-    @staticmethod
-    def pet_info_prompt(pet_description: str) -> str:
-        """Generate prompt for pet information extraction."""
-        return (
-            f"Extract pet information from the following description:\n\n{pet_description}\n\n"
-            "For each pet mentioned, include their name, animal type, age, "
-            "color (if mentioned), and favorite toy (if mentioned)."
-        )
+            similar_context = "\n\n".join([f"Similar Report #{i+1}:\n{report}" for i, report in enumerate(similar_reports)])
+            prompt += f"""
+SIMILAR PREVIOUS REPORTS FOR CONTEXT:
+---
+{similar_context}
+---
+
+Use these similar reports to identify patterns, but focus your analysis on the current report.
+"""
+
+        # Add final instructions for structured output
+        prompt += """
+Structure your response as follows:
+{
+  "achievements": [
+    {"description": "Detailed achievement description", "impact": "Impact rating (1-10)"},
+    {"description": "Another achievement", "impact": "Impact rating (1-10)"}
+  ],
+  "challenges": [
+    {"description": "Detailed challenge description", "severity": "low/medium/high"},
+    {"description": "Another challenge", "severity": "low/medium/high"}
+  ],
+  "sentiment": "positive/negative/neutral",
+  "topics": ["Topic 1", "Topic 2", "Topic 3"],
+  "action_items": ["Specific action recommendation 1", "Specific action recommendation 2"],
+  "risk_level": "low/medium/high",
+  "risk_explanation": "Detailed explanation of why you assigned this risk level"
+}
+
+Ensure your analysis is:
+- Detailed and specific with concrete examples from the report
+- Objective and fair in assessing achievements and challenges
+- Actionable with clear recommendations
+- Well-structured following the exact format above
+
+Your analysis will help managers understand employee progress and determine where support is needed.
+"""
+
+        return prompt
     
     @staticmethod
     def fallback_guidance() -> str:

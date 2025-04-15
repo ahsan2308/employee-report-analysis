@@ -32,7 +32,7 @@ class OllamaProvider(LLMProvider):
         
         logger.info(f"Initialized OllamaProvider with model {model} at {base_url}")
     
-    def generate_text(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7) -> str:
+    def generate_text(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7, num_ctx: int = 8192) -> str:
         """
         Generate text using Ollama API.
         """
@@ -42,7 +42,8 @@ class OllamaProvider(LLMProvider):
                 prompt=prompt,
                 options={
                     "num_predict": max_tokens,
-                    "temperature": temperature
+                    "temperature": temperature,
+                    "num_ctx": num_ctx,
                 }
             )
             return response.get("response", "")
@@ -55,7 +56,8 @@ class OllamaProvider(LLMProvider):
         prompt: str,
         json_schema: Union[Dict[str, Any], Type[BaseModel]] = None,
         max_tokens: int = 1000,
-        temperature: float = 0.0
+        temperature: float = 0.0,
+        num_ctx: int = 8192
     ) -> Optional[Dict[str, Any]]:
         """
         Generate a structured output using Ollama's native support for structured outputs.
@@ -91,7 +93,9 @@ class OllamaProvider(LLMProvider):
                 format=schema_dict,  # Format is now a top-level parameter
                 options={
                     "num_predict": max_tokens,
-                    "temperature": temperature
+                    "temperature": temperature,
+                    "num_ctx": num_ctx,
+
                 }
             )
             

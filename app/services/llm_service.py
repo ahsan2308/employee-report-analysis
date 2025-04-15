@@ -34,7 +34,8 @@ class LLMService:
         self.max_retries = 3
 
     def generate_text(self, prompt: str, max_tokens: int = 1000,
-                    temperature: float = 0.7, retries: int = None) -> str:
+                    temperature: float = 0.7, retries: int = None,
+                    num_ctx: int = 8192) -> str:
         """
         Generate text response for the given prompt.
         
@@ -56,7 +57,8 @@ class LLMService:
                 response = self.provider.generate_text(
                     prompt=prompt,
                     max_tokens=max_tokens,
-                    temperature=temperature
+                    temperature=temperature,
+                    num_ctx = num_ctx 
                 )
                 return response
             except Exception as e:
@@ -112,7 +114,8 @@ class LLMService:
         response_format: Optional[Dict[str, Any]] = None,
         temperature: float = 0.2, 
         max_tokens: int = 1000,
-        pydantic_model: Optional[Type] = None
+        pydantic_model: Optional[Type] = None,
+        num_ctx: int = 8192
     ) -> Dict[str, Any]:
         """
         Generate structured response in specific JSON format.
@@ -208,7 +211,8 @@ class LLMService:
                     prompt=prompt,
                     json_schema=schema_arg,
                     temperature=structured_temp,
-                    max_tokens=max_tokens
+                    max_tokens=max_tokens,
+                    num_ctx=num_ctx
                 )
                 if result is not None:
                     logger.debug(f"Received native structured output: {result}")
@@ -228,7 +232,7 @@ class LLMService:
         
         try:
             logger.debug("Generating structured response using text approach")
-            response = self.generate_text(full_prompt, temperature=temperature, max_tokens=max_tokens)
+            response = self.generate_text(full_prompt, temperature=temperature, max_tokens=max_tokens, num_ctx=num_ctx)
             logger.debug(f"Raw response from LLM: {response[:200]}...")
             
             result = self.extract_json_from_text(response)
@@ -245,7 +249,8 @@ class LLMService:
         report_text: str, 
         similar_reports: List[str] = None,
         use_custom_format: bool = False,
-        custom_format: Optional[Dict[str, Any]] = None
+        custom_format: Optional[Dict[str, Any]] = None,
+        num_ctx: int = 8192
     ) -> Dict[str, Any]:
         """
         Analyze an employee report.
@@ -261,33 +266,47 @@ class LLMService:
         """
         # Generate the task-specific prompt using the prompt template
         prompt = StructuredPrompts.employee_analysis_prompt(report_text, similar_reports)
-        
+        logger.debug(report_text)
         try:
             # Decide whether to use the custom format or the Pydantic model
             if use_custom_format:
                 if custom_format is None:
-                    # Provide a default format if none is specified
+                    # Provide a default format that aligns with our enhanced EmployeeAnalysis model
                     custom_format = {
-                        "achievements": [{"description": "achievement", "impact": "impact"}],
-                        "challenges": [{"description": "challenge", "severity": "medium"}],
+                        "achievements": [
+                            {
+                                "description": "Detailed description of the achievement",
+                                "impact": "The measurable impact or result (1-10 scale)"
+                            }
+                        ],
+                        "challenges": [
+                            {
+                                "description": "Detailed description of the challenge faced",
+                                "severity": "low/medium/high"
+                            }
+                        ],
                         "sentiment": "positive/negative/neutral",
                         "topics": ["topic1", "topic2"],
-                        "action_items": ["action1", "action2"],
+                        "action_items": ["Recommended action item 1", "Recommended action item 2"],
                         "risk_level": "low/medium/high",
-                        "risk_explanation": "explanation"
+                        "risk_explanation": "Detailed explanation of risk assessment"
                     }
                 
                 return self.get_structured_response(
                     prompt=prompt,
                     response_format=custom_format,
-                    temperature=0
+                    temperature=0,
+                    num_ctx = num_ctx
+
                 )
             else:
-                # Default behavior: use the EmployeeAnalysis Pydantic model
+                # Default behavior: use the enhanced EmployeeAnalysis Pydantic model
+                logger.debug(prompt)
                 return self.get_structured_response(
                     prompt=prompt,
                     pydantic_model=EmployeeAnalysis,
-                    temperature=0
+                    temperature=0,
+                    num_ctx = num_ctx
                 )
         except Exception as e:
             logger.error(f"Error analyzing report: {e}")
