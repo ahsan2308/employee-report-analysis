@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualizations - Employee Evaluation System</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    
+    <!-- Use ESM module version of Chart.js for better React migration path -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+    
+    <!-- For local development without internet, download and use:
+    <script src="../js/lib/chart.umd.min.js"></script> 
+    -->
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Employee Evaluation System</h1>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="employees.html">Employees</a></li>
+                    <li><a href="reports.html">Reports</a></li>
+                    <li><a href="analysis.html">Analysis</a></li>
+                    <li><a href="visualizations.html" class="active">Visualizations</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main>
+            <section id="visualizationsSection">
+                <h2>Data Visualizations</h2>
+                <p>Explore employee performance trends and insights through interactive visualizations.</p>
+                
+                <div class="filters-panel">
+                    <h3>Filters</h3>
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label for="departmentSelect">Department:</label>
+                            <select id="departmentSelect" class="form-control">
+                                <option value="">All Departments</option>
+                                <!-- Departments will be loaded dynamically -->
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item">
+                            <label for="employeeSelect">Employee:</label>
+                            <select id="employeeSelect" class="form-control">
+                                <option value="">All Employees</option>
+                                <!-- Employees will be loaded dynamically -->
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item">
+                            <label for="intervalSelect">Time Interval:</label>
+                            <select id="intervalSelect" class="form-control">
+                                <option value="day">Daily</option>
+                                <option value="week">Weekly</option>
+                                <option value="month" selected>Monthly</option>
+                                <option value="quarter">Quarterly</option>
+                                <option value="year">Yearly</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" id="startDate" class="form-control">
+                        </div>
+                        
+                        <div class="filter-item">
+                            <label for="endDate">End Date:</label>
+                            <input type="date" id="endDate" class="form-control">
+                        </div>
+                        
+                        <div class="filter-item">
+                            <button id="applyFiltersBtn" class="button primary-button">Apply Filters</button>
+                            <button id="resetFiltersBtn" class="button secondary-button">Reset</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="statusMessage"></div>
+                
+                <div id="loadingIndicator" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Loading visualization data...</p>
+                </div>
+                
+                <div id="visualizationContainer">
+                    <h3>Sentiment Trends</h3>
+                    <div class="chart-container">
+                        <canvas id="sentimentTrendChart"></canvas>
+                    </div>
+                    <div id="noDataMessage" style="display: none;">
+                        <p>No data available for the selected filters. Try adjusting your filter criteria.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Employee Evaluation System</p>
+        </footer>
+    </div>
+    
+    <script src="../js/api.js"></script>
+    <script src="../js/visualizations.js"></script>
+</body>
+</html>

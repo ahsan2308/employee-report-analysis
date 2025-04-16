@@ -98,3 +98,23 @@ const analysisApi = {
         return await fetchApi(`/analyses/${analysisId}`);
     }
 };
+
+// Visualization-related API functions
+const visualizationApi = {
+    // Get sentiment trends data
+    getSentimentTrends: async (employeeId = null, department = null, startDate = null, endDate = null, interval = "month") => {
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (employeeId) params.append('employee_id', employeeId);
+        if (department) params.append('department', department);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        if (interval) params.append('interval', interval);
+        
+        // Construct the query string
+        const queryString = params.toString();
+        const endpoint = `/visualizations/sentiment-trends${queryString ? '?' + queryString : ''}`;
+        
+        return await fetchApi(endpoint);
+    }
+};
