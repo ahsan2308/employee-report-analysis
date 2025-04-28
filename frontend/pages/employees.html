@@ -5,50 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Employees - Employee Evaluation System</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Employee Evaluation System</h1>
+            <h1><i class="fas fa-users"></i> Employee Evaluation System</h1>
             <nav>
                 <ul>
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="employees.html" class="active">Employees</a></li>
-                    <li><a href="reports.html">Reports</a></li>
-                    <li><a href="analysis.html">Analysis</a></li>
-                    <li><a href="visualizations.html">Visualizations</a></li>
+                    <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="employees.html" class="active"><i class="fas fa-users"></i> Employees</a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a></li>
+                    <li><a href="analysis.html"><i class="fas fa-brain"></i> Analysis</a></li>
+                    <li><a href="visualizations.html"><i class="fas fa-chart-bar"></i> Visualizations</a></li>
                 </ul>
             </nav>
         </header>
         
         <main>
-            <section>
-                <h2>Manage Employees</h2>
+            <section class="card">
+                <h2><i class="fas fa-user-plus"></i> Add Employee</h2>
                 <div id="statusMessage"></div>
                 
                 <form id="employeeForm">
                     <div class="form-group">
-                        <label for="name">Employee Name:</label>
-                        <input type="text" id="name" name="name" required>
+                        <label for="name"><i class="fas fa-user"></i> Employee Name:</label>
+                        <input type="text" id="name" name="name" required placeholder="Full name">
                     </div>
                     
                     <div class="form-group">
-                        <label for="wing">Wing/Department:</label>
-                        <input type="text" id="wing" name="wing" required>
+                        <label for="wing"><i class="fas fa-building"></i> Wing/Department:</label>
+                        <input type="text" id="wing" name="wing" required placeholder="Department name">
                     </div>
                     
                     <div class="form-group">
-                        <label for="position">Position:</label>
-                        <input type="text" id="position" name="position" required>
+                        <label for="position"><i class="fas fa-briefcase"></i> Position:</label>
+                        <input type="text" id="position" name="position" required placeholder="Job title">
                     </div>
                     
-                    <button type="submit" class="button">Add Employee</button>
+                    <button type="submit" class="button primary-button"><i class="fas fa-plus-circle"></i> Add Employee</button>
                 </form>
             </section>
             
-            <section>
-                <h3>Employee List</h3>
-                <div id="loadingEmployees" class="loading">Loading employees...</div>
+            <section class="card">
+                <h3><i class="fas fa-list"></i> Employee List</h3>
+                <div id="loadingEmployees" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading employees...</p>
+                </div>
                 <div id="employeeList">
                     <table id="employeesTable" style="display: none;">
                         <thead>

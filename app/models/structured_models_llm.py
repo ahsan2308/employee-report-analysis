@@ -36,6 +36,9 @@ class Achievement(BaseModel):
         description="The measurable impact or result of this achievement between 1 and 10"
     )
 
+    class Config:
+        from_attributes = True  # Updated from orm_mode=True for Pydantic v2
+
 
 class Challenge(BaseModel):
     # Model representing a challenge faced by an employee
@@ -46,6 +49,9 @@ class Challenge(BaseModel):
         default="medium",
         description="How severe the challenge is (low, medium, high)"
     )
+
+    class Config:
+        from_attributes = True  # Updated from orm_mode=True for Pydantic v2
 
 
 class EmployeeAnalysis(BaseModel):
@@ -71,6 +77,9 @@ class EmployeeAnalysis(BaseModel):
     risk_explanation: str = Field(
         description="Explanation for the assigned risk level"
     )
+
+    class Config:
+        from_attributes = True  # Updated from orm_mode=True for Pydantic v2
 
 
 

@@ -9,6 +9,13 @@ from app.services.vector_store_service import search_reports
 from app.core.logger import logger
 import uuid
 from uuid import UUID
+from datetime import datetime
+
+# Add imports for task handling
+from app.models.task_models import BackgroundTask, TaskStatus
+from app.tasks.analysis_tasks import analyze_report_task
+from app.schemas.task_schema import TaskStatusResponse
+from app.services.task_service import create_task_for_analysis
 
 # Initialize Router
 router = APIRouter(prefix="/analyses", tags=["Analyses"])
@@ -22,9 +29,10 @@ def get_db():
     finally:
         session.close()
 
-@router.post("/analyze/{report_id}", response_model=AnalysisResponse)
+# Modify to return a task ID instead of waiting for analysis
+@router.post("/analyze/{report_id}", response_model=TaskStatusResponse)
 def analyze_report(report_id: str, db: Session = Depends(get_db)):
-    logger.info(f"Request received to analyze report {report_id}")
+    logger.info(f"Request received to analyze report {report_id} asynchronously")
     try:
         # Convert string to UUID if needed
         report_uuid = UUID(report_id) if not isinstance(report_id, UUID) else report_id
@@ -39,110 +47,31 @@ def analyze_report(report_id: str, db: Session = Depends(get_db)):
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
             
-        # Check if analysis already exists
+        # Check if analysis already exists - reuse it if it does
         existing_analysis = db.query(EmployeeAnalysis).filter(
             EmployeeAnalysis.report_id == report_uuid
         ).first()
         
-        if existing_analysis:
-            # If analysis exists, fetch full analysis data
-            analysis_data = {
-                "report_id": str(existing_analysis.report_id),  # Convert UUID to string
-                "employee_name": employee.name,  # Lookup employee name from the relationship
-                "sentiment": existing_analysis.sentiment_score if existing_analysis.sentiment_score is not None else 0.5,
-                # Include other fields from existing analysis
-                "sentiment_score": existing_analysis.sentiment_score,
-                "risk_level": existing_analysis.risk_level,
-                "risk_explanation": existing_analysis.risk_explanation,
-                "full_analysis_json": existing_analysis.full_analysis_json,
-                "achievements_json": existing_analysis.achievements_json,
-                "challenges_json": existing_analysis.challenges_json,
-                "topics": existing_analysis.topics,
-                "action_items": existing_analysis.action_items
-            }
-            return analysis_data
-        
-        # Get similar reports for context
-        logger.info("Finding similar reports for context")
-        similar_reports_chunks = search_reports(
-            query=report.report_text,
-            employee_id=report.employee_id,
-            top_k=3
-        )
-        similar_texts_chunks = [r.get("text", "") for r in similar_reports_chunks]
-        
-        # Retrieving Full Reports
-        similar_texts = get_reports_for_vector_results(similar_texts_chunks)
-        
-        # Get LLM service
-        llm_service = get_llm_service()
-        
-        # Generate analysis
-        logger.info("Calling LLM service for analysis")
-        analysis_result = llm_service.analyze_report(report.report_text, similar_texts, num_ctx = 32768)
-        
-        # Extract key fields from the enhanced analysis result
-        sentiment = analysis_result.get("sentiment", "neutral")
-        risk_level = analysis_result.get("risk_level", "low")
-        risk_explanation = analysis_result.get("risk_explanation", "")
-        topics = analysis_result.get("topics", [])
-        achievements = analysis_result.get("achievements", [])
-        challenges = analysis_result.get("challenges", [])
-        action_items = analysis_result.get("action_items", [])
-        
-        # Calculate sentiment score
-        sentiment_score = 0.0
-        if sentiment == "positive":
-            sentiment_score = 0.8
-        elif sentiment == "negative":
-            sentiment_score = 0.2
-        elif sentiment == "neutral":
-            sentiment_score = 0.5
-
-        # Create a new analysis record with enhanced fields
-        new_analysis = EmployeeAnalysis(
-            report_id=report_uuid,
-            employee_id=report.employee_id,
-            sentiment_score=sentiment_score,
-            risk_level=risk_level,
-            risk_explanation=risk_explanation,
-            full_analysis_json=analysis_result,
-            achievements_json=achievements,
-            challenges_json=challenges,
-            topics=topics,
-            action_items=action_items
-        )
-        
-        # Save to database
-        db.add(new_analysis)
-        db.commit()
-        db.refresh(new_analysis)
-        logger.info(f"Analysis saved with ID: {new_analysis.analysis_id}")
-        
-        # Prepare response with all required fields
-        analysis_response = {
-            "report_id": str(new_analysis.report_id),  # Convert UUID to string
-            "employee_name": employee.name,  # Lookup from employee relationship
-            "sentiment": new_analysis.sentiment_score if new_analysis.sentiment_score is not None else 0.5,
-            "sentiment_score": new_analysis.sentiment_score,
-            "risk_level": new_analysis.risk_level,
-            "risk_explanation": new_analysis.risk_explanation,
-            "full_analysis_json": new_analysis.full_analysis_json,
-            "achievements_json": new_analysis.achievements_json,
-            "challenges_json": new_analysis.challenges_json,
-            "topics": new_analysis.topics,
-            "action_items": new_analysis.action_items
+        # Create task (either with existing analysis or as a new task)
+        task = create_task_for_analysis(db, report_uuid, employee, existing_analysis)
+            
+        return {
+            "task_id": task.task_id,
+            "celery_task_id": task.celery_task_id,
+            "status": task.status,
+            "created_at": task.created_at,
+            "started_at": task.started_at,
+            "completed_at": task.completed_at,
+            "is_complete": task.status in (TaskStatus.COMPLETED.value, TaskStatus.FAILED.value)
         }
-        
-        return analysis_response
         
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=f"Invalid report ID format: {str(ve)}")
     except HTTPException as he:
         raise he
     except Exception as e:
-        logger.error(f"Error analyzing report: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error creating analysis: {str(e)}")
+        logger.error(f"Error submitting analysis task: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error submitting analysis: {str(e)}")
 
 # Get analysis by report ID
 @router.get("/results/{report_id}", response_model=AnalysisResponse)

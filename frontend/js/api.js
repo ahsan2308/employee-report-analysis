@@ -71,9 +71,36 @@ const reportApi = {
     }
 };
 
+// Task-related API functions with improved error handling
+const taskApi = {
+    // Get the status of a task
+    getTaskStatus: async (taskId) => {
+        try {
+            return await fetchApi(`/tasks/${taskId}`);
+        } catch (error) {
+            console.error(`Error fetching status for task ${taskId}:`, error);
+            throw error;
+        }
+    },
+    
+    // Get the result of a completed task
+    getTaskResult: async (taskId) => {
+        try {
+            return await fetchApi(`/tasks/${taskId}/result`);
+        } catch (error) {
+            // Handle 422 errors specifically (task not complete)
+            if (error.message && error.message.includes('not yet complete')) {
+                throw new Error('Task still processing. Please try again shortly.');
+            }
+            console.error(`Error fetching result for task ${taskId}:`, error);
+            throw error;
+        }
+    }
+};
+
 // Analysis-related API functions
 const analysisApi = {
-    // Analyze a specific report
+    // Analyze a specific report - now returns a task instead of analysis
     analyzeReport: async (reportId) => {
         return await fetchApi(`/analyses/analyze/${reportId}`, {
             method: 'POST',
@@ -116,5 +143,63 @@ const visualizationApi = {
         const endpoint = `/visualizations/sentiment-trends${queryString ? '?' + queryString : ''}`;
         
         return await fetchApi(endpoint);
+    }
+};
+
+// TaskManager - utilities for polling and managing async tasks
+const TaskManager = {
+    // Poll a task with exponential backoff until completion
+    pollTaskUntilComplete: async function(taskId, options = {}) {
+        const defaults = {
+            initialDelay: 1000,             // Start with 1 second delay
+            maxDelay: 10000,                // Max 10 seconds between polls
+            maxAttempts: 30,                // Maximum polling attempts
+            onStatusUpdate: null,           // Callback for status updates
+            backoffFactor: 1.5              // Exponential backoff multiplier
+        };
+        
+        const settings = {...defaults, ...options};
+        let currentDelay = settings.initialDelay;
+        
+        for (let attempt = 0; attempt < settings.maxAttempts; attempt++) {
+            try {
+                // Get current status
+                const status = await taskApi.getTaskStatus(taskId);
+                
+                // Call the status update callback if provided
+                if (settings.onStatusUpdate && typeof settings.onStatusUpdate === 'function') {
+                    settings.onStatusUpdate(status);
+                }
+                
+                // If task is complete, get and return the result
+                if (status.is_complete) {
+                    const resultData = await taskApi.getTaskResult(taskId);
+                    return resultData;
+                }
+                
+                // Wait before trying again (with exponential backoff)
+                await this.delay(currentDelay);
+                
+                // Increase delay for next attempt (with maximum cap)
+                currentDelay = Math.min(currentDelay * settings.backoffFactor, settings.maxDelay);
+            } catch (error) {
+                console.error(`Error polling task ${taskId}:`, error);
+                
+                // For network errors, keep trying
+                if (error.name === 'TypeError' && error.message.includes('network')) {
+                    await this.delay(currentDelay);
+                    continue;
+                }
+                
+                throw error;
+            }
+        }
+        
+        throw new Error(`Task ${taskId} did not complete within the expected time.`);
+    },
+    
+    // Simple delay promise utility
+    delay: function(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 };

@@ -28,4 +28,4 @@ class AnalysisResponse(BaseModel):
     action_items: Optional[List[str]] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True  

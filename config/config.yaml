@@ -19,3 +19,22 @@ vector_db:
   port: 6333
   storage_path: ./qdrant_data  # Change to '/qdrant/storage' in Docker
   collection_name: employee_reports  # Collection name for storing vectors
+
+redis:
+  host: localhost  # Change from redis-container to localhost if not using Docker
+  port: 6379
+  db: 0
+  password: ""  # Empty for dev, set real password in production
+
+celery:
+  broker_url: redis://localhost:6379/0  # Change from redis-container to localhost if not using Docker
+  result_backend: redis://localhost:6379/0
+  task_serializer: json
+  accept_content: [json]
+  result_serializer: json
+  task_track_started: true
+  task_time_limit: 300  # 5 minutes max per task
+  worker_concurrency: 2  # Start with lower concurrency for LLM tasks
+  task_ignore_result: false  # Store task results in backend
+  result_expires: 86400  # Results expire after 1 day (in seconds)
+  task_packages: ['app.tasks']  # Directories to auto-discover tasks

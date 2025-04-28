@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
             reportsSection.style.display = 'none';
             loadReportsForEmployee(selectedEmployeeId);
         } else {
-            alert('Please select an employee');
+            showMessage('Please select an employee', 'error');
         }
     });
 
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
             reportsListSection.style.display = 'none';
             reportsSection.style.display = 'block';
         } else {
-            alert('Please select an employee');
+            showMessage('Please select an employee', 'error');
         }
     });
 
@@ -124,10 +124,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load all employees for the dropdown
     async function loadEmployees() {
         try {
+            // Show loading indicator
+            showStatus('Loading employees...', 'loading');
+            
             // Fetch employees
             const employees = await employeeApi.getAllEmployees();
             
+            // Clear loading indicator
+            statusMessage.innerHTML = '';
+            
             // Populate dropdown
+            employeeSelect.innerHTML = '<option value="">-- Select Employee --</option>';
             employees.forEach(employee => {
                 const option = document.createElement('option');
                 option.value = employee.id;
@@ -141,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error loading employees:', error);
-            alert('Error loading employees. Please try again later.');
+            showError('Error loading employees. Please try again later.');
         }
     }
 
@@ -157,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error loading employee details:', error);
+            container.innerHTML = '<h3>Employee information not available</h3>';
         }
         return null;
     }
@@ -235,6 +243,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Show table
             reportsTable.style.display = 'table';
+            
+            // Show success message
+            showSuccess(`Loaded ${reports.length} reports for this employee`);
 
         } catch (error) {
             // Handle errors
@@ -282,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Analyze report
+    // Analyze report - redirect to analysis page with auto-analyze flag
     async function analyzeReport(event) {
         const reportId = event.target.getAttribute('data-id');
         showStatus(`Initiating analysis for report ${reportId}...`, 'loading');
@@ -312,5 +323,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function showStatus(message, type) {
         statusMessage.innerHTML = `<div class="loading-message">${message}</div>`;
+    }
+    
+    // Generic message function for all message types
+    function showMessage(message, type) {
+        if (type === 'error') {
+            showError(message);
+        } else if (type === 'success') {
+            showSuccess(message);
+        } else {
+            showStatus(message, type);
+        }
     }
 });

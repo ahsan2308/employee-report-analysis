@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const reportIdFromUrl = urlParams.get('report_id');
     const autoAnalyze = urlParams.get('auto_analyze');
     
+    // Track the current analysis task
+    let currentTask = null;
+    
     // Event listeners
     loadEmployees();
     employeeSelect.addEventListener('change', loadReportsForEmployee);
@@ -21,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // If we have a report ID and auto_analyze is true, show loading immediately
     if (reportIdFromUrl && autoAnalyze === 'true') {
         showLoading(true);
-        showMessage('Analyzing report... This may take a moment.', 'loading');
+        showMessage('Initializing analysis...', 'loading');
     }
     
     // Toggle analyze button based on report selection
@@ -129,14 +132,49 @@ document.addEventListener('DOMContentLoaded', function() {
     async function analyzeReportDirectly(reportId) {
         try {
             showLoading(true);
-            const analysisData = await analysisApi.analyzeReport(reportId);
-            displayAnalysisResults(analysisData);
-            showMessage('Analysis completed successfully', 'success');
+            
+            // Start the analysis and get a task
+            const taskData = await analysisApi.analyzeReport(reportId);
+            currentTask = taskData.task_id;
+            
+            // If already complete (existing analysis), get results immediately
+            if (taskData.is_complete) {
+                const resultData = await taskApi.getTaskResult(taskData.task_id);
+                displayAnalysisResults(resultData.result);
+                showMessage('Analysis completed successfully', 'success');
+            } else {
+                // Show polling message
+                showMessage('Analysis in progress, please wait...', 'loading');
+                
+                // Poll for completion with the TaskManager
+                const resultData = await TaskManager.pollTaskUntilComplete(taskData.task_id, {
+                    onStatusUpdate: updateLoadingStatus
+                });
+                
+                if (resultData.error_message) {
+                    throw new Error(resultData.error_message);
+                }
+                
+                displayAnalysisResults(resultData.result);
+                showMessage('Analysis completed successfully', 'success');
+            }
         } catch (error) {
             console.error('Error in direct analysis:', error);
-            showMessage('Analysis failed. Please try again later.', 'error');
+            showMessage('Analysis failed: ' + error.message, 'error');
         } finally {
+            currentTask = null;
             showLoading(false);
+        }
+    }
+    
+    // Update loading message based on task status
+    function updateLoadingStatus(status) {
+        if (status.status === 'pending') {
+            showMessage('Analysis queued, waiting to start...', 'loading');
+        } else if (status.status === 'running') {
+            showMessage('Processing report analysis...', 'loading');
+        } else if (status.status === 'failed') {
+            showMessage('Analysis failed. Please try again.', 'error');
         }
     }
     
@@ -185,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Analyze selected report
+    // Analyze selected report - modified to use the TaskManager
     async function analyzeSelectedReport() {
         const reportId = reportSelect.value || reportIdFromUrl;
         
@@ -194,13 +232,41 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // Clear previous results
+        if (analysisResults.style.display !== 'none') {
+            analysisResults.style.display = 'none';
+            analysisResults.innerHTML = '';
+        }
+        
         showLoading(true);
         
         try {
-            const analysisData = await analysisApi.analyzeReport(reportId);
-            console.log('Analysis data received:', analysisData); // Debug log
-            displayAnalysisResults(analysisData);
-            showMessage('Analysis completed successfully', 'success');
+            // Start the analysis and get a task
+            const taskData = await analysisApi.analyzeReport(reportId);
+            currentTask = taskData.task_id;
+            console.log('Task created:', taskData);
+            
+            // If already complete (existing analysis), get results immediately
+            if (taskData.is_complete) {
+                const resultData = await taskApi.getTaskResult(taskData.task_id);
+                displayAnalysisResults(resultData.result);
+                showMessage('Analysis completed successfully', 'success');
+            } else {
+                // Show polling message
+                showMessage('Analysis in progress, please wait...', 'loading');
+                
+                // Poll for completion with the TaskManager
+                const resultData = await TaskManager.pollTaskUntilComplete(taskData.task_id, {
+                    onStatusUpdate: updateLoadingStatus
+                });
+                
+                if (resultData.error_message) {
+                    throw new Error(resultData.error_message);
+                }
+                
+                displayAnalysisResults(resultData.result);
+                showMessage('Analysis completed successfully', 'success');
+            }
             
             // Update URL without reload to include the report_id
             if (window.history && window.history.pushState) {
@@ -210,8 +276,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error analyzing report:', error);
-            showMessage('Analysis failed. Please try again later.', 'error');
+            showMessage('Analysis failed: ' + error.message, 'error');
         } finally {
+            currentTask = null;
             showLoading(false);
         }
     }
@@ -381,6 +448,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add to main results container
         analysisResults.appendChild(mainContainer);
         analysisResults.style.display = 'block';
+        
+        // Scroll to the results
+        analysisResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     
     // Helper functions
@@ -389,17 +459,21 @@ document.addEventListener('DOMContentLoaded', function() {
         statusMessage.textContent = message;
         statusMessage.style.display = 'block';
         
-        // Auto hide after 5 seconds
-        setTimeout(() => {
-            statusMessage.style.display = 'none';
-        }, 5000);
+        // Auto hide success/info messages after 5 seconds
+        if (type === 'success' || type === 'info') {
+            setTimeout(() => {
+                if (statusMessage.textContent === message) {
+                    statusMessage.style.display = 'none';
+                }
+            }, 5000);
+        }
     }
     
     function showLoading(isLoading) {
         loadingIndicator.style.display = isLoading ? 'block' : 'none';
         analyzeButton.disabled = isLoading;
         if (isLoading) {
-            showMessage('Analyzing report... This may take a moment.', 'loading');
+            showMessage('Initializing analysis...', 'loading');
         }
     }
 });

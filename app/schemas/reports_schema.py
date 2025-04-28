@@ -7,7 +7,9 @@ class ReportCreate(BaseModel):
     employee_id: int
     report_date: date
     report_text: str
-
+    
+    class Config:
+        from_attributes = True  
 
 class ReportForm(BaseModel):
     employee_id: int
@@ -28,3 +30,6 @@ class ReportForm(BaseModel):
         ]):
             raise ValueError("Either 'key_tasks_completed' or 'nothing_to_report_reason' must be provided.")
         return value
+    
+    class Config:
+        from_attributes = True  

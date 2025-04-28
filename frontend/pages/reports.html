@@ -5,73 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Reports - Employee Evaluation System</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Employee Evaluation System</h1>
+            <h1><i class="fas fa-file-alt"></i> Employee Evaluation System</h1>
             <nav>
                 <ul>
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="employees.html">Employees</a></li>
-                    <li><a href="reports.html" class="active">Reports</a></li>
-                    <li><a href="analysis.html">Analysis</a></li>
-                    <li><a href="visualizations.html">Visualizations</a></li>
+                    <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="employees.html"><i class="fas fa-users"></i> Employees</a></li>
+                    <li><a href="reports.html" class="active"><i class="fas fa-file-alt"></i> Reports</a></li>
+                    <li><a href="analysis.html"><i class="fas fa-brain"></i> Analysis</a></li>
+                    <li><a href="visualizations.html"><i class="fas fa-chart-bar"></i> Visualizations</a></li>
                 </ul>
             </nav>
         </header>
         
         <main>
-            <section id="selectEmployeeSection">
-                <h2>Select Employee</h2>
+            <section id="selectEmployeeSection" class="card">
+                <h2><i class="fas fa-user-check"></i> Select Employee</h2>
                 <div class="form-group">
-                    <label for="employeeSelect">Choose an employee:</label>
+                    <label for="employeeSelect"><i class="fas fa-user"></i> Choose an employee:</label>
                     <select id="employeeSelect" class="form-control">
                         <option value="">-- Select Employee --</option>
                     </select>
                 </div>
                 <div class="action-buttons">
-                    <button id="viewReportsBtn" class="button">View Reports</button>
-                    <button id="addReportBtn" class="button">Add Report</button>
+                    <button id="viewReportsBtn" class="button primary-button"><i class="fas fa-list"></i> View Reports</button>
+                    <button id="addReportBtn" class="button"><i class="fas fa-plus-circle"></i> Add Report</button>
                 </div>
             </section>
             
-            <section id="reportsSection" style="display:none;">
-                <h2>Submit Weekly Report</h2>
+            <section id="reportsSection" class="card" style="display:none;">
+                <h2><i class="fas fa-edit"></i> Submit Weekly Report</h2>
                 <div id="employeeInfo" class="employee-info"></div>
                 <div id="statusMessage"></div>
-                <button id="backToListBtn" class="button secondary-button">Back to Reports List</button>
+                <button id="backToListBtn" class="button secondary-button"><i class="fas fa-arrow-left"></i> Back to Reports List</button>
                 
                 <form id="reportForm">
                     <input type="hidden" id="employeeId" name="employeeId">
                     
                     <div class="form-group">
-                        <label for="keyTasksCompleted">Key Tasks Completed This Week:</label>
-                        <textarea id="keyTasksCompleted" name="keyTasksCompleted" rows="3" required></textarea>
+                        <label for="keyTasksCompleted"><i class="fas fa-tasks"></i> Key Tasks Completed This Week:</label>
+                        <textarea id="keyTasksCompleted" name="keyTasksCompleted" rows="3" required placeholder="Describe the main tasks you completed this week"></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label for="impactOutcome">Impact or Outcome:</label>
-                        <textarea id="impactOutcome" name="impactOutcome" rows="2"></textarea>
+                        <label for="impactOutcome"><i class="fas fa-bullseye"></i> Impact or Outcome:</label>
+                        <textarea id="impactOutcome" name="impactOutcome" rows="2" placeholder="What impact did your work have?"></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label for="challengesFaced">Challenges Faced:</label>
-                        <textarea id="challengesFaced" name="challengesFaced" rows="2"></textarea>
+                        <label for="challengesFaced"><i class="fas fa-exclamation-triangle"></i> Challenges Faced:</label>
+                        <textarea id="challengesFaced" name="challengesFaced" rows="2" placeholder="What challenges did you encounter?"></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label for="supportRequired">Support Required:</label>
-                        <textarea id="supportRequired" name="supportRequired" rows="2"></textarea>
+                        <label for="supportRequired"><i class="fas fa-hands-helping"></i> Support Required:</label>
+                        <textarea id="supportRequired" name="supportRequired" rows="2" placeholder="What support do you need?"></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label for="tasksPlannedNextWeek">Tasks Planned for Next Week:</label>
-                        <textarea id="tasksPlannedNextWeek" name="tasksPlannedNextWeek" rows="2"></textarea>
+                        <label for="tasksPlannedNextWeek"><i class="fas fa-calendar-week"></i> Tasks Planned for Next Week:</label>
+                        <textarea id="tasksPlannedNextWeek" name="tasksPlannedNextWeek" rows="2" placeholder="What are you planning to work on next week?"></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label for="confidenceLevel">Confidence Level (1-5):</label>
+                        <label for="confidenceLevel"><i class="fas fa-smile"></i> Confidence Level (1-5):</label>
                         <select id="confidenceLevel" name="confidenceLevel">
                             <option value="1">1 - Very Low</option>
                             <option value="2">2 - Low</option>
@@ -82,23 +83,26 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="nothingToReportReason">If Nothing to Report, Reason:</label>
-                        <textarea id="nothingToReportReason" name="nothingToReportReason" rows="2"></textarea>
+                        <label for="nothingToReportReason"><i class="fas fa-exclamation-circle"></i> If Nothing to Report, Reason:</label>
+                        <textarea id="nothingToReportReason" name="nothingToReportReason" rows="2" placeholder="Only fill this if you have nothing to report this week"></textarea>
                         <small class="form-text text-muted">Only fill this if you have nothing to report for this week.</small>
                     </div>
                     
-                    <button type="submit" class="button">Submit Report</button>
+                    <button type="submit" class="button primary-button"><i class="fas fa-paper-plane"></i> Submit Report</button>
                 </form>
             </section>
             
-            <section id="reportsListSection" style="display:none;">
-                <h3>Reports List</h3>
+            <section id="reportsListSection" class="card" style="display:none;">
+                <h3><i class="fas fa-clipboard-list"></i> Reports List</h3>
                 <div id="employeeInfoHeader" class="employee-info"></div>
                 <div class="action-buttons">
-                    <button id="newReportBtn" class="button primary-button">Add New Report</button>
-                    <button id="selectAnotherEmployeeBtn" class="button secondary-button">Select Another Employee</button>
+                    <button id="newReportBtn" class="button primary-button"><i class="fas fa-plus-circle"></i> Add New Report</button>
+                    <button id="selectAnotherEmployeeBtn" class="button secondary-button"><i class="fas fa-user-edit"></i> Select Another Employee</button>
                 </div>
-                <div id="loadingReports" class="loading">Loading reports...</div>
+                <div id="loadingReports" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading reports...</p>
+                </div>
                 <div id="reportList">
                     <table id="reportsTable" style="display: none;">
                         <thead>

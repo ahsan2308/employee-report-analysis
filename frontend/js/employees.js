@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', function() {
             position: document.getElementById('position').value
         };
         
+        // Validate data before submitting
+        if (!employeeData.name.trim()) {
+            showError('Employee name is required');
+            return;
+        }
+        
         // Create employee
         createEmployee(employeeData);
     });
@@ -30,12 +36,14 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show loading
             loadingEmployees.style.display = 'block';
             employeesTable.style.display = 'none';
+            showMessage('Loading employees...', 'loading');
             
             // Fetch employees
             const employees = await employeeApi.getAllEmployees();
             
             // Hide loading
             loadingEmployees.style.display = 'none';
+            statusMessage.innerHTML = '';
             
             // If no employees, show message
             if (employees.length === 0) {
@@ -63,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show table
             employeesTable.style.display = 'table';
+            showMessage(`Loaded ${employees.length} employees`, 'success');
             
         } catch (error) {
             // Handle errors
@@ -74,8 +83,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create a new employee
     async function createEmployee(employeeData) {
         try {
-            // Show status
+            // Show status and disable form
             showStatus('Adding employee...', 'loading');
+            toggleFormElements(employeeForm, true);
             
             // Create employee
             const result = await employeeApi.createEmployee(employeeData);
@@ -92,7 +102,18 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             // Handle errors
             showError('Error adding employee: ' + error.message);
+        } finally {
+            // Re-enable form
+            toggleFormElements(employeeForm, false);
         }
+    }
+    
+    // Toggle form elements (disable/enable during submission)
+    function toggleFormElements(form, disabled) {
+        const elements = form.querySelectorAll('input, select, textarea, button');
+        elements.forEach(element => {
+            element.disabled = disabled;
+        });
     }
     
     // Helper functions for UI messages
@@ -104,11 +125,31 @@ document.addEventListener('DOMContentLoaded', function() {
         statusMessage.innerHTML = `<div class="success-message">${message}</div>`;
         // Clear message after 3 seconds
         setTimeout(() => {
-            statusMessage.innerHTML = '';
+            if (statusMessage.innerHTML === `<div class="success-message">${message}</div>`) {
+                statusMessage.innerHTML = '';
+            }
         }, 3000);
     }
     
     function showStatus(message, type) {
         statusMessage.innerHTML = `<div class="${type}-message">${message}</div>`;
+    }
+    
+    // Generic message function
+    function showMessage(message, type = 'info') {
+        if (type === 'error') {
+            showError(message);
+        } else if (type === 'success') {
+            showSuccess(message);
+        } else if (type === 'loading') {
+            showStatus(message, 'loading');
+        } else {
+            statusMessage.innerHTML = `<div class="info-message">${message}</div>`;
+            setTimeout(() => {
+                if (statusMessage.innerHTML === `<div class="info-message">${message}</div>`) {
+                    statusMessage.innerHTML = '';
+                }
+            }, 3000);
+        }
     }
 });

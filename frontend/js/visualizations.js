@@ -46,14 +46,27 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event listeners
         setupEventListeners();
         
-        // Load departments and employees
-        await Promise.all([
-            loadDepartments(),
-            loadEmployees()
-        ]);
+        // Show loading indicator
+        showLoading(true);
+        showMessage('Loading initial data...', 'loading');
         
-        // Load initial data and render chart
-        fetchAndRenderChart();
+        try {
+            // Load departments and employees
+            await Promise.all([
+                loadDepartments(),
+                loadEmployees()
+            ]);
+            
+            // Load initial data and render chart
+            await fetchAndRenderChart();
+            
+            showMessage('Visualization loaded successfully', 'success');
+        } catch (error) {
+            console.error('Error initializing visualizations:', error);
+            showError('Failed to initialize visualizations: ' + error.message);
+        } finally {
+            showLoading(false);
+        }
     }
 
     // Set up event listeners
@@ -95,8 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load departments for filter dropdown
     async function loadDepartments() {
         try {
-            showLoading(true);
-            
             // Fetch all employees to extract unique departments
             const employees = await employeeApi.getAllEmployees();
             
@@ -114,19 +125,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 departmentSelect.appendChild(option);
             });
             
-            showLoading(false);
         } catch (error) {
             console.error('Error loading departments:', error);
             showError('Could not load departments. Please try again later.');
-            showLoading(false);
+            throw error; // Re-throw to be caught by caller
         }
     }
 
     // Load employees for filter dropdown
     async function loadEmployees(department = '') {
         try {
-            showLoading(true);
-            
             // Fetch all employees
             const employees = await employeeApi.getAllEmployees();
             
@@ -146,11 +154,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 employeeSelect.appendChild(option);
             });
             
-            showLoading(false);
         } catch (error) {
             console.error('Error loading employees:', error);
             showError('Could not load employees. Please try again later.');
-            showLoading(false);
+            throw error; // Re-throw to be caught by caller
         }
     }
 
@@ -159,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             showLoading(true);
             noDataMessage.style.display = 'none';
+            showMessage('Fetching visualization data...', 'loading');
             
             // Validate date range
             if (filters.start_date && filters.end_date) {
@@ -187,18 +195,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     chart.destroy();
                     chart = null;
                 }
+                showMessage('No data available for the selected filters', 'info');
                 showLoading(false);
                 return;
             }
             
             // Render chart
             renderChart(sentimentData);
-            showLoading(false);
             showMessage('Chart updated successfully', 'success');
             
         } catch (error) {
             console.error('Error fetching sentiment data:', error);
             showError('Error loading visualization data: ' + error.message);
+        } finally {
             showLoading(false);
         }
     }
@@ -234,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }));
         
         // Get the trend metadata for annotations
-        const metadata = data.datasets[0].metadata;
+        const metadata = data.datasets[0].metadata || { avg: 0.5 };  // Default if missing
         
         // Configure the chart
         const config = {
@@ -260,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 if (value > 0.7) sentiment = 'Positive';
                                 else if (value < 0.3) sentiment = 'Negative';
                                 
-                                return `${label}: ${value} (${sentiment})`;
+                                return `${label}: ${value.toFixed(2)} (${sentiment})`;
                             }
                         }
                     },
@@ -276,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 borderDash: [6, 6],
                                 label: {
                                     display: true,
-                                    content: `Average: ${metadata.avg}`,
+                                    content: `Average: ${parseFloat(metadata.avg).toFixed(2)}`,
                                     position: 'end',
                                     backgroundColor: 'rgba(128, 128, 128, 0.7)'
                                 }
@@ -303,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 if (value === 0) return 'Negative';
                                 if (value === 0.5) return 'Neutral';
                                 if (value === 1) return 'Positive';
-                                return value;
+                                return value.toFixed(1);
                             }
                         }
                     }
@@ -348,6 +357,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper for loading indicator
     function showLoading(isLoading) {
         loadingIndicator.style.display = isLoading ? 'block' : 'none';
+        // Disable/enable filter buttons during loading
+        applyFiltersBtn.disabled = isLoading;
+        resetFiltersBtn.disabled = isLoading;
     }
 
     // Helper for displaying error messages
@@ -359,10 +371,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function showMessage(message, type = 'info') {
         statusMessage.innerHTML = `<div class="${type}-message">${message}</div>`;
         
-        // Auto-hide after 4 seconds
-        setTimeout(() => {
-            statusMessage.innerHTML = '';
-        }, 4000);
+        // Auto-hide after 4 seconds for success/info messages
+        if (type === 'success' || type === 'info') {
+            setTimeout(() => {
+                // Only clear if it's still the same message
+                if (statusMessage.innerHTML === `<div class="${type}-message">${message}</div>`) {
+                    statusMessage.innerHTML = '';
+                }
+            }, 4000);
+        }
     }
 
     // Format date for input elements
