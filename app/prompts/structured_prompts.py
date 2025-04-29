@@ -52,29 +52,81 @@ class StructuredPrompts:
             Prompt for employee report analysis
         """
         prompt = f"""
-You are an expert HR analyst reviewing employee reports. Your task is to analyze the following weekly/monthly report from an employee and extract key information in a structured format.
+You are an expert HR analyst reviewing employee weekly performance reports. Your task is to analyze the following report and extract key information in a structured format.
+
+The report follows a standard Weekly Performance Reporting format with these specific sections:
+
+1. Tasks completed during the past week
+   - This includes both routine and special/extraordinary tasks
+   - Officers are instructed to provide as much relevant detail as possible
+   - Some reports may indicate "Nothing to Report" with a reason
+
+2. Impact/outcome of the completed tasks
+   - This may include the level to which reports were viewed
+   - Important decisions taken as a result of the employee's work
+   - Quantifiable or qualitative outcomes achieved
+
+3. Challenges/obstacles faced
+   - Nature and severity of any issues encountered
+   - Whether challenges were internal (organizational) or external
+   - Any hindrances affecting task performance
+
+4. Required tools/support/resources
+   - Specific resources that would help with efficient task completion
+   - Whether these deficiencies were previously reported
+   - Any immediate support needs
+
+5. Tasks planned for next week
+   - Whether tasks were self-identified or assigned by a superior
+   - Specific planned activities and deliverables
+   - Continuations of ongoing projects
+
+6. Confidence level regarding tasks for the next week
+   - Rated on a scale of 1 to 10
+   - An indicator of anticipated challenges or roadblocks
+   - Reflects employee's perception of their ability to complete tasks on time
 
 Please provide a comprehensive analysis with the following elements:
 
-1. ACHIEVEMENTS: Identify key accomplishments mentioned in the report. For each achievement:
-   - Provide a detailed description of what was accomplished
+1. ACHIEVEMENTS: Identify key accomplishments from the "Tasks completed" and "Impact/outcome" sections. For each achievement:
+   - Provide a detailed description of what was accomplished, especially extraordinary tasks
    - Rate its impact on a scale from 1-10 (where 10 is highest impact)
+   - Consider the organizational level at which the work had impact (team, department, entire organization)
+   - Note if any important decisions resulted from the employee's work
 
-2. CHALLENGES: Identify obstacles or issues the employee faced. For each challenge:
-   - Provide a detailed description of the challenge
+2. CHALLENGES: Identify obstacles or issues from the "Challenges/obstacles faced" section. For each challenge:
+   - Provide a detailed description of the challenge, distinguishing between internal and external factors
    - Rate its severity as "low", "medium", or "high"
+   - Consider whether the challenge is one-time or recurring from previous reports
+   - Note whether the challenge affects only this employee or has broader impact
 
-3. SENTIMENT: Determine if the overall tone is "positive", "negative", or "neutral"
+3. SENTIMENT: Determine if the overall tone is "positive", "negative", or "neutral", paying special attention to:
+   - The confidence level reported (1-5 suggests negative, 6-8 suggests neutral, 9-10 suggests positive)
+   - Language used when describing challenges (frustrated, concerned, optimistic about resolution)
+   - How the employee describes resource requests (urgent needs vs. helpful additions)
+   - Balance between achievements reported and challenges faced
+   - The employee's outlook on planned tasks
 
-4. TOPICS: Extract the main discussion points or project areas (as a list of key phrases)
+4. TOPICS: Extract the main discussion points, focus areas, or projects mentioned across all sections:
+   - Identify specific projects or initiatives mentioned
+   - Note recurring themes across current and previous reports
+   - Capture key technical or organizational systems referenced
+   - Identify stakeholders or departments mentioned as collaborators
 
-5. ACTION ITEMS: Recommend specific follow-up actions based on the report content (as a list)
+5. ACTION ITEMS: Recommend specific follow-up actions based on:
+   - The specific resources/support explicitly requested in section 4
+   - Any immediate issues that need addressing from the challenges section
+   - Preparation or support needed for tasks planned in the next week
+   - Any pattern of decreasing confidence levels that requires intervention
+   - Opportunities to build on successful achievements
+   - Required follow-up on important decisions that resulted from the employee's work
 
-6. RISK ASSESSMENT: Determine if there are any concerns requiring management attention
+6. RISK ASSESSMENT: Determine if there are any concerns requiring management attention:
    - Rate the overall risk as "low", "medium", or "high"
-   - Provide detailed reasoning for your risk assessment
-
-Analyze only the content provided and stay objective. Your response should be structured in a format suitable for JSON conversion.
+   - Pay special attention to: unfulfilled resource requests, declining confidence levels (below 6), external challenges beyond employee control, and negative patterns across reports
+   - Consider risks to: project timelines, work quality, employee wellbeing, team dynamics
+   - Provide detailed reasoning for your risk assessment, citing specific evidence from the report
+   - Note any urgent intervention needed versus monitoring situations
 
 EMPLOYEE REPORT:
 ---
@@ -90,7 +142,14 @@ SIMILAR PREVIOUS REPORTS FOR CONTEXT:
 {similar_context}
 ---
 
-Use these similar reports to identify patterns, but focus your analysis on the current report.
+Analyze these previous reports to identify:
+- Patterns in confidence levels (increasing, decreasing, or fluctuating)
+- Recurring resource requests that haven't been addressed
+- Previously mentioned challenges that are still present
+- Progress on tasks that span multiple weeks
+- Changes in tone or sentiment over time
+
+Focus your primary analysis on the current report while using these patterns for context.
 """
 
         # Add final instructions for structured output
