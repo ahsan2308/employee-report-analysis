@@ -37,7 +37,7 @@ class StructuredPrompts:
             f"Follow this exact format:\n{json.dumps(example_format, indent=2)}\n"
         )
     
-    # Specific prompt templates for different use cases
+    # Specific prompt template
     
     @staticmethod
     def employee_analysis_prompt(report_text: str, similar_reports: List[str] = None) -> str:
@@ -82,7 +82,7 @@ The report follows a standard Weekly Performance Reporting format with these spe
    - Continuations of ongoing projects
 
 6. Confidence level regarding tasks for the next week
-   - Rated on a scale of 1 to 10
+   - Rated on a scale of 1 to 5 (1 being lowest, 5 being highest)
    - An indicator of anticipated challenges or roadblocks
    - Reflects employee's perception of their ability to complete tasks on time
 
@@ -91,7 +91,9 @@ Please provide a comprehensive analysis with the following elements:
 1. ACHIEVEMENTS: Identify key accomplishments from the "Tasks completed" and "Impact/outcome" sections. For each achievement:
    - Provide a detailed description of what was accomplished, especially extraordinary tasks
    - Rate its impact on a scale from 1-10 (where 10 is highest impact)
-   - Consider the organizational level at which the work had impact (team, department, entire organization)
+   - Format the impact field EXACTLY as: "N (reason)" where N is just the integer rating and reason is a brief explanation
+   - The description field must contain complete sentences WITHOUT mentioning the impact rating
+   - In your impact reason, link the reason with the impact level (individual, team, department, or organization-wide etc) as well if applicable   
    - Note if any important decisions resulted from the employee's work
 
 2. CHALLENGES: Identify obstacles or issues from the "Challenges/obstacles faced" section. For each challenge:
@@ -123,7 +125,7 @@ Please provide a comprehensive analysis with the following elements:
 
 6. RISK ASSESSMENT: Determine if there are any concerns requiring management attention:
    - Rate the overall risk as "low", "medium", or "high"
-   - Pay special attention to: unfulfilled resource requests, declining confidence levels (below 6), external challenges beyond employee control, and negative patterns across reports
+   - Pay special attention to: unfulfilled resource requests, declining confidence levels (below 3), external challenges beyond employee control, and negative patterns across reports
    - Consider risks to: project timelines, work quality, employee wellbeing, team dynamics
    - Provide detailed reasoning for your risk assessment, citing specific evidence from the report
    - Note any urgent intervention needed versus monitoring situations
@@ -133,7 +135,7 @@ EMPLOYEE REPORT:
 {report_text}
 ---"""
 
-        # Add context from similar reports if provided
+        # Context from similar reports if provided
         if similar_reports and len(similar_reports) > 0:
             similar_context = "\n\n".join([f"Similar Report #{i+1}:\n{report}" for i, report in enumerate(similar_reports)])
             prompt += f"""
@@ -148,17 +150,18 @@ Analyze these previous reports to identify:
 - Previously mentioned challenges that are still present
 - Progress on tasks that span multiple weeks
 - Changes in tone or sentiment over time
+- Do not write anything in the first person or use "I" or "we" in your analysis
 
 Focus your primary analysis on the current report while using these patterns for context.
 """
 
-        # Add final instructions for structured output
+        # Final instructions for structured output
         prompt += """
 Structure your response as follows:
 {
   "achievements": [
-    {"description": "Detailed achievement description", "impact": "Impact rating (1-10)"},
-    {"description": "Another achievement", "impact": "Impact rating (1-10)"}
+    {"description": "Detailed achievement description in complete sentences", "impact": "8 (Brief reason for this impact rating)"},
+    {"description": "Another detailed achievement in complete sentences", "impact": "6 (Brief reason for this rating)"}
   ],
   "challenges": [
     {"description": "Detailed challenge description", "severity": "low/medium/high"},
@@ -176,10 +179,11 @@ Ensure your analysis is:
 - Objective and fair in assessing achievements and challenges
 - Actionable with clear recommendations
 - Well-structured following the exact format above
+- ALWAYS ensure your response is valid JSON with no extraneous text
 
 Your analysis will help managers understand employee progress and determine where support is needed.
 """
-
+        
         return prompt
     
     @staticmethod

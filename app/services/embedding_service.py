@@ -3,6 +3,7 @@ Embedding service for generating text embeddings using various providers.
 This is the new modular implementation that replaces app.core.embeddings.
 """
 
+from typing import List, Optional, Union
 from app.model_host import get_llm_provider
 from app.core.logger import logger
 from app.core.config_provider import get_config_provider
@@ -45,3 +46,43 @@ def get_embedding(text: str, model_name: str = None) -> list:
         import traceback
         logger.error(traceback.format_exc())
         return []
+
+def get_embeddings(texts: List[str], model_name: str = None) -> List[list]:
+    """
+    Generates embeddings for multiple texts in a single batch operation.
+    This is more efficient than calling get_embedding() multiple times.
+    
+    :param texts: List of texts to embed
+    :param model_name: Optional model name override
+    :return: List of embeddings corresponding to the input texts
+    """
+    if not texts:
+        return []
+        
+    try:
+        # Get the LLM provider (default from config/env)
+        provider = get_llm_provider()
+        
+        # If model_name is provided, create a new provider instance with that model
+        if model_name:
+            provider = get_llm_provider(model=model_name)
+            
+        # Log the model being used for debugging
+        logger.debug(f"Generating batch embeddings for {len(texts)} texts with model: {provider.model}")
+        
+        # Get embeddings from the provider in a single batch operation
+        embeddings = provider.get_embedding(texts)
+        
+        # Log basic embedding info for debugging
+        if embeddings and isinstance(embeddings, list):
+            logger.debug(f"Generated {len(embeddings)} embeddings successfully")
+        else:
+            logger.warning("Empty or invalid embeddings returned from provider")
+            return []
+            
+        return embeddings
+    except Exception as e:
+        logger.error(f"Error generating batch embeddings: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return [[] for _ in range(len(texts))]  # Return empty embeddings for each input text

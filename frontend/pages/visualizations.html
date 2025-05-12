@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Visualizations - Employee Evaluation System</title>
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
     
-    <!-- Use ESM module version of Chart.js for better React migration path -->
+    <!-- Use local version of Chart.js -->
+    <script src="../js/lib/chart.umd.min.js"></script>
+    
+    <!-- Commented CDN version for reference
     <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
-    
-    <!-- For local development without internet, download and use:
-    <script src="../js/lib/chart.umd.min.js"></script> 
     -->
 </head>
 <body>
@@ -23,6 +23,7 @@
                     <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
                     <li><a href="employees.html"><i class="fas fa-users"></i> Employees</a></li>
                     <li><a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a></li>
+                    <li><a href="imports.html"><i class="fas fa-file-import"></i> Imports</a></li>
                     <li><a href="analysis.html"><i class="fas fa-brain"></i> Analysis</a></li>
                     <li><a href="visualizations.html" class="active"><i class="fas fa-chart-bar"></i> Visualizations</a></li>
                 </ul>
@@ -38,6 +39,14 @@
                     <h3><i class="fas fa-filter"></i> Filters</h3>
                     <div class="filter-group">
                         <div class="filter-item">
+                            <label for="visualizationTypeSelect"><i class="fas fa-chart-line"></i> Visualization Type:</label>
+                            <select id="visualizationTypeSelect" class="form-control">
+                                <option value="sentiment">Sentiment Trends</option>
+                                <option value="impact">Achievement Impact Scores</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item">
                             <label for="departmentSelect"><i class="fas fa-building"></i> Department:</label>
                             <select id="departmentSelect" class="form-control">
                                 <option value="">All Departments</option>
@@ -52,7 +61,9 @@
                                 <!-- Employees will be loaded dynamically -->
                             </select>
                         </div>
-                        
+                    </div>
+                    
+                    <div class="filter-group">
                         <div class="filter-item">
                             <label for="intervalSelect"><i class="fas fa-calendar-alt"></i> Time Interval:</label>
                             <select id="intervalSelect" class="form-control">
@@ -63,9 +74,7 @@
                                 <option value="year">Yearly</option>
                             </select>
                         </div>
-                    </div>
-                    
-                    <div class="filter-group">
+                        
                         <div class="filter-item">
                             <label for="startDate"><i class="fas fa-calendar-day"></i> Start Date:</label>
                             <input type="date" id="startDate" class="form-control">
@@ -75,11 +84,12 @@
                             <label for="endDate"><i class="fas fa-calendar-day"></i> End Date:</label>
                             <input type="date" id="endDate" class="form-control">
                         </div>
-                        
-                        <div class="filter-item filter-actions">
-                            <button id="applyFiltersBtn" class="button primary-button"><i class="fas fa-check"></i> Apply Filters</button>
-                            <button id="resetFiltersBtn" class="button secondary-button"><i class="fas fa-undo"></i> Reset</button>
-                        </div>
+                    </div>
+                    
+                    <!-- Moved buttons to their own row with better styling -->
+                    <div class="filter-actions-row">
+                        <button id="applyFiltersBtn" class="button primary-button"><i class="fas fa-check"></i> Apply Filters</button>
+                        <button id="resetFiltersBtn" class="button secondary-button"><i class="fas fa-undo"></i> Reset</button>
                     </div>
                 </div>
                 
@@ -90,14 +100,36 @@
                     <p>Loading visualization data...</p>
                 </div>
                 
-                <div id="visualizationContainer" class="card">
+                <!-- Sentiment Visualization Card -->
+                <div id="sentimentVisualizationContainer" class="card visualization-container">
                     <h3><i class="fas fa-chart-line"></i> Sentiment Trends</h3>
+                    <p class="visualization-description">
+                        This chart shows the average sentiment score over time. Higher values indicate more positive sentiment in reports.
+                    </p>
                     <div class="chart-container">
                         <canvas id="sentimentTrendChart"></canvas>
                     </div>
-                    <div id="noDataMessage" style="display: none;" class="info-message">
-                        <p><i class="fas fa-info-circle"></i> No data available for the selected filters. Try adjusting your filter criteria.</p>
+                    <div class="no-data-message" style="display: none;">
+                        <p><i class="fas fa-info-circle"></i> No sentiment data available for the selected filters. Try adjusting your filter criteria.</p>
                     </div>
+                </div>
+                
+                <!-- Impact Score Visualization Card -->
+                <div id="impactVisualizationContainer" class="card visualization-container" style="display: none;">
+                    <h3><i class="fas fa-chart-line"></i> Achievement Impact Scores</h3>
+                    <p class="visualization-description">
+                        This chart shows the average impact score of achievements over time. Higher values indicate achievements with greater impact.
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="impactTrendChart"></canvas>
+                    </div>
+                    <div class="no-data-message" style="display: none;">
+                        <p><i class="fas fa-info-circle"></i> No impact score data available for the selected filters. Try adjusting your filter criteria.</p>
+                    </div>
+                </div>
+                
+                <div id="noDataMessage" style="display: none;" class="info-message">
+                    <p><i class="fas fa-info-circle"></i> No data available for the selected visualization and filters. Try adjusting your filter criteria.</p>
                 </div>
             </section>
         </main>
@@ -108,6 +140,7 @@
     </div>
     
     <script src="../js/api.js"></script>
+    <script src="../js/dropdown.js"></script>  <!-- Changed from searchable-dropdown.js -->
     <script src="../js/visualizations.js"></script>
 </body>
 </html>

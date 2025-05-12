@@ -85,7 +85,14 @@ def get_vector_store(store_type: Optional[str] = None, **kwargs) -> BaseVectorSt
         # Log final parameters being passed
         logger.info(f"Final parameters for QdrantProvider: {kwargs}")
         
-        return QdrantProvider(**kwargs)
+        # Get QdrantProvider instance and explicitly connect
+        provider = QdrantProvider(**kwargs)
+        try:
+            provider.connect()  # Explicitly connect
+        except Exception as e:
+            logger.error(f"Failed to connect to Qdrant: {str(e)}")
+            raise
+        return provider
     # Add more providers as needed
     else:
         raise ValueError(f"Unsupported vector store provider: {store_type}")

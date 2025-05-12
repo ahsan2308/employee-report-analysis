@@ -146,6 +146,22 @@ document.addEventListener('DOMContentLoaded', function() {
             if (employeeIdFromUrl) {
                 employeeSelect.value = employeeIdFromUrl;
             }
+            
+            // Make the dropdown searchable with fixed placeholder issue
+            if (!employeeSelect.hasAttribute('data-searchable')) {
+                SearchableDropdown.enhance(employeeSelect);
+            } else {
+                SearchableDropdown.resetSearch(employeeSelect);
+            }
+            
+            // Apply consistent styling to other select elements
+            document.querySelectorAll('select.form-control').forEach(select => {
+                if (!select.hasAttribute('data-consistent-style') && select.id !== 'employeeSelect') {
+                    SearchableDropdown.enhanceSimple(select);
+                    select.setAttribute('data-consistent-style', 'true');
+                }
+            });
+            
         } catch (error) {
             console.error('Error loading employees:', error);
             showError('Error loading employees. Please try again later.');

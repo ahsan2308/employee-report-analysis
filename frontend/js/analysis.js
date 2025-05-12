@@ -45,6 +45,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 employeeSelect.appendChild(option);
             });
             
+            // Make the employee dropdown searchable
+            if (!employeeSelect.hasAttribute('data-searchable')) {
+                SearchableDropdown.enhance(employeeSelect);
+            } else {
+                SearchableDropdown.resetSearch(employeeSelect);
+            }
+            
+            // Apply consistent styling to report dropdown (without search)
+            if (!reportSelect.hasAttribute('data-consistent-style')) {
+                SearchableDropdown.enhanceSimple(reportSelect);
+                reportSelect.setAttribute('data-consistent-style', 'true');
+            }
+            
             // If we have a report ID from URL, find the related employee and select them
             if (reportIdFromUrl) {
                 console.log("Found report ID in URL:", reportIdFromUrl);
@@ -189,19 +202,40 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             showMessage('Loading reports...', 'loading');
             const response = await reportApi.getEmployeeReports(employeeId);
-            const reports = response.reports || [];
+            let reports = response.reports || [];
             
             if (reports.length === 0) {
                 reportSelect.innerHTML = '<option value="">No reports available</option>';
                 showMessage('No reports found for this employee.', 'info');
+                // Ensure the styling is maintained even with no options
+                if (!reportSelect.hasAttribute('data-consistent-style')) {
+                    SearchableDropdown.enhanceSimple(reportSelect);
+                    reportSelect.setAttribute('data-consistent-style', 'true');
+                }
                 return;
             }
+            
+            // Sort reports by date (most recent first)
+            reports.sort((a, b) => {
+                const dateA = new Date(a.report_date || 0);
+                const dateB = new Date(b.report_date || 0);
+                return dateB - dateA; // Descending order (newest first)
+            });
             
             reports.forEach(report => {
                 const option = document.createElement('option');
                 option.value = report.report_id;
-                const reportDate = new Date(report.report_date).toLocaleDateString();
-                option.textContent = `Report from ${reportDate}`;
+                
+                // Format the date in a more readable way
+                const reportDate = new Date(report.report_date || new Date());
+                const formattedDate = reportDate.toLocaleDateString(undefined, { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                // Create a descriptive label with date
+                option.textContent = `Report from ${formattedDate}`;
                 reportSelect.appendChild(option);
             });
             
@@ -214,6 +248,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         break;
                     }
                 }
+            }
+            
+            // Ensure consistent styling is maintained
+            if (!reportSelect.hasAttribute('data-consistent-style')) {
+                SearchableDropdown.enhanceSimple(reportSelect);
+                reportSelect.setAttribute('data-consistent-style', 'true');
             }
             
             showMessage(`Loaded ${reports.length} reports.`, 'success');

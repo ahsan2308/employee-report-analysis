@@ -38,6 +38,23 @@ class BaseVectorStore(ABC):
         pass
     
     @abstractmethod
+    def add_documents_batch(self, collection_name: str, points: List[Dict[str, Any]]) -> bool:
+        """
+        Add multiple documents with their vector embeddings to the store in a single operation.
+        
+        Args:
+            collection_name: Name of the collection
+            points: List of point dictionaries, each containing:
+                - document_id: Unique ID for the document
+                - vector: Vector embedding of the document
+                - payload: Additional metadata for the document
+                
+        Returns:
+            True if all documents were added successfully, False otherwise
+        """
+        pass
+    
+    @abstractmethod
     def search(self, collection_name: str, query_vector: List[float], limit: int, filter_params: Optional[Dict] = None) -> List[Dict[str, Any]]:
         """
         Search for similar vectors in the store.

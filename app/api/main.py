@@ -11,6 +11,7 @@ from app.api.reports import router as report_router
 from app.api.analyses import router as analyses_router
 from app.api.visualizations import router as visualizations_router
 from app.api.tasks import router as tasks_router
+from app.api.imports import router as imports_router  # Add this import
 
 # Create all tables (if they don't exist)
 db_instance = get_database()  
@@ -35,6 +36,7 @@ app.include_router(report_router)
 app.include_router(analyses_router)
 app.include_router(visualizations_router)
 app.include_router(tasks_router)
+app.include_router(imports_router)  # Add this line
 
 # Root endpoint
 @app.get("/")

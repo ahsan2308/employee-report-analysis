@@ -1,7 +1,7 @@
 from typing import List, Dict, Any, Optional
 import os
-import psutil
 import threading
+import psutil
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct, Filter
 from qdrant_client.models import FieldCondition, MatchValue
@@ -11,105 +11,168 @@ from app.core.logger import logger
 
 class QdrantProvider(BaseVectorStore):
     """
-    Vector store implementation using Qdrant.
+    Vector store implementation using Qdrant with improved connection management.
     """
     
-    # Class variables to implement singleton pattern
+    # Class variables for thread safety
     _instance = None
-    _initialized = False
-    _instances = 0
-    _client = None
+    _lock = threading.RLock()  # Reentrant lock for thread safety
+    
+    # Connection state tracking
+    _conn_state = {
+        "initialized": False,
+        "connected": False,
+        "client": None,
+        "host": None,
+        "port": None,
+        "path": None
+    }
     
     def __new__(cls, *args, **kwargs):
-        """Implement singleton pattern to ensure only one instance exists."""
-        if cls._instance is None:
-            logger.info("Creating first QdrantProvider instance (singleton)")
-            cls._instance = super(QdrantProvider, cls).__new__(cls)
-        else:
-            logger.info("Returning existing QdrantProvider singleton instance")
-        return cls._instance
+        """Implement singleton pattern with proper thread safety."""
+        with cls._lock:
+            if cls._instance is None:
+                logger.info("Creating QdrantProvider singleton instance")
+                cls._instance = super(QdrantProvider, cls).__new__(cls)
+            return cls._instance
     
     def __init__(self, 
                  host: Optional[str] = None, 
                  port: Optional[int] = None, 
                  path: Optional[str] = None):
         """
-        Initialize the Qdrant provider.
+        Initialize the Qdrant provider with connection parameters.
         
         Args:
             host: Qdrant server host (None for embedded mode)
             port: Qdrant server port (None for embedded mode)
             path: Path to local storage (for embedded mode)
         """
-        # Skip initialization if already done
-        if QdrantProvider._initialized:
-            logger.info("Skipping initialization of QdrantProvider, already initialized")
-            return
+        with self._lock:
+            # Store connection parameters
+            self._conn_state["host"] = host
+            self._conn_state["port"] = port
+            self._conn_state["path"] = path
             
-        # Log diagnostic information
-        QdrantProvider._instances += 1
-        current_process = psutil.Process(os.getpid())
-        current_thread = threading.current_thread()
-        
-        logger.info(f"Initializing QdrantProvider instance #{QdrantProvider._instances}")
-        logger.info(f"Process ID: {os.getpid()}, Process name: {current_process.name()}")
-        logger.info(f"Thread ID: {current_thread.ident}, Thread name: {current_thread.name}")
-        
-        if path:
-            # Log if the storage path exists and is locked
-            full_path = os.path.abspath(path)
-            logger.info(f"Storage path: {full_path}")
-            logger.info(f"Storage path exists: {os.path.exists(full_path)}")
-            
-            # Print details about other processes that might be using this folder
-            logger.info("Looking for processes that might be accessing Qdrant storage...")
-            for process in psutil.process_iter(['pid', 'name', 'cmdline']):
-                try:
-                    cmdline = " ".join(process.info['cmdline'] or [])
-                    if path in cmdline and process.info['pid'] != os.getpid():
-                        logger.info(f"Process {process.info['pid']} ({process.info['name']}) might be accessing the storage: {cmdline[:100]}...")
-                except (psutil.NoSuchProcess, psutil.AccessDenied):
-                    pass
-        
-        # Initialize client with appropriate settings
-        if host and port and isinstance(port, int):
-            QdrantProvider._client = QdrantClient(host=host, port=port)
-            logger.info(f"Using on-premise Qdrant server at {host}:{port}")
-        elif path:
-            try:
-                QdrantProvider._client = QdrantClient(path=path)
-                logger.info(f"Using local embedded Qdrant storage at {path}")
-            except Exception as e:
-                logger.error(f"Failed to initialize Qdrant client: {e}")
-                # Try to give more diagnostic information
-                if "already accessed by another instance" in str(e):
-                    logger.error("This error suggests another process or thread is using the Qdrant storage.")
-                    logger.error("Consider using server mode instead of embedded mode for concurrent access.")
-                raise
-        else:
-            raise ValueError("Either host+port or path must be provided")
-        
-        self.client = QdrantProvider._client
-        QdrantProvider._initialized = True
+            # Don't initialize client here - will be done in connect()
+            self.client = None
     
-    def __del__(self):
-        """Ensure proper cleanup when the object is garbage collected."""
-        # Only close the client when the class variable is being deleted, not each instance
-        if QdrantProvider._client is not None and QdrantProvider._instances <= 1:
+    def connect(self) -> bool:
+        """
+        Explicitly connect to Qdrant.
+        Returns True if connection was successful, False otherwise.
+        """
+        with self._lock:
+            # If already connected, return True
+            if self._conn_state["connected"] and self._conn_state["client"] is not None:
+                logger.info("Already connected to Qdrant")
+                self.client = self._conn_state["client"]
+                return True
+            
+            # Connection parameters
+            host = self._conn_state["host"]
+            port = self._conn_state["port"]
+            path = self._conn_state["path"]
+            
+            # Log diagnostic information
+            current_process = psutil.Process(os.getpid())
+            current_thread = threading.current_thread()
+            logger.info(f"Connecting to Qdrant from process {os.getpid()} ({current_process.name()})")
+            logger.info(f"Thread ID: {current_thread.ident}, Thread name: {current_thread.name}")
+            
             try:
-                QdrantProvider._client.close()
-                logger.info(f"Closed Qdrant client for singleton instance")
-                QdrantProvider._client = None
-                QdrantProvider._initialized = False
+                # For server mode - need host and port
+                if host and port and isinstance(port, int):
+                    logger.info(f"Connecting to Qdrant server at {host}:{port}")
+                    client = QdrantClient(host=host, port=port)
+                    logger.info(f"Connected to Qdrant server at {host}:{port}")
+                
+                # For embedded mode - need path
+                elif path:
+                    # Check if path exists and log details
+                    full_path = os.path.abspath(path)
+                    logger.info(f"Connecting to local Qdrant at {full_path}")
+                    logger.info(f"Path exists: {os.path.exists(full_path)}")
+                    
+                    # Skip lengthy process scanning as it's slow and not always helpful
+                    logger.info("Connecting to local embedded Qdrant...")
+                    
+                    # Create the client with the storage path
+                    client = QdrantClient(path=path)
+                    logger.info(f"Connected to local Qdrant at {full_path}")
+                else:
+                    raise ValueError("Either host+port or path must be provided")
+                
+                # Store client and update connection state
+                self._conn_state["client"] = client
+                self._conn_state["connected"] = True
+                self._conn_state["initialized"] = True
+                self.client = client
+                
+                # Test connection with a simple API call
+                _ = client.get_collections()
+                logger.info("Qdrant connection verified successfully")
+                return True
+                
             except Exception as e:
-                logger.error(f"Error closing Qdrant client: {e}")
+                self._conn_state["client"] = None
+                self._conn_state["connected"] = False
+                logger.error(f"Failed to connect to Qdrant: {str(e)}")
+                
+                # Provide better diagnostics for common errors
+                if "already accessed by another instance" in str(e):
+                    logger.error("This error indicates another process has locked the Qdrant storage folder.")
+                    logger.error("Consider running in server mode or ensuring all previous connections are closed.")
+                
+                # Re-raise the exception
+                raise
+    
+    def disconnect(self) -> bool:
+        """
+        Explicitly disconnect from Qdrant.
+        Returns True if disconnection was successful, False otherwise.
+        """
+        with self._lock:
+            if not self._conn_state["connected"] or self._conn_state["client"] is None:
+                logger.info("Not connected to Qdrant - nothing to disconnect")
+                return True
+            
+            try:
+                # Close the client
+                self._conn_state["client"].close()
+                logger.info("Closed Qdrant connection")
+                
+                # Update connection state
+                self._conn_state["client"] = None
+                self._conn_state["connected"] = False
+                self.client = None
+                return True
+            except Exception as e:
+                logger.error(f"Error disconnecting from Qdrant: {str(e)}")
+                return False
+    
+    def _ensure_connected(self):
+        """Ensure connection is established before operations."""
+        if not self._conn_state["connected"] or self._conn_state["client"] is None:
+            self.connect()
+    
+    # Context manager support for automated cleanup
+    def __enter__(self):
+        """Context manager entry."""
+        self.connect()
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit with proper cleanup."""
+        self.disconnect()
+        return False  # Re-raise any exceptions
         
-        if QdrantProvider._instances > 0:
-            QdrantProvider._instances -= 1
-
+    # Existing methods updated to use connection management
+    
     def setup_collection(self, collection_name: str, vector_size: int) -> bool:
         """Ensure a collection exists with the specified parameters."""
         try:
+            self._ensure_connected()
             collections = self.client.get_collections()
             if collection_name not in [c.name for c in collections.collections]:
                 self.client.create_collection(
@@ -121,10 +184,11 @@ class QdrantProvider(BaseVectorStore):
         except Exception as e:
             logger.error(f"Error setting up collection '{collection_name}': {e}")
             return False
-    
+
     def add_document(self, collection_name: str, document_id: str, vector: List[float], payload: Dict[str, Any]) -> bool:
         """Add a document with its vector embedding to the store."""
         try:
+            self._ensure_connected()
             self.client.upsert(
                 collection_name=collection_name,
                 points=[
@@ -139,11 +203,53 @@ class QdrantProvider(BaseVectorStore):
         except Exception as e:
             logger.error(f"Error adding document to collection '{collection_name}': {e}")
             return False
-    
+
+    def add_documents_batch(self, collection_name: str, points: List[Dict[str, Any]]) -> bool:
+        """
+        Add multiple documents with their vector embeddings to the store in a single operation.
+        
+        Args:
+            collection_name: Name of the collection
+            points: List of point dictionaries, each containing:
+                - document_id: Unique ID for the document
+                - vector: Vector embedding of the document
+                - payload: Additional metadata for the document
+                
+        Returns:
+            True if all documents were added successfully, False otherwise
+        """
+        if not points:
+            logger.warning("No points provided to add_documents_batch")
+            return True  # Nothing to do
+            
+        try:
+            self._ensure_connected()
+            
+            # Convert dictionary format to PointStruct objects
+            point_structs = [
+                PointStruct(
+                    id=point["document_id"],
+                    vector=point["vector"],
+                    payload=point["payload"]
+                ) for point in points
+            ]
+            
+            # Perform batch upsert
+            self.client.upsert(
+                collection_name=collection_name,
+                points=point_structs
+            )
+            
+            logger.info(f"Successfully added batch of {len(points)} documents to collection {collection_name}")
+            return True
+        except Exception as e:
+            logger.error(f"Error adding documents batch to collection '{collection_name}': {e}")
+            return False
+
     def search(self, collection_name: str, query_vector: List[float], limit: int, filter_params: Optional[Dict] = None) -> List[Dict[str, Any]]:
         """Search for similar vectors in the store."""
         try:
-            # Convert dictionary filter to Qdrant Filter object
+            self._ensure_connected()
             query_filter = None
             if filter_params:
                 if "must" in filter_params:
@@ -167,7 +273,6 @@ class QdrantProvider(BaseVectorStore):
                 with_vectors=False,
             )
             
-            # Convert to standardized format
             results = []
             for point in response:
                 result = point.payload.copy()
@@ -183,6 +288,7 @@ class QdrantProvider(BaseVectorStore):
     def retrieve_document(self, collection_name: str, document_id: str) -> Optional[Dict[str, Any]]:
         """Retrieve a document by its ID."""
         try:
+            self._ensure_connected()
             response = self.client.retrieve(
                 collection_name=collection_name,
                 ids=[document_id]
@@ -207,15 +313,13 @@ class QdrantProvider(BaseVectorStore):
             points_selector: Either a list of IDs or a Filter object
         """
         try:
-            # If document_id is provided, use it
+            self._ensure_connected()
             if document_id is not None and document_id != "":
                 points_selector = [document_id]
             
-            # Validate points_selector
             if points_selector is None:
                 raise ValueError("Either document_id or points_selector must be provided")
             
-            # Delete the points
             self.client.delete(
                 collection_name=collection_name,
                 points_selector=points_selector
@@ -225,7 +329,6 @@ class QdrantProvider(BaseVectorStore):
             logger.error(f"Error deleting documents: {e}")
             return False
     
-    # Add a compatibility method that delegates to delete_document
     def delete(self, collection_name: str, points_selector: List[str]) -> bool:
         """
         Compatibility method for legacy code that calls delete directly.
@@ -241,10 +344,11 @@ class QdrantProvider(BaseVectorStore):
     def get_collection_info(self, collection_name: str) -> Dict[str, Any]:
         """Get information about a collection."""
         try:
+            self._ensure_connected()
             response = self.client.get_collection(collection_name)
 
             return {
-                "name": collection_name,  # Qdrant does not return collection name, so we add it manually
+                "name": collection_name,
                 "vectors_count": response.vectors_count,
                 "points_count": response.points_count,
                 "dimension": response.config.params.vectors.size,
@@ -266,7 +370,7 @@ class QdrantProvider(BaseVectorStore):
             bool: True if no documents match the filter criteria (deletion successful)
         """
         try:
-            # Convert dictionary filter to Qdrant Filter object
+            self._ensure_connected()
             query_filter = None
             if filter_params and "must" in filter_params:
                 must_conditions = []
@@ -280,14 +384,11 @@ class QdrantProvider(BaseVectorStore):
                         )
                 query_filter = Filter(must=must_conditions)
             
-            # We don't need an actual query vector for count operation
-            # Using a simple count operation to see if any matching documents exist
             count_result = self.client.count(
                 collection_name=collection_name,
                 count_filter=query_filter
             )
             
-            # If count is 0, deletion was successful
             return count_result.count == 0
         except Exception as e:
             logger.error(f"Error verifying deletion in collection '{collection_name}': {e}")

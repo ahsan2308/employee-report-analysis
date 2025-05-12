@@ -8,32 +8,14 @@ define a structured output format for LLM responses.
 from typing import List, Optional, Literal, Dict, Any
 from pydantic import BaseModel, Field
 
-# # Simplified EmployeeAnalysis model
-# class EmployeeAnalysis(BaseModel):
-#     """Simplified model for employee report analysis."""
-#     sentiment: Literal["positive", "negative", "neutral"] = Field(
-#         description="Overall sentiment of the report"
-#     )
-#     risk_level: Literal["low", "medium", "high"] = Field(
-#         description="Overall risk assessment level"
-#     )
-#     risk_explanation: str = Field(
-#         description="Explanation for the assigned risk level"
-#     )
-#     # Additional fields that will be stored in full_analysis_json
-#     topics: List[str] = Field(
-#         description="Key topics covered in the report"
-#     )
-
-
 # More detailed models commented out for future use
 class Achievement(BaseModel):
     # Model representing an employee achievement
     description: str = Field(
-        description="Detailed description of the achievement"
+        description="Detailed description of the achievement in complete sentences without referencing the impact rating"
     )
     impact: str = Field(
-        description="The measurable impact or result of this achievement between 1 and 10"
+        description="Format must be: 'N (reason)' where N is an integer rating 1-10, followed by a concise reason for the rating in parentheses"
     )
 
     class Config:

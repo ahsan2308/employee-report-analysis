@@ -43,7 +43,7 @@
 }
 
 #analyzeButton {
-    margin-top: 1.25rem;
+    margin-top: 0.5rem;  /* Reduced from 1.25rem to create less space */
     padding: 0.85rem;
     background-color: var(--primary-dark);
     width: 100%;
@@ -329,7 +329,7 @@
     margin-top: 0.3rem;
     font-style: italic;
     display: flex;
-    align-items: center;
+    align-items: flex-start;  /* Changed from center to flex-start */
     gap: 5px;
 }
 
@@ -337,10 +337,8 @@
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     font-size: 0.8rem;
+    margin-top: 0.2rem; /* Added to vertically align with the first line text */
 }
-
-.achievement-impact::before { content: '\f30b'; }
-.challenge-severity::before { content: '\f06d'; }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

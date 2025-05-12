@@ -20,6 +20,19 @@ vector_db:
   storage_path: ./qdrant_data  # Change to '/qdrant/storage' in Docker
   collection_name: employee_reports  # Collection name for storing vectors
 
+  batch_processing:
+    enabled: true
+    embedding_batch_size: 50     # Maximum number of chunks to embed in one call
+    upsert_batch_size: 100       # Maximum number of vectors to upsert in one call
+    retry:
+      max_attempts: 3            # Maximum number of retry attempts for failed batches
+      backoff_factor: 2          # Multiplicative factor for successive backoff delays
+      initial_wait_ms: 100       # Initial wait time before first retry (milliseconds)
+    
+    # Advanced settings (optional)
+    split_on_failure: true       # Whether to split batches and retry on failure
+    min_batch_size: 10           # Minimum batch size when splitting on failure
+
 redis:
   host: localhost  # Change from redis-container to localhost if not using Docker
   port: 6379

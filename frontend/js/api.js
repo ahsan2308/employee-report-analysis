@@ -1,4 +1,4 @@
-// Base URL for API endpoints
+// Base URL for API endpoints - ensure this always points to localhost
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
 // Generic error handler for fetch operations
@@ -143,6 +143,53 @@ const visualizationApi = {
         const endpoint = `/visualizations/sentiment-trends${queryString ? '?' + queryString : ''}`;
         
         return await fetchApi(endpoint);
+    },
+    
+    // Get impact score trends data
+    getImpactTrends: async (employeeId = null, department = null, startDate = null, endDate = null, interval = "month") => {
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (employeeId) params.append('employee_id', employeeId);
+        if (department) params.append('department', department);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        if (interval) params.append('interval', interval);
+        
+        // Construct the query string
+        const queryString = params.toString();
+        const endpoint = `/visualizations/impact-trends${queryString ? '?' + queryString : ''}`;
+        
+        return await fetchApi(endpoint);
+    }
+};
+
+// NEW: Import-related API functions
+const importApi = {
+    // Upload a CSV file for import
+    uploadCSV: async (formData) => {
+        return await fetch(`${API_BASE_URL}/imports/upload`, {
+            method: 'POST',
+            body: formData,
+        }).then(handleErrors);
+    },
+    
+    // Get status of an import job
+    getJobStatus: async (jobId) => {
+        return await fetchApi(`/imports/${jobId}`);
+    },
+    
+    // Get paginated errors for an import job
+    getJobErrors: async (jobId, page = 1, pageSize = 100) => {
+        return await fetchApi(`/imports/${jobId}/errors?page=${page}&page_size=${pageSize}`);
+    },
+    
+    // Get list of all import jobs
+    getJobsList: async (status = null, limit = 50, offset = 0) => {
+        let url = `/imports/?limit=${limit}&offset=${offset}`;
+        if (status) {
+            url += `&status=${status}`;
+        }
+        return await fetchApi(url);
     }
 };
 
