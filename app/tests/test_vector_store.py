@@ -1,6 +1,7 @@
 import sys
 import os
 import uuid
+import time
 from datetime import datetime
 
 from qdrant_client.models import Filter, FieldCondition, MatchValue
@@ -14,8 +15,11 @@ from app.services.vector_store_service import (
     setup_collection,
     add_report_to_vector_store,
     search_reports,
-    get_report_chunks
+    get_report_chunks,
+    get_embedding_size,
+    COLLECTION_NAME
 )
+from app.services.embedding_service import get_embedding
 from app.vector_store import get_vector_store
 from app.core.logger import logger
 from app.database import get_database
@@ -23,28 +27,75 @@ from app.models.db_models import Report, Employee
 
 # Get vector store and collection name
 qdrant = get_vector_store()
-from app.services.vector_store_service import COLLECTION_NAME
 
 def test_qdrant_connection():
     """Test if Qdrant server is reachable."""
     print("\n===== Testing Qdrant Connection =====")
     try:
-        qdrant.get_collection_info(COLLECTION_NAME)
-        logger.info("Qdrant server is reachable.")
-        return True
+        with qdrant:  # Use context manager for proper connection handling
+            qdrant.connect()
+            print("Qdrant connection successful")
+            return True
     except Exception as e:
         logger.error(f"Failed to connect to Qdrant server: {e}")
         return False
 
-def test_setup_collection():
-    """Test creating/accessing the collection."""
-    print("\n===== Testing Collection Setup =====")
-    setup_collection()
-    try:
-        collection_info = qdrant.get_collection_info(COLLECTION_NAME)
-        print(f"Collection '{COLLECTION_NAME}' contains {collection_info.get('points_count', 0)} points.")
-    except Exception as e:
-        print(f"Error retrieving collection size: {e}")
+def test_collection_management():
+    """Test collection creation, deletion, and dimension handling."""
+    print("\n===== Testing Collection Management =====")
+    
+    # 1. Test get_embedding_size
+    print("Testing embedding size detection...")
+    embedding_size = get_embedding_size()
+    print(f"Detected embedding size: {embedding_size}")
+    
+    # 2. Delete collection if it exists (testing delete_collection functionality)
+    print(f"Testing delete_collection for '{COLLECTION_NAME}'...")
+    with qdrant:
+        try:
+            collection_exists = False
+            try:
+                info = qdrant.get_collection_info(COLLECTION_NAME)
+                if info:
+                    collection_exists = True
+                    old_dimension = info.get('dimension', 0)
+                    print(f"Found existing collection with dimension: {old_dimension}")
+            except Exception:
+                print(f"Collection '{COLLECTION_NAME}' does not exist yet")
+                
+            # If collection exists, test deletion
+            if collection_exists:
+                delete_success = qdrant.delete_collection(COLLECTION_NAME)
+                print(f"Collection deletion result: {'Success' if delete_success else 'Failed'}")
+                time.sleep(1)  # Give time for deletion to complete
+                
+                # Verify collection is deleted
+                try:
+                    qdrant.get_collection_info(COLLECTION_NAME)
+                    print("ERROR: Collection still exists after deletion")
+                except Exception:
+                    print("Collection successfully deleted (verified)")
+        except Exception as e:
+            print(f"Error during collection deletion test: {e}")
+    
+    # 3. Test setup_collection (should create with correct dimensions)
+    print("\nTesting setup_collection...")
+    setup_success = setup_collection()
+    print(f"Collection setup: {'Success' if setup_success else 'Failed'}")
+    
+    # 4. Verify collection was created with correct dimensions
+    with qdrant:
+        try:
+            info = qdrant.get_collection_info(COLLECTION_NAME)
+            if info:
+                print(f"Collection info: {info}")
+                # Check if dimensions match what we detected
+                if info.get('dimension') == embedding_size:
+                    print("✅ Collection has correct dimension")
+                else:
+                    print(f"❌ Dimension mismatch: expected {embedding_size}, got {info.get('dimension')}")
+        except Exception as e:
+            print(f"Error verifying collection info: {e}")
 
 def test_chunk_text():
     """Test text chunking functionality."""
@@ -176,17 +227,19 @@ def cleanup_test_data(employee_id):
             ]
         )
         
-        # Delete test points from vector store
-        delete_result = qdrant.delete_document(
-            collection_name=COLLECTION_NAME,
-            points_selector=delete_filter
-        )
-        
-        # Verify deletion was successful
-        deletion_verified = qdrant.verify_deletion(
-            collection_name=COLLECTION_NAME, 
-            filter_params=filter_params
-        )
+        # Delete test points from vector store using context manager
+        with qdrant:
+            # Delete test points from vector store
+            delete_result = qdrant.delete_document(
+                collection_name=COLLECTION_NAME,
+                points_selector=delete_filter
+            )
+            
+            # Verify deletion was successful
+            deletion_verified = qdrant.verify_deletion(
+                collection_name=COLLECTION_NAME, 
+                filter_params=filter_params
+            )
         
         if delete_result and deletion_verified:
             print(f"Successfully deleted test data for employee ID: {employee_id} (verified)")
@@ -205,13 +258,47 @@ def cleanup_test_data(employee_id):
     except Exception as e:
         print(f"Error cleaning up test data: {e}")
 
+def test_embedding_stability():
+    """Test the stability and consistency of embeddings."""
+    print("\n===== Testing Embedding Stability =====")
+    
+    test_text = "This is a test text for checking embedding consistency."
+    
+    # Generate multiple embeddings for the same text
+    print("Generating multiple embeddings for the same text...")
+    embedding1 = get_embedding(test_text)
+    embedding2 = get_embedding(test_text)
+    
+    # Check dimensions
+    print(f"Embedding dimensions: {len(embedding1)}")
+    
+    # Check consistency (not exact equality due to potential randomness)
+    import numpy as np
+    similarity = np.dot(embedding1, embedding2) / (np.linalg.norm(embedding1) * np.linalg.norm(embedding2))
+    print(f"Cosine similarity between two embeddings of same text: {similarity:.6f}")
+    
+    # Test embedding for query vs document
+    print("\nTesting query vs document embedding differences:")
+    doc_embedding = get_embedding(test_text, is_query=False)
+    query_embedding = get_embedding(test_text, is_query=True)
+    
+    # Check if query preprocessing is being applied
+    doc_query_similarity = np.dot(doc_embedding, query_embedding) / (np.linalg.norm(doc_embedding) * np.linalg.norm(query_embedding))
+    print(f"Cosine similarity between document and query embedding: {doc_query_similarity:.6f}")
+    
+
 if __name__ == "__main__":
     # Run all tests in sequence
     logger.info("Starting vector store test script")
     
     # Test basic connection and setup
     test_qdrant_connection()
-    test_setup_collection()
+    
+    # Test the new collection management functionality
+    test_collection_management()
+    
+    # Test embedding stability
+    test_embedding_stability()
     
     # Test text chunking (doesn't require database)
     test_chunk_text()

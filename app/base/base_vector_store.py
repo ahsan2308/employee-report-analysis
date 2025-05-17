@@ -110,3 +110,16 @@ class BaseVectorStore(ABC):
             Dictionary with collection information
         """
         pass
+        
+    @abstractmethod
+    def delete_collection(self, collection_name: str) -> bool:
+        """
+        Delete an entire collection.
+        
+        Args:
+            collection_name: Name of the collection to delete
+                
+        Returns:
+            True if collection was deleted successfully, False otherwise
+        """
+        pass

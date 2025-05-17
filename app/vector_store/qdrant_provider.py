@@ -357,6 +357,34 @@ class QdrantProvider(BaseVectorStore):
         except Exception as e:
             logger.error(f"Error getting info for collection '{collection_name}': {e}")
             return {}
+    
+    def delete_collection(self, collection_name: str) -> bool:
+        """
+        Delete an entire collection.
+        
+        Args:
+            collection_name: Name of the collection to delete
+                
+        Returns:
+            True if collection was deleted successfully, False otherwise
+        """
+        try:
+            self._ensure_connected()
+            logger.info(f"Deleting collection '{collection_name}'")
+            
+            # Check if collection exists first
+            collections = self.client.get_collections()
+            if collection_name not in [c.name for c in collections.collections]:
+                logger.warning(f"Collection '{collection_name}' does not exist, nothing to delete")
+                return True  # Not an error if it doesn't exist
+                
+            # Delete the collection
+            self.client.delete_collection(collection_name)
+            logger.info(f"Collection '{collection_name}' successfully deleted")
+            return True
+        except Exception as e:
+            logger.error(f"Error deleting collection '{collection_name}': {e}")
+            return False
 
     def verify_deletion(self, collection_name: str, filter_params: dict) -> bool:
         """

@@ -46,16 +46,66 @@ def chunk_text(text: str, max_chunk_size: int = 500) -> List[str]:
 
 def get_embedding_size() -> int:
     """Dynamically determine the embedding size."""
-    sample_text = "Test text"
-    sample_embedding = get_embedding(sample_text)
-    return len(sample_embedding)
+    try:
+        sample_text = "Test text"
+        sample_embedding = get_embedding(sample_text)
+        
+        # Add additional logging and validation
+        if not sample_embedding or len(sample_embedding) == 0:
+            logger.error("Empty embedding returned when detecting embedding size")
+            # Default to 1024 for bge-m3 as fallback
+            logger.warning("Falling back to default size 1024 for bge-m3")
+            return 1024
+            
+        embedding_size = len(sample_embedding)
+        logger.info(f"Detected embedding size: {embedding_size}")
+        return embedding_size
+    except Exception as e:
+        logger.error(f"Error detecting embedding size: {str(e)}")
+        # Default to 1024 for bge-m3 as fallback
+        logger.warning("Error occurred, falling back to default size 1024 for bge-m3")
+        return 1024
 
 def setup_collection() -> bool:
     """Ensure the vector collection exists with correct settings."""
     try:
         vector_store = get_vector_store()
-        embedding_size = get_embedding_size()
-        return vector_store.setup_collection(COLLECTION_NAME, embedding_size)
+        
+        # Check if collection already exists
+        try:
+            collection_info = vector_store.get_collection_info(COLLECTION_NAME)
+            current_dimension = collection_info.get('dimension', 0)
+            logger.info(f"Found existing collection '{COLLECTION_NAME}' with dimension {current_dimension}")
+            
+            # Get the expected dimension for current model
+            embedding_size = get_embedding_size()
+            
+            # If dimensions don't match, delete and recreate
+            if current_dimension != embedding_size:
+                logger.warning(f"Collection dimension mismatch: found {current_dimension}, expected {embedding_size}")
+                logger.info(f"Recreating collection '{COLLECTION_NAME}' with correct dimension {embedding_size}")
+                
+                # Additional logging for debugging
+                logger.debug(f"Current collection info: {collection_info}")
+                
+                # Delete the collection using the new method
+                if not vector_store.delete_collection(COLLECTION_NAME):
+                    logger.error(f"Failed to delete collection '{COLLECTION_NAME}'")
+                    return False
+                
+                # Create new collection with correct dimensions
+                logger.info(f"Creating new collection '{COLLECTION_NAME}' with dimension {embedding_size}")
+                return vector_store.setup_collection(COLLECTION_NAME, embedding_size)
+            
+            return True  # Collection exists with correct dimensions
+            
+        except Exception as e:
+            # Collection likely doesn't exist, create it
+            logger.info(f"Collection '{COLLECTION_NAME}' not found or error checking: {e}")
+            embedding_size = get_embedding_size()
+            logger.info(f"Creating new collection '{COLLECTION_NAME}' with dimension {embedding_size}")
+            return vector_store.setup_collection(COLLECTION_NAME, embedding_size)
+            
     except Exception as e:
         logger.error(f"Error setting up vector collection: {e}")
         return False
@@ -456,7 +506,7 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
         with vector_store:
             # Add debug logging for embedding generation
             logger.debug(f"Generating embedding for query: '{query}'")
-            query_embedding = get_embedding(query)
+            query_embedding = get_embedding(query, is_query=True)  # Set is_query=True for search queries
             
             # Check if embedding is valid
             if not query_embedding or len(query_embedding) == 0:
