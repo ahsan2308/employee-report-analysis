@@ -6,7 +6,7 @@ from app.utils.env_loader import load_env_from_file
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 
 from app.config.config import config
-from app.model_host import get_llm_provider
+from app.model_host import get_embedding_provider
 from app.core.logger import logger
 
 # Load environment variables from specific .env file
@@ -23,11 +23,11 @@ def get_embedding(text: str, model_name: str = None) -> list:
     """
     try:
         # Get the LLM provider (default from config/env)
-        provider = get_llm_provider()
+        provider = get_embedding_provider()
         
         # If model_name is provided, create a new provider instance with that model
         if model_name:
-            provider = get_llm_provider(model=model_name)
+            provider = get_embedding_provider(model=model_name)
             
         # Get embedding from the provider
         return provider.get_embedding(text)
@@ -46,7 +46,7 @@ def generate_text(prompt: str, max_tokens: int = 1000, temperature: float = 0.7)
     """
     try:
         # Get the LLM provider (default from config/env)
-        provider = get_llm_provider()
+        provider = get_embedding_provider()
         
         # Generate text using the provider
         return provider.generate_text(prompt, max_tokens, temperature)

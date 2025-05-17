@@ -4,7 +4,7 @@ This is the new modular implementation that replaces app.core.embeddings.
 """
 
 from typing import List, Optional, Union
-from app.model_host import get_llm_provider
+from app.model_host import get_embedding_provider
 from app.core.logger import logger
 from app.core.config_provider import get_config_provider
 
@@ -22,11 +22,11 @@ def get_embedding(text: str, model_name: str = None) -> list:
     """
     try:
         # Get the LLM provider (default from config/env)
-        provider = get_llm_provider()
+        provider = get_embedding_provider()
         
         # If model_name is provided, create a new provider instance with that model
         if model_name:
-            provider = get_llm_provider(model=model_name)
+            provider = get_embedding_provider(model=model_name)
             
         # Log the model being used for debugging
         logger.debug(f"Generating embedding with model: {provider.model}")
@@ -61,11 +61,11 @@ def get_embeddings(texts: List[str], model_name: str = None) -> List[list]:
         
     try:
         # Get the LLM provider (default from config/env)
-        provider = get_llm_provider()
+        provider = get_embedding_provider()
         
         # If model_name is provided, create a new provider instance with that model
         if model_name:
-            provider = get_llm_provider(model=model_name)
+            provider = get_embedding_provider(model=model_name)
             
         # Log the model being used for debugging
         logger.debug(f"Generating batch embeddings for {len(texts)} texts with model: {provider.model}")
