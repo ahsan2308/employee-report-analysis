@@ -12,12 +12,13 @@ from app.core.config_provider import get_config_provider
 config = get_config_provider()
 DEFAULT_MODEL = config.get("embedding_model", "default_embedding_model", section="llm")
 
-def get_embedding(text: str, model_name: str = None) -> list:
+def get_embedding(text: str, model_name: str = None, is_query: bool = False) -> list:
     """
     Generates an embedding for the given text using the configured LLM provider.
 
     :param text: The text to embed
     :param model_name: Optional model name override
+    :param is_query: Whether the text is a query (True) or passage (False)
     :return: A list representing the vector embedding
     """
     try:
@@ -31,8 +32,8 @@ def get_embedding(text: str, model_name: str = None) -> list:
         # Log the model being used for debugging
         logger.debug(f"Generating embedding with model: {provider.model}")
             
-        # Get embedding from the provider
-        embedding = provider.get_embedding(text)
+        # Get embedding from the provider, passing is_query parameter
+        embedding = provider.get_embedding(text, is_query=is_query)
         
         # Log basic embedding info for debugging
         if embedding:
@@ -47,13 +48,14 @@ def get_embedding(text: str, model_name: str = None) -> list:
         logger.error(traceback.format_exc())
         return []
 
-def get_embeddings(texts: List[str], model_name: str = None) -> List[list]:
+def get_embeddings(texts: List[str], model_name: str = None, is_query: bool = False) -> List[list]:
     """
     Generates embeddings for multiple texts in a single batch operation.
     This is more efficient than calling get_embedding() multiple times.
     
     :param texts: List of texts to embed
     :param model_name: Optional model name override
+    :param is_query: Whether the texts are queries (True) or passages (False)
     :return: List of embeddings corresponding to the input texts
     """
     if not texts:
@@ -70,8 +72,8 @@ def get_embeddings(texts: List[str], model_name: str = None) -> List[list]:
         # Log the model being used for debugging
         logger.debug(f"Generating batch embeddings for {len(texts)} texts with model: {provider.model}")
         
-        # Get embeddings from the provider in a single batch operation
-        embeddings = provider.get_embedding(texts)
+        # Get embeddings from the provider in a single batch operation, passing is_query parameter
+        embeddings = provider.get_embedding(texts, is_query=is_query)
         
         # Log basic embedding info for debugging
         if embeddings and isinstance(embeddings, list):

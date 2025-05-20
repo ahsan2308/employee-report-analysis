@@ -160,6 +160,38 @@ const visualizationApi = {
         const endpoint = `/visualizations/impact-trends${queryString ? '?' + queryString : ''}`;
         
         return await fetchApi(endpoint);
+    },
+
+    // Get sentiment heatmap data
+    getSentimentHeatmap: async (dimension = "department", startDate = null, endDate = null, interval = "month") => {
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (dimension) params.append('dimension', dimension);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        if (interval) params.append('interval', interval);
+        
+        // Construct the query string
+        const queryString = params.toString();
+        const endpoint = `/visualizations/sentiment-heatmap${queryString ? '?' + queryString : ''}`;
+        
+        return await fetchApi(endpoint);
+    },
+    
+    // Get impact score heatmap data
+    getImpactHeatmap: async (dimension = "department", startDate = null, endDate = null, interval = "month") => {
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (dimension) params.append('dimension', dimension);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        if (interval) params.append('interval', interval);
+        
+        // Construct the query string
+        const queryString = params.toString();
+        const endpoint = `/visualizations/impact-heatmap${queryString ? '?' + queryString : ''}`;
+        
+        return await fetchApi(endpoint);
     }
 };
 

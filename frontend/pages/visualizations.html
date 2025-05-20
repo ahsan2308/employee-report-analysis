@@ -10,6 +10,9 @@
     <!-- Use local version of Chart.js -->
     <script src="../js/lib/chart.umd.min.js"></script>
     
+    <!-- Add Plotly.js for heatmap visualizations -->
+    <script src="../js/lib/plotly.min.js"></script>
+    
     <!-- Commented CDN version for reference
     <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
     -->
@@ -39,14 +42,32 @@
                     <h3><i class="fas fa-filter"></i> Filters</h3>
                     <div class="filter-group">
                         <div class="filter-item">
-                            <label for="visualizationTypeSelect"><i class="fas fa-chart-line"></i> Visualization Type:</label>
+                            <label for="visualizationTypeSelect"><i class="fas fa-chart-line"></i> Data Type:</label>
                             <select id="visualizationTypeSelect" class="form-control">
-                                <option value="sentiment">Sentiment Trends</option>
+                                <option value="sentiment">Sentiment Scores</option>
                                 <option value="impact">Achievement Impact Scores</option>
                             </select>
                         </div>
                         
                         <div class="filter-item">
+                            <label for="visualizationModeSelect"><i class="fas fa-chart-area"></i> Visualization Mode:</label>
+                            <select id="visualizationModeSelect" class="form-control">
+                                <option value="trend">Trend Over Time</option>
+                                <option value="heatmap">Heatmap</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item heatmap-only" style="display: none;">
+                            <label for="dimensionSelect"><i class="fas fa-th"></i> Heatmap Dimension:</label>
+                            <select id="dimensionSelect" class="form-control">
+                                <option value="department">By Department</option>
+                                <option value="employee">By Employee</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <div class="filter-item trend-only">
                             <label for="departmentSelect"><i class="fas fa-building"></i> Department:</label>
                             <select id="departmentSelect" class="form-control">
                                 <option value="">All Departments</option>
@@ -54,16 +75,14 @@
                             </select>
                         </div>
                         
-                        <div class="filter-item">
+                        <div class="filter-item trend-only">
                             <label for="employeeSelect"><i class="fas fa-user"></i> Employee:</label>
                             <select id="employeeSelect" class="form-control">
                                 <option value="">All Employees</option>
                                 <!-- Employees will be loaded dynamically -->
                             </select>
                         </div>
-                    </div>
-                    
-                    <div class="filter-group">
+
                         <div class="filter-item">
                             <label for="intervalSelect"><i class="fas fa-calendar-alt"></i> Time Interval:</label>
                             <select id="intervalSelect" class="form-control">
@@ -74,7 +93,9 @@
                                 <option value="year">Yearly</option>
                             </select>
                         </div>
-                        
+                    </div>
+                    
+                    <div class="filter-group">
                         <div class="filter-item">
                             <label for="startDate"><i class="fas fa-calendar-day"></i> Start Date:</label>
                             <input type="date" id="startDate" class="form-control">
@@ -100,8 +121,8 @@
                     <p>Loading visualization data...</p>
                 </div>
                 
-                <!-- Sentiment Visualization Card -->
-                <div id="sentimentVisualizationContainer" class="card visualization-container">
+                <!-- Sentiment Trend Visualization Card -->
+                <div id="sentimentVisualizationContainer" class="card visualization-container trend-visualization">
                     <h3><i class="fas fa-chart-line"></i> Sentiment Trends</h3>
                     <p class="visualization-description">
                         This chart shows the average sentiment score over time. Higher values indicate more positive sentiment in reports.
@@ -114,8 +135,8 @@
                     </div>
                 </div>
                 
-                <!-- Impact Score Visualization Card -->
-                <div id="impactVisualizationContainer" class="card visualization-container" style="display: none;">
+                <!-- Impact Score Trend Visualization Card -->
+                <div id="impactVisualizationContainer" class="card visualization-container trend-visualization" style="display: none;">
                     <h3><i class="fas fa-chart-line"></i> Achievement Impact Scores</h3>
                     <p class="visualization-description">
                         This chart shows the average impact score of achievements over time. Higher values indicate achievements with greater impact.
@@ -125,6 +146,34 @@
                     </div>
                     <div class="no-data-message" style="display: none;">
                         <p><i class="fas fa-info-circle"></i> No impact score data available for the selected filters. Try adjusting your filter criteria.</p>
+                    </div>
+                </div>
+                
+                <!-- Sentiment Heatmap Visualization Card -->
+                <div id="sentimentHeatmapContainer" class="card visualization-container heatmap-visualization" style="display: none;">
+                    <h3><i class="fas fa-th"></i> Sentiment Heatmap</h3>
+                    <p class="visualization-description">
+                        This heatmap shows sentiment scores across time and departments/employees. Darker colors indicate higher sentiment scores.
+                    </p>
+                    <div class="chart-container">
+                        <div id="sentimentHeatmapChart"></div>
+                    </div>
+                    <div class="no-data-message" style="display: none;">
+                        <p><i class="fas fa-info-circle"></i> No sentiment heatmap data available for the selected filters. Try adjusting your filter criteria.</p>
+                    </div>
+                </div>
+                
+                <!-- Impact Score Heatmap Visualization Card -->
+                <div id="impactHeatmapContainer" class="card visualization-container heatmap-visualization" style="display: none;">
+                    <h3><i class="fas fa-th"></i> Achievement Impact Heatmap</h3>
+                    <p class="visualization-description">
+                        This heatmap shows impact scores across time and departments/employees. Darker colors indicate higher impact scores.
+                    </p>
+                    <div class="chart-container">
+                        <div id="impactHeatmapChart"></div>
+                    </div>
+                    <div class="no-data-message" style="display: none;">
+                        <p><i class="fas fa-info-circle"></i> No impact heatmap data available for the selected filters. Try adjusting your filter criteria.</p>
                     </div>
                 </div>
                 
@@ -140,7 +189,7 @@
     </div>
     
     <script src="../js/api.js"></script>
-    <script src="../js/dropdown.js"></script>  <!-- Changed from searchable-dropdown.js -->
+    <script src="../js/dropdown.js"></script>
     <script src="../js/visualizations.js"></script>
 </body>
 </html>

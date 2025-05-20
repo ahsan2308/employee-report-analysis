@@ -541,16 +541,24 @@ select.form-control:not([data-searchable="true"]) {
 /* Fix dropdown z-index in filter panels */
 .filters-panel .filter-item {
     position: relative;
-    z-index: 20;  /* Give higher z-index to make dropdowns appear above others */
+    z-index: 10;  /* Lower base z-index */
 }
 
 /* Add these specific z-index rules for filter items in different positions */
-.filters-panel .filter-group:first-of-type .filter-item:nth-child(1) { z-index: 25; }
-.filters-panel .filter-group:first-of-type .filter-item:nth-child(2) { z-index: 24; }
-.filters-panel .filter-group:first-of-type .filter-item:nth-child(3) { z-index: 23; }
-.filters-panel .filter-group:last-of-type .filter-item:nth-child(1) { z-index: 22; }
-.filters-panel .filter-group:last-of-type .filter-item:nth-child(2) { z-index: 21; }
-.filters-panel .filter-group:last-of-type .filter-item:nth-child(3) { z-index: 20; }
+/* First filter group - highest z-index values */
+.filters-panel .filter-group:nth-of-type(1) .filter-item:nth-child(1) { z-index: 100; }
+.filters-panel .filter-group:nth-of-type(1) .filter-item:nth-child(2) { z-index: 99; }
+.filters-panel .filter-group:nth-of-type(1) .filter-item:nth-child(3) { z-index: 98; }
+
+/* Second (middle) filter group */
+.filters-panel .filter-group:nth-of-type(2) .filter-item:nth-child(1) { z-index: 80; }
+.filters-panel .filter-group:nth-of-type(2) .filter-item:nth-child(2) { z-index: 79; }
+.filters-panel .filter-group:nth-of-type(2) .filter-item:nth-child(3) { z-index: 78; }
+
+/* Last filter group */
+.filters-panel .filter-group:nth-of-type(3) .filter-item:nth-child(1) { z-index: 60; }
+.filters-panel .filter-group:nth-of-type(3) .filter-item:nth-child(2) { z-index: 59; }
+.filters-panel .filter-group:nth-of-type(3) .filter-item:nth-child(3) { z-index: 58; }
 
 /* Ensure consistent styling for all form controls */
 .form-control {
@@ -852,8 +860,36 @@ button:disabled,
     padding: 20px;
     margin-bottom: 24px;
     box-shadow: var(--shadow-sm);
-    height: 400px;
+    min-height: 400px; /* Changed from fixed height to min-height */
     position: relative;
+    overflow: hidden; /* Prevent content from overflowing */
+}
+
+/* Specific styling for heatmap containers */
+.heatmap-visualization .chart-container {
+    padding: 10px; /* Reduced padding to give more room for the chart */
+    display: flex;
+    justify-content: center;
+    height: auto;
+}
+
+/* Responsive Plotly chart container */
+[id$="HeatmapChart"] {
+    width: 100%;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .chart-container {
+        padding: 15px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-container {
+        min-height: 350px;
+        padding: 10px 5px;
+    }
 }
 
 /* Hero section styling */

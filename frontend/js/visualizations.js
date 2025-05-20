@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
     const visualizationTypeSelect = document.getElementById('visualizationTypeSelect');
+    const visualizationModeSelect = document.getElementById('visualizationModeSelect');
+    const dimensionSelect = document.getElementById('dimensionSelect');
     const departmentSelect = document.getElementById('departmentSelect');
     const employeeSelect = document.getElementById('employeeSelect');
     const intervalSelect = document.getElementById('intervalSelect');
@@ -12,21 +14,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const noDataMessage = document.getElementById('noDataMessage');
     const statusMessage = document.getElementById('statusMessage');
     
-    // Visualization containers
+    // Trend Visualization containers
     const sentimentVisualizationContainer = document.getElementById('sentimentVisualizationContainer');
     const impactVisualizationContainer = document.getElementById('impactVisualizationContainer');
+    
+    // Heatmap Visualization containers
+    const sentimentHeatmapContainer = document.getElementById('sentimentHeatmapContainer');
+    const impactHeatmapContainer = document.getElementById('impactHeatmapContainer');
     
     // Chart canvases
     const sentimentTrendChart = document.getElementById('sentimentTrendChart');
     const impactTrendChart = document.getElementById('impactTrendChart');
+    const sentimentHeatmapChart = document.getElementById('sentimentHeatmapChart');
+    const impactHeatmapChart = document.getElementById('impactHeatmapChart');
 
     // Chart instances
     let sentimentChart = null;
     let impactChart = null;
+    let sentimentHeatmap = null;
+    let impactHeatmap = null;
 
     // Current filters state
     const filters = {
-        visualizationType: 'sentiment', // Default to sentiment
+        visualizationType: 'sentiment', // sentiment or impact
+        visualizationMode: 'trend',     // trend or heatmap
+        dimension: 'department',        // department or employee (for heatmaps)
         department: '',
         employee_id: '',
         start_date: '',
@@ -39,13 +51,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize the page and load data
     async function init() {
-        // Set default interval
+        // Set default values
         intervalSelect.value = filters.interval;
-        
-        // Set default visualization type
         visualizationTypeSelect.value = filters.visualizationType;
+        visualizationModeSelect.value = filters.visualizationMode;
+        dimensionSelect.value = filters.dimension;
         
-        // Enhance select dropdowns with consistent styling (similar to analysis page)
+        // Enhance select dropdowns with consistent styling
         enhanceDropdowns();
         
         // Set default dates (last 6 months)
@@ -61,6 +73,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add event listeners
         setupEventListeners();
+        
+        // Update UI based on initial mode
+        updateVisibilityBasedOnMode();
         
         // Show loading indicator
         showLoading(true);
@@ -87,22 +102,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Apply consistent styling to all dropdowns
     function enhanceDropdowns() {
-        // Apply consistent styling to visualization type dropdown
-        if (!visualizationTypeSelect.hasAttribute('data-consistent-style')) {
-            SearchableDropdown.enhanceSimple(visualizationTypeSelect);
-            visualizationTypeSelect.setAttribute('data-consistent-style', 'true');
-        }
+        const dropdowns = [
+            visualizationTypeSelect,
+            visualizationModeSelect,
+            dimensionSelect,
+            departmentSelect,
+            intervalSelect
+        ];
         
-        // Apply consistent styling to department dropdown
-        if (!departmentSelect.hasAttribute('data-consistent-style')) {
-            SearchableDropdown.enhanceSimple(departmentSelect);
-            departmentSelect.setAttribute('data-consistent-style', 'true');
-        }
+        // Apply consistent styling to dropdowns
+        dropdowns.forEach(dropdown => {
+            if (!dropdown.hasAttribute('data-consistent-style')) {
+                SearchableDropdown.enhanceSimple(dropdown);
+                dropdown.setAttribute('data-consistent-style', 'true');
+            }
+        });
         
-        // Apply consistent styling to interval dropdown
-        if (!intervalSelect.hasAttribute('data-consistent-style')) {
-            SearchableDropdown.enhanceSimple(intervalSelect);
-            intervalSelect.setAttribute('data-consistent-style', 'true');
+        // Make employee dropdown searchable
+        if (!employeeSelect.hasAttribute('data-searchable')) {
+            SearchableDropdown.enhance(employeeSelect);
+            employeeSelect.setAttribute('data-searchable', 'true');
         }
     }
 
@@ -112,7 +131,20 @@ document.addEventListener('DOMContentLoaded', function() {
         visualizationTypeSelect.addEventListener('change', function() {
             filters.visualizationType = this.value;
             updateVisibilityBasedOnType();
-            fetchAndRenderCharts(); // Add this line to fetch and render the selected chart type
+            fetchAndRenderCharts();
+        });
+        
+        // Visualization mode change
+        visualizationModeSelect.addEventListener('change', function() {
+            filters.visualizationMode = this.value;
+            updateVisibilityBasedOnMode();
+            fetchAndRenderCharts();
+        });
+        
+        // Dimension change (for heatmaps)
+        dimensionSelect.addEventListener('change', function() {
+            filters.dimension = this.value;
+            fetchAndRenderCharts();
         });
         
         // Department change - update employee dropdown
@@ -151,14 +183,53 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update chart visibility based on selected visualization type
     function updateVisibilityBasedOnType() {
-        if (filters.visualizationType === 'sentiment') {
-            sentimentVisualizationContainer.style.display = 'block';
-            impactVisualizationContainer.style.display = 'none';
+        if (filters.visualizationMode === 'trend') {
+            // Show the appropriate trend chart
+            if (filters.visualizationType === 'sentiment') {
+                sentimentVisualizationContainer.style.display = 'block';
+                impactVisualizationContainer.style.display = 'none';
+            } else {
+                sentimentVisualizationContainer.style.display = 'none';
+                impactVisualizationContainer.style.display = 'block';
+            }
+            
+            // Hide all heatmap visualizations
+            sentimentHeatmapContainer.style.display = 'none';
+            impactHeatmapContainer.style.display = 'none';
         } else {
+            // Hide all trend visualizations
             sentimentVisualizationContainer.style.display = 'none';
-            impactVisualizationContainer.style.display = 'block';
+            impactVisualizationContainer.style.display = 'none';
+            
+            // Show the appropriate heatmap
+            if (filters.visualizationType === 'sentiment') {
+                sentimentHeatmapContainer.style.display = 'block';
+                impactHeatmapContainer.style.display = 'none';
+            } else {
+                sentimentHeatmapContainer.style.display = 'none';
+                impactHeatmapContainer.style.display = 'block';
+            }
         }
+        
         noDataMessage.style.display = 'none';
+    }
+    
+    // Update UI based on visualization mode
+    function updateVisibilityBasedOnMode() {
+        // Show/hide filters based on mode
+        const trendOnlyElements = document.querySelectorAll('.trend-only');
+        const heatmapOnlyElements = document.querySelectorAll('.heatmap-only');
+        
+        if (filters.visualizationMode === 'trend') {
+            trendOnlyElements.forEach(el => el.style.display = 'block');
+            heatmapOnlyElements.forEach(el => el.style.display = 'none');
+        } else {
+            trendOnlyElements.forEach(el => el.style.display = 'none');
+            heatmapOnlyElements.forEach(el => el.style.display = 'block');
+        }
+        
+        // Update chart visibility based on type
+        updateVisibilityBasedOnType();
     }
 
     // Load departments for filter dropdown
@@ -216,18 +287,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 employeeSelect.appendChild(option);
             });
             
-            // Make the dropdown searchable if not already enhanced
+            // Update dropdown styling
             if (!employeeSelect.hasAttribute('data-searchable')) {
                 SearchableDropdown.enhance(employeeSelect);
             } else {
-                // Reset search if already enhanced
                 SearchableDropdown.resetSearch(employeeSelect);
             }
             
         } catch (error) {
             console.error('Error loading employees:', error);
             showError('Could not load employees. Please try again later.');
-            throw error; // Re-throw to be caught by caller
+            throw error;
         }
     }
 
@@ -248,14 +318,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Update visibility based on selected type
-            updateVisibilityBasedOnType();
+            // Update visibility based on selected type and mode
+            updateVisibilityBasedOnMode();
             
-            // Fetch and render the selected visualization type
-            if (filters.visualizationType === 'sentiment') {
-                await fetchAndRenderSentimentChart();
+            // Fetch and render based on mode and type
+            if (filters.visualizationMode === 'trend') {
+                if (filters.visualizationType === 'sentiment') {
+                    await fetchAndRenderSentimentTrend();
+                } else {
+                    await fetchAndRenderImpactTrend();
+                }
             } else {
-                await fetchAndRenderImpactChart();
+                // Heatmap mode
+                if (filters.visualizationType === 'sentiment') {
+                    await fetchAndRenderSentimentHeatmap();
+                } else {
+                    await fetchAndRenderImpactHeatmap();
+                }
             }
             
             showMessage('Chart updated successfully', 'success');
@@ -269,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Fetch and render sentiment trend chart
-    async function fetchAndRenderSentimentChart() {
+    async function fetchAndRenderSentimentTrend() {
         try {
             // Get the container and no-data message for sentiment
             const noDataElement = sentimentVisualizationContainer.querySelector('.no-data-message');
@@ -304,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Fetch and render impact trend chart
-    async function fetchAndRenderImpactChart() {
+    async function fetchAndRenderImpactTrend() {
         try {
             // Get the container and no-data message for impact
             const noDataElement = impactVisualizationContainer.querySelector('.no-data-message');
@@ -335,6 +414,74 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error fetching impact data:', error);
             throw error; // Let the main function handle the error
+        }
+    }
+    
+    // Fetch and render sentiment heatmap
+    async function fetchAndRenderSentimentHeatmap() {
+        try {
+            // Get the container and no-data message for sentiment heatmap
+            const noDataElement = sentimentHeatmapContainer.querySelector('.no-data-message');
+            noDataElement.style.display = 'none';
+            
+            // Fetch data from API
+            const heatmapData = await visualizationApi.getSentimentHeatmap(
+                filters.dimension,
+                filters.start_date,
+                filters.end_date,
+                filters.interval
+            );
+            
+            // Check if we have data
+            if (!heatmapData || !heatmapData.x_labels || heatmapData.x_labels.length === 0 || 
+                !heatmapData.y_labels || heatmapData.y_labels.length === 0) {
+                noDataElement.style.display = 'block';
+                // Clear existing heatmap if it exists
+                if (sentimentHeatmapChart) {
+                    Plotly.purge(sentimentHeatmapChart);
+                }
+                return;
+            }
+            
+            // Render heatmap
+            renderSentimentHeatmap(heatmapData);
+        } catch (error) {
+            console.error('Error fetching sentiment heatmap data:', error);
+            throw error;
+        }
+    }
+    
+    // Fetch and render impact heatmap
+    async function fetchAndRenderImpactHeatmap() {
+        try {
+            // Get the container and no-data message for impact heatmap
+            const noDataElement = impactHeatmapContainer.querySelector('.no-data-message');
+            noDataElement.style.display = 'none';
+            
+            // Fetch data from API
+            const heatmapData = await visualizationApi.getImpactHeatmap(
+                filters.dimension,
+                filters.start_date,
+                filters.end_date,
+                filters.interval
+            );
+            
+            // Check if we have data
+            if (!heatmapData || !heatmapData.x_labels || heatmapData.x_labels.length === 0 || 
+                !heatmapData.y_labels || heatmapData.y_labels.length === 0) {
+                noDataElement.style.display = 'block';
+                // Clear existing heatmap if it exists
+                if (impactHeatmapChart) {
+                    Plotly.purge(impactHeatmapChart);
+                }
+                return;
+            }
+            
+            // Render heatmap
+            renderImpactHeatmap(heatmapData);
+        } catch (error) {
+            console.error('Error fetching impact heatmap data:', error);
+            throw error;
         }
     }
 
@@ -560,16 +707,254 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create the chart
         impactChart = new Chart(impactTrendChart, config);
     }
+    
+    // Render sentiment heatmap using Plotly
+    function renderSentimentHeatmap(data) {
+        // Process data for Plotly format
+        const plotlyData = processPlotlyHeatmapData(data, true); // true for sentiment
+        
+        // Calculate container width for responsive sizing
+        const containerWidth = sentimentHeatmapChart.parentElement.offsetWidth;
+        
+        const layout = {
+            title: `Sentiment Scores by ${filters.dimension === 'department' ? 'Department' : 'Employee'}`,
+            xaxis: {
+                title: 'Time Period',
+                tickangle: 45,
+                tickformat: '%b %Y', // Format to show month and year
+                tickfont: {
+                    size: 10
+                },
+                automargin: true
+            },
+            yaxis: {
+                title: filters.dimension === 'department' ? 'Department' : 'Employee',
+                automargin: true,
+                tickfont: {
+                    size: 11
+                }
+            },
+            margin: {
+                l: 180, // Increased left margin for y-axis labels
+                r: 50,  // Right margin
+                b: 120, // Increased bottom margin for x-axis labels
+                t: 60   // Top margin for title
+            },
+            width: containerWidth - 40, // Dynamic width with padding
+            height: Math.max(containerWidth * 0.6, 450), // Dynamic height based on width
+            hovermode: 'closest',
+            annotations: [{
+                text: "Sentiment Scale: Red (Negative) to Green (Positive)",
+                showarrow: false,
+                xref: 'paper',
+                yref: 'paper',
+                x: 0,
+                y: -0.2, // Moved down to avoid overlap
+                font: {
+                    size: 12
+                }
+            }]
+        };
+
+        const config = {
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d']
+        };
+
+        // Clear existing chart if any
+        Plotly.purge(sentimentHeatmapChart);
+        
+        // Create new chart
+        Plotly.newPlot(sentimentHeatmapChart, [plotlyData], layout, config);
+        
+        // Store reference to the chart element (not the chart instance)
+        sentimentHeatmap = sentimentHeatmapChart;
+
+        // Add responsive behavior
+        window.addEventListener('resize', function() {
+            const newWidth = sentimentHeatmapChart.parentElement.offsetWidth - 40;
+            Plotly.relayout(sentimentHeatmapChart, {
+                width: newWidth,
+                height: Math.max(newWidth * 0.6, 450)
+            });
+        });
+    }
+    
+    // Render impact score heatmap using Plotly
+    function renderImpactHeatmap(data) {
+        // Process data for Plotly format
+        const plotlyData = processPlotlyHeatmapData(data, false); // false for impact scores
+        
+        // Calculate container width for responsive sizing
+        const containerWidth = impactHeatmapChart.parentElement.offsetWidth;
+        
+        const layout = {
+            title: `Impact Scores by ${filters.dimension === 'department' ? 'Department' : 'Employee'}`,
+            xaxis: {
+                title: 'Time Period',
+                tickangle: 45,
+                tickformat: '%b %Y', // Format to show month and year
+                tickfont: {
+                    size: 10
+                },
+                automargin: true
+            },
+            yaxis: {
+                title: filters.dimension === 'department' ? 'Department' : 'Employee',
+                automargin: true,
+                tickfont: {
+                    size: 11
+                }
+            },
+            margin: {
+                l: 180, // Increased left margin for y-axis labels
+                r: 50,  // Right margin
+                b: 120, // Increased bottom margin for x-axis labels
+                t: 60   // Top margin for title
+            },
+            width: containerWidth - 40, // Dynamic width with padding
+            height: Math.max(containerWidth * 0.6, 450), // Dynamic height based on width
+            hovermode: 'closest',
+            annotations: [{
+                text: "Impact Scale: Light (Low) to Dark (High)",
+                showarrow: false,
+                xref: 'paper',
+                yref: 'paper',
+                x: 0,
+                y: -0.2, // Moved down to avoid overlap
+                font: {
+                    size: 12
+                }
+            }]
+        };
+
+        const config = {
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d']
+        };
+
+        // Clear existing chart if any
+        Plotly.purge(impactHeatmapChart);
+        
+        // Create new chart
+        Plotly.newPlot(impactHeatmapChart, [plotlyData], layout, config);
+        
+        // Store reference to the chart element (not the chart instance)
+        impactHeatmap = impactHeatmapChart;
+
+        // Add responsive behavior
+        window.addEventListener('resize', function() {
+            const newWidth = impactHeatmapChart.parentElement.offsetWidth - 40;
+            Plotly.relayout(impactHeatmapChart, {
+                width: newWidth,
+                height: Math.max(newWidth * 0.6, 450)
+            });
+        });
+    }
+    
+    // Process heatmap data for Plotly format
+    function processPlotlyHeatmapData(data, isSentiment = true) {
+        // Extract data from the API response
+        const xLabels = data.x_labels;
+        const yLabels = data.y_labels;
+        const cells = data.cells;
+        const metadata = data.metadata;
+        
+        // Create a 2D array filled with nulls for z values
+        const zValues = Array(yLabels.length).fill().map(() => Array(xLabels.length).fill(null));
+        
+        // Fill in the values from the cells
+        cells.forEach(cell => {
+            zValues[cell.y][cell.x] = cell.value;
+        });
+        
+        // Set up color scale based on data type with more intermediate stops for subtle transitions
+        let colorscale;
+        if (isSentiment) {
+            // Enhanced sentiment color scale with more intermediate stops (Red -> Yellow -> Green)
+            colorscale = [
+                [0, 'rgb(231, 76, 60)'],       // Negative (red)
+                [0.15, 'rgb(237, 116, 58)'],   // Added intermediate
+                [0.3, 'rgb(243, 156, 18)'],    // Neutral-low (orange)
+                [0.4, 'rgb(242, 176, 16)'],    // Added intermediate
+                [0.5, 'rgb(241, 196, 15)'],    // Neutral (yellow)
+                [0.6, 'rgb(202, 200, 42)'],    // Added intermediate
+                [0.7, 'rgb(142, 204, 57)'],    // Neutral-high (light green)
+                [0.85, 'rgb(88, 189, 76)'],    // Added intermediate
+                [1, 'rgb(39, 174, 96)']        // Positive (green)
+            ];
+        } else {
+            // Enhanced impact color scale with more intermediate stops (purple gradient)
+            colorscale = [
+                [0, 'rgb(158, 118, 180)'],     // Low impact (light purple)
+                [0.15, 'rgb(145, 97, 169)'],   // Added intermediate
+                [0.3, 'rgb(123, 58, 150)'],    // Medium-low
+                [0.5, 'rgb(109, 47, 141)'],    // Added intermediate
+                [0.7, 'rgb(95, 37, 132)'],     // Medium-high
+                [0.85, 'rgb(81, 30, 115)'],    // Added intermediate
+                [1, 'rgb(68, 24, 98)']         // High impact (dark purple)
+            ];
+        }
+        
+        // Configure hover text format with better formatting
+        let hovertemplate;
+        if (isSentiment) {
+            hovertemplate = 
+                '<b>%{y}</b><br>' +
+                'Time: %{x}<br>' +
+                'Sentiment: %{z:.2f}<br>' +
+                '<extra></extra>';
+        } else {
+            hovertemplate = 
+                '<b>%{y}</b><br>' +
+                'Time: %{x}<br>' +
+                'Impact: %{z:.2f}<br>' +
+                '<extra></extra>';
+        }
+        
+        // Return Plotly heatmap trace
+        return {
+            type: 'heatmap',
+            z: zValues,
+            x: xLabels,
+            y: yLabels,
+            colorscale: colorscale,
+            showscale: true,
+            colorbar: {
+                title: isSentiment ? 'Sentiment Score' : 'Impact Score',
+                titleside: 'right',
+                titlefont: {
+                    size: 14
+                },
+                len: 0.9 // Adjusted length of colorbar
+            },
+            hovertemplate: hovertemplate,
+            zmin: isSentiment ? 0 : metadata.min,
+            zmax: isSentiment ? 1 : metadata.max
+        };
+    }
 
     // Reset all filters to default
     function resetFilters() {
-        // Reset department and employee selections
-        departmentSelect.value = '';
-        filters.department = '';
+        // Reset mode to trend
+        visualizationModeSelect.value = 'trend';
+        filters.visualizationMode = 'trend';
         
         // Reset visualization type to sentiment
         visualizationTypeSelect.value = 'sentiment';
         filters.visualizationType = 'sentiment';
+        
+        // Reset department and employee filters
+        departmentSelect.value = '';
+        filters.department = '';
+        
+        // Reset dimension to department
+        dimensionSelect.value = 'department';
+        filters.dimension = 'department';
         
         // Reload all employees
         loadEmployees();
@@ -590,7 +975,7 @@ document.addEventListener('DOMContentLoaded', function() {
         filters.end_date = endDateInput.value;
         
         // Update UI based on visualization type
-        updateVisibilityBasedOnType();
+        updateVisibilityBasedOnMode();
         
         // Fetch data with reset filters
         fetchAndRenderCharts();

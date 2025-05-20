@@ -4,7 +4,7 @@ Visualization Service
 Provides data aggregation and transformation functions for visualizations.
 This service acts as a layer between the raw data and visualization endpoints.
 """
-from typing import Dict, List, Optional, Tuple, Any, Union
+from typing import Dict, List, Optional, Tuple, Any, Union, Callable
 from datetime import datetime, timedelta, date
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
@@ -21,132 +21,76 @@ _cache = {}
 _cache_expiry = {}
 DEFAULT_CACHE_SECONDS = 300  # 5 minutes
 
-def get_sentiment_trends(
-    db: Session,  # Add db session parameter
-    employee_id: Optional[int] = None,
-    department: Optional[str] = None,
-    start_date: Optional[date] = None,  # Changed from datetime to date
-    end_date: Optional[date] = None,    # Changed from datetime to date
-    interval: str = "month",
-    cache_ttl: int = DEFAULT_CACHE_SECONDS
-) -> Dict[str, Any]:
-    """
-    Get sentiment trends over time, optionally filtered by employee, department, and date range.
-    
-    Args:
-        db: SQLAlchemy database session.
-        employee_id: Optional filter for a specific employee
-        department: Optional filter for a specific department/wing
-        start_date: Optional start date for the trend analysis
-        end_date: Optional end date for the trend analysis
-        interval: Time grouping interval ('day', 'week', 'month', 'quarter', 'year')
-        cache_ttl: Cache time-to-live in seconds
-        
-    Returns:
-        Dictionary with sentiment trend data ready for visualization
-    """
-    # Generate cache key based on parameters
-    cache_key = f"sentiment_trends_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
-    
-    # Check if we have cached results
+def _get_from_cache(cache_key: str) -> Optional[Dict[str, Any]]:
+    """Get data from cache if available and not expired."""
     if cache_key in _cache and _cache_expiry.get(cache_key, 0) > datetime.now().timestamp():
-        logger.debug(f"Using cached sentiment trends for key: {cache_key}")
+        logger.debug(f"Using cached data for key: {cache_key}")
         return _cache[cache_key]
-    
-    logger.info(f"Calculating sentiment trends with interval={interval}")
-    
-    # Simplify date handling - only use date components, ignore time
-    if isinstance(start_date, str):
-        try:
-            start_date = datetime.strptime(start_date.split('T')[0].split(' ')[0], "%Y-%m-%d").date()
-        except ValueError:
-            logger.warning(f"Could not parse start_date: {start_date}, ignoring filter")
-            start_date = None
-    elif isinstance(start_date, datetime):  # Handle if datetime object is somehow passed
-        start_date = start_date.date()
+    return None
 
-    if isinstance(end_date, str):
-        try:
-            end_date = datetime.strptime(end_date.split('T')[0].split(' ')[0], "%Y-%m-%d").date()
-        except ValueError:
-            logger.warning(f"Could not parse end_date: {end_date}, ignoring filter")
-            end_date = None
-    elif isinstance(end_date, datetime):  # Handle if datetime object is somehow passed
-        end_date = end_date.date()
-                   
-    # Base query for employee analyses
-    query = db.query(  
-        Report.report_date.label('report_date'),  
-        EmployeeAnalysis.sentiment_score,
-        Report.employee_id,
-        Employee.wing
-    ).join(
-        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id 
-    ).join(
-        Employee, Report.employee_id == Employee.id
-    )
+def _store_in_cache(cache_key: str, data: Dict[str, Any], ttl: int = DEFAULT_CACHE_SECONDS) -> None:
+    """Store data in cache with expiration."""
+    _cache[cache_key] = data
+    _cache_expiry[cache_key] = datetime.now().timestamp() + ttl
+    logger.debug(f"Stored data in cache with key: {cache_key}, expires in {ttl}s")
+
+def _parse_date(date_value: Any) -> Optional[date]:
+    """Parse date from various formats."""
+    if not date_value:
+        return None
         
-    # Apply filters with null-safety
+    if isinstance(date_value, date):
+        return date_value
+        
+    if isinstance(date_value, datetime):
+        return date_value.date()
+        
+    if isinstance(date_value, str):
+        try:
+            return datetime.strptime(date_value.split('T')[0].split(' ')[0], "%Y-%m-%d").date()
+        except ValueError:
+            logger.warning(f"Could not parse date: {date_value}, ignoring filter")
+            return None
+            
+    logger.warning(f"Unexpected date format: {type(date_value)}, ignoring filter")
+    return None
+
+def _format_time_period(report_date: date, interval: str) -> str:
+    """Format a date into a period string based on the interval."""
+    if interval == 'day':
+        return report_date.strftime('%Y-%m-%d')
+    elif interval == 'week':
+        return f"{report_date.year}-W{report_date.isocalendar()[1]}"
+    elif interval == 'month':
+        return report_date.strftime('%Y-%m')
+    elif interval == 'quarter':
+        quarter = (report_date.month - 1) // 3 + 1
+        return f"{report_date.year}-Q{quarter}"
+    else:  # year
+        return str(report_date.year)
+
+def _apply_common_filters(query, employee_id, department, start_date, end_date):
+    """Apply common filters to a query."""
+    # Filter by employee
     if employee_id:
         try:
             employee_id = int(employee_id) if not isinstance(employee_id, int) else employee_id
             query = query.filter(Report.employee_id == employee_id)
         except (ValueError, TypeError):
             logger.warning(f"Invalid employee_id format: {employee_id}, ignoring filter")
-        
+    
+    # Filter by department
     if department:
         query = query.filter(Employee.wing == department)
-            
-    # Filter by report date instead of analysis date
+    
+    # Filter by date range
     if start_date:
         query = query.filter(Report.report_date >= start_date)
-            
+    
     if end_date:
         query = query.filter(Report.report_date <= end_date)
-        
-    # Group by time interval and get average sentiment
-    # Pass report_date as the column name to group by
-    results = _group_by_time_interval(query, interval, "report_date")
-        
-    # Process results into visualization-ready format
-    time_periods = []
-    sentiment_values = []
-        
-    for period, avg_sentiment in results:
-        if interval == 'day':
-            formatted_period = period.strftime('%Y-%m-%d')
-        elif interval == 'week':
-            formatted_period = f"{period.year}-W{period.isocalendar()[1]}"
-        elif interval == 'month':
-            formatted_period = period.strftime('%Y-%m')
-        elif interval == 'quarter':
-            quarter = (period.month - 1) // 3 + 1
-            formatted_period = f"{period.year}-Q{quarter}"
-        else:  # year
-            formatted_period = str(period.year)
-                
-        time_periods.append(formatted_period)
-        sentiment_values.append(round(avg_sentiment, 2))
-            
-    # Prepare result dictionary
-    trend_data = {
-        "labels": time_periods,
-        "datasets": [{
-            "label": "Average Sentiment",
-            "data": sentiment_values,
-            "metadata": {
-                "min": min(sentiment_values) if sentiment_values else 0,
-                "max": max(sentiment_values) if sentiment_values else 0,
-                "avg": round(sum(sentiment_values) / len(sentiment_values), 2) if sentiment_values else 0
-            }
-        }]
-    }
-        
-    # Cache the result
-    _cache[cache_key] = trend_data
-    _cache_expiry[cache_key] = datetime.now().timestamp() + cache_ttl
-        
-    return trend_data
+    
+    return query
 
 def _group_by_time_interval(query, interval: str, date_column_name: str):
     """
@@ -203,41 +147,123 @@ def _group_by_time_interval(query, interval: str, date_column_name: str):
             func.avg(EmployeeAnalysis.sentiment_score)
         )
 
-def clear_cache(prefix: Optional[str] = None):
+def _build_trend_response(labels: List[str], data: List[float], dataset_label: str) -> Dict[str, Any]:
+    """Build a standardized trend response object."""
+    return {
+        "labels": labels,
+        "datasets": [{
+            "label": dataset_label,
+            "data": data,
+            "metadata": {
+                "min": min(data) if data else 0,
+                "max": max(data) if data else 0,
+                "avg": round(sum(data) / len(data), 2) if data else 0
+            }
+        }]
+    }
+
+def _sort_time_periods(periods: List[str], interval: str) -> List[str]:
     """
-    Clear visualization cache, optionally filtered by key prefix.
+    Sort time periods chronologically rather than alphabetically.
     
     Args:
-        prefix: Optional prefix to selectively clear cache entries
+        periods: List of period strings formatted by _format_time_period
+        interval: The interval type used ('day', 'week', 'month', 'quarter', 'year')
+        
+    Returns:
+        List of period strings in correct chronological order
     """
-    global _cache, _cache_expiry
+    if not periods:
+        return []
     
-    if prefix:
-        # Selectively clear cache entries that start with prefix
-        keys_to_remove = [k for k in _cache.keys() if k.startswith(prefix)]
-        for key in keys_to_remove:
-            _cache.pop(key, None)
-            _cache_expiry.pop(key, None)
-        logger.info(f"Cleared {len(keys_to_remove)} cache entries with prefix '{prefix}'")
-    else:
-        # Clear all cache
-        _cache = {}
-        _cache_expiry = {}
-        logger.info("Cleared entire visualization cache")
+    # Define a function to convert period strings back to sortable values
+    def period_to_sortable(period: str) -> tuple:
+        if interval == 'day':
+            # Format: 'YYYY-MM-DD'
+            year, month, day = period.split('-')
+            return (int(year), int(month), int(day))
+        elif interval == 'week':
+            # Format: 'YYYY-WNN'
+            year, week_part = period.split('-W')
+            return (int(year), int(week_part))
+        elif interval == 'month':
+            # Format: 'YYYY-MM'
+            year, month = period.split('-')
+            return (int(year), int(month))
+        elif interval == 'quarter':
+            # Format: 'YYYY-QN'
+            year, quarter_part = period.split('-Q')
+            return (int(year), int(quarter_part))
+        else:  # year
+            # Format: 'YYYY'
+            return (int(period), 0)
+    
+    # Sort using the conversion function
+    return sorted(periods, key=period_to_sortable)
+
+def get_sentiment_trends(
+    db: Session,
+    employee_id: Optional[int] = None,
+    department: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    interval: str = "month",
+    cache_ttl: int = DEFAULT_CACHE_SECONDS
+) -> Dict[str, Any]:
+    """
+    Get sentiment trends over time, optionally filtered by employee, department, and date range.
+    """
+    # Generate cache key
+    cache_key = f"sentiment_trends_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
+    
+    # Check cache first
+    cached_data = _get_from_cache(cache_key)
+    if cached_data:
+        return cached_data
+    
+    logger.info(f"Calculating sentiment trends with interval={interval}")
+    
+    # Parse dates
+    start_date = _parse_date(start_date)
+    end_date = _parse_date(end_date)
+    
+    # Base query
+    query = db.query(  
+        Report.report_date.label('report_date'),  
+        EmployeeAnalysis.sentiment_score,
+        Report.employee_id,
+        Employee.wing
+    ).join(
+        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id 
+    ).join(
+        Employee, Report.employee_id == Employee.id
+    )
+    
+    # Apply filters
+    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
+    
+    # Group by time interval
+    results = _group_by_time_interval(query, interval, "report_date")
+    
+    # Process results
+    time_periods = []
+    sentiment_values = []
+    
+    for period, avg_sentiment in results:
+        formatted_period = _format_time_period(period, interval)
+        time_periods.append(formatted_period)
+        sentiment_values.append(round(avg_sentiment, 2))
+    
+    # Build response
+    trend_data = _build_trend_response(time_periods, sentiment_values, "Average Sentiment")
+    
+    # Cache result
+    _store_in_cache(cache_key, trend_data, cache_ttl)
+    
+    return trend_data
 
 def extract_impact_score(impact_str: str) -> Optional[float]:
-    """
-    Extract numeric impact score from differently formatted impact strings.
-    
-    Args:
-        impact_str: String containing the impact score in different formats:
-                   "6 (Brief reason)" or "9/10" or just "9" or
-                   "It has a high impact (8) on the team level..." or
-                   "Elevated the quality of reports (Impact rating: 8)"
-                   
-    Returns:
-        Extracted numeric impact score as a float, or None if extraction fails
-    """
+    """Extract numeric impact score from differently formatted impact strings."""
     if not impact_str or not isinstance(impact_str, str):
         return None
     
@@ -281,49 +307,22 @@ def get_impact_score_trends(
 ) -> Dict[str, Any]:
     """
     Get average impact score trends over time, optionally filtered by employee, department, and date range.
-    
-    Args:
-        db: SQLAlchemy database session
-        employee_id: Optional filter for a specific employee
-        department: Optional filter for a specific department/wing
-        start_date: Optional start date for the trend analysis
-        end_date: Optional end date for the trend analysis
-        interval: Time grouping interval ('day', 'week', 'month', 'quarter', 'year')
-        cache_ttl: Cache time-to-live in seconds
-        
-    Returns:
-        Dictionary with impact score trend data ready for visualization
     """
-    # Generate cache key based on parameters
+    # Generate cache key
     cache_key = f"impact_trends_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
     
-    # Check if we have cached results
-    if cache_key in _cache and _cache_expiry.get(cache_key, 0) > datetime.now().timestamp():
-        logger.debug(f"Using cached impact trends for key: {cache_key}")
-        return _cache[cache_key]
+    # Check cache first
+    cached_data = _get_from_cache(cache_key)
+    if cached_data:
+        return cached_data
     
     logger.info(f"Calculating impact score trends with interval={interval}")
     
-    # Handle date parameters
-    if isinstance(start_date, str):
-        try:
-            start_date = datetime.strptime(start_date.split('T')[0].split(' ')[0], "%Y-%m-%d").date()
-        except ValueError:
-            logger.warning(f"Could not parse start_date: {start_date}, ignoring filter")
-            start_date = None
-    elif isinstance(start_date, datetime):
-        start_date = start_date.date()
-
-    if isinstance(end_date, str):
-        try:
-            end_date = datetime.strptime(end_date.split('T')[0].split(' ')[0], "%Y-%m-%d").date()
-        except ValueError:
-            logger.warning(f"Could not parse end_date: {end_date}, ignoring filter")
-            end_date = None
-    elif isinstance(end_date, datetime):
-        end_date = end_date.date()
+    # Parse dates
+    start_date = _parse_date(start_date)
+    end_date = _parse_date(end_date)
     
-    # Base query for employee analyses with achievements
+    # Base query
     query = db.query(
         Report.report_date.label('report_date'),
         EmployeeAnalysis.achievements_json,
@@ -336,21 +335,7 @@ def get_impact_score_trends(
     ).filter(EmployeeAnalysis.achievements_json.isnot(None))
     
     # Apply filters
-    if employee_id:
-        try:
-            employee_id = int(employee_id) if not isinstance(employee_id, int) else employee_id
-            query = query.filter(Report.employee_id == employee_id)
-        except (ValueError, TypeError):
-            logger.warning(f"Invalid employee_id format: {employee_id}, ignoring filter")
-    
-    if department:
-        query = query.filter(Employee.wing == department)
-    
-    if start_date:
-        query = query.filter(Report.report_date >= start_date)
-    
-    if end_date:
-        query = query.filter(Report.report_date <= end_date)
+    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
     
     # Calculate average impact score per time period
     results_by_period = {}
@@ -360,17 +345,7 @@ def get_impact_score_trends(
             continue
         
         # Determine period based on interval
-        if interval == 'day':
-            period = report_date.strftime('%Y-%m-%d')
-        elif interval == 'week':
-            period = f"{report_date.year}-W{report_date.isocalendar()[1]}"
-        elif interval == 'month':
-            period = report_date.strftime('%Y-%m')
-        elif interval == 'quarter':
-            quarter = (report_date.month - 1) // 3 + 1
-            period = f"{report_date.year}-Q{quarter}"
-        else:  # year
-            period = str(report_date.year)
+        period = _format_time_period(report_date, interval)
         
         # Extract impact scores from achievements
         impact_scores = []
@@ -401,22 +376,310 @@ def get_impact_score_trends(
         time_periods.append(period)
         impact_values.append(avg_impact)
     
-    # Prepare result dictionary
-    trend_data = {
-        "labels": time_periods,
-        "datasets": [{
-            "label": "Average Impact Score",
-            "data": impact_values,
-            "metadata": {
-                "min": min(impact_values) if impact_values else 0,
-                "max": max(impact_values) if impact_values else 0,
-                "avg": round(sum(impact_values) / len(impact_values), 2) if impact_values else 0
-            }
-        }]
-    }
+    # Build response
+    trend_data = _build_trend_response(time_periods, impact_values, "Average Impact Score")
     
-    # Cache the result
-    _cache[cache_key] = trend_data
-    _cache_expiry[cache_key] = datetime.now().timestamp() + cache_ttl
+    # Cache result
+    _store_in_cache(cache_key, trend_data, cache_ttl)
     
     return trend_data
+
+def get_sentiment_heatmap(
+    db: Session,
+    dimension: str = "department",  # Options: "department", "employee"
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    interval: str = "month",
+    cache_ttl: int = DEFAULT_CACHE_SECONDS
+) -> Dict[str, Any]:
+    """
+    Generate a heatmap of sentiment scores across time and another dimension (department or employee).
+    
+    Args:
+        db: Database session
+        dimension: The dimension to use for y-axis ("department" or "employee")
+        start_date: Optional start date for filtering
+        end_date: Optional end date for filtering
+        interval: Time interval for x-axis
+        cache_ttl: Cache time-to-live
+        
+    Returns:
+        Heatmap data with x_labels (time periods), y_labels (departments/employees),
+        and cells with x,y coordinates and values
+    """
+    # Generate cache key
+    cache_key = f"sentiment_heatmap_{dimension}_{start_date}_{end_date}_{interval}"
+    
+    # Check cache first
+    cached_data = _get_from_cache(cache_key)
+    if cached_data:
+        return cached_data
+    
+    logger.info(f"Generating sentiment heatmap with dimension={dimension}, interval={interval}")
+    
+    # Parse dates
+    start_date = _parse_date(start_date)
+    end_date = _parse_date(end_date)
+    
+    # Base query
+    query = db.query(
+        Report.report_date,
+        EmployeeAnalysis.sentiment_score,
+        Employee.wing.label('department'),
+        Employee.id.label('employee_id'),
+        Employee.name.label('employee_name')
+    ).join(
+        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id
+    ).join(
+        Employee, Report.employee_id == Employee.id
+    )
+    
+    # Apply date filters
+    if start_date:
+        query = query.filter(Report.report_date >= start_date)
+    
+    if end_date:
+        query = query.filter(Report.report_date <= end_date)
+    
+    # Collect data organized by time period and dimension
+    data_points = {}
+    time_periods = set()
+    dimension_values = set()
+    
+    for report_date, sentiment, department, employee_id, employee_name in query.all():
+        # Format time period
+        period = _format_time_period(report_date, interval)
+        time_periods.add(period)
+        
+        # Determine dimension value
+        if dimension == "department":
+            dim_value = department
+        else:  # employee
+            dim_value = f"{employee_name} (#{employee_id})"
+        
+        dimension_values.add(dim_value)
+        
+        # Store data point
+        if period not in data_points:
+            data_points[period] = {}
+        
+        if dim_value not in data_points[period]:
+            data_points[period][dim_value] = []
+            
+        data_points[period][dim_value].append(sentiment)
+    
+    # Sort the dimension values and time periods
+    sorted_time_periods = _sort_time_periods(list(time_periods), interval)
+    sorted_dimension_values = sorted(dimension_values)
+    
+    # Create mapping dictionaries for indices
+    time_period_indices = {period: i for i, period in enumerate(sorted_time_periods)}
+    dimension_indices = {dim: i for i, dim in enumerate(sorted_dimension_values)}
+    
+    # Calculate average values and create cells
+    cells = []
+    all_values = []
+    
+    for period, dim_values in data_points.items():
+        x_idx = time_period_indices[period]
+        
+        for dim_value, sentiments in dim_values.items():
+            y_idx = dimension_indices[dim_value]
+            avg_sentiment = round(sum(sentiments) / len(sentiments), 2)
+            
+            cells.append({
+                "x": x_idx,
+                "y": y_idx,
+                "value": avg_sentiment
+            })
+            
+            all_values.append(avg_sentiment)
+    
+    # Calculate metadata
+    min_val = min(all_values) if all_values else 0
+    max_val = max(all_values) if all_values else 0
+    avg_val = round(sum(all_values) / len(all_values), 2) if all_values else 0
+    
+    # Build response
+    heatmap_data = {
+        "x_labels": sorted_time_periods,
+        "y_labels": sorted_dimension_values,
+        "cells": cells,
+        "metadata": {
+            "min": min_val,
+            "max": max_val,
+            "avg": avg_val
+        }
+    }
+    
+    # Cache result
+    _store_in_cache(cache_key, heatmap_data, cache_ttl)
+    
+    return heatmap_data
+
+def get_impact_score_heatmap(
+    db: Session,
+    dimension: str = "department",  # Options: "department", "employee"
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    interval: str = "month",
+    cache_ttl: int = DEFAULT_CACHE_SECONDS
+) -> Dict[str, Any]:
+    """
+    Generate a heatmap of impact scores across time and another dimension (department or employee).
+    
+    Args:
+        db: Database session
+        dimension: The dimension to use for y-axis ("department" or "employee")
+        start_date: Optional start date for filtering
+        end_date: Optional end date for filtering
+        interval: Time interval for x-axis
+        cache_ttl: Cache time-to-live
+        
+    Returns:
+        Heatmap data with x_labels (time periods), y_labels (departments/employees),
+        and cells with x,y coordinates and values
+    """
+    # Generate cache key
+    cache_key = f"impact_heatmap_{dimension}_{start_date}_{end_date}_{interval}"
+    
+    # Check cache first
+    cached_data = _get_from_cache(cache_key)
+    if cached_data:
+        return cached_data
+    
+    logger.info(f"Generating impact score heatmap with dimension={dimension}, interval={interval}")
+    
+    # Parse dates
+    start_date = _parse_date(start_date)
+    end_date = _parse_date(end_date)
+    
+    # Base query
+    query = db.query(
+        Report.report_date,
+        EmployeeAnalysis.achievements_json,
+        Employee.wing.label('department'),
+        Employee.id.label('employee_id'),
+        Employee.name.label('employee_name')
+    ).join(
+        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id
+    ).join(
+        Employee, Report.employee_id == Employee.id
+    ).filter(EmployeeAnalysis.achievements_json.isnot(None))
+    
+    # Apply date filters
+    if start_date:
+        query = query.filter(Report.report_date >= start_date)
+    
+    if end_date:
+        query = query.filter(Report.report_date <= end_date)
+    
+    # Collect data organized by time period and dimension
+    data_points = {}
+    time_periods = set()
+    dimension_values = set()
+    
+    for report_date, achievements_json, department, employee_id, employee_name in query.all():
+        # Skip if no achievements
+        if not achievements_json:
+            continue
+        
+        # Format time period
+        period = _format_time_period(report_date, interval)
+        time_periods.add(period)
+        
+        # Determine dimension value
+        if dimension == "department":
+            dim_value = department
+        else:  # employee
+            dim_value = f"{employee_name} (#{employee_id})"
+        
+        dimension_values.add(dim_value)
+        
+        # Extract impact scores
+        impact_scores = []
+        for achievement in achievements_json:
+            if not isinstance(achievement, dict) or 'impact' not in achievement:
+                continue
+                
+            impact_score = extract_impact_score(achievement['impact'])
+            if impact_score is not None:
+                impact_scores.append(impact_score)
+        
+        # Store data point if we have scores
+        if impact_scores:
+            if period not in data_points:
+                data_points[period] = {}
+            
+            if dim_value not in data_points[period]:
+                data_points[period][dim_value] = []
+                
+            data_points[period][dim_value].extend(impact_scores)
+    
+    # Sort the dimension values and time periods
+    sorted_time_periods = _sort_time_periods(list(time_periods), interval)
+    sorted_dimension_values = sorted(dimension_values)
+    
+    # Create mapping dictionaries for indices
+    time_period_indices = {period: i for i, period in enumerate(sorted_time_periods)}
+    dimension_indices = {dim: i for i, dim in enumerate(sorted_dimension_values)}
+    
+    # Calculate average values and create cells
+    cells = []
+    all_values = []
+    
+    for period, dim_values in data_points.items():
+        x_idx = time_period_indices[period]
+        
+        for dim_value, scores in dim_values.items():
+            y_idx = dimension_indices[dim_value]
+            avg_score = round(sum(scores) / len(scores), 2)
+            
+            cells.append({
+                "x": x_idx,
+                "y": y_idx,
+                "value": avg_score
+            })
+            
+            all_values.append(avg_score)
+    
+    # Calculate metadata
+    min_val = min(all_values) if all_values else 0
+    max_val = max(all_values) if all_values else 0
+    avg_val = round(sum(all_values) / len(all_values), 2) if all_values else 0
+    
+    # Build response
+    heatmap_data = {
+        "x_labels": sorted_time_periods,
+        "y_labels": sorted_dimension_values,
+        "cells": cells,
+        "metadata": {
+            "min": min_val,
+            "max": max_val,
+            "avg": avg_val
+        }
+    }
+    
+    # Cache result
+    _store_in_cache(cache_key, heatmap_data, cache_ttl)
+    
+    return heatmap_data
+
+def clear_cache(prefix: Optional[str] = None):
+    """
+    Clear visualization cache, optionally filtered by key prefix.
+    """
+    global _cache, _cache_expiry
+    
+    if prefix:
+        # Selectively clear cache entries that start with prefix
+        keys_to_remove = [k for k in _cache.keys() if k.startswith(prefix)]
+        for key in keys_to_remove:
+            _cache.pop(key, None)
+            _cache_expiry.pop(key, None)
+        logger.info(f"Cleared {len(keys_to_remove)} cache entries with prefix '{prefix}'")
+    else:
+        # Clear all cache
+        _cache = {}
+        _cache_expiry = {}
+        logger.info("Cleared entire visualization cache")

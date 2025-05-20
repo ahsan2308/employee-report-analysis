@@ -18,4 +18,22 @@ class SentimentTrendResponse(BaseModel):
     labels: List[str]
     datasets: List[TrendDataset]
 
-# Add other visualization response schemas here as needed
+# Heatmap-related models
+class HeatmapCell(BaseModel):
+    """Represents a single cell in a heatmap."""
+    x: int  # X coordinate/index  
+    y: int  # Y coordinate/index
+    value: float  # Value determining cell color
+
+class HeatmapMetadata(BaseModel):
+    """Metadata associated with a heatmap."""
+    min: float
+    max: float
+    avg: float
+
+class HeatmapResponse(BaseModel):
+    """Response model for heatmap visualization data."""
+    x_labels: List[str]  # Labels for x-axis (e.g., time periods)
+    y_labels: List[str]  # Labels for y-axis (e.g., employees, departments)
+    cells: List[HeatmapCell]  # Cell data
+    metadata: HeatmapMetadata  # Metadata like min, max, avg values
