@@ -80,7 +80,7 @@ def analyze_report_task(self, task_id: str):
         # Get LLM service and generate analysis
         logger.info(f"Calling LLM service for analysis (task: {task_id})")
         llm_service = get_llm_service()
-        analysis_result = llm_service.analyze_report(report.report_text, similar_texts, num_ctx=32768)
+        analysis_result = llm_service.analyze_report(report.report_text, similar_texts, num_ctx=40000)
         
         # Extract key fields
         sentiment = analysis_result.get("sentiment", "neutral")
@@ -90,6 +90,13 @@ def analyze_report_task(self, task_id: str):
         achievements = analysis_result.get("achievements", [])
         challenges = analysis_result.get("challenges", [])
         action_items = analysis_result.get("action_items", [])
+        
+        # Extract credibility assessment fields
+        credibility_assessment = analysis_result.get("credibility_assessment", {})
+        credibility_rating = credibility_assessment.get("rating", "medium")
+        credibility_explanation = credibility_assessment.get("explanation", "")
+        exaggeration_flags = credibility_assessment.get("exaggeration_flags", [])
+        consistency_score = credibility_assessment.get("consistency_score", "medium")
         
         # Calculate sentiment score
         sentiment_score = 0.0
@@ -113,7 +120,11 @@ def analyze_report_task(self, task_id: str):
                 achievements_json=achievements,
                 challenges_json=challenges,
                 topics=topics,
-                action_items=action_items
+                action_items=action_items,
+                credibility_rating=credibility_rating,
+                credibility_explanation=credibility_explanation,
+                exaggeration_flags=exaggeration_flags,
+                consistency_score=consistency_score
             )
             
             session.add(new_analysis)
@@ -133,8 +144,16 @@ def analyze_report_task(self, task_id: str):
                 "achievements_json": achievements,
                 "challenges_json": challenges,
                 "topics": topics,
-                "action_items": action_items
+                "action_items": action_items,
+                "credibility_assessment": {
+                    "rating": credibility_rating,
+                    "explanation": credibility_explanation,
+                    "exaggeration_flags": exaggeration_flags,
+                    "consistency_score": consistency_score
+                }
             }
+
+            
             
             # Update task as completed with result
             task = session.query(BackgroundTask).filter(

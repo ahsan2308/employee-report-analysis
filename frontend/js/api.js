@@ -14,8 +14,11 @@ function handleErrors(response) {
 // Generic fetch function with error handling
 async function fetchApi(endpoint, options = {}) {
     try {
+        console.log(`API Request: ${endpoint}`, options);
         const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-        return await handleErrors(response);
+        const result = await handleErrors(response);
+        console.log(`API Response from ${endpoint}:`, result);
+        return result;
     } catch (error) {
         console.error('API Error:', error);
         throw error;
@@ -112,7 +115,15 @@ const analysisApi = {
     
     // Get analysis results for a specific report
     getAnalysisResults: async (reportId) => {
-        return await fetchApi(`/analyses/results/${reportId}`);
+        console.log(`Fetching analysis for report ID: ${reportId}`);
+        try {
+            const response = await fetchApi(`/analyses/results/${reportId}`);
+            console.log('API Response:', response);
+            return response;
+        } catch (error) {
+            console.error('Error in getAnalysisResults:', error);
+            throw error;
+        }
     },
     
     // Get all analyses for an employee

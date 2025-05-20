@@ -13,6 +13,13 @@ class Challenge(BaseModel):
     description: str = Field(description="Detailed description of the challenge faced")
     severity: str = Field(description="How severe the challenge is (low, medium, high)")
 
+class CredibilityAssessment(BaseModel):
+    """Schema for credibility assessment in analysis."""
+    rating: str = Field(description="Overall credibility rating (high/medium/low)")
+    explanation: str = Field(description="Assessment of the report's credibility, focusing on potential exaggeration")
+    exaggeration_flags: List[str] = Field(description="Specific claims that appear to be exaggerated")
+    consistency_score: str = Field(description="How well the various sections of the report align with each other")
+
 class AnalysisResponse(BaseModel):
     """Schema for analysis response. This is the model that is returned by the API."""
     report_id: str
@@ -26,6 +33,7 @@ class AnalysisResponse(BaseModel):
     challenges_json: Optional[List[Any]] = None
     topics: Optional[List[str]] = None
     action_items: Optional[List[str]] = None
+    credibility_assessment: Optional[CredibilityAssessment] = None
 
     class Config:
-        from_attributes = True  
+        from_attributes = True

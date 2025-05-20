@@ -129,6 +129,25 @@ Please provide a comprehensive analysis with the following elements:
    - Consider risks to: project timelines, work quality, employee wellbeing, team dynamics
    - Provide detailed reasoning for your risk assessment, citing specific evidence from the report
    - Note any urgent intervention needed versus monitoring situations
+   - Consider the presence of exaggerated claims as a risk factor that may indicate reporting issues
+
+7. CREDIBILITY ASSESSMENT: Evaluate the credibility and accuracy of the report:
+   - Rate the overall credibility as "high", "medium", or "low"
+   - Look specifically for exaggerated claims by identifying:
+     * Vague statements without specific, measurable outcomes
+     * Inflated impact claims that don't match the scope of the task
+     * Overuse of superlatives without supporting evidence
+     * Claims that contradict information in other sections
+     * Outcomes that seem disproportionate to the effort or time invested
+   - Assess the consistency between different sections of the report
+   - Cite specific examples of potential exaggeration if found
+   - Compare with previous reports (if available) to identify patterns of exaggeration
+    In your credibility assessment:
+     * "high" credibility means claims are well-supported with specific evidence and realistic outcomes
+     * "medium" credibility means some claims may be slightly inflated but generally reasonable
+     * "low" credibility means significant exaggeration detected or claims that cannot be substantiated
+     * Be sure to cite specific examples of potential exaggeration in the exaggeration_flags field
+     * The consistency_score evaluates how well the various sections of the report align with each other
 
 EMPLOYEE REPORT:
 ---
@@ -150,6 +169,8 @@ Analyze these previous reports to identify:
 - Previously mentioned challenges that are still present
 - Progress on tasks that span multiple weeks
 - Changes in tone or sentiment over time
+- Patterns of exaggeration by comparing claimed achievements against actual delivered outcomes
+- Consistency in how the employee describes their impact and contributions over time
 - Do not write anything in the first person or use "I" or "we" in your analysis
 
 Focus your primary analysis on the current report while using these patterns for context.
@@ -171,15 +192,24 @@ Structure your response as follows:
   "topics": ["Topic 1", "Topic 2", "Topic 3"],
   "action_items": ["Specific action recommendation 1", "Specific action recommendation 2"],
   "risk_level": "low/medium/high",
-  "risk_explanation": "Detailed explanation of why you assigned this risk level"
+  "risk_explanation": "Detailed explanation of why you assigned this risk level",
+  "credibility_assessment": {
+    "rating": "high/medium/low",
+    "explanation": "Assessment of the report's credibility, focusing on potential exaggeration",
+    "exaggeration_flags": ["Specific claim 1 that appears exaggerated", "Specific claim 2 that appears exaggerated"],
+    "consistency_score": "high/medium/low"
+  }
 }
 
 Ensure your analysis is:
 - Detailed and specific with concrete examples from the report
 - Objective and fair in assessing achievements and challenges
+- Vigilant about detecting and flagging potential exaggeration in claims
 - Actionable with clear recommendations
 - Well-structured following the exact format above
 - ALWAYS ensure your response is valid JSON with no extraneous text
+
+
 
 Your analysis will help managers understand employee progress and determine where support is needed.
 """

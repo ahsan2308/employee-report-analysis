@@ -164,7 +164,13 @@ def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
                     "achievements_json": analysis.achievements_json,
                     "challenges_json": analysis.challenges_json,
                     "topics": analysis.topics,
-                    "action_items": analysis.action_items
+                    "action_items": analysis.action_items,
+                    "credibility_assessment": {
+                        "rating": analysis.credibility_rating or "medium",
+                        "explanation": analysis.credibility_explanation or "No credibility assessment was performed for this analysis.",
+                        "exaggeration_flags": analysis.exaggeration_flags or [],
+                        "consistency_score": analysis.consistency_score or "medium"
+                    }
                 }
     
     return {

@@ -120,8 +120,9 @@
 
 .analysis-meta {
     display: flex;
-    gap: 2.5rem;
+    gap: 1.75rem; /* Reduced from 2.5rem to make badges fit better */
     margin-top: 0.75rem;
+    align-items: flex-start; /* Keeps this alignment property */
 }
 
 .analysis-section {
@@ -142,9 +143,10 @@
 }
 
 .analysis-section:nth-child(2) { animation-delay: 0.1s; }
-.analysis-section:nth-child(3) { animation-delay: 0.2s; }
-.analysis-section:nth-child(4) { animation-delay: 0.3s; }
-.analysis-section:nth-child(5) { animation-delay: 0.4s; }
+.analysis-section:nth-child(3) { animation-delay: 0.2s; }  /* Adjusted for credibility section */
+.analysis-section:nth-child(4) { animation-delay: 0.3s; }  /* Topics */
+.analysis-section:nth-child(5) { animation-delay: 0.4s; }  /* Achievements */
+.analysis-section:nth-child(6) { animation-delay: 0.5s; }  /* Challenges */
 
 .analysis-section:hover {
     background-color: #f1f5f9;
@@ -168,11 +170,14 @@
     font-weight: 900;
 }
 
+/* Update section icons - fix the shield icon issue */
 .risk-explanation h5::before { content: '\f071'; color: var(--warning); }
 .topics-section h5::before { content: '\f02b'; color: var(--primary); }
 .achievements-section h5::before { content: '\f091'; color: var(--success); }
 .challenges-section h5::before { content: '\f0e7'; color: var(--warning); }
 .action-items-section h5::before { content: '\f044'; color: var(--primary); }
+/* Use a different icon that's definitely available in Font Awesome */
+.credibility-assessment-section h5::before { content: '\f06e'; color: var(--primary); }
 
 /* Topics display */
 .topics-container {
@@ -248,17 +253,18 @@
     color: var(--warning);
 }
 
-/* Sentiment and risk level enhanced styling */
-.sentiment, .risk-level {
+/* Sentiment, risk level, credibility and consistency badges with consistent styling */
+.sentiment, .risk-level, .credibility-level, .consistency-level {
     padding: 6px 12px;
     border-radius: 4px;
     font-weight: 500;
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap; /* Add this property to prevent text wrapping */
 }
 
-.sentiment::before, .risk-level::before {
+.sentiment::before, .risk-level::before, .credibility-level::before, .consistency-level::before {
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
 }
@@ -299,6 +305,73 @@
 }
 .risk-high::before { content: '\f06a'; }
 
+.credibility-high {
+    color: var(--success);
+    background-color: rgba(21, 128, 61, 0.1);
+}
+.credibility-high::before { content: '\f058'; }
+
+.credibility-medium {
+    color: var(--warning);
+    background-color: rgba(180, 83, 9, 0.1);
+}
+.credibility-medium::before { content: '\f059'; }
+
+.credibility-low {
+    color: var(--danger);
+    background-color: rgba(185, 28, 28, 0.1);
+}
+.credibility-low::before { content: '\f057'; }
+
+/* Add consistency level styling consistent with other badges */
+.consistency-high {
+    color: var(--success);
+    background-color: rgba(21, 128, 61, 0.1);
+}
+.consistency-high::before { content: '\f0c8'; } /* square-full icon */
+
+.consistency-medium {
+    color: var(--warning);
+    background-color: rgba(180, 83, 9, 0.1);
+}
+.consistency-medium::before { content: '\f28d'; } /* stop-circle icon */
+
+.consistency-low {
+    color: var(--danger);
+    background-color: rgba(185, 28, 28, 0.1);
+}
+.consistency-low::before { content: '\f111'; } /* circle icon */
+
+/* Consistency badge styling */
+.consistency-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    margin: 10px 0;
+    font-weight: 500;
+}
+
+.consistency-high {
+    background-color: rgba(21, 128, 61, 0.1);
+    color: var(--success);
+}
+
+.consistency-medium {
+    background-color: rgba(180, 83, 9, 0.1);
+    color: var(--warning);
+}
+
+.consistency-low {
+    background-color: rgba(185, 28, 28, 0.1);
+    color: var(--danger);
+}
+
+.badge-label {
+    font-weight: 600;
+    margin-right: 4px;
+}
+
 /* Achievement and challenge items */
 .achievement-item, .challenge-item {
     margin-bottom: 1.25rem;
@@ -325,12 +398,16 @@
 
 .achievement-impact, .challenge-severity {
     font-size: 0.9rem;
-    color: #64748b;
-    margin-top: 0.3rem;
     font-style: italic;
-    display: flex;
-    align-items: flex-start;  /* Changed from center to flex-start */
-    gap: 5px;
+    margin-top: 0.3rem;
+    color: var(--text-light);
+}
+
+.achievement-impact .with-tooltip, 
+.challenge-severity .with-tooltip {
+    display: inline-block;
+    padding: 1px 4px;
+    border-radius: 3px;
 }
 
 .achievement-impact::before, .challenge-severity::before {
@@ -338,6 +415,208 @@
     font-weight: 900;
     font-size: 0.8rem;
     margin-top: 0.2rem; /* Added to vertically align with the first line text */
+}
+
+/* Credibility assessment section */
+.credibility-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.credibility-rating,
+.consistency-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 16px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.rating-label,
+.consistency-label {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+/* Credibility rating color coding */
+.credibility-high {
+    color: var(--success);
+    background-color: rgba(21, 128, 61, 0.1);
+}
+.credibility-medium {
+    color: var(--warning);
+    background-color: rgba(180, 83, 9, 0.1);
+}
+.credibility-low {
+    color: var(--danger);
+    background-color: rgba(185, 28, 28, 0.1);
+}
+
+.credibility-explanation {
+    margin-top: 8px;
+    line-height: 1.6;
+}
+
+/* Exaggeration flags styling */
+.exaggeration-flags {
+    background-color: rgba(185, 28, 28, 0.05);
+    padding: 12px;
+    border-radius: var(--rounded);
+    border: 1px solid rgba(185, 28, 28, 0.2);
+    margin-top: 12px;
+}
+
+.exaggeration-flags h6 {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: var(--danger);
+    font-weight: 600;
+}
+
+.flags-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.flag-item {
+    padding: 6px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: var(--danger);
+    border-bottom: 1px dashed rgba(185, 28, 28, 0.2);
+}
+
+.flag-item:last-child {
+    border-bottom: none;
+}
+
+.flag-item i {
+    color: var(--danger);
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+/* Tooltip System */
+.tooltip-trigger {
+    position: relative;
+    display: inline-flex;
+    margin-left: 4px;
+    color: var(--text-light);
+    cursor: help;
+    z-index: 100; /* Added z-index to ensure tooltips appear over other content */
+}
+
+.tooltip {
+    position: absolute;
+    bottom: 125%; /* Changed from top to bottom positioning for better display */
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 250px;
+    max-width: 350px;
+    background-color: var(--text-main);
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    font-weight: normal;
+    line-height: 1.5;
+    z-index: 101; /* Higher than parent to ensure visibility */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: var(--text-main) transparent transparent transparent;
+}
+
+.tooltip-trigger:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Tooltip System - additional styles for direct tooltips */
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.with-tooltip {
+    position: relative;
+    cursor: help;
+    /* Remove the underlining */
+    /* border-bottom: 1px dotted var(--text-light); */
+}
+
+.with-tooltip .tooltip {
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 250px;
+    max-width: 300px;
+    background-color: var(--text-main);
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    font-weight: normal;
+    line-height: 1.4;
+    z-index: 101;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+.with-tooltip .tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: var(--text-main) transparent transparent transparent;
+}
+
+.with-tooltip:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Mobile tooltip adjustments */
+@media (max-width: 768px) {
+    .tooltip {
+        min-width: 200px;
+        max-width: 280px;
+        font-size: 0.75rem;
+        left: auto;
+        right: -10px; /* Adjusted for better positioning on mobile */
+        transform: translateX(0); /* Don't center horizontally */
+    }
+    
+    .tooltip::after {
+        left: auto;
+        right: 10px;
+    }
 }
 
 /* Responsive adjustments */
@@ -363,5 +642,16 @@
     
     #analyzeButton {
         max-width: 100%;
+    }
+
+    .credibility-rating,
+    .consistency-score {
+        display: flex;
+        margin-bottom: 8px;
+        width: fit-content;
+    }
+
+    .sentiment, .risk-level, .credibility-level, .consistency-level {
+        width: fit-content;
     }
 }

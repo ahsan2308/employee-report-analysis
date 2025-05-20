@@ -103,11 +103,11 @@ def get_analysis_by_report(report_id: str, db: Session = Depends(get_db)):
         
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
-            
+        
         # Prepare and return response with employee name included
         return {
             "report_id": str(analysis.report_id),
-            "employee_name": employee.name,  # Include employee name from related entity
+            "employee_name": employee.name,
             "sentiment": analysis.sentiment_score if analysis.sentiment_score is not None else 0.5,
             "sentiment_score": analysis.sentiment_score,
             "risk_level": analysis.risk_level,
@@ -116,7 +116,13 @@ def get_analysis_by_report(report_id: str, db: Session = Depends(get_db)):
             "achievements_json": analysis.achievements_json,
             "challenges_json": analysis.challenges_json,
             "topics": analysis.topics,
-            "action_items": analysis.action_items
+            "action_items": analysis.action_items,
+            "credibility_assessment": {
+                "rating": analysis.credibility_rating or "medium",
+                "explanation": analysis.credibility_explanation or "No credibility assessment was performed for this analysis.",
+                "exaggeration_flags": analysis.exaggeration_flags or [],
+                "consistency_score": analysis.consistency_score or "medium"
+            }
         }
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid report ID format")
@@ -190,7 +196,7 @@ def get_analysis_by_id(analysis_id: int, db: Session = Depends(get_db)):
         # Prepare response with employee name
         return {
             "report_id": str(analysis.report_id),
-            "employee_name": employee.name,  # Include employee name from relationship
+            "employee_name": employee.name,
             "sentiment": analysis.sentiment_score if analysis.sentiment_score is not None else 0.5,
             "sentiment_score": analysis.sentiment_score,
             "risk_level": analysis.risk_level,
@@ -199,7 +205,13 @@ def get_analysis_by_id(analysis_id: int, db: Session = Depends(get_db)):
             "achievements_json": analysis.achievements_json,
             "challenges_json": analysis.challenges_json,
             "topics": analysis.topics,
-            "action_items": analysis.action_items
+            "action_items": analysis.action_items,
+            "credibility_assessment": {
+                "rating": analysis.credibility_rating or "medium",
+                "explanation": analysis.credibility_explanation or "No credibility assessment was performed for this analysis.",
+                "exaggeration_flags": analysis.exaggeration_flags or [],
+                "consistency_score": analysis.consistency_score or "medium"
+            }
         }
     except Exception as e:
         logger.error(f"Error retrieving analysis: {str(e)}")

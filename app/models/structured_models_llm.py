@@ -36,6 +36,25 @@ class Challenge(BaseModel):
         from_attributes = True  # Updated from orm_mode=True for Pydantic v2
 
 
+class CredibilityAssessment(BaseModel):
+    # Model representing a credibility assessment for an employee report
+    rating: Literal["high", "medium", "low"] = Field(
+        description="Overall credibility rating of the report"
+    )
+    explanation: str = Field(
+        description="Assessment of the report's credibility, focusing on potential exaggeration"
+    )
+    exaggeration_flags: List[str] = Field(
+        description="Specific claims that appear to be exaggerated"
+    )
+    consistency_score: Literal["high", "medium", "low"] = Field(
+        description="How well the various sections of the report align with each other"
+    )
+
+    class Config:
+        from_attributes = True  # Updated from orm_mode=True for Pydantic v2
+
+
 class EmployeeAnalysis(BaseModel):
     # Full model for comprehensive employee report analysis
     achievements: List[Achievement] = Field(
@@ -58,6 +77,9 @@ class EmployeeAnalysis(BaseModel):
     )
     risk_explanation: str = Field(
         description="Explanation for the assigned risk level"
+    )
+    credibility_assessment: CredibilityAssessment = Field(
+        description="Assessment of the report's credibility and potential exaggeration"
     )
 
     class Config:

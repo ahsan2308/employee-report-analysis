@@ -74,6 +74,9 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             // First, try to get the analysis results which will include employee info
             const analysisData = await analysisApi.getAnalysisResults(reportId);
+            console.log("Analysis data from API:", analysisData);
+            console.log("Credibility assessment data:", analysisData.credibility_assessment);
+            
             if (analysisData && analysisData.employee_name) {
                 console.log("Found employee for report:", analysisData.employee_name);
                 
@@ -287,26 +290,18 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Task created:', taskData);
             
             // If already complete (existing analysis), get results immediately
-            if (taskData.is_complete) {
-                const resultData = await taskApi.getTaskResult(taskData.task_id);
-                displayAnalysisResults(resultData.result);
-                showMessage('Analysis completed successfully', 'success');
-            } else {
-                // Show polling message
-                showMessage('Analysis in progress, please wait...', 'loading');
-                
-                // Poll for completion with the TaskManager
-                const resultData = await TaskManager.pollTaskUntilComplete(taskData.task_id, {
+            const resultData = taskData.is_complete
+                ? await taskApi.getTaskResult(taskData.task_id)
+                : await TaskManager.pollTaskUntilComplete(taskData.task_id, {
                     onStatusUpdate: updateLoadingStatus
                 });
-                
-                if (resultData.error_message) {
-                    throw new Error(resultData.error_message);
-                }
-                
-                displayAnalysisResults(resultData.result);
-                showMessage('Analysis completed successfully', 'success');
+            
+            if (resultData.error_message) {
+                throw new Error(resultData.error_message);
             }
+            
+            displayAnalysisResults(resultData.result);
+            showMessage('Analysis completed successfully', 'success');
             
             // Update URL without reload to include the report_id
             if (window.history && window.history.pushState) {
@@ -328,6 +323,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear previous results
         analysisResults.innerHTML = '';
         
+        console.log("Full analysis data received:", data);
+        console.log("Credibility assessment:", data.credibility_assessment);
+        
         // Extract data from analysis result
         const { 
             full_analysis_json,
@@ -337,7 +335,8 @@ document.addEventListener('DOMContentLoaded', function() {
             achievements_json,
             challenges_json,
             topics,
-            action_items
+            action_items,
+            credibility_assessment
         } = data;
         
         // Determine sentiment text based on score
@@ -358,27 +357,106 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add header
         const header = document.createElement('div');
         header.className = 'analysis-header';
-        header.innerHTML = `
-            <h3>Report Analysis</h3>
-            <div class="analysis-meta">
-                <div class="sentiment ${sentimentClass.toLowerCase()}">
-                    <strong>Sentiment:</strong> ${sentimentText}
-                </div>
-                <div class="risk-level risk-${risk_level.toLowerCase()}">
-                    <strong>Risk Level:</strong> ${risk_level}
-                </div>
-            </div>
-        `;
+        
+        // Create header with title
+        const headerTitle = document.createElement('h3');
+        headerTitle.textContent = 'Report Analysis';
+        header.appendChild(headerTitle);
+        
+        // Create meta info row for sentiment, risk, credibility and consistency
+        const metaInfo = document.createElement('div');
+        metaInfo.className = 'analysis-meta';
+        
+        // Add sentiment badge with tooltip
+        const sentimentBadge = document.createElement('div');
+        sentimentBadge.className = `sentiment ${sentimentClass.toLowerCase()}`;
+        sentimentBadge.innerHTML = `<strong>Sentiment:</strong> ${sentimentText}<span class="tooltip-trigger"><i class="fas fa-info-circle"></i><span class="tooltip">Overall tone of the report, derived from language used, confidence levels expressed, and balance between achievements and challenges.</span></span>`;
+        metaInfo.appendChild(sentimentBadge);
+        
+        // Add risk level badge with tooltip - Fix by putting everything on one line without linebreaks
+        const riskBadge = document.createElement('div');
+        riskBadge.className = `risk-level risk-${risk_level.toLowerCase()}`;
+        riskBadge.innerHTML = `<strong>Risk Level:</strong> ${risk_level}<span class="tooltip-trigger"><i class="fas fa-info-circle"></i><span class="tooltip">Assessment of concerns requiring management attention. Considers unaddressed resource requests, low confidence levels, external challenges, and negative patterns.</span></span>`;
+        metaInfo.appendChild(riskBadge);
+        
+        // Add credibility rating badge if available with tooltip
+        if (credibility_assessment && credibility_assessment.rating) {
+            const credibilityBadge = document.createElement('div');
+            credibilityBadge.className = `credibility-level credibility-${credibility_assessment.rating.toLowerCase()}`;
+            credibilityBadge.innerHTML = `<strong>Credibility:</strong> ${credibility_assessment.rating}<span class="tooltip-trigger"><i class="fas fa-info-circle"></i><span class="tooltip">Measures how well-supported the claims in the report are with evidence. High credibility means claims are specific and realistic; low credibility indicates potential exaggeration.</span></span>`;
+            metaInfo.appendChild(credibilityBadge);
+            
+            // Add consistency score badge alongside the other badges with tooltip
+            if (credibility_assessment.consistency_score) {
+                const consistencyBadge = document.createElement('div');
+                consistencyBadge.className = `consistency-level consistency-${credibility_assessment.consistency_score.toLowerCase()}`;
+                consistencyBadge.innerHTML = `<strong>Consistency:</strong> ${credibility_assessment.consistency_score}<span class="tooltip-trigger"><i class="fas fa-info-circle"></i><span class="tooltip">Evaluates how well different sections of the report align with each other. High consistency indicates the report sections support each other; low consistency suggests contradictions between sections.</span></span>`;
+                metaInfo.appendChild(consistencyBadge);
+            }
+        }
+        
+        header.appendChild(metaInfo);
         mainContainer.appendChild(header);
 
+        // Add credibility assessment section if available (place before risk assessment)
+        if (credibility_assessment) {
+            const credibilitySection = document.createElement('div');
+            credibilitySection.className = 'credibility-assessment-section analysis-section';
+            
+            // Create section heading with icon and tooltip
+            credibilitySection.innerHTML = `<h5>Credibility Assessment
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">An evaluation of how well-supported the claims in the report are with evidence and how consistently different parts of the report align.</span>
+                </span>
+            </h5>`;
+            
+            // Add explanation paragraph
+            const explanationPara = document.createElement('p');
+            explanationPara.textContent = credibility_assessment.explanation;
+            credibilitySection.appendChild(explanationPara);
+            
+            // Add exaggeration flags if any exist
+            if (credibility_assessment.exaggeration_flags && credibility_assessment.exaggeration_flags.length > 0) {
+                const flagsContainer = document.createElement('div');
+                flagsContainer.className = 'exaggeration-flags';
+                
+                const flagsTitle = document.createElement('h6');
+                flagsTitle.innerHTML = `Potential Exaggerations:
+                    <span class="tooltip-trigger">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip">Statements identified as potentially exaggerated based on vague language, inflated impact claims, contradictions, or outcomes disproportionate to the described effort.</span>
+                    </span>`;
+                flagsContainer.appendChild(flagsTitle);
+                
+                const flagsList = document.createElement('ul');
+                flagsList.className = 'flags-list';
+                
+                credibility_assessment.exaggeration_flags.forEach(flag => {
+                    const flagItem = document.createElement('li');
+                    flagItem.className = 'flag-item';
+                    flagItem.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${flag}`;
+                    flagsList.appendChild(flagItem);
+                });
+                
+                flagsContainer.appendChild(flagsList);
+                credibilitySection.appendChild(flagsContainer);
+            }
+            
+            mainContainer.appendChild(credibilitySection);
+        }
+        
         // Add risk explanation
         if (risk_explanation) {
             const riskExplanation = document.createElement('div');
             riskExplanation.className = 'risk-explanation analysis-section';
-            riskExplanation.innerHTML = `
-                <h5>Risk Assessment</h5>
-                <p>${risk_explanation}</p>
-            `;
+            riskExplanation.innerHTML = `<h5>Risk Assessment
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">Identifies concerns requiring management attention based on unfulfilled resource requests, confidence levels, and patterns across reports.</span>
+                </span>
+            </h5>
+                <p>${risk_explanation}</p>`;
             mainContainer.appendChild(riskExplanation);
         }
         
@@ -386,7 +464,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (topics && topics.length > 0) {
             const topicsSection = document.createElement('div');
             topicsSection.className = 'topics-section analysis-section';
-            topicsSection.innerHTML = '<h5>Key Topics</h5>';
+            topicsSection.innerHTML = `<h5>Key Topics
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">Main themes, projects, and focus areas mentioned throughout the employee's report.</span>
+                </span>
+            </h5>`;
             
             const topicsContainer = document.createElement('div');
             topicsContainer.className = 'topics-container';
@@ -406,7 +489,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (achievements_json && achievements_json.length > 0) {
             const achievementsSection = document.createElement('div');
             achievementsSection.className = 'achievements-section analysis-section';
-            achievementsSection.innerHTML = '<h5>Achievements</h5>';
+            achievementsSection.innerHTML = `<h5>Achievements
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">Key accomplishments reported by the employee with impact ratings where higher numbers represent greater positive effects on goals and outcomes.</span>
+                </span>
+            </h5>`;
             
             const achievementsList = document.createElement('ul');
             achievementsList.className = 'achievements-list';
@@ -414,10 +502,23 @@ document.addEventListener('DOMContentLoaded', function() {
             achievements_json.forEach(achievement => {
                 const achievementItem = document.createElement('li');
                 achievementItem.className = 'achievement-item';
-                achievementItem.innerHTML = `
-                    <div class="achievement-description">${achievement.description || achievement}</div>
-                    ${achievement.impact ? `<div class="achievement-impact">Impact: ${achievement.impact}</div>` : ''}
-                `;
+                
+                // Add description as before
+                let achievementContent = `<div class="achievement-description">${achievement.description || achievement}</div>`;
+                
+                // Add impact with tooltip using an info icon instead of underlining the text
+                if (achievement.impact) {
+                    achievementContent += `
+                        <div class="achievement-impact">
+                            Impact: ${achievement.impact}
+                            <span class="tooltip-trigger">
+                                <i class="fas fa-question-circle"></i>
+                                <span class="tooltip">Impact ratings range from 1-10, where 10 represents the highest impact and 1 represents minimal impact.</span>
+                            </span>
+                        </div>`;
+                }
+                
+                achievementItem.innerHTML = achievementContent;
                 achievementsList.appendChild(achievementItem);
             });
             
@@ -429,7 +530,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (challenges_json && challenges_json.length > 0) {
             const challengesSection = document.createElement('div');
             challengesSection.className = 'challenges-section analysis-section';
-            challengesSection.innerHTML = '<h5>Challenges</h5>';
+            challengesSection.innerHTML = `<h5>Challenges
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">Obstacles or issues reported by the employee with severity ratings indicating their impact on work performance.</span>
+                </span>
+            </h5>`;
             
             const challengesList = document.createElement('ul');
             challengesList.className = 'challenges-list';
@@ -441,9 +547,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typeof challenge === 'string') {
                     challengeContent = challenge;
                 } else {
-                    challengeContent = challenge.description || '';
+                    challengeContent = `<div class="challenge-description">${challenge.description || ''}</div>`;
+                    
                     if (challenge.severity) {
                         severityClass = `severity-${challenge.severity.toLowerCase()}`;
+                        // Add severity with tooltip using an info icon instead of underlining
+                        challengeContent += `
+                            <div class="challenge-severity">
+                                Severity: ${challenge.severity}
+                                <span class="tooltip-trigger">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span class="tooltip">Severity indicates how much this challenge affects employee performance and intended outcomes. Low: minimal impact, Medium: moderate disruption, High: significant blocker.</span>
+                                </span>
+                            </div>`;
                     }
                 }
                 
@@ -453,10 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typeof challenge === 'string') {
                     challengeItem.textContent = challenge;
                 } else {
-                    challengeItem.innerHTML = `
-                        <div class="challenge-description">${challenge.description || ''}</div>
-                        ${challenge.severity ? `<div class="challenge-severity">Severity: ${challenge.severity}</div>` : ''}
-                    `;
+                    challengeItem.innerHTML = challengeContent;
                 }
                 
                 challengesList.appendChild(challengeItem);
@@ -470,7 +583,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (action_items && action_items.length > 0) {
             const actionItemsSection = document.createElement('div');
             actionItemsSection.className = 'action-items-section analysis-section';
-            actionItemsSection.innerHTML = '<h5>Recommended Actions</h5>';
+            actionItemsSection.innerHTML = `<h5>Recommended Actions
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">Suggested follow-up items for both management and employees to address based on the report content, including resource needs, support requirements, and opportunities to build on achievements.</span>
+                </span>
+            </h5>`;
             
             const actionItemsList = document.createElement('ul');
             actionItemsList.className = 'action-items-list';
