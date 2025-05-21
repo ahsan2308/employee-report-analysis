@@ -550,6 +550,14 @@
     opacity: 1;
 }
 
+/* Special handling for header area tooltips to prevent truncation */
+.analysis-meta .tooltip-trigger .tooltip {
+    max-width: 400px; /* Wider tooltips in the header */
+    width: auto;
+    white-space: normal; /* Allow text to wrap properly */
+    z-index: 1000; /* Ensure it appears above all other content */
+}
+
 /* Tooltip System - additional styles for direct tooltips */
 .tooltip-container {
     position: relative;

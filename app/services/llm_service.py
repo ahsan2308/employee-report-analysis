@@ -204,7 +204,7 @@ class LLMService:
         # Try using native structured output if available
         if hasattr(self.provider, "generate_structured_output"):
             try:
-                logger.debug(f"Attempting to use native structured output with model {self.model}")
+                logger.info(f"Attempting to use native structured output with model {self.model}")
                 # Always use pydantic_model directly if it's provided
                 schema_arg = pydantic_model if pydantic_model else json_schema
                 result = self.provider.generate_structured_output(
@@ -215,9 +215,9 @@ class LLMService:
                     num_ctx=num_ctx
                 )
                 if result is not None:
-                    logger.debug(f"Received native structured output: {result}")
+                    logger.info(f"Received native structured output: {result}")
                     return result
-                logger.debug("Native structured output returned None, falling back to text generation")
+                logger.info("Native structured output returned None, falling back to text generation")
             except Exception as e:
                 logger.warning(f"Native structured output generation failed: {e}. Falling back to text generation.")
         
