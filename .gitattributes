@@ -2,8 +2,11 @@
 * text=auto
 
 # Scripts and code should use LF (Unix-style)
-*.py text eol=lf
-*.sh text eol=lf
+*.py   text eol=lf
+*.yml  text eol=lf
+*.json text eol=lf
+*.sh   text eol=lf
+*.md   text eol=lf
 Dockerfile text eol=lf
 
 # Windows-specific scripts can keep CRLF
