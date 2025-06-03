@@ -1,3 +1,10 @@
+/**
+ * API client for the Employee Evaluation System backend.
+ * 
+ * This module provides functions for interacting with the backend APIs,
+ * including CSV import operations.
+ */
+
 // Base URL for API endpoints - ensure this always points to localhost
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
@@ -206,7 +213,7 @@ const visualizationApi = {
     }
 };
 
-// NEW: Import-related API functions
+// Import-related API functions
 const importApi = {
     // Upload a CSV file for import
     uploadCSV: async (formData) => {
@@ -227,10 +234,13 @@ const importApi = {
     },
     
     // Get list of all import jobs
-    getJobsList: async (status = null, limit = 50, offset = 0) => {
+    getJobsList: async (status = null, csv_type = null, limit = 50, offset = 0) => {
         let url = `/imports/?limit=${limit}&offset=${offset}`;
         if (status) {
             url += `&status=${status}`;
+        }
+        if (csv_type) {
+            url += `&csv_type=${csv_type}`;
         }
         return await fetchApi(url);
     }

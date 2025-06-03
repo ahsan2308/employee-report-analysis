@@ -13,6 +13,9 @@ class Employee(Base):
     name = Column(String, nullable=False, index=True)
     wing = Column(String, nullable=False, index=True)
     position = Column(String, nullable=False, index=True)
+    
+    # Add relationship to vision data
+    vision_data = relationship("EmployeeVisionData", back_populates="employee")
 
     def __repr__(self):
         return f"<Employee(id={self.id}, name='{self.name}', wing='{self.wing}', position='{self.position}')>"

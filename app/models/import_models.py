@@ -16,6 +16,12 @@ class ImportStatus(str, enum.Enum):
     COMPLETED = "completed"
     FAILED = "failed"
 
+# Define CSV import types
+class CSVImportType(str, enum.Enum):
+    """Enum for CSV import types."""
+    EMPLOYEE_REPORT = "employee_report"
+    VISION_DATA = "vision_data"
+
 class CSVImportJob(Base):
     """Model for tracking CSV import jobs."""
     __tablename__ = "csv_import_jobs"
@@ -28,22 +34,22 @@ class CSVImportJob(Base):
     # Use String instead of Enum type for database compatibility
     status = Column(String, default=ImportStatus.PENDING.value, nullable=False)
     
+    # New field to identify CSV type
+    csv_type = Column(String, nullable=True)  # Uses values from CSVImportType enum
+    
     # Timestamps
     submitted_at = Column(DateTime, default=func.now(), nullable=False)
     started_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
     
-    # Metrics
+    # Generic metrics
     total_rows = Column(Integer, default=0)
     processed_rows = Column(Integer, default=0)
     successful_rows = Column(Integer, default=0)
     error_count = Column(Integer, default=0)
     
-    # Import results counts
-    employees_created = Column(Integer, default=0)
-    employees_updated = Column(Integer, default=0)
-    reports_created = Column(Integer, default=0)
-    reports_updated = Column(Integer, default=0)
+    # Type-specific metrics (JSONB for flexibility)
+    metrics_json = Column(JSONB, nullable=True)
     
     # Options/configuration
     options = Column(JSONB, nullable=True)
@@ -60,7 +66,7 @@ class CSVImportJob(Base):
     )
     
     def __repr__(self):
-        return f"<CSVImportJob(id={self.job_id}, status={self.status})>"
+        return f"<CSVImportJob(id={self.job_id}, type={self.csv_type}, status={self.status})>"
 
 class ImportError(Base):
     """Model for tracking individual row errors during CSV imports."""

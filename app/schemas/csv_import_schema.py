@@ -377,6 +377,7 @@ class CSVImportJobResponse(BaseModel):
     job_id: str = Field(description="Unique identifier for the import job")
     filename: str = Field(description="Original filename of the CSV")
     status: str = Field(description="Current status of the import job")
+    csv_type: Optional[str] = Field(None, description="Type of CSV data being imported")
     submitted_at: datetime = Field(description="When the job was submitted")
     started_at: Optional[datetime] = Field(None, description="When processing started")
     completed_at: Optional[datetime] = Field(None, description="When processing finished")
@@ -387,11 +388,8 @@ class CSVImportJobResponse(BaseModel):
     successful_rows: int = Field(description="Number of rows successfully imported")
     error_count: int = Field(description="Number of rows with errors")
     
-    # Result counts
-    employees_created: int = Field(description="Number of employees created")
-    employees_updated: int = Field(description="Number of employees updated")
-    reports_created: int = Field(description="Number of reports created")
-    reports_updated: int = Field(description="Number of reports updated")
+    # Type-specific metrics
+    metrics: Optional[Dict[str, Any]] = Field(None, description="Type-specific detailed metrics")
     
     # Calculated fields
     percent_complete: float = Field(description="Percentage of processing completed")
@@ -455,3 +453,223 @@ class ImportErrorsResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class VisionDataCSVRow(BaseModel):
+    """
+    Schema for validating a single row of vision system data in a CSV file.
+    
+    Each row contains employee activity data from the Vision system with metrics
+    about various entity interactions.
+    """
+    # Employee identification field
+    Employee_ID: int = Field(
+        description="Employee ID (must match an existing employee)"
+    )
+    
+    # Date range fields - Note the capitalization
+    From_Date: str = Field(
+        description="Start date of the reporting period (YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY)"
+    )
+    To_Date: str = Field(
+        description="End date of the reporting period (YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY)"
+    )
+    
+    # Entity data fields
+    Main_Entity: str = Field(
+        description="The primary entity type being reported"
+    )
+    Sub_Entities: str = Field(
+        description="Quantitative data about sub-entities in format 'Name1:Count1, Name2:Count2, ...'"
+    )
+    
+    # Configuration
+    model_config = {
+        "from_attributes": True,
+        "extra": "forbid",
+        "validate_assignment": False,
+        "str_strip_whitespace": True,
+        "str_to_lower": False,
+        "validate_default": False,
+    }
+    
+    @field_validator('Employee_ID')
+    @classmethod
+    def validate_employee_id(cls, v):
+        """Validate employee ID is a positive integer."""
+        if not isinstance(v, int) or v <= 0:
+            raise ValueError("Employee ID must be a positive integer")
+        return v
+    
+    @field_validator('From_Date', 'To_Date')
+    @classmethod
+    def validate_dates(cls, v, info):
+        """
+        Parse and validate dates in various formats.
+        Uses MM/DD/YYYY as the default format for slash-separated dates.
+        """
+        from datetime import datetime, date
+        today = date.today()
+        
+        # If already a date object, just validate it's not in future
+        if isinstance(v, date):
+            if v > today:
+                raise ValueError(f"Date cannot be in the future: {v}")
+            return v
+            
+        # Handle string dates in various formats
+        if isinstance(v, str):
+            v = v.strip()
+            
+            try:
+                # Try to parse different date formats
+                if '/' in v:
+                    import re
+                    # Format with slashes - interpret as MM/DD/YYYY by default
+                    if re.match(r'^\d{1,2}/\d{1,2}/\d{4}$', v):
+                        # First try MM/DD/YYYY (US format - the default)
+                        try:
+                            parsed_date = datetime.strptime(v, '%m/%d/%Y').date()
+                        except ValueError:
+                            # If MM/DD/YYYY fails, try DD/MM/YYYY as fallback
+                            parsed_date = datetime.strptime(v, '%d/%m/%Y').date()
+                        
+                        # Check if the date is in the future
+                        if parsed_date > today:
+                            raise ValueError(f"Date cannot be in the future: {parsed_date}")
+                        
+                        # Return the original string - we'll convert to date in the model_validator
+                        return v
+                
+                # Format: MM-DD-YYYY or DD-MM-YYYY
+                elif '-' in v:
+                    # Try both formats
+                    try:
+                        parsed_date = datetime.strptime(v, '%m-%d-%Y').date()
+                    except ValueError:
+                        try:
+                            parsed_date = datetime.strptime(v, '%d-%m-%Y').date()
+                        except ValueError:
+                            # Try ISO format
+                            parsed_date = datetime.strptime(v, '%Y-%m-%d').date()
+                    
+                    # Check if the date is in the future
+                    if parsed_date > today:
+                        raise ValueError(f"Date cannot be in the future: {parsed_date}")
+                    
+                    return v
+                
+                # For ISO format (YYYY-MM-DD), validate but return the string
+                elif re.match(r'^\d{4}-\d{2}-\d{2}$', v):
+                    parsed_date = datetime.strptime(v, '%Y-%m-%d').date()
+                    if parsed_date > today:
+                        raise ValueError(f"Date cannot be in the future: {parsed_date}")
+                    return v
+                
+            except ValueError as e:
+                # Provide more specific error message
+                raise ValueError(f"Invalid date format: {v}. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.")
+        
+        return v
+    
+    @field_validator('Main_Entity')
+    @classmethod
+    def validate_main_entity(cls, v):
+        """Validate the main entity type."""
+        known_entities = [
+            "Activities and Cases", 
+            "Correspondence", 
+            "Events", 
+            "Links", 
+            "Media", 
+            "Nadra", 
+            "Organizations", 
+            "PER", 
+            "Persons", 
+            "Tasks"
+        ]
+        
+        if not v or not v.strip():
+            raise ValueError("Main entity cannot be empty")
+            
+        # Check against known entity types, but allow others since the list may expand
+        if v.strip() not in known_entities:
+            # This is a warning rather than an error
+            pass
+            
+        return v
+    
+    @field_validator('Sub_Entities')
+    @classmethod
+    def validate_sub_entities(cls, v):
+        """Validate the sub-entities format (Name:Count, Name:Count, ...)."""
+        if not v or not v.strip():
+            return "{}"  # Return empty JSON object if no sub-entities
+            
+        import re
+        import json
+        
+        # Expected format: "Name1:Count1, Name2:Count2, ..."
+        sub_entity_pattern = r'([^:,]+):(\d+)'
+        matches = re.findall(sub_entity_pattern, v)
+        
+        if not matches:
+            raise ValueError(f"Invalid sub-entities format. Expected 'Name:Count, Name:Count, ...' but got '{v}'")
+            
+        # Convert to structured dictionary
+        sub_entities_dict = {}
+        for name, count in matches:
+            name = name.strip()
+            count = int(count)
+            sub_entities_dict[name] = count
+            
+        # Return the string representation for downstream processing
+        return json.dumps(sub_entities_dict)
+    
+    @model_validator(mode='after')
+    def convert_date_strings(self):
+        """Convert date strings to actual date objects after all validation."""
+        from datetime import datetime
+        
+        # Apply same date conversion logic as in CombinedCSVRow
+        for date_field in ['From_Date', 'To_Date']:
+            date_str = getattr(self, date_field)
+            if isinstance(date_str, str):
+                if '/' in date_str:
+                    try:
+                        # First try MM/DD/YYYY
+                        setattr(self, date_field, datetime.strptime(date_str, '%m/%d/%Y').date())
+                    except ValueError:
+                        # Then try DD/MM/YYYY
+                        try:
+                            setattr(self, date_field, datetime.strptime(date_str, '%d/%m/%Y').date())
+                        except ValueError:
+                            # If all else fails, let it pass - likely already validated
+                            pass
+                elif '-' in date_str and not date_str.startswith('20'):  # Not ISO format
+                    try:
+                        # First try MM-DD-YYYY
+                        setattr(self, date_field, datetime.strptime(date_str, '%m-%d-%Y').date())
+                    except ValueError:
+                        # Then try DD-MM-YYYY
+                        try:
+                            setattr(self, date_field, datetime.strptime(date_str, '%d-%m-%Y').date())
+                        except ValueError:
+                            pass
+                else:
+                    # Try ISO format
+                    try:
+                        setattr(self, date_field, datetime.strptime(date_str, '%Y-%m-%d').date())
+                    except ValueError:
+                        pass
+        
+        return self
+    
+    @model_validator(mode='after')
+    def validate_date_range(self):
+        """Ensure From_Date is before or equal to To_Date."""
+        from_date = self.From_Date
+        to_date = self.To_Date
+        
+        if from_date and to_date and from_date > to_date:
+            raise ValueError(f"From date ({from_date}) cannot be after To date ({to_date})")
+        return self

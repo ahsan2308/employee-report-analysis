@@ -1,6 +1,7 @@
 # Import all models here to ensure they're discovered by SQLAlchemy
 from app.models.db_models import Employee, Report, QdrantMapping, EmployeeAnalysis
 from app.models.import_models import CSVImportJob, ImportError, ImportStatus
+from app.models.vision_data_models import EmployeeVisionData
 
 __all__ = [
     'Employee', 
@@ -9,5 +10,6 @@ __all__ = [
     'EmployeeAnalysis',
     'CSVImportJob',
     'ImportError',
-    'ImportStatus'
+    'ImportStatus',
+    'EmployeeVisionData'
 ]

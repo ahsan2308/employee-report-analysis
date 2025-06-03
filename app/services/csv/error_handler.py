@@ -4,6 +4,8 @@ Error Handler Component
 from typing import List, Dict, Any, Optional, Tuple
 from enum import Enum
 from dataclasses import dataclass
+import json
+import traceback
 from pydantic import ValidationError
 
 from app.core.logger import logger
@@ -161,17 +163,40 @@ class ImportErrorHandler:
         Returns:
             List of ImportError models for database insertion
         """
-        return [
-            ImportError(
-                job_id=job_id,
-                row_number=error.row_number,
-                field_name=error.field_name,
-                error_message=error.error_message,
-                row_data=error.row_data
+        result = []
+        for error in self.errors:
+            # Ensure row_data is properly serializable
+            row_data = error.row_data
+            if row_data:
+                # Handle non-serializable objects in row_data
+                try:
+                    # Test if row_data is serializable
+                    json.dumps(row_data)
+                except (TypeError, ValueError):
+                    # If not, create a cleaned version with string representations
+                    cleaned_data = {}
+                    for k, v in row_data.items():
+                        if v is not None:
+                            try:
+                                json.dumps({k: v})
+                                cleaned_data[k] = v
+                            except (TypeError, ValueError):
+                                cleaned_data[k] = str(v)
+                        else:
+                            cleaned_data[k] = None
+                    row_data = cleaned_data
+
+            result.append(
+                ImportError(
+                    job_id=job_id,
+                    row_number=error.row_number,
+                    field_name=error.field_name,
+                    error_message=error.error_message,
+                    row_data=row_data
+                )
             )
-            for error in self.errors
-        ]
-        
+        return result
+    
     def should_abort(self, 
                    total_rows: int, 
                    error_threshold_percent: float = 10.0,
@@ -199,14 +224,24 @@ class ImportErrorHandler:
     
     def normalize_pydantic_errors(self, error: ValidationError, row_number: int, row_data: Dict[str, Any]) -> None:
         """Process Pydantic validation errors into standardized format."""
-        for err in error.errors():
-            field_path = ".".join(str(loc) for loc in err.get("loc", []))
-            message = err.get("msg", "Unknown validation error")
-            
+        try:
+            # Handle Pydantic validation errors
+            for err in error.errors():
+                field_path = ".".join(str(loc) for loc in err.get("loc", []))
+                message = err.get("msg", "Unknown validation error")
+                
+                self.add_validation_error(
+                    row_number=row_number,
+                    error_message=message,
+                    field_name=field_path if field_path else None,
+                    row_data=row_data
+                )
+        except Exception as e:
+            # Fallback if error normalization fails
+            logger.error(f"Error normalizing validation errors: {str(e)}\n{traceback.format_exc()}")
             self.add_validation_error(
                 row_number=row_number,
-                error_message=message,
-                field_name=field_path if field_path else None,
+                error_message=f"Validation error: {str(error)}",
                 row_data=row_data
             )
     

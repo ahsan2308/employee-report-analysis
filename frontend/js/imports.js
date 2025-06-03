@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements - Import Form
     const importForm = document.getElementById('importForm');
     const csvFileInput = document.getElementById('csvFile');
+    const csvTypeSelect = document.getElementById('csvType');
     const dryRunOption = document.getElementById('dryRunOption');
     const stopOnErrorOption = document.getElementById('stopOnErrorOption');
     const errorThresholdOption = document.getElementById('errorThresholdOption');
@@ -18,15 +19,37 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // DOM Elements - Job Details
     const jobFilename = document.getElementById('jobFilename');
+    const jobType = document.getElementById('jobType');
     const jobStatus = document.getElementById('jobStatus');
     const jobSubmitted = document.getElementById('jobSubmitted');
     const progressText = document.getElementById('progressText');
     const progressPercent = document.getElementById('progressPercent');
     const progressBar = document.getElementById('progressBar');
+    
+    // DOM Elements - General Metrics
+    const processedRows = document.getElementById('processedRows');
+    const successfulRows = document.getElementById('successfulRows');
+    const errorsCount = document.getElementById('errorsCount');
+    
+    // DOM Elements - Employee Report Metrics
+    const metricContainerEmployeeReport = document.getElementById('metricContainerEmployeeReport');
     const employeesCreated = document.getElementById('employeesCreated');
     const employeesUpdated = document.getElementById('employeesUpdated');
     const reportsCreated = document.getElementById('reportsCreated');
-    const errorsCount = document.getElementById('errorsCount');
+    const reportsUpdated = document.getElementById('reportsUpdated');
+    
+    // DOM Elements - Vision Data Metrics
+    const metricContainerVisionData = document.getElementById('metricContainerVisionData');
+    const visionRecordsCreated = document.getElementById('visionRecordsCreated');
+    const visionRecordsUpdated = document.getElementById('visionRecordsUpdated');
+    
+    // DOM Elements - Template Buttons
+    const employeeReportTemplateBtn = document.getElementById('employeeReportTemplateBtn');
+    const visionDataTemplateBtn = document.getElementById('visionDataTemplateBtn');
+    const employeeReportTemplate = document.getElementById('employeeReportTemplate');
+    const visionDataTemplate = document.getElementById('visionDataTemplate');
+    const downloadEmployeeReportTemplate = document.getElementById('downloadEmployeeReportTemplate');
+    const downloadVisionDataTemplate = document.getElementById('downloadVisionDataTemplate');
     
     // DOM Elements - Buttons
     const viewErrorsBtn = document.getElementById('viewErrorsBtn');
@@ -76,6 +99,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ------------- EVENT LISTENERS -------------
+    
+    // CSV Type selector change
+    csvTypeSelect.addEventListener('change', function() {
+        updateTemplateLink();
+    });
+    
+    // Template button clicks
+    employeeReportTemplateBtn.addEventListener('click', function() {
+        toggleTemplateSection('employee_report');
+    });
+    
+    visionDataTemplateBtn.addEventListener('click', function() {
+        toggleTemplateSection('vision_data');
+    });
+    
+    // Download template links
+    downloadEmployeeReportTemplate.addEventListener('click', function(event) {
+        event.preventDefault();
+        generateAndDownloadTemplate('employee_report');
+    });
+    
+    downloadVisionDataTemplate.addEventListener('click', function(event) {
+        event.preventDefault();
+        generateAndDownloadTemplate('vision_data');
+    });
     
     // Form submission
     importForm.addEventListener('submit', function(event) {
@@ -142,6 +190,39 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ------------- FUNCTIONS -------------
     
+    // Toggle template section
+    function toggleTemplateSection(type) {
+        if (type === 'employee_report') {
+            employeeReportTemplateBtn.classList.add('primary-button');
+            employeeReportTemplateBtn.classList.remove('secondary-button');
+            visionDataTemplateBtn.classList.add('secondary-button');
+            visionDataTemplateBtn.classList.remove('primary-button');
+            employeeReportTemplate.style.display = 'block';
+            visionDataTemplate.style.display = 'none';
+        } else {
+            employeeReportTemplateBtn.classList.add('secondary-button');
+            employeeReportTemplateBtn.classList.remove('primary-button');
+            visionDataTemplateBtn.classList.add('primary-button');
+            visionDataTemplateBtn.classList.remove('secondary-button');
+            employeeReportTemplate.style.display = 'none';
+            visionDataTemplate.style.display = 'block';
+        }
+    }
+    
+    // Update template link based on selected CSV type
+    function updateTemplateLink() {
+        const selectedType = csvTypeSelect.value;
+        if (selectedType === 'vision_data') {
+            downloadTemplateLink.setAttribute('data-type', 'vision_data');
+            // Also update the template section
+            toggleTemplateSection('vision_data');
+        } else {
+            // Default to employee_report for empty or employee_report
+            downloadTemplateLink.setAttribute('data-type', 'employee_report');
+            toggleTemplateSection('employee_report');
+        }
+    }
+    
     // Form validation
     function validateForm() {
         // Check if a file is selected
@@ -178,6 +259,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add checkbox values explicitly because FormData doesn't handle them well
             formData.set('dry_run', dryRunOption.checked);
             formData.set('stop_on_error', stopOnErrorOption.checked);
+            
+            // If CSV type is empty (auto-detect), remove it from the form data
+            if (!csvTypeSelect.value) {
+                formData.delete('csv_type');
+            }
             
             // Send the form data
             const result = await importApi.uploadCSV(formData);
@@ -240,16 +326,24 @@ document.addEventListener('DOMContentLoaded', function() {
         jobStatus.textContent = capitalizeFirst(jobDetails.status);
         jobStatus.className = `detail-value status-${jobDetails.status}`;
         
+        // Update CSV type if available
+        if (jobDetails.csv_type) {
+            jobType.textContent = formatCsvType(jobDetails.csv_type);
+            // Show appropriate metrics based on CSV type
+            updateMetricsDisplay(jobDetails);
+        } else {
+            jobType.textContent = 'Auto-Detect';
+        }
+        
         // Update progress bar and text
         const percentComplete = jobDetails.percent_complete || 0;
         progressBar.style.width = `${percentComplete}%`;
         progressPercent.textContent = `${percentComplete}%`;
         progressText.textContent = `Processing: ${jobDetails.processed_rows}/${jobDetails.total_rows} rows`;
         
-        // Update metrics
-        employeesCreated.textContent = jobDetails.employees_created;
-        employeesUpdated.textContent = jobDetails.employees_updated;
-        reportsCreated.textContent = jobDetails.reports_created;
+        // Update general metrics
+        processedRows.textContent = jobDetails.processed_rows;
+        successfulRows.textContent = jobDetails.successful_rows;
         errorsCount.textContent = jobDetails.error_count;
         
         // Show/hide error button based on error count
@@ -268,6 +362,51 @@ document.addEventListener('DOMContentLoaded', function() {
             progressBar.classList.remove('complete');
         } else {
             progressBar.classList.remove('complete', 'error');
+        }
+    }
+    
+    // Format CSV type for display
+    function formatCsvType(type) {
+        if (!type) return 'Unknown';
+        
+        switch (type) {
+            case 'employee_report':
+                return 'Employee Reports';
+            case 'vision_data':
+                return 'Vision Data';
+            default:
+                return capitalizeFirst(type.replace('_', ' '));
+        }
+    }
+    
+    // Update metrics display based on CSV type
+    function updateMetricsDisplay(jobDetails) {
+        const metrics = jobDetails.metrics || {};
+        
+        if (jobDetails.csv_type === 'employee_report') {
+            // Show Employee Report metrics
+            metricContainerEmployeeReport.style.display = 'flex';
+            metricContainerVisionData.style.display = 'none';
+            
+            // Update metrics values
+            employeesCreated.textContent = metrics.employees_created || 0;
+            employeesUpdated.textContent = metrics.employees_updated || 0;
+            reportsCreated.textContent = metrics.reports_created || 0;
+            reportsUpdated.textContent = metrics.reports_updated || 0;
+        } 
+        else if (jobDetails.csv_type === 'vision_data') {
+            // Show Vision Data metrics
+            metricContainerEmployeeReport.style.display = 'none';
+            metricContainerVisionData.style.display = 'flex';
+            
+            // Update metrics values
+            visionRecordsCreated.textContent = metrics.vision_records_created || 0;
+            visionRecordsUpdated.textContent = metrics.vision_records_updated || 0;
+        }
+        else {
+            // Hide specific metrics if type is unknown
+            metricContainerEmployeeReport.style.display = 'none';
+            metricContainerVisionData.style.display = 'none';
         }
     }
     
@@ -485,34 +624,63 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Generate and download CSV template
-    function generateAndDownloadTemplate() {
-        // Define template headers and a sample row
-        const headers = [
-            'Employee_ID', 'Name', 'Designation', 'BPS', 'Office_Hierarchy',
-            'From', 'To', 'Tasks_Completed', 'Impact', 'Challenges',
-            'Support_Required', 'Tasks_Planned', 'Confidence_Level', 'NTR'
-        ];
-        
-        const sampleRow = [
-            '101', 'John Doe', 'Software Engineer', 'BS-17', 'Technology>Development',
-            '2023-10-01', '2023-10-07', 'Completed API documentation', 'Improved developer onboarding',
-            'Integration issues with legacy systems', 'More testing resources', 'Start on new authentication module', '4', ''
-        ];
-        
-        // Create CSV content
-        let csvContent = headers.join(',') + '\n' + sampleRow.join(',');
-        
+    function generateAndDownloadTemplate(templateType = 'employee_report') {
+        if (templateType === 'employee_report') {
+            // Define template headers and a sample row for employee reports
+            const headers = [
+                'Employee_ID', 'Name', 'Designation', 'BPS', 'Office_Hierarchy',
+                'From', 'To', 'Tasks_Completed', 'Impact', 'Challenges',
+                'Support_Required', 'Tasks_Planned', 'Confidence_Level', 'NTR'
+            ];
+            
+            const sampleRow = [
+                '101', 'John Doe', 'Software Engineer', 'BS-17', 'Technology>Development',
+                '2023-10-01', '2023-10-07', 'Completed API documentation', 'Improved developer onboarding',
+                'Integration issues with legacy systems', 'More testing resources', 'Start on new authentication module', '4', ''
+            ];
+            
+            // Create CSV content
+            let csvContent = headers.join(',') + '\n' + sampleRow.join(',');
+            downloadCSV(csvContent, 'employee_reports_template.csv');
+        }
+        else if (templateType === 'vision_data') {
+            // Define template headers and a sample row for vision data
+            const headers = [
+                'Employee_ID', 'From_Date', 'To_Date', 'Main_Entity', 'Sub_Entities'
+            ];
+            
+            const sampleRow = [
+                '101', '2023-10-01', '2023-10-31', 'Tasks', 'Analysis:5, Reporting:3, Planning:2'
+            ];
+            
+            // Create CSV content
+            let csvContent = headers.join(',') + '\n' + sampleRow.join(',');
+            downloadCSV(csvContent, 'vision_data_template.csv');
+        }
+    }
+    
+    // Download CSV helper
+    function downloadCSV(csvContent, filename) {
         // Create download link
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.setAttribute('hidden', '');
         a.setAttribute('href', url);
-        a.setAttribute('download', 'employee_reports_template.csv');
+        a.setAttribute('download', filename);
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
     }
+    
+    // Download template based on current selection
+    downloadTemplateLink.addEventListener('click', function(event) {
+        event.preventDefault();
+        const templateType = downloadTemplateLink.getAttribute('data-type') || 
+                            csvTypeSelect.value || 
+                            'employee_report';
+        generateAndDownloadTemplate(templateType);
+    });
     
     // ------------- UTILITY FUNCTIONS -------------
     
@@ -582,4 +750,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.history.pushState({}, '', url.toString());
         }
     }
+    
+    // Initialize template link
+    updateTemplateLink();
 });

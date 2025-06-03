@@ -27,14 +27,24 @@
             <section id="csvImportSection" class="card">
                 <h2><i class="fas fa-file-import"></i> CSV Import</h2>
                 <p class="section-description">
-                    Upload CSV files to bulk import employee reports. The system will process the data and create or update employee records and reports.
+                    Upload CSV files to bulk import data. The system supports multiple data types and will automatically detect the correct format.
                 </p>
                 
                 <form id="importForm" class="import-form" enctype="multipart/form-data">
                     <div class="form-group">
+                        <label for="csvType"><i class="fas fa-list-alt"></i> CSV Type:</label>
+                        <select id="csvType" name="csv_type" class="form-control">
+                            <option value="">Auto-Detect (Recommended)</option>
+                            <option value="employee_report">Employee Reports</option>
+                            <option value="vision_data">Vision Data</option>
+                        </select>
+                        <small class="form-text">Select the type of data you're importing or leave as Auto-Detect.</small>
+                    </div>
+
+                    <div class="form-group">
                         <label for="csvFile"><i class="fas fa-file-csv"></i> Select CSV File:</label>
                         <input type="file" id="csvFile" name="file" accept=".csv" required class="form-control">
-                        <small class="form-text">Please upload a CSV file with the required columns. <a href="#" id="downloadTemplateLink">Download template</a>.</small>
+                        <small class="form-text">Please upload a CSV file with the required columns. <a href="#" id="downloadTemplateLink">Download template</a> for the selected type.</small>
                     </div>
 
                     <div class="import-options">
@@ -108,6 +118,10 @@
                         <span id="jobFilename" class="detail-value">filename.csv</span>
                     </div>
                     <div class="detail-row">
+                        <span class="detail-label">Type:</span>
+                        <span id="jobType" class="detail-value">auto-detect</span>
+                    </div>
+                    <div class="detail-row">
                         <span class="detail-label">Status:</span>
                         <span id="jobStatus" class="detail-value">running</span>
                     </div>
@@ -127,7 +141,23 @@
                     </div>
                 </div>
                 
-                <div class="metrics-container">
+                <div class="metrics-container" id="metricContainerGeneral">
+                    <div class="metric-item">
+                        <div class="metric-value" id="processedRows">0</div>
+                        <div class="metric-label">Processed Rows</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="successfulRows">0</div>
+                        <div class="metric-label">Successful Rows</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="errorsCount">0</div>
+                        <div class="metric-label">Errors</div>
+                    </div>
+                </div>
+                
+                <!-- Employee Report Metrics -->
+                <div class="metrics-container" id="metricContainerEmployeeReport" style="display: none;">
                     <div class="metric-item">
                         <div class="metric-value" id="employeesCreated">0</div>
                         <div class="metric-label">Employees Created</div>
@@ -141,8 +171,20 @@
                         <div class="metric-label">Reports Created</div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-value" id="errorsCount">0</div>
-                        <div class="metric-label">Errors</div>
+                        <div class="metric-value" id="reportsUpdated">0</div>
+                        <div class="metric-label">Reports Updated</div>
+                    </div>
+                </div>
+                
+                <!-- Vision Data Metrics -->
+                <div class="metrics-container" id="metricContainerVisionData" style="display: none;">
+                    <div class="metric-item">
+                        <div class="metric-value" id="visionRecordsCreated">0</div>
+                        <div class="metric-label">Vision Records Created</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="visionRecordsUpdated">0</div>
+                        <div class="metric-label">Vision Records Updated</div>
                     </div>
                 </div>
                 
@@ -214,109 +256,181 @@
             
             <section class="card" id="csvTemplateSection">
                 <h3><i class="fas fa-file-csv"></i> CSV Format Information</h3>
-                <p>Your CSV file should include the following columns:</p>
                 
-                <table class="template-table">
-                    <thead>
-                        <tr>
-                            <th>Column Name</th>
-                            <th>Description</th>
-                            <th>Required</th>
-                            <th>Example</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Employee_ID</td>
-                            <td>Unique identifier for the employee</td>
-                            <td>Optional</td>
-                            <td>101</td>
-                        </tr>
-                        <tr>
-                            <td>Name</td>
-                            <td>Full name of the employee</td>
-                            <td>Required</td>
-                            <td>John Smith</td>
-                        </tr>
-                        <tr>
-                            <td>Designation</td>
-                            <td>Job title or position</td>
-                            <td>Required</td>
-                            <td>Senior Developer</td>
-                        </tr>
-                        <tr>
-                            <td>BPS</td>
-                            <td>Grade of the employee</td>
-                            <td>Optional</td>
-                            <td>BS-17</td>
-                        </tr>
-                        <tr>
-                            <td>Office_Hierarchy</td>
-                            <td>Department or organizational structure</td>
-                            <td>Optional</td>
-                            <td>Technology>Development</td>
-                        </tr>
-                        <tr>
-                            <td>From</td>
-                            <td>Start date of report period (YYYY-MM-DD)</td>
-                            <td>Required</td>
-                            <td>2023-10-01</td>
-                        </tr>
-                        <tr>
-                            <td>To</td>
-                            <td>End date of report period (YYYY-MM-DD)</td>
-                            <td>Required</td>
-                            <td>2023-10-08</td>
-                        </tr>
-                        <tr>
-                            <td>Tasks_Completed</td>
-                            <td>Description of completed tasks</td>
-                            <td>Required*</td>
-                            <td>Implemented new feature</td>
-                        </tr>
-                        <tr>
-                            <td>Impact</td>
-                            <td>Impact of the completed tasks</td>
-                            <td>Optional</td>
-                            <td>Improved system performance</td>
-                        </tr>
-                        <tr>
-                            <td>Challenges</td>
-                            <td>Challenges faced during the period</td>
-                            <td>Optional</td>
-                            <td>Integration issues</td>
-                        </tr>
-                        <tr>
-                            <td>Support_Required</td>
-                            <td>Support or resources needed</td>
-                            <td>Optional</td>
-                            <td>Additional testing resources</td>
-                        </tr>
-                        <tr>
-                            <td>Tasks_Planned</td>
-                            <td>Tasks planned for next period</td>
-                            <td>Optional</td>
-                            <td>Finalize documentation</td>
-                        </tr>
-                        <tr>
-                            <td>Confidence_Level</td>
-                            <td>Confidence level (1-5)</td>
-                            <td>Optional</td>
-                            <td>4</td>
-                        </tr>
-                        <tr>
-                            <td>NTR</td>
-                            <td>Nothing to report reason</td>
-                            <td>Optional**</td>
-                            <td>On leave</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- Template selector for two formats -->
+                <div class="template-selector">
+                    <button id="employeeReportTemplateBtn" class="button primary-button active"><i class="fas fa-file-alt"></i> Employee Reports</button>
+                    <button id="visionDataTemplateBtn" class="button secondary-button"><i class="fas fa-eye"></i> Vision Data</button>
+                </div>
                 
-                <p class="notes">
-                    <small>* Either Tasks_Completed must be provided or NTR must be specified.</small><br>
-                    <small>** If NTR is provided, a report will not be created.</small>
-                </p>
+                <!-- Employee Report template information -->
+                <div id="employeeReportTemplate">
+                    <p>Your CSV file for Employee Reports should include the following columns:</p>
+                    
+                    <table class="template-table">
+                        <thead>
+                            <tr>
+                                <th>Column Name</th>
+                                <th>Description</th>
+                                <th>Required</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Employee_ID</td>
+                                <td>Unique identifier for the employee</td>
+                                <td>Optional</td>
+                                <td>101</td>
+                            </tr>
+                            <tr>
+                                <td>Name</td>
+                                <td>Full name of the employee</td>
+                                <td>Required</td>
+                                <td>John Smith</td>
+                            </tr>
+                            <tr>
+                                <td>Designation</td>
+                                <td>Job title or position</td>
+                                <td>Required</td>
+                                <td>Senior Developer</td>
+                            </tr>
+                            <tr>
+                                <td>BPS</td>
+                                <td>Grade of the employee</td>
+                                <td>Optional</td>
+                                <td>BS-17</td>
+                            </tr>
+                            <tr>
+                                <td>Office_Hierarchy</td>
+                                <td>Department or organizational structure</td>
+                                <td>Optional</td>
+                                <td>Technology>Development</td>
+                            </tr>
+                            <tr>
+                                <td>From</td>
+                                <td>Start date of report period (YYYY-MM-DD)</td>
+                                <td>Required</td>
+                                <td>2023-10-01</td>
+                            </tr>
+                            <tr>
+                                <td>To</td>
+                                <td>End date of report period (YYYY-MM-DD)</td>
+                                <td>Required</td>
+                                <td>2023-10-08</td>
+                            </tr>
+                            <tr>
+                                <td>Tasks_Completed</td>
+                                <td>Description of completed tasks</td>
+                                <td>Required*</td>
+                                <td>Implemented new feature</td>
+                            </tr>
+                            <tr>
+                                <td>Impact</td>
+                                <td>Impact of the completed tasks</td>
+                                <td>Optional</td>
+                                <td>Improved system performance</td>
+                            </tr>
+                            <tr>
+                                <td>Challenges</td>
+                                <td>Challenges faced during the period</td>
+                                <td>Optional</td>
+                                <td>Integration issues</td>
+                            </tr>
+                            <tr>
+                                <td>Support_Required</td>
+                                <td>Support or resources needed</td>
+                                <td>Optional</td>
+                                <td>Additional testing resources</td>
+                            </tr>
+                            <tr>
+                                <td>Tasks_Planned</td>
+                                <td>Tasks planned for next period</td>
+                                <td>Optional</td>
+                                <td>Finalize documentation</td>
+                            </tr>
+                            <tr>
+                                <td>Confidence_Level</td>
+                                <td>Confidence level (1-5)</td>
+                                <td>Optional</td>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>NTR</td>
+                                <td>Nothing to report reason</td>
+                                <td>Optional**</td>
+                                <td>On leave</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <p class="notes">
+                        <small>* Either Tasks_Completed must be provided or NTR must be specified.</small><br>
+                        <small>** If NTR is provided, a report will not be created.</small>
+                    </p>
+                    
+                    <div class="action-buttons">
+                        <a href="#" id="downloadEmployeeReportTemplate" class="button small-button"><i class="fas fa-download"></i> Download Template</a>
+                    </div>
+                </div>
+                
+                <!-- Vision Data template information -->
+                <div id="visionDataTemplate" style="display: none;">
+                    <p>Your CSV file for Vision Data should include the following columns:</p>
+                    
+                    <table class="template-table">
+                        <thead>
+                            <tr>
+                                <th>Column Name</th>
+                                <th>Description</th>
+                                <th>Required</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Employee_ID</td>
+                                <td>Unique identifier for the employee (must exist in system)</td>
+                                <td>Required</td>
+                                <td>101</td>
+                            </tr>
+                            <tr>
+                                <td>From_Date</td>
+                                <td>Start date of data period (YYYY-MM-DD)</td>
+                                <td>Required</td>
+                                <td>2023-10-01</td>
+                            </tr>
+                            <tr>
+                                <td>To_Date</td>
+                                <td>End date of data period (YYYY-MM-DD)</td>
+                                <td>Required</td>
+                                <td>2023-10-31</td>
+                            </tr>
+                            <tr>
+                                <td>Main_Entity</td>
+                                <td>Primary entity type being reported</td>
+                                <td>Required</td>
+                                <td>Tasks</td>
+                            </tr>
+                            <tr>
+                                <td>Sub_Entities</td>
+                                <td>Sub-entity counts in format "Name1:Count1, Name2:Count2"</td>
+                                <td>Required</td>
+                                <td>Analysis:5, Reporting:3, Planning:2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <p class="notes">
+                        <small>* Employee_ID must match an existing employee in the system.</small><br>
+                        <small>* Main_Entity should be one of: Tasks, Persons, Organizations, etc.</small><br>
+                        <small>* Sub_Entities must follow the format "Name1:Count1, Name2:Count2" exactly.</small>
+                    </p>
+                    
+                    <div class="action-buttons">
+                        <a href="#" id="downloadVisionDataTemplate" class="button small-button"><i class="fas fa-download"></i> Download Template</a>
+                    </div>
+                </div>
             </section>
         </main>
         
