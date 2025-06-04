@@ -40,12 +40,13 @@ class StructuredPrompts:
     # Specific prompt template
     
     @staticmethod
-    def employee_analysis_prompt(report_text: str, similar_reports: List[str] = None) -> str:
+    def employee_analysis_prompt(report_text: str, vision_data: Dict[str, Any] = None, similar_reports: List[str] = None) -> str:
         """
         Generate a prompt for analyzing an employee report.
         
         Args:
             report_text: The report text to analyze
+            vision_data: Optional vision system tracking data for the employee
             similar_reports: Optional list of similar previous reports for context
             
         Returns:
@@ -202,6 +203,22 @@ EMPLOYEE REPORT:
 {report_text}
 ---"""
 
+        # Add vision data for the current report period if available
+        if vision_data and "current_data" in vision_data and vision_data["current_data"]:
+            vision_context = f"""
+OBJECTIVE TRACKING DATA (FROM VISION SYSTEM):
+
+Current Report Period Activity Data:
+"""
+            for item in vision_data["current_data"]:
+                vision_context += f"""
+- Time Period: {item["from_date"]} to {item["to_date"]}
+  Main Activity: {item["main_entity"]}
+  Details: {json.dumps(item["sub_entities"], indent=2)}
+"""
+            
+            prompt += vision_context
+
         # Context from similar reports if provided
         if similar_reports and len(similar_reports) > 0:
             similar_context = "\n\n".join([f"Similar Report #{i+1}:\n{report}" for i, report in enumerate(similar_reports)])
@@ -222,6 +239,35 @@ Analyze these previous reports to identify:
 - Do not write anything in the first person or use "I" or "we" in your analysis
 
 Focus your primary analysis on the current report while using these patterns for context and calibration of what's reasonable to expect.
+"""
+
+        # Add previous vision data after similar reports if available
+        if vision_data and "previous_data" in vision_data and vision_data["previous_data"]:
+            previous_vision_context = f"""
+HISTORICAL ACTIVITY DATA (FROM VISION SYSTEM):
+Previous Periods:
+"""
+            for item in vision_data["previous_data"]:
+                previous_vision_context += f"""
+- Time Period: {item["from_date"]} to {item["to_date"]}
+  Main Activity: {item["main_entity"]}
+  Details: {json.dumps(item["sub_entities"], indent=2)}
+"""
+            
+            prompt += previous_vision_context
+            
+            # Add specific instructions for using vision data
+            prompt += """
+USING VISION SYSTEM DATA IN YOUR ANALYSIS:
+When analyzing the report, use the vision system data to:
+- Cross-validate claims made in the report with the tracked activities
+- Identify any discrepancies between what the employee reports and what the vision system tracked
+- Assess credibility by comparing self-reported activities with objective tracking data
+- Note if major accomplishments mentioned in the report align with the main entities tracked
+- Identify shifts in the employee's focus areas over time
+- Consider vision data as an objective source when evaluating the credibility of claims
+
+This objective tracking data should factor into your credibility assessment and overall analysis.
 """
 
         # Final instructions for structured output

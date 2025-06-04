@@ -246,7 +246,8 @@ class LLMService:
 
     def analyze_report(
         self, 
-        report_text: str, 
+        report_text: str,
+        vision_data: Dict[str, Any], 
         similar_reports: List[str] = None,
         use_custom_format: bool = False,
         custom_format: Optional[Dict[str, Any]] = None,
@@ -265,7 +266,7 @@ class LLMService:
             Analysis results
         """
         # Generate the task-specific prompt using the prompt template
-        prompt = StructuredPrompts.employee_analysis_prompt(report_text, similar_reports)
+        prompt = StructuredPrompts.employee_analysis_prompt(report_text, vision_data, similar_reports)
         logger.debug(report_text)
         try:
             # Decide whether to use the custom format or the Pydantic model

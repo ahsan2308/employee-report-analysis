@@ -1,8 +1,10 @@
-from typing import List, Dict, Optional, Set
+from typing import List, Dict, Optional, Set, Any
 from uuid import UUID
 from sqlalchemy import text
+from datetime import date, timedelta
 from app.database import get_database
 from app.models.db_models import Report
+from app.models.vision_data_models import EmployeeVisionData
 from app.core.logger import logger
 
 def get_complete_reports_by_ids(report_ids: List[str]) -> List[str]:
@@ -74,3 +76,68 @@ def get_reports_for_vector_results(search_results: List[Dict]) -> List[str]:
     
     # Fetch complete reports
     return get_complete_reports_by_ids(report_ids)
+
+def get_employee_vision_data(employee_id: int, report_date: date, num_previous_weeks: int = 4) -> Dict[str, Any]:
+    """
+    Fetch vision data for an employee for the given report date and previous periods.
+    
+    Args:
+        employee_id: The ID of the employee
+        report_date: The date of the report (to match with to_date in vision data)
+        num_previous_weeks: Number of previous weeks worth of data to include
+        
+    Returns:
+        Dictionary containing current data (matching report date) and previous data
+    """
+    db_instance = get_database()
+    
+    # Calculate cutoff date for previous data (4 weeks before report date by default)
+    previous_data_cutoff = report_date - timedelta(weeks=num_previous_weeks)
+    
+    result = {
+        "date_context": {
+            "report_date": report_date.isoformat(),
+        },
+        "current_data": [],  # Data where to_date matches report_date
+        "previous_data": []  # Data where to_date is before report_date but after cutoff
+    }
+    
+    try:
+        with db_instance.create_session() as session:
+            # Get current data - records where to_date exactly matches the report_date
+            current_data = session.query(EmployeeVisionData).filter(
+                EmployeeVisionData.employee_id == employee_id,
+                EmployeeVisionData.to_date == report_date
+            ).all()
+            
+            # Format current data
+            for record in current_data:
+                result["current_data"].append({
+                    "main_entity": record.main_entity,
+                    "sub_entities": record.sub_entities,
+                    "from_date": record.from_date.isoformat() if record.from_date else None,
+                    "to_date": record.to_date.isoformat() if record.to_date else None
+                })
+            
+            # Get previous data - records with to_date before report_date but after cutoff
+            previous_data = session.query(EmployeeVisionData).filter(
+                EmployeeVisionData.employee_id == employee_id,
+                EmployeeVisionData.to_date < report_date,
+                EmployeeVisionData.to_date >= previous_data_cutoff
+            ).order_by(EmployeeVisionData.to_date.desc()).all()
+            
+            # Format previous data
+            for record in previous_data:
+                result["previous_data"].append({
+                    "main_entity": record.main_entity,
+                    "sub_entities": record.sub_entities,
+                    "from_date": record.from_date.isoformat() if record.from_date else None,
+                    "to_date": record.to_date.isoformat() if record.to_date else None
+                })
+                
+            logger.info(f"Retrieved vision data for employee {employee_id}: {len(result['current_data'])} current records, {len(result['previous_data'])} previous records")
+            return result
+            
+    except Exception as e:
+        logger.error(f"Error fetching vision data for employee {employee_id}: {e}")
+        return result
