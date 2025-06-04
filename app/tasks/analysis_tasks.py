@@ -70,7 +70,8 @@ def analyze_report_task(self, task_id: str):
         similar_reports_chunks = search_reports(
             query=report.report_text,
             employee_id=report.employee_id,
-            top_k=3
+            top_k=3,
+            group_by_report=True  # Enable grouping by report_id to get one chunk per report
         )
         similar_texts_chunks = [r.get("text", "") for r in similar_reports_chunks]
         

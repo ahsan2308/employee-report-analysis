@@ -487,7 +487,7 @@ def add_report_to_vector_store(report_id=None, employee_id=None, report_date=Non
         logger.error(f"Failed to add report to vector store: {str(e)}")
         return False
 
-def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold: float = 0.3, bypass_threshold: bool = False) -> List[Dict[str, Any]]:
+def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold: float = 0.3, bypass_threshold: bool = False, group_by_report: bool = False) -> List[Dict[str, Any]]:
     """
     Searches for the most relevant reports based on the query.
     
@@ -497,6 +497,7 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
         top_k: Maximum number of results to return
         score_threshold: Minimum similarity score (0-1) for results
         bypass_threshold: If True, ignores the score threshold (for debugging)
+        group_by_report: If True, returns at most one chunk per unique report_id
     """
     try:
         # Get vector store and use context manager pattern for proper cleanup
@@ -536,13 +537,21 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
             
             logger.debug(f"Searching for: '{query}' with employee_id={employee_id}, filter={filter_params}")
             
+            # Define search parameters
+            search_params = {
+                "collection_name": COLLECTION_NAME,
+                "query_vector": query_embedding,
+                "limit": top_k,
+                "filter_params": filter_params
+            }
+            
+            # Add group_by parameter if enabled
+            if group_by_report:
+                search_params["group_by"] = {"field": "report_id"}
+                logger.debug("Using group_by=report_id to deduplicate results by report")
+            
             # Search for similar vectors
-            results = vector_store.search(
-                collection_name=COLLECTION_NAME,
-                query_vector=query_embedding,
-                limit=top_k,
-                filter_params=filter_params
-            )
+            results = vector_store.search(**search_params)
             
             logger.debug(f"Raw search returned {len(results)} results before filtering")
             
