@@ -203,11 +203,43 @@ EMPLOYEE REPORT:
 {report_text}
 ---"""
 
-        # Add pre-formatted vision data if available
+        # Split vision data into current and historical parts if available
+        current_data = ""
+        historical_data = ""
+        
+        if formatted_vision_data:
+            parts = formatted_vision_data.split("Historical Activity Data:")
+            if len(parts) > 1:
+                current_data = parts[0].strip()
+                historical_data = parts[1].strip()  # Remove the "Historical Activity Data:" prefix
+            else:
+                current_data = formatted_vision_data.strip()
+                
+        # Add both current and historical vision data together if available, with clear headings
         if formatted_vision_data:
             prompt += f"""
-OBJECTIVE TRACKING DATA (FROM VISION SYSTEM):
-{formatted_vision_data}
+OBJECTIVE TRACKING DATA FROM VISION SYSTEM:
+
+=== CURRENT PERIOD ACTIVITY DATA ===
+{current_data}
+
+=== HISTORICAL ACTIVITY DATA ===
+{historical_data}
+"""
+
+        # Add instructions for using vision data immediately after
+        prompt += """
+USING VISION SYSTEM DATA IN YOUR ANALYSIS:
+When analyzing the report, use the vision system data to:
+- Cross-validate claims made in the report with the tracked activities
+- Identify any discrepancies between what the employee reports and what the vision system tracked
+- Assess credibility by comparing self-reported activities with objective tracking data
+- Note if major accomplishments mentioned in the report align with the main entities tracked
+- Identify shifts in the employee's focus areas over time
+- Consider vision data as an objective source when evaluating the credibility of claims
+- Compare current period data with historical data to identify trends or changes in work patterns
+
+This objective tracking data should factor into your credibility assessment and overall analysis.
 """
 
         # Context from similar reports if provided
@@ -230,21 +262,6 @@ Analyze these previous reports to identify:
 - Do not write anything in the first person or use "I" or "we" in your analysis
 
 Focus your primary analysis on the current report while using these patterns for context and calibration of what's reasonable to expect.
-"""
-
-        # Add specific instructions for using vision data if vision data is provided
-        if formatted_vision_data:
-            prompt += """
-USING VISION SYSTEM DATA IN YOUR ANALYSIS:
-When analyzing the report, use the vision system data to:
-- Cross-validate claims made in the report with the tracked activities
-- Identify any discrepancies between what the employee reports and what the vision system tracked
-- Assess credibility by comparing self-reported activities with objective tracking data
-- Note if major accomplishments mentioned in the report align with the main entities tracked
-- Identify shifts in the employee's focus areas over time
-- Consider vision data as an objective source when evaluating the credibility of claims
-
-This objective tracking data should factor into your credibility assessment and overall analysis.
 """
 
         # Final instructions for structured output
