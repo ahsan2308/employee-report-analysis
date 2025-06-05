@@ -1,0 +1,34 @@
+
+Current Report Period Activity Data:
+
+- Time Period: 2025-06-04 to 2025-06-05
+  Main Activity: Persons
+  Details:
+    - Persons: 5 (New Person records created)
+    - Numbers: 3 (Numbers linked with Persons (Mobile, Residence, Office, Intercom etc.))
+    - Addresses: 2 (Addresses linked with Persons (Present, Permanent, Native, Office etc.))
+    - POIs: 1 (Persons marked as Person of Interest)
+
+- Time Period: 2025-06-04 to 2025-06-05
+  Main Activity: Tasks
+  Details:
+    - Tasks: 7 (New Tasks created)
+    - Task Updates: 4 (Updates added with Tasks)
+    - Assigned/CC: 2 (Tasks assigned/CCed by the employee)
+
+Historical Activity Data:
+
+- Time Period: 2025-05-29 to 2025-06-04
+  Main Activity: Persons
+  Details:
+    - Persons: 10 (New Person records created)
+    - Numbers: 5 (Numbers linked with Persons (Mobile, Residence, Office, Intercom etc.))
+    - Pictures: 2 (Pictures uploaded with Persons (Profile Pictures))
+    - Features: 1 (Physical features added with Persons (Complexion, Height, Face description, Appearance etc.))
+
+- Time Period: 2025-05-22 to 2025-05-29
+  Main Activity: Organizations
+  Details:
+    - Orgs: 3 (New organization records created)
+    - Particulars: 1 (Particulars / organized and comprehensive details added with organizations)
+    - OPs: 2 (Organization profiles created)

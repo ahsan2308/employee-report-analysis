@@ -246,10 +246,27 @@ class QdrantProvider(BaseVectorStore):
             logger.error(f"Error adding documents batch to collection '{collection_name}': {e}")
             return False
 
-    def search(self, collection_name: str, query_vector: List[float], limit: int, filter_params: Optional[Dict] = None) -> List[Dict[str, Any]]:
-        """Search for similar vectors in the store."""
+    def search(self, collection_name: str, query_vector: List[float], limit: int, 
+               filter_params: Optional[Dict] = None, group_by: Optional[str] = None,
+               group_size: Optional[int] = None) -> List[Dict[str, Any]]:
+        """
+        Search for similar vectors in the store.
+        
+        Args:
+            collection_name: Name of the collection to search
+            query_vector: Vector to search for
+            limit: Maximum number of results to return
+            filter_params: Additional filtering parameters
+            group_by: Field name to group results by (requires Qdrant v1.11.0+)
+            group_size: Number of results per group (requires Qdrant v1.11.0+)
+            
+        Returns:
+            List of results with payloads and similarity scores
+        """
         try:
             self._ensure_connected()
+            
+            # Convert our filter_params to Qdrant Filter format
             query_filter = None
             if filter_params:
                 if "must" in filter_params:
@@ -263,28 +280,80 @@ class QdrantProvider(BaseVectorStore):
                                 )
                             )
                     query_filter = Filter(must=must_conditions)
-            
-            response = self.client.search(
-                collection_name=collection_name,
-                query_vector=query_vector,
-                limit=limit,
-                query_filter=query_filter,
-                with_payload=True,
-                with_vectors=False,
-            )
-            
-            results = []
-            for point in response:
-                result = point.payload.copy()
-                result["score"] = point.score
-                result["id"] = point.id
-                results.append(result)
-            
-            return results
+
+            # If group_by is provided, use the query_points_groups method (recommended for v1.13.3+)
+            if group_by:
+                logger.debug(f"Using query_points_groups with group_by='{group_by}'")
+                
+                # Set default group_size if not provided
+                group_size = group_size or 1
+                
+                try:
+                    # Use the recommended query_points_groups method
+                    response = self.client.query_points_groups(
+                        collection_name=collection_name,
+                        query=query_vector,
+                        group_by=group_by,          # Field to group by
+                        group_size=group_size,      # Top K points per group
+                        limit=limit,                # Number of groups to return
+                        query_filter=query_filter,  # Filter to apply
+                        with_payload=True           # Include payload in results
+                    )
+                    
+                    # Debug the response structure
+                    logger.debug(f"Response type from query_points_groups: {type(response)}")
+                    
+                    # Process response from grouped search
+                    results = []
+                    
+                    # FIXED: Properly iterate over response.groups (not response itself)
+                    for group in response.groups:
+                        # Skip empty groups
+                        if not group.hits:
+                            continue
+                            
+                        # Get the top-scoring point from each group
+                        top_point = group.hits[0]
+                        
+                        # Create result dict from the point
+                        result = top_point.payload.copy()  
+                        result["score"] = top_point.score
+                        result["id"] = top_point.id
+                        
+                        results.append(result)
+                    
+                    return results
+                    
+                except Exception as e:
+                    logger.error(f"Error searching collection '{collection_name}': {e}")
+                    return []
+        
+        # Regular non-grouped search
+            else:
+                logger.debug("Using regular search method")
+                response = self.client.search(
+                    collection_name=collection_name,
+                    query_vector=query_vector,
+                    limit=limit,
+                    query_filter=query_filter,
+                    with_payload=True,
+                    with_vectors=False,
+                )
+                
+                # Process results from regular search
+                results = []
+                for point in response:
+                    result = point.payload.copy()
+                    result["score"] = point.score
+                    result["id"] = point.id
+                    results.append(result)
+                    
+                return results
+        
         except Exception as e:
             logger.error(f"Error searching collection '{collection_name}': {e}")
             return []
-    
+
     def retrieve_document(self, collection_name: str, document_id: str) -> Optional[Dict[str, Any]]:
         """Retrieve a document by its ID."""
         try:

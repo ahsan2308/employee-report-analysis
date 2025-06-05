@@ -545,10 +545,11 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
                 "filter_params": filter_params
             }
             
-            # Add group_by parameter if enabled
+            # Add group_by parameter if enabled - corrected to match Qdrant API (v1.11.0+)
             if group_by_report:
-                search_params["group_by"] = {"field": "report_id"}
-                logger.debug("Using group_by=report_id to deduplicate results by report")
+                search_params["group_by"] = "report_id"  # String field name, not a dict
+                search_params["group_size"] = 1  # Get only the top-scoring chunk per report
+                logger.debug("Using group_by='report_id', group_size=1 to deduplicate results by report")
             
             # Search for similar vectors
             results = vector_store.search(**search_params)
