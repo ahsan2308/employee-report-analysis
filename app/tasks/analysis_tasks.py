@@ -12,6 +12,7 @@ from app.models.db_models import Report, Employee, EmployeeAnalysis
 from app.services.vector_store_service import search_reports
 from app.services.db_service import get_reports_for_vector_results, get_employee_vision_data
 from app.services.llm_service import get_llm_service
+from app.services.additional_services import filter_vision_data, format_vision_data_for_prompt
 from app.core.logger import logger
 
 
@@ -77,12 +78,21 @@ def analyze_report_task(self, task_id: str):
         
         # Retrieving Full Reports
         similar_texts = get_reports_for_vector_results(similar_texts_chunks)
-        vision_data = get_employee_vision_data(report.employee_id, report.report_date, num_previous_weeks=4)
+        
+        # Get vision data, filter it, and format it
+        raw_vision_data = get_employee_vision_data(report.employee_id, report.report_date, num_previous_weeks=4)
+        filtered_vision_data = filter_vision_data(raw_vision_data)
+        formatted_vision_data = format_vision_data_for_prompt(filtered_vision_data)
 
         # Get LLM service and generate analysis
         logger.info(f"Calling LLM service for analysis (task: {task_id})")
         llm_service = get_llm_service()
-        analysis_result = llm_service.analyze_report(report.report_text, vision_data, similar_texts, num_ctx=40000)
+        analysis_result = llm_service.analyze_report(
+            report.report_text, 
+            formatted_vision_data, 
+            similar_texts, 
+            num_ctx=40000
+        )
         
         # Extract key fields
         sentiment = analysis_result.get("sentiment", "neutral")
