@@ -214,11 +214,11 @@ EMPLOYEE REPORT:
             parts = formatted_vision_data.split("Historical Activity Data:")
             if len(parts) > 1:
                 current_data = parts[0].strip()
-                historical_data = parts[1].strip()  # Remove the "Historical Activity Data:" prefix
+                historical_data = parts[1].strip()  
             else:
                 current_data = formatted_vision_data.strip()
                 
-        # Add both current and historical vision data together if available, with clear headings
+        # Add both current and historical vision data together if available
         if formatted_vision_data:
             prompt += f"""
 OBJECTIVE TRACKING DATA FROM VISION SYSTEM:
