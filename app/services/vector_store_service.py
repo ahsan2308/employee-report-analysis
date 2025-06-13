@@ -525,16 +525,29 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
         # Get vector store and use context manager pattern for proper cleanup
         vector_store = get_vector_store()
         
+        # Use context manager pattern for automatic cleanup
         with vector_store:
-            # Generate embedding for the query
+            # Add debug logging for embedding generation
             logger.debug(f"Generating embedding for query: '{query}'")
-            query_embedding = get_embedding(query, is_query=True)
+            query_embedding = get_embedding(query, is_query=True)  # Set is_query=True for search queries
             
+            # Check if embedding is valid
             if not query_embedding or len(query_embedding) == 0:
                 logger.error("Generated embedding is empty or None")
                 return []
                 
-            # Construct the base filter for employee ID
+            # Log embedding details for debugging
+            embedding_sample = str(query_embedding[:3]) + "..." + str(query_embedding[-3:])
+            embedding_stats = {
+                "length": len(query_embedding),
+                "type": type(query_embedding).__name__,
+                "min": np.min(query_embedding) if isinstance(query_embedding, (list, np.ndarray)) else "N/A",
+                "max": np.max(query_embedding) if isinstance(query_embedding, (list, np.ndarray)) else "N/A",
+                "has_zeros_only": all(x == 0 for x in query_embedding) if isinstance(query_embedding, (list, np.ndarray)) else "N/A"
+            }
+            logger.debug(f"Embedding generated - sample: {embedding_sample}, stats: {embedding_stats}")
+            
+            # Construct the filter for employee ID
             filter_params = {
                 "must": [
                     {
@@ -548,6 +561,7 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
             if cutoff_date:
                 # Convert cutoff_date to timestamp for range filtering
                 if isinstance(cutoff_date, date):
+                    # Convert to datetime at midnight
                     cutoff_datetime = datetime.combine(cutoff_date, datetime.min.time())
                     cutoff_ts = cutoff_datetime.timestamp()
                 elif isinstance(cutoff_date, datetime):
@@ -556,12 +570,19 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
                     logger.error(f"Unsupported cutoff_date type: {type(cutoff_date)}")
                     cutoff_ts = None
                 
+                logger.info(f"DEBUG: Using cutoff date timestamp: {cutoff_ts} for {cutoff_date}")
+                
                 # Use timestamp field for filtering
                 if cutoff_ts:
                     filter_params["must"].append({
                         "key": "report_date_ts",
                         "range": {"lt": cutoff_ts}
                     })
+                
+                # Also log the complete filter
+                logger.info(f"DEBUG: Complete filter: {json.dumps(filter_params)}")
+            
+            logger.debug(f"Searching for: '{query}' with employee_id={employee_id}, filter={filter_params}")
             
             # Define search parameters
             search_params = {
@@ -571,23 +592,30 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
                 "filter_params": filter_params
             }
             
-            # Add group_by parameter if enabled
+            # Add group_by parameter if enabled - corrected to match Qdrant API (v1.11.0+)
             if group_by_report:
-                search_params["group_by"] = "report_id"
-                search_params["group_size"] = 1
+                search_params["group_by"] = "report_id"  # String field name, not a dict
+                search_params["group_size"] = 1  # Get only the top-scoring chunk per report
+                logger.debug("Using group_by='report_id', group_size=1 to deduplicate results by report")
             
             # Search for similar vectors
             results = vector_store.search(**search_params)
-            logger.debug(f"Search returned {len(results)} results before filtering")
+            
+            logger.debug(f"Raw search returned {len(results)} results before filtering")
+            
+            # Log all scores to check threshold
+            if results:
+                scores = [f"{r.get('score', 0):.4f}" for r in results]
+                logger.debug(f"Result scores: {', '.join(scores)}")
             
             # Filter by score threshold (unless bypassed)
             if bypass_threshold:
+                logger.debug("Score threshold check bypassed for debugging")
                 filtered_results = results
             else:
                 filtered_results = [r for r in results if r.get("score", 0) >= score_threshold]
                 logger.debug(f"After threshold filtering: {len(filtered_results)} results remain")
             
-            # Sort results by date (newest first)
             try:
                 sorted_results = sorted(
                     filtered_results,
@@ -597,7 +625,13 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
                 logger.info(f"Search for '{query}' found {len(sorted_results)} results")
             except Exception as date_err:
                 logger.error(f"Error sorting results by date: {date_err}")
-                sorted_results = filtered_results
+                sorted_results = filtered_results  # Fall back to unsorted results if sorting fails
+                    
+            # Log the first result if available for debugging
+            if sorted_results:
+                logger.debug(f"Top result: {sorted_results[0]}")
+            else:
+                logger.debug("No results found after processing")
                 
             return sorted_results
     except Exception as e:
