@@ -7,7 +7,7 @@ from app.models.db_models import Report
 from app.models.vision_data_models import EmployeeVisionData
 from app.core.logger import logger
 
-def get_complete_reports_by_ids(report_ids: List[str]) -> List[str]:
+def get_complete_reports_by_ids(report_ids: List[str]) -> List[Dict[str, Any]]:
     """
     Fetch complete reports from the database given a list of report IDs.
     This is useful when we have chunks from vector search and need to
@@ -17,7 +17,7 @@ def get_complete_reports_by_ids(report_ids: List[str]) -> List[str]:
         report_ids: List of report IDs (as strings)
         
     Returns:
-        List of complete report texts
+        List of dictionaries containing report text and metadata
     """
     # Early return if no report IDs
     if not report_ids:
@@ -47,7 +47,11 @@ def get_complete_reports_by_ids(report_ids: List[str]) -> List[str]:
                         
                     report = session.query(Report).filter(Report.report_id == uuid_id).first()
                     if report and report.report_text:
-                        reports.append(report.report_text)
+                        reports.append({
+                            "text": report.report_text,
+                            "date": report.report_date,
+                            "report_id": str(report.report_id)
+                        })
                     else:
                         logger.debug(f"Report not found or has no text: {report_id}")
                 except Exception as e:
@@ -58,15 +62,15 @@ def get_complete_reports_by_ids(report_ids: List[str]) -> List[str]:
         logger.error(f"Database error when retrieving reports: {e}")
         return []
 
-def get_reports_for_vector_results(search_results: List[Dict]) -> List[str]:
+def get_reports_for_vector_results(search_results: List[Dict]) -> List[Dict[str, Any]]:
     """
-    Extract report IDs from vector search results and fetch the complete reports.
+    Extract report IDs from vector search results and fetch the complete reports with date information.
     
     Args:
         search_results: Results from vector search, containing report_id in metadata
         
     Returns:
-        List of complete report texts
+        List of dictionaries containing report text and metadata
     """
     # Extract report IDs from search results
     report_ids = []
@@ -141,3 +145,63 @@ def get_employee_vision_data(employee_id: int, report_date: date, num_previous_w
     except Exception as e:
         logger.error(f"Error fetching vision data for employee {employee_id}: {e}")
         return result
+
+def get_recent_employee_reports(employee_id: int, current_report_date: date, 
+                               exclude_report_id: str = None, limit: int = None, 
+                               max_weeks: int = 52) -> List[Dict[str, Any]]:
+    """
+    Fetch the most recent reports for an employee before the given date.
+    
+    Args:
+        employee_id: The employee's ID
+        current_report_date: The date of the current report
+        exclude_report_id: Optional ID of current report to exclude
+        limit: Maximum number of reports to return (most recent first)
+        max_weeks: Maximum age of reports to consider in weeks (default: 1 year)
+        
+    Returns:
+        List of dictionaries containing report text and metadata
+    """
+    db_instance = get_database()
+    reports = []
+    
+    try:
+        with db_instance.create_session() as session:
+            # Build query to get recent reports - use max_weeks as an upper bound only
+            query = session.query(Report).filter(
+                Report.employee_id == employee_id,
+                Report.report_date < current_report_date,
+                Report.report_date >= current_report_date - timedelta(weeks=max_weeks)
+            ).order_by(Report.report_date.desc())
+            
+            # Exclude current report if provided
+            if exclude_report_id:
+                try:
+                    uuid_id = UUID(exclude_report_id)
+                    query = query.filter(Report.report_id != uuid_id)
+                except ValueError:
+                    logger.warning(f"Invalid UUID format for exclude_report_id: {exclude_report_id}")
+            
+            # Apply limit if provided
+            if limit and isinstance(limit, int) and limit > 0:
+                query = query.limit(limit)
+            
+            # Execute query
+            recent_reports = query.all()
+            
+            # Extract report texts and dates
+            for report in recent_reports:
+                if report and report.report_text:
+                    reports.append({
+                        "text": report.report_text,
+                        "date": report.report_date,
+                        "report_id": str(report.report_id)
+                    })
+                    
+            logger.info(f"Retrieved {len(reports)} recent reports for employee {employee_id}" +
+                       (f" (limited to {limit})" if limit else ""))
+            return reports
+            
+    except Exception as e:
+        logger.error(f"Error fetching recent reports for employee {employee_id}: {e}")
+        return []

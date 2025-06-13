@@ -2,7 +2,7 @@
 Celery tasks for asynchronous report analysis.
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 
 from app.worker.celery_app import celery_app
@@ -10,7 +10,7 @@ from app.database import get_database
 from app.models.task_models import BackgroundTask, TaskStatus
 from app.models.db_models import Report, Employee, EmployeeAnalysis
 from app.services.vector_store_service import search_reports
-from app.services.db_service import get_reports_for_vector_results, get_employee_vision_data
+from app.services.db_service import get_reports_for_vector_results, get_employee_vision_data, get_recent_employee_reports
 from app.services.llm_service import get_llm_service
 from app.services.additional_services import filter_vision_data, format_vision_data_for_prompt
 from app.core.logger import logger
@@ -65,19 +65,48 @@ def analyze_report_task(self, task_id: str):
             if not employee:
                 raise ValueError(f"Employee {report.employee_id} not found")
         
-        # Perform analysis - using existing analysis code
-        # Get similar reports for context
-        logger.info(f"Finding similar reports for context (task: {task_id})")
+        # Perform analysis
+        # Get recent reports for context - with clearer parameters
+        target_recent_reports = 4  # Target number of recent reports
+        target_similar_reports = 3  # Target number of similar historical reports
+        
+        logger.info(f"Fetching {target_recent_reports} most recent reports for employee {report.employee_id} (task: {task_id})")
+        recent_report_data = get_recent_employee_reports(
+            employee_id=report.employee_id,
+            current_report_date=report.report_date,
+            exclude_report_id=str(report_id),
+            limit=target_recent_reports  
+        )
+        
+        recent_count = len(recent_report_data)
+        logger.info(f"Found {recent_count} recent reports for context")
+        
+        # Determine cutoff date based on the oldest recent report or a fallback
+        if recent_report_data and recent_count > 0:
+            # Find the oldest report date in the returned data
+            oldest_recent_report_date = min(report_data["date"] for report_data in recent_report_data)
+            logger.info(f"Using oldest recent report date as cutoff: {oldest_recent_report_date}")
+        else:
+            # No recent reports, don't restrict the date range at all
+            oldest_recent_report_date = None
+            logger.info("No recent reports found, searching entire vector database without date restriction")
+        
+        # Get similar reports for context - use the dynamic cutoff date (or None for unrestricted search)
+        logger.info(f"Finding similar reports for context with cutoff: {oldest_recent_report_date or 'None (unrestricted)'} (task: {task_id})")
         similar_reports_chunks = search_reports(
             query=report.report_text,
             employee_id=report.employee_id,
-            top_k=3,
-            group_by_report=True  # Enable grouping by report_id to get one chunk per report
+            top_k=target_similar_reports,  # Get exact number needed
+            group_by_report=True,  # Ensure one chunk per report
+            cutoff_date=oldest_recent_report_date  # Only pass a date when we have recent reports
         )
-        similar_texts_chunks = [r.get("text", "") for r in similar_reports_chunks]
         
-        # Retrieving Full Reports
-        similar_texts = get_reports_for_vector_results(similar_texts_chunks)
+        
+        # Now get the complete reports based on the search results
+        similar_report_data = get_reports_for_vector_results(similar_reports_chunks)
+        
+        logger.info(f"Found {len(similar_report_data)} semantically similar reports for context")
+        logger.info(f"Found {(similar_report_data)}")
         
         # Get vision data, filter it, and format it
         raw_vision_data = get_employee_vision_data(report.employee_id, report.report_date, num_previous_weeks=4)
@@ -89,8 +118,9 @@ def analyze_report_task(self, task_id: str):
         llm_service = get_llm_service()
         analysis_result = llm_service.analyze_report(
             report.report_text, 
-            formatted_vision_data, 
-            similar_texts, 
+            formatted_vision_data,
+            recent_report_data,     # Pass recent reports with date info
+            similar_report_data,    # Pass similar reports with date info
             num_ctx=40000
         )
         

@@ -248,6 +248,7 @@ class LLMService:
         self, 
         report_text: str,
         formatted_vision_data: str = None, 
+        recent_reports: List[Dict[str, Any]] = None,
         similar_reports: List[str] = None,
         use_custom_format: bool = False,
         custom_format: Optional[Dict[str, Any]] = None,
@@ -259,17 +260,19 @@ class LLMService:
         Args:
             report_text: The report text to analyze
             formatted_vision_data: Pre-formatted vision data string
-            similar_reports: List of similar previous reports for context
+            recent_reports: List of recent reports with date information
+            similar_reports: List of semantically similar historical reports
             use_custom_format: If True, use custom_format instead of the Pydantic model
             custom_format: Optional custom response format to use instead of Pydantic model
             
         Returns:
             Analysis results
         """
-        # Generate the task-specific prompt using the prompt template with pre-formatted vision data
+        # Generate the task-specific prompt using the prompt template
         prompt = StructuredPrompts.employee_analysis_prompt(
             report_text, 
             formatted_vision_data, 
+            recent_reports,
             similar_reports
         )
         logger.debug(report_text)

@@ -4,7 +4,7 @@ import threading
 import psutil
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct, Filter
-from qdrant_client.models import FieldCondition, MatchValue
+from qdrant_client.models import FieldCondition, MatchValue, Range
 
 from app.base.base_vector_store import BaseVectorStore
 from app.core.logger import logger
@@ -279,6 +279,14 @@ class QdrantProvider(BaseVectorStore):
                                     match=MatchValue(value=condition["match"]["value"])
                                 )
                             )
+                        elif "key" in condition and "range" in condition:
+                            # Simply pass the range parameters directly to the Range constructor
+                            must_conditions.append(
+                                FieldCondition(
+                                    key=condition["key"],
+                                    range=Range(**condition["range"])
+                                )
+                            )
                     query_filter = Filter(must=must_conditions)
 
             # If group_by is provided, use the query_points_groups method (recommended for v1.13.3+)
@@ -479,8 +487,15 @@ class QdrantProvider(BaseVectorStore):
                                 match=MatchValue(value=condition["match"]["value"])
                             )
                         )
+                    elif "key" in condition and "range" in condition:
+                        must_conditions.append(
+                            FieldCondition(
+                                key=condition["key"],
+                                range=Range(**condition["range"])
+                            )
+                        )
                 query_filter = Filter(must=must_conditions)
-            
+        
             count_result = self.client.count(
                 collection_name=collection_name,
                 count_filter=query_filter

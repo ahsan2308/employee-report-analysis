@@ -40,14 +40,17 @@ class StructuredPrompts:
     # Specific prompt template
     
     @staticmethod
-    def employee_analysis_prompt(report_text: str, formatted_vision_data: str = None, similar_reports: List[str] = None) -> str:
+    def employee_analysis_prompt(report_text: str, formatted_vision_data: str = None, 
+                           recent_reports: List[Dict[str, Any]] = None, 
+                           similar_reports: List[Dict[str, Any]] = None) -> str:
         """
         Generate a prompt for analyzing an employee report.
         
         Args:
             report_text: The report text to analyze
             formatted_vision_data: Optional pre-formatted string of vision system tracking data
-            similar_reports: Optional list of similar previous reports for context
+            recent_reports: List of recent report dictionaries, each containing text and date
+            similar_reports: List of similar historical report dictionaries with text and date
             
         Returns:
             Prompt for employee report analysis
@@ -242,24 +245,50 @@ When analyzing the report, use the vision system data to:
 This objective tracking data should factor into your credibility assessment and overall analysis.
 """
 
-        # Context from similar reports if provided
-        if similar_reports and len(similar_reports) > 0:
-            similar_context = "\n\n".join([f"Similar Report #{i+1}:\n{report}" for i, report in enumerate(similar_reports)])
+        # Add recent reports with dates if provided
+        if recent_reports and len(recent_reports) > 0:
+            recent_context = "\n\n".join([
+                f"Recent Report from {report['date'].isoformat()}:\n{report['text']}" 
+                for report in recent_reports
+            ])
+            
             prompt += f"""
-SIMILAR PREVIOUS REPORTS FOR CONTEXT:
+RECENT REPORTS (FROM THE PAST FEW WEEKS):
+---
+{recent_context}
+---
+
+These recent reports show the employee's work and progress over the past few weeks.
+Pay special attention to:
+- Tasks promised in previous weeks and whether they were completed in subsequent weeks
+- Recent challenges and whether they persist in the current report
+- Continuity in the employee's work across reports
+- Changes in confidence levels or sentiment over time
+- Recurring resource requests that haven't been addressed
+"""
+
+        # Add semantically similar reports with dates if provided
+        if similar_reports and len(similar_reports) > 0:
+            similar_context = "\n\n".join([
+                f"Similar Historical Report from {report['date'].isoformat()}:\n{report['text']}" 
+                for report in similar_reports
+            ])
+            
+            prompt += f"""
+SEMANTICALLY SIMILAR HISTORICAL REPORTS:
 ---
 {similar_context}
 ---
 
-Analyze these previous reports to identify:
-- Patterns in confidence levels (increasing, decreasing, or fluctuating)
-- Recurring resource requests that haven't been addressed
-- Previously mentioned challenges that are still present
-- Progress on tasks that span multiple weeks
-- Changes in tone or sentiment over time
+These historical reports are semantically similar to the current report.
+Analyze these reports to identify:
+- Patterns in how the employee handles similar tasks or situations
+- Common challenges the employee faces in similar contexts
+- Typical outcomes when working on similar projects
+- Consistent patterns in their reporting style and detail level
 - Patterns of exaggeration by comparing claimed achievements against actual delivered outcomes
 - Consistency in how the employee describes their impact and contributions over time
-- Do not write anything in the first person or use "I" or "we" in your analysis
+- Recurring topics and projects the employee has been working on
 
 Focus your primary analysis on the current report while using these patterns for context and calibration of what's reasonable to expect.
 """
@@ -305,6 +334,8 @@ CRITICAL INSTRUCTIONS:
    - Actionable with clear recommendations that address credibility concerns when present
    - Well-structured following the exact format above
    - ALWAYS ensure your response is valid JSON with no extraneous text
+   - Do not write anything in the first person or use "I" or "we" in your analysis
+
 
 Your analysis will help managers understand employee progress, determine where support is needed, and identify potential credibility concerns that require attention.
 """
