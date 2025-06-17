@@ -21,8 +21,8 @@ COLLECTION_NAME = config.get("collection_name", "employee_reports", section="vec
 
 # Get batch processing configuration using the config provider pattern
 VECTOR_BATCH_MODE = config.get("enabled", True, section="vector_db.batch_processing")
-VECTOR_EMBEDDING_BATCH_SIZE = config.get("embedding_batch_size", 50, section="vector_db.batch_processing")
-VECTOR_UPSERT_BATCH_SIZE = config.get("upsert_batch_size", 100, section="vector_db.batch_processing")
+VECTOR_EMBEDDING_BATCH_SIZE = config.get("embedding_batch_size", 256, section="vector_db.batch_processing")
+VECTOR_UPSERT_BATCH_SIZE = config.get("upsert_batch_size", 1000, section="vector_db.batch_processing")
 VECTOR_BATCH_MAX_RETRIES = config.get("max_attempts", 3, section="vector_db.batch_processing.retry")
 
 def chunk_text(text: str, max_chunk_size: int = 500) -> List[str]:
@@ -508,7 +508,7 @@ def add_report_to_vector_store(report_id=None, employee_id=None, report_date=Non
 
 def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold: float = 0.3, 
                    bypass_threshold: bool = False, group_by_report: bool = False,
-                   cutoff_date: Optional[date] = None) -> List[Dict[str, Any]]:
+                   cutoff_date: Optional[date] = None, search_params: Optional[Dict] = None) -> List[Dict[str, Any]]:
     """
     Searches for the most relevant reports based on the query.
     
@@ -520,6 +520,7 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
         bypass_threshold: If True, ignores the score threshold (for debugging)
         group_by_report: If True, returns at most one chunk per unique report_id
         cutoff_date: If provided, only returns reports older than this date
+        search_params: Optional search parameters (e.g., {"hnsw_ef": 128})
     """
     try:
         # Get vector store and use context manager pattern for proper cleanup
@@ -585,7 +586,7 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
             logger.debug(f"Searching for: '{query}' with employee_id={employee_id}, filter={filter_params}")
             
             # Define search parameters
-            search_params = {
+            search_params_dict = {
                 "collection_name": COLLECTION_NAME,
                 "query_vector": query_embedding,
                 "limit": top_k,
@@ -594,12 +595,17 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
             
             # Add group_by parameter if enabled - corrected to match Qdrant API (v1.11.0+)
             if group_by_report:
-                search_params["group_by"] = "report_id"  # String field name, not a dict
-                search_params["group_size"] = 1  # Get only the top-scoring chunk per report
+                search_params_dict["group_by"] = "report_id"  # String field name, not a dict
+                search_params_dict["group_size"] = 1  # Get only the top-scoring chunk per report
                 logger.debug("Using group_by='report_id', group_size=1 to deduplicate results by report")
             
+            # Add search parameters if provided
+            if search_params:
+                search_params_dict["search_params"] = search_params
+                logger.debug(f"Using custom search parameters: {search_params}")
+        
             # Search for similar vectors
-            results = vector_store.search(**search_params)
+            results = vector_store.search(**search_params_dict)
             
             logger.debug(f"Raw search returned {len(results)} results before filtering")
             

@@ -14,7 +14,11 @@ from app.services.db_service import get_reports_for_vector_results, get_employee
 from app.services.llm_service import get_llm_service
 from app.services.additional_services import filter_vision_data, format_vision_data_for_prompt
 from app.core.logger import logger
+from app.core.config_provider import get_config_provider
 
+# Get configuration
+config = get_config_provider()
+VECTOR_SEARCH_HNSW_EF = config.get("hnsw_ef", 128, section="vector_db.search")
 
 @celery_app.task(bind=True)
 def analyze_report_task(self, task_id: str):
@@ -98,7 +102,8 @@ def analyze_report_task(self, task_id: str):
             employee_id=report.employee_id,
             top_k=target_similar_reports,  # Get exact number needed
             group_by_report=True,  # Ensure one chunk per report
-            cutoff_date=oldest_recent_report_date  # Only pass a date when we have recent reports
+            cutoff_date=oldest_recent_report_date,  # Only pass a date when we have recent reports
+            search_params={"hnsw_ef": VECTOR_SEARCH_HNSW_EF}  # Add optimized search parameters
         )
         
         

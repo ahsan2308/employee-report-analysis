@@ -5,6 +5,8 @@ import psutil
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct, Filter
 from qdrant_client.models import FieldCondition, MatchValue, Range
+from qdrant_client.models import PayloadSchemaType, HnswConfigDiff, SearchParams
+from qdrant_client.models import KeywordIndexParams, TextIndexParams
 
 from app.base.base_vector_store import BaseVectorStore
 from app.core.logger import logger
@@ -175,11 +177,58 @@ class QdrantProvider(BaseVectorStore):
             self._ensure_connected()
             collections = self.client.get_collections()
             if collection_name not in [c.name for c in collections.collections]:
+                # Create collection with just vector parameters first
                 self.client.create_collection(
                     collection_name=collection_name,
-                    vectors_config=VectorParams(size=vector_size, distance=Distance.COSINE)
+                    vectors_config=VectorParams(
+                        size=vector_size, 
+                        distance=Distance.COSINE,
+                        hnsw_config=HnswConfigDiff(
+                            m=32,
+                            ef_construct=256
+                        )
+                    )
                 )
                 logger.info(f"Collection '{collection_name}' created with vector size {vector_size}")
+                
+                # Set up payload schema with more specific index configurations
+
+                
+                # ------------- employee_id (tenant-aware keyword) -------------
+                self.client.create_payload_index(
+                    collection_name=collection_name,
+                    field_name="employee_id",
+                    field_schema=KeywordIndexParams(
+                        type=PayloadSchemaType.KEYWORD,
+                        is_tenant=True  
+                    )
+                )
+                
+                # ------------- report_id (plain keyword) -----------------------
+                self.client.create_payload_index(
+                    collection_name=collection_name,
+                    field_name="report_id",
+                    field_schema=PayloadSchemaType.KEYWORD
+                )
+                
+                # ------------- report_date_ts (numeric) ------------------------
+                self.client.create_payload_index(
+                    collection_name=collection_name,
+                    field_name="report_date_ts",
+                    field_schema=PayloadSchemaType.FLOAT
+                )
+                
+                # ------------- text (full-text BM25 index) ---------------------
+                self.client.create_payload_index(
+                    collection_name=collection_name,
+                    field_name="text",
+                    field_schema=TextIndexParams(
+                        type="text",
+                        tokenizer="word" 
+                    )
+                )
+                
+                logger.info(f"Optimized payload indexes created for collection '{collection_name}'")
             return True
         except Exception as e:
             logger.error(f"Error setting up collection '{collection_name}': {e}")
@@ -248,7 +297,7 @@ class QdrantProvider(BaseVectorStore):
 
     def search(self, collection_name: str, query_vector: List[float], limit: int, 
                filter_params: Optional[Dict] = None, group_by: Optional[str] = None,
-               group_size: Optional[int] = None) -> List[Dict[str, Any]]:
+               group_size: Optional[int] = None, search_params: Optional[Dict] = None) -> List[Dict[str, Any]]:
         """
         Search for similar vectors in the store.
         
@@ -259,6 +308,7 @@ class QdrantProvider(BaseVectorStore):
             filter_params: Additional filtering parameters
             group_by: Field name to group results by (requires Qdrant v1.11.0+)
             group_size: Number of results per group (requires Qdrant v1.11.0+)
+            search_params: Optional search parameters for fine-tuning (e.g., {"hnsw_ef": 128})
             
         Returns:
             List of results with payloads and similarity scores
@@ -266,6 +316,12 @@ class QdrantProvider(BaseVectorStore):
         try:
             self._ensure_connected()
             
+            # Process search parameters
+            qdrant_search_params = None
+            if search_params:
+                qdrant_search_params = SearchParams(**search_params)
+                logger.debug(f"Using search parameters: {search_params}")
+        
             # Convert our filter_params to Qdrant Filter format
             query_filter = None
             if filter_params:
@@ -305,7 +361,8 @@ class QdrantProvider(BaseVectorStore):
                         group_size=group_size,      # Top K points per group
                         limit=limit,                # Number of groups to return
                         query_filter=query_filter,  # Filter to apply
-                        with_payload=True           # Include payload in results
+                        with_payload=True,          # Include payload in results
+                        search_params=qdrant_search_params  # Add search parameters
                     )
                     
                     # Debug the response structure
@@ -346,6 +403,7 @@ class QdrantProvider(BaseVectorStore):
                     query_filter=query_filter,
                     with_payload=True,
                     with_vectors=False,
+                    search_params=qdrant_search_params  # Add search parameters
                 )
                 
                 # Process results from regular search

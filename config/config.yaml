@@ -20,6 +20,10 @@ vector_db:
   storage_path: ./qdrant_data  # Change to '/qdrant/storage' in Docker
   collection_name: employee_reports  # Collection name for storing vectors
 
+  # Search parameters
+  search:
+    hnsw_ef: 128  # Controls search depth (higher = more accurate but slower)
+
   batch_processing:
     enabled: true
     embedding_batch_size: 50     # Maximum number of chunks to embed in one call
