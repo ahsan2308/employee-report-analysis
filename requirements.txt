@@ -79,7 +79,7 @@ portalocker==2.10.1
 posthog==3.20.0
 prometheus_client==0.21.1
 prompt_toolkit==3.0.51
-protobuf==5.29.3
+protobuf==5.29.5
 psutil==7.0.0
 psycopg2-binary==2.9.10
 pyasn1==0.6.1
@@ -101,7 +101,7 @@ PyYAML==6.0.2
 qdrant-client==1.13.3
 redis==5.2.1
 redis-cli==1.0.1
-requests>=2.32.4
+requests==2.32.4
 requests-oauthlib==2.0.0
 rich==13.9.4
 rsa==4.9
