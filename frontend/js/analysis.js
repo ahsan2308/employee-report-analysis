@@ -325,6 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log("Full analysis data received:", data);
         console.log("Credibility assessment:", data.credibility_assessment);
+        console.log("Performance assessment:", data.performance_assessment);
         
         // Extract data from analysis result
         const { 
@@ -336,7 +337,8 @@ document.addEventListener('DOMContentLoaded', function() {
             challenges_json,
             topics,
             action_items,
-            credibility_assessment
+            credibility_assessment,
+            performance_assessment
         } = data;
         
         // Determine sentiment text based on score
@@ -367,13 +369,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const metaInfo = document.createElement('div');
         metaInfo.className = 'analysis-meta';
         
+        // Add performance rating badge if available - add this FIRST
+        if (performance_assessment && performance_assessment.rating) {
+            const performanceBadge = document.createElement('div');
+            performanceBadge.className = `performance-rating performance-${performance_assessment.rating.toLowerCase()}`;
+            performanceBadge.innerHTML = `<strong>Performance:</strong> ${performance_assessment.rating}<span class="tooltip-trigger"><i class="fas fa-info-circle"></i><span class="tooltip">Overall assessment of employee performance based on task completion, impact, challenge management, and planning quality.</span></span>`;
+            metaInfo.appendChild(performanceBadge);
+        }
+        
         // Add sentiment badge with tooltip
         const sentimentBadge = document.createElement('div');
         sentimentBadge.className = `sentiment ${sentimentClass.toLowerCase()}`;
         sentimentBadge.innerHTML = `<strong>Sentiment:</strong> ${sentimentText}<span class="tooltip-trigger"><i class="fas fa-info-circle"></i><span class="tooltip">Overall tone of the report, derived from language used, confidence levels expressed, and balance between achievements and challenges.</span></span>`;
         metaInfo.appendChild(sentimentBadge);
         
-        // Add risk level badge with tooltip - Fix by putting everything on one line without linebreaks
+        // Add risk level badge with tooltip
         const riskBadge = document.createElement('div');
         riskBadge.className = `risk-level risk-${risk_level.toLowerCase()}`;
         riskBadge.innerHTML = `<strong>Risk Level:</strong> ${risk_level}<span class="tooltip-trigger"><i class="fas fa-info-circle"></i><span class="tooltip">Assessment of concerns requiring management attention. Considers unaddressed resource requests, low confidence levels, external challenges, and negative patterns.</span></span>`;
@@ -398,7 +408,82 @@ document.addEventListener('DOMContentLoaded', function() {
         header.appendChild(metaInfo);
         mainContainer.appendChild(header);
 
-        // Add credibility assessment section if available (place before risk assessment)
+        // Add performance assessment section if available - NOW BEFORE credibility assessment
+        if (performance_assessment) {
+            const performanceSection = document.createElement('div');
+            performanceSection.className = 'performance-assessment-section analysis-section';
+            
+            // Create section heading with icon and tooltip
+            performanceSection.innerHTML = `<h5>Performance Assessment
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">An evaluation of the employee's overall performance based on task completion, impact, challenge management, and planning quality.</span>
+                </span>
+            </h5>`;
+            
+            // Add summary paragraph
+            const summaryPara = document.createElement('p');
+            summaryPara.textContent = performance_assessment.summary;
+            performanceSection.appendChild(summaryPara);
+            
+            // Add key strengths if available
+            if (performance_assessment.key_strengths && performance_assessment.key_strengths.length > 0) {
+                const strengthsContainer = document.createElement('div');
+                strengthsContainer.className = 'strengths-container';
+                
+                const strengthsTitle = document.createElement('h6');
+                strengthsTitle.innerHTML = `Key Strengths:
+                    <span class="tooltip-trigger">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip">Notable areas where the employee demonstrates strong performance and capabilities.</span>
+                    </span>`;
+                strengthsContainer.appendChild(strengthsTitle);
+                
+                const strengthsList = document.createElement('ul');
+                strengthsList.className = 'strengths-list';
+                
+                performance_assessment.key_strengths.forEach(strength => {
+                    const strengthItem = document.createElement('li');
+                    strengthItem.className = 'flag-item';
+                    strengthItem.innerHTML = `<i class="fas fa-check-circle"></i> ${strength}`;
+                    strengthsList.appendChild(strengthItem);
+                });
+                
+                strengthsContainer.appendChild(strengthsList);
+                performanceSection.appendChild(strengthsContainer);
+            }
+            
+            // Add improvement areas if available
+            if (performance_assessment.improvement_areas && performance_assessment.improvement_areas.length > 0) {
+                const improvementContainer = document.createElement('div');
+                improvementContainer.className = 'improvement-areas-container';
+                
+                const improvementTitle = document.createElement('h6');
+                improvementTitle.innerHTML = `Areas for Improvement:
+                    <span class="tooltip-trigger">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip">Specific areas where the employee could enhance their performance and effectiveness.</span>
+                    </span>`;
+                improvementContainer.appendChild(improvementTitle);
+                
+                const improvementList = document.createElement('ul');
+                improvementList.className = 'improvement-list';
+                
+                performance_assessment.improvement_areas.forEach(area => {
+                    const areaItem = document.createElement('li');
+                    areaItem.className = 'improvement-item';
+                    areaItem.innerHTML = `<i class="fas fa-arrow-alt-circle-up"></i> ${area}`;
+                    improvementList.appendChild(areaItem);
+                });
+                
+                improvementContainer.appendChild(improvementList);
+                performanceSection.appendChild(improvementContainer);
+            }
+            
+            mainContainer.appendChild(performanceSection);
+        }
+        
+        // Add credibility assessment section if available
         if (credibility_assessment) {
             const credibilitySection = document.createElement('div');
             credibilitySection.className = 'credibility-assessment-section analysis-section';

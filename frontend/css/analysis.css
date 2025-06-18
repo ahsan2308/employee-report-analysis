@@ -120,9 +120,23 @@
 
 .analysis-meta {
     display: flex;
-    gap: 1.75rem; /* Reduced from 2.5rem to make badges fit better */
+    flex-wrap: wrap; /* Add this to ensure badges wrap to the next line */
+    gap: 1rem; /* Reduced from 1.75rem to make badges fit better */
     margin-top: 0.75rem;
-    align-items: flex-start; /* Keeps this alignment property */
+    margin-bottom: 0.5rem; /* Add bottom margin to ensure content doesn't crowd when wrapped */
+    align-items: flex-start;
+}
+
+/* Make the badges have consistent width for better alignment */
+.sentiment, .risk-level, .credibility-level, .consistency-level, .performance-rating {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    margin-bottom: 0.5rem; /* Add spacing between rows when wrapped */
 }
 
 .analysis-section {
@@ -142,11 +156,14 @@
     to { opacity: 1; transform: translateX(0); }
 }
 
+/* Update animation delays for new section order */
 .analysis-section:nth-child(2) { animation-delay: 0.1s; }
-.analysis-section:nth-child(3) { animation-delay: 0.2s; }  /* Adjusted for credibility section */
-.analysis-section:nth-child(4) { animation-delay: 0.3s; }  /* Topics */
-.analysis-section:nth-child(5) { animation-delay: 0.4s; }  /* Achievements */
-.analysis-section:nth-child(6) { animation-delay: 0.5s; }  /* Challenges */
+.analysis-section:nth-child(3) { animation-delay: 0.2s; }  /* Performance section now */
+.analysis-section:nth-child(4) { animation-delay: 0.3s; }  /* Credibility section now */
+.analysis-section:nth-child(5) { animation-delay: 0.4s; }  /* Risk assessment */
+.analysis-section:nth-child(6) { animation-delay: 0.5s; }  /* Topics */
+.analysis-section:nth-child(7) { animation-delay: 0.6s; }  /* Achievements */
+.analysis-section:nth-child(8) { animation-delay: 0.7s; }  /* Challenges */
 
 .analysis-section:hover {
     background-color: #f1f5f9;
@@ -170,14 +187,14 @@
     font-weight: 900;
 }
 
-/* Update section icons - fix the shield icon issue */
+/* Update section icons to include performance assessment */
 .risk-explanation h5::before { content: '\f071'; color: var(--warning); }
 .topics-section h5::before { content: '\f02b'; color: var(--primary); }
 .achievements-section h5::before { content: '\f091'; color: var(--success); }
 .challenges-section h5::before { content: '\f0e7'; color: var(--warning); }
 .action-items-section h5::before { content: '\f044'; color: var(--primary); }
-/* Use a different icon that's definitely available in Font Awesome */
 .credibility-assessment-section h5::before { content: '\f06e'; color: var(--primary); }
+.performance-assessment-section h5::before { content: '\f201'; color: var(--primary); } /* Chart icon for performance */
 
 /* Topics display */
 .topics-container {
@@ -662,4 +679,89 @@
     .sentiment, .risk-level, .credibility-level, .consistency-level {
         width: fit-content;
     }
+}
+
+/* Performance assessment section styling */
+.performance-rating-container {
+    margin: 1rem 0;
+}
+
+.performance-rating {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.performance-rating::before {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+.performance-high {
+    color: var(--success);
+    background-color: rgba(21, 128, 61, 0.1);
+}
+.performance-high::before { content: '\f058'; } /* circle-check icon */
+
+.performance-medium {
+    color: var(--warning);
+    background-color: rgba(180, 83, 9, 0.1);
+}
+.performance-medium::before { content: '\f111'; } /* circle icon */
+
+.performance-low {
+    color: var(--danger);
+    background-color: rgba(185, 28, 28, 0.1);
+}
+.performance-low::before { content: '\f057'; } /* times-circle icon */
+
+/* Strengths and improvement areas styling */
+.strengths-container,
+.improvement-areas-container {
+    margin-top: 1rem;
+}
+
+.strengths-container h6,
+.improvement-areas-container h6 {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.strengths-list,
+.improvement-list {
+    list-style: none;
+    padding-left: 0.5rem;
+}
+
+.strength-item,
+.improvement-item {
+    padding: 6px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.95rem;
+    border-bottom: 1px dashed var(--border);
+}
+
+.strength-item:last-child,
+.improvement-item:last-child {
+    border-bottom: none;
+}
+
+.strength-item i {
+    color: var(--success);
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+.improvement-item i {
+    color: var(--primary);
+    font-size: 0.9rem;
+    margin-top: 4px;
 }

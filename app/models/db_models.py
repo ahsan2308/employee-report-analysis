@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Index, Float, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Index, Float, DateTime, Text, ARRAY
 from sqlalchemy.orm import relationship
 from app.models.base import Base
 from app.models.base import schema_name
@@ -68,13 +68,19 @@ class EmployeeAnalysis(Base):
     # Core analysis fields
     sentiment_score = Column(Float, nullable=True)
     risk_level = Column(String, nullable=True)  # "low", "medium", "high"
-    risk_explanation = Column(String, nullable=True)  
+    risk_explanation = Column(Text, nullable=True)  
     
-    # Credibility assessment fields
-    credibility_rating = Column(String, nullable=True)  # "high", "medium", "low"
-    credibility_explanation = Column(String, nullable=True)
-    consistency_score = Column(String, nullable=True)  # "high", "medium", "low"
-    exaggeration_flags = Column(JSONB, nullable=True)  # JSON array of exaggerated claims
+    # Existing fields for credibility assessment
+    credibility_rating = Column(String, nullable=True)
+    credibility_explanation = Column(Text, nullable=True)
+    exaggeration_flags = Column(JSONB, nullable=True)
+    consistency_score = Column(String, nullable=True)
+    
+    # Fields for performance assessment
+    performance_rating = Column(String, nullable=True)
+    performance_summary = Column(Text, nullable=True)
+    performance_strengths = Column(JSONB, nullable=True)
+    performance_improvement_areas = Column(JSONB, nullable=True)
     
     # Complete analysis output
     full_analysis_json = Column(JSONB, nullable=False)

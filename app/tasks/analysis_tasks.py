@@ -145,6 +145,13 @@ def analyze_report_task(self, task_id: str):
         exaggeration_flags = credibility_assessment.get("exaggeration_flags", [])
         consistency_score = credibility_assessment.get("consistency_score", "medium")
         
+        # Extract performance assessment fields
+        performance_assessment = analysis_result.get("performance_assessment", {})
+        performance_rating = performance_assessment.get("rating", "medium")
+        performance_summary = performance_assessment.get("summary", "")
+        performance_strengths = performance_assessment.get("key_strengths", [])
+        performance_improvement_areas = performance_assessment.get("improvement_areas", [])
+        
         # Calculate sentiment score
         sentiment_score = 0.0
         if sentiment == "positive":
@@ -171,7 +178,11 @@ def analyze_report_task(self, task_id: str):
                 credibility_rating=credibility_rating,
                 credibility_explanation=credibility_explanation,
                 exaggeration_flags=exaggeration_flags,
-                consistency_score=consistency_score
+                consistency_score=consistency_score,
+                performance_rating=performance_rating,
+                performance_summary=performance_summary,
+                performance_strengths=performance_strengths,
+                performance_improvement_areas=performance_improvement_areas
             )
             
             session.add(new_analysis)
@@ -197,6 +208,12 @@ def analyze_report_task(self, task_id: str):
                     "explanation": credibility_explanation,
                     "exaggeration_flags": exaggeration_flags,
                     "consistency_score": consistency_score
+                },
+                "performance_assessment": {
+                    "rating": performance_rating,
+                    "summary": performance_summary,
+                    "key_strengths": performance_strengths,
+                    "improvement_areas": performance_improvement_areas
                 }
             }
 

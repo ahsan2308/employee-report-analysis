@@ -201,6 +201,33 @@ GUIDELINES FOR CREDIBILITY RATING:
    - "medium": Reports with 1-2 specific instances of claims that seem unrealistically positive or vague on important metrics.
    - "low": Reports with multiple clear examples of significant exaggeration or claims that contradict other sections.
 
+8. PERFORMANCE ASSESSMENT: Provide a concise evaluation of the employee's overall performance:
+   - Rate the overall performance as "high", "medium", or "low"
+   - Write a brief summary that holistically evaluates the employee's performance
+   - Identify notable strengths demonstrated in the report
+   - Identify specific areas where performance could be enhanced
+   - Consider the following factors when determining the performance rating:
+     * Task completion quality and quantity
+     * Impact and significance of reported outcomes
+     * Effectiveness in handling challenges
+     * Quality of forward planning
+     * Level of initiative and proactivity shown
+     * Alignment of work with organizational objectives
+   
+GUIDELINES FOR PERFORMANCE RATING:
+   - "high": Strong achievements with significant impact, effective challenge management, and solid planning
+   - "medium": Adequate task completion with moderate impact, some challenges handled effectively, reasonable planning
+   - "low": Limited achievements, minimal impact, ineffective challenge management, or poor planning
+   
+IMPORTANT PERFORMANCE ASSESSMENT CONSIDERATIONS:
+   - The credibility assessment MUST influence the performance rating - lower credibility should result in a more conservative performance assessment
+   - Focus on synthesizing an overall performance evaluation without repeating details from other sections
+   - Be balanced - identify both strengths and improvement areas regardless of overall rating
+   - Base your assessment on what was actually accomplished rather than just planned or attempted
+   - Consider how effectively challenges were managed, not just whether they existed
+   - Evaluate performance relative to the role and expectations, not against an absolute standard
+   - Keep the assessment concise and evaluative rather than merely descriptive
+
 EMPLOYEE REPORT:
 ---
 {report_text}
@@ -315,6 +342,12 @@ Structure your response as follows:
     "explanation": "Assessment of the report's credibility, focusing on potential exaggeration",
     "exaggeration_flags": ["Specific claim 1 that appears exaggerated", "Specific claim 2 that appears exaggerated"],
     "consistency_score": "high/medium/low"
+  },
+  "performance_assessment": {
+    "rating": "high/medium/low",
+    "summary": "Brief overall performance assessment summarizing key findings",
+    "key_strengths": ["Notable strength identified from the report", "Another strength identified"],
+    "improvement_areas": ["Specific area where performance could be enhanced", "Another improvement area"]
   }
 }
 
@@ -326,6 +359,7 @@ CRITICAL INSTRUCTIONS:
    - Impact ratings MUST be adjusted downward proportionally
    - Action items MUST include verification steps
    - Risk level MUST reflect the reporting credibility concerns
+   - Performance rating MUST be more conservative
 
 3. Ensure your analysis is:
    - Detailed and specific with concrete examples from the report

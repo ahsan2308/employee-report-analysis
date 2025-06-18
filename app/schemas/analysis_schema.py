@@ -20,11 +20,18 @@ class CredibilityAssessment(BaseModel):
     exaggeration_flags: List[str] = Field(description="Specific claims that appear to be exaggerated")
     consistency_score: str = Field(description="How well the various sections of the report align with each other")
 
+class PerformanceAssessment(BaseModel):
+    """Schema for performance assessment in analysis."""
+    rating: str = Field(description="Overall performance rating (high/medium/low)")
+    summary: str = Field(description="Brief overall performance assessment summarizing key findings")
+    key_strengths: List[str] = Field(description="Notable strengths identified from the report")
+    improvement_areas: List[str] = Field(description="Specific areas where performance could be enhanced")
+
 class AnalysisResponse(BaseModel):
     """Schema for analysis response. This is the model that is returned by the API."""
     report_id: str
-    employee_name: str  # Required field
-    sentiment: float  # Required field (now consistent with sentiment_score)
+    employee_name: str 
+    sentiment: float  
     sentiment_score: Optional[float] = None
     risk_level: Optional[str] = None
     risk_explanation: Optional[str] = None
@@ -34,6 +41,7 @@ class AnalysisResponse(BaseModel):
     topics: Optional[List[str]] = None
     action_items: Optional[List[str]] = None
     credibility_assessment: Optional[CredibilityAssessment] = None
+    performance_assessment: Optional[PerformanceAssessment] = None
 
     class Config:
         from_attributes = True

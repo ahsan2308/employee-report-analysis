@@ -19,7 +19,7 @@ class Achievement(BaseModel):
     )
 
     class Config:
-        from_attributes = True  # Updated from orm_mode=True for Pydantic v2
+        from_attributes = True  
 
 
 class Challenge(BaseModel):
@@ -33,8 +33,7 @@ class Challenge(BaseModel):
     )
 
     class Config:
-        from_attributes = True  # Updated from orm_mode=True for Pydantic v2
-
+        from_attributes = True 
 
 class CredibilityAssessment(BaseModel):
     # Model representing a credibility assessment for an employee report
@@ -52,7 +51,26 @@ class CredibilityAssessment(BaseModel):
     )
 
     class Config:
-        from_attributes = True  # Updated from orm_mode=True for Pydantic v2
+        from_attributes = True 
+
+
+class PerformanceAssessment(BaseModel):
+    # Model representing a performance assessment for an employee report
+    rating: Literal["high", "medium", "low"] = Field(
+        description="Overall performance rating of the employee based on the report"
+    )
+    summary: str = Field(
+        description="Brief overall performance assessment summarizing the key findings"
+    )
+    key_strengths: List[str] = Field(
+        description="Notable strengths identified from the report"
+    )
+    improvement_areas: List[str] = Field(
+        description="Specific areas where performance could be enhanced"
+    )
+
+    class Config:
+        from_attributes = True 
 
 
 class EmployeeAnalysis(BaseModel):
@@ -81,9 +99,12 @@ class EmployeeAnalysis(BaseModel):
     credibility_assessment: CredibilityAssessment = Field(
         description="Assessment of the report's credibility and potential exaggeration"
     )
+    performance_assessment: PerformanceAssessment = Field(
+        description="Assessment of the employee's overall performance based on the report"
+    )
 
     class Config:
-        from_attributes = True  # Updated from orm_mode=True for Pydantic v2
+        from_attributes = True  
 
 
 

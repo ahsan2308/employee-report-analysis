@@ -122,6 +122,12 @@ def get_analysis_by_report(report_id: str, db: Session = Depends(get_db)):
                 "explanation": analysis.credibility_explanation or "No credibility assessment was performed for this analysis.",
                 "exaggeration_flags": analysis.exaggeration_flags or [],
                 "consistency_score": analysis.consistency_score or "medium"
+            },
+            "performance_assessment": {
+                "rating": analysis.performance_rating or "medium",
+                "summary": analysis.performance_summary or "No performance assessment was performed for this analysis.",
+                "key_strengths": analysis.performance_strengths or [],
+                "improvement_areas": analysis.performance_improvement_areas or []
             }
         }
     except ValueError:
@@ -157,7 +163,8 @@ def get_employee_analyses(employee_id: int, db: Session = Depends(get_db)):
                     "report_id": str(analysis.report_id),
                     "report_date": report.report_date,
                     "sentiment_score": analysis.sentiment_score,
-                    "risk_level": analysis.risk_level
+                    "risk_level": analysis.risk_level,
+                    "performance_rating": analysis.performance_rating
                 })
             
         return {"employee_id": employee_id, "employee_name": employee.name, "analyses": analyses_list}
@@ -211,6 +218,12 @@ def get_analysis_by_id(analysis_id: int, db: Session = Depends(get_db)):
                 "explanation": analysis.credibility_explanation or "No credibility assessment was performed for this analysis.",
                 "exaggeration_flags": analysis.exaggeration_flags or [],
                 "consistency_score": analysis.consistency_score or "medium"
+            },
+            "performance_assessment": {
+                "rating": analysis.performance_rating or "medium",
+                "summary": analysis.performance_summary or "No performance assessment was performed for this analysis.",
+                "key_strengths": analysis.performance_strengths or [],
+                "improvement_areas": analysis.performance_improvement_areas or []
             }
         }
     except Exception as e:

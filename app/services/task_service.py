@@ -170,6 +170,12 @@ def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
                         "explanation": analysis.credibility_explanation or "No credibility assessment was performed for this analysis.",
                         "exaggeration_flags": analysis.exaggeration_flags or [],
                         "consistency_score": analysis.consistency_score or "medium"
+                    },
+                    "performance_assessment": {
+                        "rating": analysis.performance_rating or "medium",
+                        "summary": analysis.performance_summary or "No performance assessment was performed for this analysis.",
+                        "key_strengths": analysis.performance_strengths or [],
+                        "improvement_areas": analysis.performance_improvement_areas or []
                     }
                 }
     
