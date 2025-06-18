@@ -180,6 +180,103 @@ const visualizationApi = {
         return await fetchApi(endpoint);
     },
 
+    // Get risk level trends data
+    getRiskTrends: async (employeeId = null, department = null, startDate = null, endDate = null, interval = "month") => {
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (employeeId) params.append('employee_id', employeeId);
+        if (department) params.append('department', department);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        if (interval) params.append('interval', interval);
+        
+        // Construct the query string
+        const queryString = params.toString();
+        const endpoint = `/visualizations/risk-trends${queryString ? '?' + queryString : ''}`;
+        
+        return await fetchApi(endpoint);
+    },
+    
+    // Get credibility rating trends data
+    getCredibilityTrends: async (employeeId = null, department = null, startDate = null, endDate = null, interval = "month") => {
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (employeeId) params.append('employee_id', employeeId);
+        if (department) params.append('department', department);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        if (interval) params.append('interval', interval);
+        
+        // Construct the query string
+        const queryString = params.toString();
+        const endpoint = `/visualizations/credibility-trends${queryString ? '?' + queryString : ''}`;
+        
+        return await fetchApi(endpoint);
+    },
+    
+    // Get consistency score trends data
+    getConsistencyTrends: async (employeeId = null, department = null, startDate = null, endDate = null, interval = "month") => {
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (employeeId) params.append('employee_id', employeeId);
+        if (department) params.append('department', department);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        if (interval) params.append('interval', interval);
+        
+        // Construct the query string
+        const queryString = params.toString();
+        const endpoint = `/visualizations/consistency-trends${queryString ? '?' + queryString : ''}`;
+        
+        return await fetchApi(endpoint);
+    },
+    
+    // Get performance rating trends data
+    getPerformanceTrends: async (employeeId = null, department = null, startDate = null, endDate = null, interval = "month") => {
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (employeeId) params.append('employee_id', employeeId);
+        if (department) params.append('department', department);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        if (interval) params.append('interval', interval);
+        
+        // Construct the query string
+        const queryString = params.toString();
+        const endpoint = `/visualizations/performance-trends${queryString ? '?' + queryString : ''}`;
+        
+        return await fetchApi(endpoint);
+    },
+    
+    // Get multi-criteria trends data
+    getMultiCriteriaTrends: async (criteria = ["sentiment"], employeeId = null, department = null, startDate = null, endDate = null, interval = "month") => {
+        // Validate criteria input
+        if (!Array.isArray(criteria) || criteria.length === 0) {
+            throw new Error('Criteria must be a non-empty array');
+        }
+        
+        // Build query parameters
+        const params = new URLSearchParams();
+        
+        // Add each criterion as a separate query parameter with the same name
+        criteria.forEach(criterion => {
+            params.append('criteria', criterion);
+        });
+        
+        // Add other parameters
+        if (employeeId) params.append('employee_id', employeeId);
+        if (department) params.append('department', department);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        if (interval) params.append('interval', interval);
+        
+        // Construct the query string
+        const queryString = params.toString();
+        const endpoint = `/visualizations/multi-criteria-trends${queryString ? '?' + queryString : ''}`;
+        
+        return await fetchApi(endpoint);
+    },
+
     // Get sentiment heatmap data
     getSentimentHeatmap: async (dimension = "department", startDate = null, endDate = null, interval = "month") => {
         // Build query parameters

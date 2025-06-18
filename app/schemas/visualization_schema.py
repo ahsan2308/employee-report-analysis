@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Union, Optional
 
 class TrendMetadata(BaseModel):
     """Metadata associated with a trend dataset."""
@@ -10,13 +10,23 @@ class TrendMetadata(BaseModel):
 class TrendDataset(BaseModel):
     """Represents a single dataset within a trend visualization."""
     label: str
-    data: List[Union[float, int]]
+    data: List[Union[float, int, None]]
     metadata: TrendMetadata
+    # Add optional color fields for multi-criteria visualization
+    backgroundColor: Optional[str] = None
+    borderColor: Optional[str] = None
 
-class SentimentTrendResponse(BaseModel):
-    """Response model for sentiment trend visualization data."""
+
+class TrendResponse(BaseModel):
+    """
+    Response model for trend visualization data.
+    Used for both single criterion (like sentiment) and multi-criteria visualizations.
+    """
     labels: List[str]
     datasets: List[TrendDataset]
+
+# For backward compatibility, keep SentimentTrendResponse as an alias
+SentimentTrendResponse = TrendResponse
 
 # Heatmap-related models
 class HeatmapCell(BaseModel):

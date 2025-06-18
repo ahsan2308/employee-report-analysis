@@ -45,6 +45,10 @@
                             <label for="visualizationTypeSelect"><i class="fas fa-chart-line"></i> Data Type:</label>
                             <select id="visualizationTypeSelect" class="form-control">
                                 <option value="sentiment">Sentiment Scores</option>
+                                <option value="risk">Risk Level</option>
+                                <option value="credibility">Credibility Rating</option>
+                                <option value="consistency">Consistency Score</option>
+                                <option value="performance">Performance Rating</option>
                                 <option value="impact">Achievement Impact Scores</option>
                             </select>
                         </div>
@@ -54,6 +58,7 @@
                             <select id="visualizationModeSelect" class="form-control">
                                 <option value="trend">Trend Over Time</option>
                                 <option value="heatmap">Heatmap</option>
+                                <option value="multi-criteria">Multi-Criteria View</option>
                             </select>
                         </div>
                         
@@ -63,6 +68,42 @@
                                 <option value="department">By Department</option>
                                 <option value="employee">By Employee</option>
                             </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Add new criteria selection section for multi-criteria visualization -->
+                    <div class="filter-group multi-criteria-only" style="display: none;">
+                        <div class="filter-item">
+                            <label><i class="fas fa-list-check"></i> Select Criteria to Compare:</label>
+                            <div class="criteria-checkboxes">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="criteriaCheckSentiment" value="sentiment" checked>
+                                    <label for="criteriaCheckSentiment">Sentiment</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="criteriaCheckRisk" value="risk">
+                                    <label for="criteriaCheckRisk">Risk Level</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="criteriaCheckCredibility" value="credibility">
+                                    <label for="criteriaCheckCredibility">Credibility</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="criteriaCheckConsistency" value="consistency">
+                                    <label for="criteriaCheckConsistency">Consistency</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="criteriaCheckPerformance" value="performance">
+                                    <label for="criteriaCheckPerformance">Performance</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="criteriaCheckImpact" value="impact">
+                                    <label for="criteriaCheckImpact">Impact</label>
+                                </div>
+                            </div>
+                            <div class="criteria-hint">
+                                <small><i class="fas fa-info-circle"></i> Select multiple criteria to compare them in a single chart.</small>
+                            </div>
                         </div>
                     </div>
                     
@@ -121,6 +162,20 @@
                     <p>Loading visualization data...</p>
                 </div>
                 
+                <!-- Add new Multi-Criteria Visualization Container -->
+                <div id="multiCriteriaVisualizationContainer" class="card visualization-container multi-criteria-visualization" style="display: none;">
+                    <h3><i class="fas fa-chart-line"></i> Multi-Criteria Comparison</h3>
+                    <p class="visualization-description">
+                        This chart compares multiple criteria over time, allowing you to identify relationships between different metrics.
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="multiCriteriaTrendChart"></canvas>
+                    </div>
+                    <div class="no-data-message" style="display: none;">
+                        <p><i class="fas fa-info-circle"></i> No data available for the selected criteria. Try selecting different criteria or adjusting your filter options.</p>
+                    </div>
+                </div>
+                
                 <!-- Sentiment Trend Visualization Card -->
                 <div id="sentimentVisualizationContainer" class="card visualization-container trend-visualization">
                     <h3><i class="fas fa-chart-line"></i> Sentiment Trends</h3>
@@ -146,6 +201,62 @@
                     </div>
                     <div class="no-data-message" style="display: none;">
                         <p><i class="fas fa-info-circle"></i> No impact score data available for the selected filters. Try adjusting your filter criteria.</p>
+                    </div>
+                </div>
+                
+                <!-- Risk Level Trend Visualization Card -->
+                <div id="riskVisualizationContainer" class="card visualization-container trend-visualization" style="display: none;">
+                    <h3><i class="fas fa-chart-line"></i> Risk Level Trends</h3>
+                    <p class="visualization-description">
+                        This chart shows risk level trends over time. Higher values indicate higher risk levels identified in reports.
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="riskTrendChart"></canvas>
+                    </div>
+                    <div class="no-data-message" style="display: none;">
+                        <p><i class="fas fa-info-circle"></i> No risk level data available for the selected filters. Try adjusting your filter criteria.</p>
+                    </div>
+                </div>
+
+                <!-- Credibility Rating Trend Visualization Card -->
+                <div id="credibilityVisualizationContainer" class="card visualization-container trend-visualization" style="display: none;">
+                    <h3><i class="fas fa-chart-line"></i> Credibility Rating Trends</h3>
+                    <p class="visualization-description">
+                        This chart shows credibility rating trends over time. Higher values indicate higher credibility in reports.
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="credibilityTrendChart"></canvas>
+                    </div>
+                    <div class="no-data-message" style="display: none;">
+                        <p><i class="fas fa-info-circle"></i> No credibility data available for the selected filters. Try adjusting your filter criteria.</p>
+                    </div>
+                </div>
+
+                <!-- Consistency Score Trend Visualization Card -->
+                <div id="consistencyVisualizationContainer" class="card visualization-container trend-visualization" style="display: none;">
+                    <h3><i class="fas fa-chart-line"></i> Consistency Score Trends</h3>
+                    <p class="visualization-description">
+                        This chart shows consistency score trends over time. Higher values indicate greater consistency in reports.
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="consistencyTrendChart"></canvas>
+                    </div>
+                    <div class="no-data-message" style="display: none;">
+                        <p><i class="fas fa-info-circle"></i> No consistency data available for the selected filters. Try adjusting your filter criteria.</p>
+                    </div>
+                </div>
+
+                <!-- Performance Rating Trend Visualization Card -->
+                <div id="performanceVisualizationContainer" class="card visualization-container trend-visualization" style="display: none;">
+                    <h3><i class="fas fa-chart-line"></i> Performance Rating Trends</h3>
+                    <p class="visualization-description">
+                        This chart shows performance rating trends over time. Higher values indicate better performance as reported.
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="performanceTrendChart"></canvas>
+                    </div>
+                    <div class="no-data-message" style="display: none;">
+                        <p><i class="fas fa-info-circle"></i> No performance data available for the selected filters. Try adjusting your filter criteria.</p>
                     </div>
                 </div>
                 

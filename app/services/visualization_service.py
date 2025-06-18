@@ -21,6 +21,33 @@ _cache = {}
 _cache_expiry = {}
 DEFAULT_CACHE_SECONDS = 300  # 5 minutes
 
+def _convert_rating_to_score(rating: Optional[str]) -> float:
+    """
+    Convert string-based ratings to numerical scores for visualization.
+    
+    Args:
+        rating: String rating ('low', 'medium', 'high') or None
+        
+    Returns:
+        Numerical score (0.2 for low, 0.5 for medium, 0.8 for high)
+        Returns 0.5 (neutral) for None or unrecognized values
+    """
+    if rating is None:
+        logger.debug("Rating is None, defaulting to medium (0.5)")
+        return 0.5
+        
+    rating_lower = rating.lower().strip()
+    
+    if rating_lower == 'low':
+        return 0.2
+    elif rating_lower == 'medium':
+        return 0.5
+    elif rating_lower == 'high':
+        return 0.8
+    else:
+        logger.warning(f"Unknown rating value: '{rating}', defaulting to medium (0.5)")
+        return 0.5
+
 def _get_from_cache(cache_key: str) -> Optional[Dict[str, Any]]:
     """Get data from cache if available and not expired."""
     if cache_key in _cache and _cache_expiry.get(cache_key, 0) > datetime.now().timestamp():
@@ -256,6 +283,330 @@ def get_sentiment_trends(
     
     # Build response
     trend_data = _build_trend_response(time_periods, sentiment_values, "Average Sentiment")
+    
+    # Cache result
+    _store_in_cache(cache_key, trend_data, cache_ttl)
+    
+    return trend_data
+
+def get_risk_level_trends(
+    db: Session,
+    employee_id: Optional[int] = None,
+    department: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    interval: str = "month",
+    cache_ttl: int = DEFAULT_CACHE_SECONDS
+) -> Dict[str, Any]:
+    """
+    Get risk level trends over time, optionally filtered by employee, department, and date range.
+    Risk levels (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.
+    """
+    # Generate cache key
+    cache_key = f"risk_level_trends_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
+    
+    # Check cache first
+    cached_data = _get_from_cache(cache_key)
+    if cached_data:
+        return cached_data
+    
+    logger.info(f"Calculating risk level trends with interval={interval}")
+    
+    # Parse dates
+    start_date = _parse_date(start_date)
+    end_date = _parse_date(end_date)
+    
+    # Base query
+    query = db.query(  
+        Report.report_date.label('report_date'),  
+        EmployeeAnalysis.risk_level,
+        Report.employee_id,
+        Employee.wing
+    ).join(
+        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id 
+    ).join(
+        Employee, Report.employee_id == Employee.id
+    )
+    
+    # Apply filters
+    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
+    
+    # Group by time interval and collect data
+    results_by_period = {}
+    
+    for report_date, risk_level, _, _ in query.all():
+        # Skip if no risk level
+        if not risk_level:
+            continue
+            
+        # Convert string risk level to numeric score
+        risk_score = _convert_rating_to_score(risk_level)
+        
+        # Determine period based on interval
+        period = _format_time_period(report_date, interval)
+        
+        # Add to period data
+        if period not in results_by_period:
+            results_by_period[period] = []
+        results_by_period[period].append(risk_score)
+    
+    # Calculate averages and prepare results
+    time_periods = []
+    risk_values = []
+    
+    # Sort periods chronologically
+    for period in _sort_time_periods(list(results_by_period.keys()), interval):
+        scores = results_by_period[period]
+        avg_risk = round(sum(scores) / len(scores), 2) if scores else 0
+        
+        time_periods.append(period)
+        risk_values.append(avg_risk)
+    
+    # Build response
+    trend_data = _build_trend_response(time_periods, risk_values, "Average Risk Level")
+    
+    # Cache result
+    _store_in_cache(cache_key, trend_data, cache_ttl)
+    
+    return trend_data
+
+def get_credibility_trends(
+    db: Session,
+    employee_id: Optional[int] = None,
+    department: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    interval: str = "month",
+    cache_ttl: int = DEFAULT_CACHE_SECONDS
+) -> Dict[str, Any]:
+    """
+    Get credibility rating trends over time, optionally filtered by employee, department, and date range.
+    Credibility ratings (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.
+    """
+    # Generate cache key
+    cache_key = f"credibility_trends_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
+    
+    # Check cache first
+    cached_data = _get_from_cache(cache_key)
+    if cached_data:
+        return cached_data
+    
+    logger.info(f"Calculating credibility trends with interval={interval}")
+    
+    # Parse dates
+    start_date = _parse_date(start_date)
+    end_date = _parse_date(end_date)
+    
+    # Base query
+    query = db.query(  
+        Report.report_date.label('report_date'),  
+        EmployeeAnalysis.credibility_rating,
+        Report.employee_id,
+        Employee.wing
+    ).join(
+        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id 
+    ).join(
+        Employee, Report.employee_id == Employee.id
+    )
+    
+    # Apply filters
+    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
+    
+    # Group by time interval and collect data
+    results_by_period = {}
+    
+    for report_date, credibility_rating, _, _ in query.all():
+        # Skip if no credibility rating
+        if not credibility_rating:
+            continue
+            
+        # Convert string credibility rating to numeric score
+        credibility_score = _convert_rating_to_score(credibility_rating)
+        
+        # Determine period based on interval
+        period = _format_time_period(report_date, interval)
+        
+        # Add to period data
+        if period not in results_by_period:
+            results_by_period[period] = []
+        results_by_period[period].append(credibility_score)
+    
+    # Calculate averages and prepare results
+    time_periods = []
+    credibility_values = []
+    
+    # Sort periods chronologically
+    for period in _sort_time_periods(list(results_by_period.keys()), interval):
+        scores = results_by_period[period]
+        avg_credibility = round(sum(scores) / len(scores), 2) if scores else 0
+        
+        time_periods.append(period)
+        credibility_values.append(avg_credibility)
+    
+    # Build response
+    trend_data = _build_trend_response(time_periods, credibility_values, "Average Credibility")
+    
+    # Cache result
+    _store_in_cache(cache_key, trend_data, cache_ttl)
+    
+    return trend_data
+
+def get_consistency_trends(
+    db: Session,
+    employee_id: Optional[int] = None,
+    department: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    interval: str = "month",
+    cache_ttl: int = DEFAULT_CACHE_SECONDS
+) -> Dict[str, Any]:
+    """
+    Get consistency score trends over time, optionally filtered by employee, department, and date range.
+    Consistency scores (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.
+    """
+    # Generate cache key
+    cache_key = f"consistency_trends_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
+    
+    # Check cache first
+    cached_data = _get_from_cache(cache_key)
+    if cached_data:
+        return cached_data
+    
+    logger.info(f"Calculating consistency trends with interval={interval}")
+    
+    # Parse dates
+    start_date = _parse_date(start_date)
+    end_date = _parse_date(end_date)
+    
+    # Base query
+    query = db.query(  
+        Report.report_date.label('report_date'),  
+        EmployeeAnalysis.consistency_score,
+        Report.employee_id,
+        Employee.wing
+    ).join(
+        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id 
+    ).join(
+        Employee, Report.employee_id == Employee.id
+    )
+    
+    # Apply filters
+    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
+    
+    # Group by time interval and collect data
+    results_by_period = {}
+    
+    for report_date, consistency_score, _, _ in query.all():
+        # Skip if no consistency score
+        if not consistency_score:
+            continue
+            
+        # Convert string consistency score to numeric score
+        numeric_score = _convert_rating_to_score(consistency_score)
+        
+        # Determine period based on interval
+        period = _format_time_period(report_date, interval)
+        
+        # Add to period data
+        if period not in results_by_period:
+            results_by_period[period] = []
+        results_by_period[period].append(numeric_score)
+    
+    # Calculate averages and prepare results
+    time_periods = []
+    consistency_values = []
+    
+    # Sort periods chronologically
+    for period in _sort_time_periods(list(results_by_period.keys()), interval):
+        scores = results_by_period[period]
+        avg_consistency = round(sum(scores) / len(scores), 2) if scores else 0
+        
+        time_periods.append(period)
+        consistency_values.append(avg_consistency)
+    
+    # Build response
+    trend_data = _build_trend_response(time_periods, consistency_values, "Average Consistency")
+    
+    # Cache result
+    _store_in_cache(cache_key, trend_data, cache_ttl)
+    
+    return trend_data
+
+def get_performance_trends(
+    db: Session,
+    employee_id: Optional[int] = None,
+    department: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    interval: str = "month",
+    cache_ttl: int = DEFAULT_CACHE_SECONDS
+) -> Dict[str, Any]:
+    """
+    Get performance rating trends over time, optionally filtered by employee, department, and date range.
+    Performance ratings (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.
+    """
+    # Generate cache key
+    cache_key = f"performance_trends_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
+    
+    # Check cache first
+    cached_data = _get_from_cache(cache_key)
+    if cached_data:
+        return cached_data
+    
+    logger.info(f"Calculating performance trends with interval={interval}")
+    
+    # Parse dates
+    start_date = _parse_date(start_date)
+    end_date = _parse_date(end_date)
+    
+    # Base query
+    query = db.query(  
+        Report.report_date.label('report_date'),  
+        EmployeeAnalysis.performance_rating,
+        Report.employee_id,
+        Employee.wing
+    ).join(
+        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id 
+    ).join(
+        Employee, Report.employee_id == Employee.id
+    )
+    
+    # Apply filters
+    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
+    
+    # Group by time interval and collect data
+    results_by_period = {}
+    
+    for report_date, performance_rating, _, _ in query.all():
+        # Skip if no performance rating
+        if not performance_rating:
+            continue
+            
+        # Convert string performance rating to numeric score
+        performance_score = _convert_rating_to_score(performance_rating)
+        
+        # Determine period based on interval
+        period = _format_time_period(report_date, interval)
+        
+        # Add to period data
+        if period not in results_by_period:
+            results_by_period[period] = []
+        results_by_period[period].append(performance_score)
+    
+    # Calculate averages and prepare results
+    time_periods = []
+    performance_values = []
+    
+    # Sort periods chronologically
+    for period in _sort_time_periods(list(results_by_period.keys()), interval):
+        scores = results_by_period[period]
+        avg_performance = round(sum(scores) / len(scores), 2) if scores else 0
+        
+        time_periods.append(period)
+        performance_values.append(avg_performance)
+    
+    # Build response
+    trend_data = _build_trend_response(time_periods, performance_values, "Average Performance")
     
     # Cache result
     _store_in_cache(cache_key, trend_data, cache_ttl)
@@ -683,3 +1034,160 @@ def clear_cache(prefix: Optional[str] = None):
         _cache = {}
         _cache_expiry = {}
         logger.info("Cleared entire visualization cache")
+
+def get_multi_criteria_trends(
+    db: Session,
+    criteria: List[str],
+    employee_id: Optional[int] = None,
+    department: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    interval: str = "month",
+    cache_ttl: int = DEFAULT_CACHE_SECONDS
+) -> Dict[str, Any]:
+    """
+    Get trends for multiple criteria over time, optionally filtered by employee, department, and date range.
+    
+    Args:
+        db: Database session
+        criteria: List of criteria to include (e.g., ["sentiment", "risk", "credibility", "consistency", "performance"])
+        employee_id: Optional employee ID filter
+        department: Optional department filter
+        start_date: Optional start date for filtering
+        end_date: Optional end date for filtering
+        interval: Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')
+        cache_ttl: Cache time-to-live in seconds
+        
+    Returns:
+        Trend data with time periods as labels and multiple datasets for each criterion
+    """
+    # Generate cache key
+    criteria_key = "_".join(sorted(criteria))
+    cache_key = f"multi_criteria_trends_{criteria_key}_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
+    
+    # Check cache first
+    cached_data = _get_from_cache(cache_key)
+    if cached_data:
+        return cached_data
+    
+    logger.info(f"Calculating multi-criteria trends with criteria={criteria}, interval={interval}")
+    
+    # Parse dates
+    start_date = _parse_date(start_date)
+    end_date = _parse_date(end_date)
+    
+    # Define color mappings for each criterion to ensure consistent colors
+    color_mappings = {
+        "sentiment": {
+            "backgroundColor": "rgba(52, 152, 219, 0.2)",  # Blue with transparency
+            "borderColor": "rgba(52, 152, 219, 1)"         # Solid blue
+        },
+        "risk": {
+            "backgroundColor": "rgba(231, 76, 60, 0.2)",   # Red with transparency
+            "borderColor": "rgba(231, 76, 60, 1)"          # Solid red
+        },
+        "credibility": {
+            "backgroundColor": "rgba(241, 196, 15, 0.2)",  # Distinct yellow with transparency
+            "borderColor": "rgba(241, 196, 15, 1)"         # Solid yellow
+        },
+        "consistency": {
+            "backgroundColor": "rgba(46, 204, 113, 0.2)",  # Green with transparency
+            "borderColor": "rgba(46, 204, 113, 1)"         # Solid green
+        },
+        "performance": {
+            "backgroundColor": "rgba(243, 156, 18, 0.2)",  # Orange with transparency
+            "borderColor": "rgba(243, 156, 18, 1)"         # Solid orange
+        },
+        "impact": {
+            "backgroundColor": "rgba(155, 89, 182, 0.2)",  # Purple with transparency
+            "borderColor": "rgba(155, 89, 182, 1)"         # Solid purple
+        }
+    }
+    
+    # Define mapping between criterion names and their respective functions
+    criterion_functions = {
+        "sentiment": get_sentiment_trends,
+        "risk": get_risk_level_trends,
+        "credibility": get_credibility_trends,
+        "consistency": get_consistency_trends,
+        "performance": get_performance_trends,
+        "impact": get_impact_score_trends
+    }
+    
+    # Define display names for each criterion
+    criterion_display_names = {
+        "sentiment": "Sentiment Score",
+        "risk": "Risk Level",
+        "credibility": "Credibility Rating",
+        "consistency": "Consistency Score",
+        "performance": "Performance Rating",
+        "impact": "Impact Score"
+    }
+    
+    # Collect all time periods from all criteria
+    all_time_periods = set()
+    criterion_data = {}
+    
+    # Fetch data for each criterion
+    for criterion in criteria:
+        if criterion not in criterion_functions:
+            logger.warning(f"Unknown criterion: {criterion}, skipping")
+            continue
+            
+        # Call the appropriate function for this criterion
+        criterion_func = criterion_functions[criterion]
+        result = criterion_func(
+            db=db,
+            employee_id=employee_id,
+            department=department,
+            start_date=start_date,
+            end_date=end_date,
+            interval=interval,
+            cache_ttl=cache_ttl  # Pass the cache_ttl parameter
+        )
+        
+        # Store the result and collect time periods
+        if result and "labels" in result and "datasets" in result and len(result["datasets"]) > 0:
+            criterion_data[criterion] = result
+            all_time_periods.update(result["labels"])
+    
+    # Convert to sorted list of time periods
+    time_periods = _sort_time_periods(list(all_time_periods), interval)
+    
+    # Create datasets for each criterion
+    datasets = []
+    
+    for criterion, result in criterion_data.items():
+        # Get the first dataset (there should only be one per criterion)
+        source_dataset = result["datasets"][0]
+        
+        # Create a mapping of time period to value for this criterion
+        period_to_value = {
+            period: value 
+            for period, value in zip(result["labels"], source_dataset["data"])
+        }
+        
+        # Create an array of values matching the combined time periods
+        values = [
+            period_to_value.get(period, None) 
+            for period in time_periods
+        ]
+        
+        # Create dataset with colors
+        datasets.append({
+            "label": criterion_display_names.get(criterion, criterion.capitalize()),
+            "data": values,
+            **color_mappings.get(criterion, {}),  # Add colors
+            "metadata": source_dataset.get("metadata", {})
+        })
+    
+    # Build response
+    multi_criteria_trend_data = {
+        "labels": time_periods,
+        "datasets": datasets
+    }
+    
+    # Cache result
+    _store_in_cache(cache_key, multi_criteria_trend_data, cache_ttl)
+    
+    return multi_criteria_trend_data
