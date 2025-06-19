@@ -852,6 +852,29 @@ button:disabled,
     min-width: 200px;
 }
 
+/* Styling for disabled filter items */
+.disabled-filter {
+    opacity: 0.7;
+    position: relative;
+}
+
+.disabled-filter::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: not-allowed;
+    border-radius: var(--rounded);
+    z-index: 5; /* Above the input but below any popups */
+}
+
+.disabled-filter label {
+    color: var(--text-light);
+}
+
 /* Chart container styling */
 .chart-container {
     background-color: var(--white);
@@ -1355,13 +1378,13 @@ button:disabled,
 }
 
 .status-completed, .status-badge.status-completed {
-    background-color: var(--success-light);
-    color: var(--success);
+    background-color: #d1fae5;
+    color: #15803d;
 }
 
 .status-failed, .status-badge.status-failed {
-    background-color: var(--danger-light);
-    color: var(--danger);
+    background-color: #fee2e2;
+    color: #b91c1c;
 }
 
 /* Progress bar */
@@ -1527,7 +1550,7 @@ button:disabled,
 }
 
 .template-table th,
-.template-table td {
+.template.table td {
     padding: 10px;
     text-align: left;
     border: 1px solid var(--border);
@@ -1667,5 +1690,203 @@ button:disabled,
     .modal-content {
         width: 95%;
         margin: 10% auto;
+    }
+}
+
+/* Criteria Selection UI for Multi-Criteria Visualization */
+.criteria-selector-container {
+    background-color: var(--background);
+    padding: 16px;
+    border-radius: var(--rounded);
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    transition: var(--transition);
+}
+
+.criteria-selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.criteria-selector-title {
+    font-weight: 600;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95rem;
+}
+
+.criteria-selection-count {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    background-color: var(--primary-light);
+    padding: 3px 8px;
+    border-radius: 12px;
+}
+
+.criteria-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.criteria-action-btn {
+    background-color: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: var(--transition);
+}
+
+.criteria-action-btn:hover {
+    background-color: var(--background);
+    color: var(--primary);
+}
+
+.criteria-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.criteria-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.criteria-pill::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 6px;
+    border-radius: 3px 0 0 3px;
+    opacity: 0.8;
+}
+
+.criteria-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.criteria-pill.active {
+    color: white !important; /* Ensure text is white in active state regardless of criteria type */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.criteria-pill.active:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Individual criteria colors - exactly matched to chart colors */
+.criteria-pill[data-criteria="sentiment"] {
+    border-color: rgba(52, 152, 219, 0.3);
+    background-color: rgba(52, 152, 219, 0.1);
+    color: rgb(52, 152, 219);
+}
+.criteria-pill[data-criteria="sentiment"]::before {
+    background-color: rgb(52, 152, 219);
+}
+.criteria-pill[data-criteria="sentiment"].active {
+    background-color: rgb(52, 152, 219);
+    border-color: rgb(52, 152, 219);
+}
+
+.criteria-pill[data-criteria="risk"] {
+    border-color: rgba(231, 76, 60, 0.3);
+    background-color: rgba(231, 76, 60, 0.1);
+    color: rgb(231, 76, 60);
+}
+.criteria-pill[data-criteria="risk"]::before {
+    background-color: rgb(231, 76, 60);
+}
+.criteria-pill[data-criteria="risk"].active {
+    background-color: rgb(231, 76, 60);
+    border-color: rgb(231, 76, 60);
+}
+
+/* Changed credibility to yellow */
+.criteria-pill[data-criteria="credibility"] {
+    border-color: rgba(241, 196, 15, 0.3);
+    background-color: rgba(241, 196, 15, 0.1);
+    color: rgb(241, 196, 15);
+}
+.criteria-pill[data-criteria="credibility"]::before {
+    background-color: rgb(241, 196, 15);
+}
+.criteria-pill[data-criteria="credibility"].active {
+    background-color: rgb(241, 196, 15);
+    border-color: rgb(241, 196, 15);
+}
+
+/* Changed consistency to green */
+.criteria-pill[data-criteria="consistency"] {
+    border-color: rgba(46, 204, 113, 0.3);
+    background-color: rgba(46, 204, 113, 0.1);
+    color: rgb(46, 204, 113);
+}
+.criteria-pill[data-criteria="consistency"]::before {
+    background-color: rgb(46, 204, 113);
+}
+.criteria-pill[data-criteria="consistency"].active {
+    background-color: rgb(46, 204, 113);
+    border-color: rgb(46, 204, 113);
+}
+
+/* Changed performance to orange */
+.criteria-pill[data-criteria="performance"] {
+    border-color: rgba(243, 156, 18, 0.3);
+    background-color: rgba(243, 156, 18, 0.1);
+    color: rgb(243, 156, 18);
+}
+.criteria-pill[data-criteria="performance"]::before {
+    background-color: rgb(243, 156, 18);
+}
+.criteria-pill[data-criteria="performance"].active {
+    background-color: rgb(243, 156, 18);
+    border-color: rgb(243, 156, 18);
+}
+
+/* Responsive styles for criteria selector */
+@media (max-width: 768px) {
+    .criteria-selector-container {
+        padding: 12px;
+    }
+    
+    .criteria-selector-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .criteria-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .criteria-pills {
+        gap: 8px;
+    }
+    
+    .criteria-pill {
+        padding: 6px 12px;
+        font-size: 0.85rem;
     }
 }

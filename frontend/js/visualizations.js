@@ -14,10 +14,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const noDataMessage = document.getElementById('noDataMessage');
     const statusMessage = document.getElementById('statusMessage');
     
-    // Multi-criteria related elements
+    // Multi-criteria related elements - update references
     const multiCriteriaContainer = document.getElementById('multiCriteriaVisualizationContainer');
     const multiCriteriaTrendChart = document.getElementById('multiCriteriaTrendChart');
-    const criteriaCheckboxes = document.querySelectorAll('.criteria-checkboxes input[type="checkbox"]');
+    // Replace checkbox references with pill buttons
+    const criteriaPills = document.querySelectorAll('.criteria-pill');
+    const criteriaSelectionCount = document.querySelector('.criteria-selection-count');
+    const selectAllCriteriaBtn = document.getElementById('selectAllCriteria');
+    const clearAllCriteriaBtn = document.getElementById('clearAllCriteria');
     const multiCriteriaOnlyElements = document.querySelectorAll('.multi-criteria-only');
     
     // Trend Visualization containers
@@ -164,9 +168,13 @@ document.addEventListener('DOMContentLoaded', function() {
             fetchAndRenderCharts();
         });
         
-        // Add event listeners for criteria checkboxes
-        criteriaCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
+        // Remove the old criteria checkbox event listeners and add new pill button listeners
+        criteriaPills.forEach(pill => {
+            pill.addEventListener('click', function() {
+                // Toggle active state
+                this.classList.toggle('active');
+                
+                // Update selected criteria
                 updateSelectedCriteria();
                 
                 // If multi-criteria mode is active, update the chart immediately
@@ -175,6 +183,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
+        
+        // Add event listeners for Select All and Clear All buttons
+        if (selectAllCriteriaBtn) {
+            selectAllCriteriaBtn.addEventListener('click', function() {
+                criteriaPills.forEach(pill => {
+                    pill.classList.add('active');
+                });
+                updateSelectedCriteria();
+                if (filters.visualizationMode === 'multi-criteria') {
+                    fetchAndRenderCharts();
+                }
+            });
+        }
+        
+        if (clearAllCriteriaBtn) {
+            clearAllCriteriaBtn.addEventListener('click', function() {
+                criteriaPills.forEach(pill => {
+                    pill.classList.remove('active');
+                });
+                updateSelectedCriteria(); // This will ensure at least one is selected
+                if (filters.visualizationMode === 'multi-criteria') {
+                    fetchAndRenderCharts();
+                }
+            });
+        }
         
         // Dimension change (for heatmaps)
         dimensionSelect.addEventListener('change', function() {
@@ -216,22 +249,30 @@ document.addEventListener('DOMContentLoaded', function() {
         resetFiltersBtn.addEventListener('click', resetFilters);
     }
 
-    // Update the selected criteria based on checkbox states
+    // Update the selected criteria based on pill button states
     function updateSelectedCriteria() {
         const selectedCriteria = [];
         
-        criteriaCheckboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                selectedCriteria.push(checkbox.value);
+        criteriaPills.forEach(pill => {
+            if (pill.classList.contains('active')) {
+                selectedCriteria.push(pill.dataset.criteria);
             }
         });
         
         // Ensure at least one criterion is selected
         if (selectedCriteria.length === 0) {
             // Default to sentiment if nothing selected
-            document.getElementById('criteriaCheckSentiment').checked = true;
-            selectedCriteria.push('sentiment');
+            const sentimentPill = document.querySelector('.criteria-pill[data-criteria="sentiment"]');
+            if (sentimentPill) {
+                sentimentPill.classList.add('active');
+                selectedCriteria.push('sentiment');
+            }
             showMessage('At least one criterion must be selected', 'warning');
+        }
+        
+        // Update the selection count
+        if (criteriaSelectionCount) {
+            criteriaSelectionCount.textContent = `${selectedCriteria.length} of ${criteriaPills.length} selected`;
         }
         
         filters.criteria = selectedCriteria;
@@ -289,6 +330,9 @@ document.addEventListener('DOMContentLoaded', function() {
             sentimentVisualizationContainer.style.display = 'none';
             impactVisualizationContainer.style.display = 'none';
             
+            // Hide multi-criteria container
+            multiCriteriaContainer.style.display = 'none';
+            
             // Show the appropriate heatmap
             if (filters.visualizationType === 'sentiment') {
                 sentimentHeatmapContainer.style.display = 'block';
@@ -312,14 +356,37 @@ document.addEventListener('DOMContentLoaded', function() {
             trendOnlyElements.forEach(el => el.style.display = 'block');
             heatmapOnlyElements.forEach(el => el.style.display = 'none');
             multiCriteriaOnlyElements.forEach(el => el.style.display = 'none');
+            
+            // Reset dropdown to show all options
+            resetVisualizationTypeOptions();
+            
+            // Enable the visualization type dropdown
+            visualizationTypeSelect.disabled = false;
+            visualizationTypeSelect.parentElement.classList.remove('disabled-filter');
+            
         } else if (filters.visualizationMode === 'heatmap') {
             trendOnlyElements.forEach(el => el.style.display = 'none');
             heatmapOnlyElements.forEach(el => el.style.display = 'block');
             multiCriteriaOnlyElements.forEach(el => el.style.display = 'none');
+            
+            // Limit dropdown to only sentiment and impact options
+            limitVisualizationTypeOptions(['sentiment', 'impact']);
+            
+            // Enable the visualization type dropdown
+            visualizationTypeSelect.disabled = false;
+            visualizationTypeSelect.parentElement.classList.remove('disabled-filter');
+            
         } else if (filters.visualizationMode === 'multi-criteria') {
             trendOnlyElements.forEach(el => el.style.display = 'block');
             heatmapOnlyElements.forEach(el => el.style.display = 'none');
             multiCriteriaOnlyElements.forEach(el => el.style.display = 'block');
+            
+            // Reset dropdown to show all options (but it will be disabled)
+            resetVisualizationTypeOptions();
+            
+            // Disable the visualization type dropdown since it doesn't apply in multi-criteria mode
+            visualizationTypeSelect.disabled = true;
+            visualizationTypeSelect.parentElement.classList.add('disabled-filter');
             
             // Ensure criteria are initialized
             updateSelectedCriteria();
@@ -327,6 +394,73 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update chart visibility based on type
         updateVisibilityBasedOnType();
+    }
+
+    // Function to reset visualization type dropdown to show all options
+    function resetVisualizationTypeOptions() {
+        // Store current selection
+        const currentValue = visualizationTypeSelect.value;
+        
+        // Clear the select element
+        visualizationTypeSelect.innerHTML = '';
+        
+        // Add all options back
+        const options = [
+            { value: 'sentiment', text: 'Sentiment Scores' },
+            { value: 'impact', text: 'Achievement Impact Scores' },
+            { value: 'risk', text: 'Risk Level' },
+            { value: 'credibility', text: 'Credibility Rating' },
+            { value: 'consistency', text: 'Consistency Score' },
+            { value: 'performance', text: 'Performance Rating' }
+        ];
+        
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.text;
+            visualizationTypeSelect.appendChild(option);
+        });
+        
+        // Restore the selection if possible
+        visualizationTypeSelect.value = currentValue;
+        
+        // Re-apply SearchableDropdown enhancement
+        SearchableDropdown.enhanceSimple(visualizationTypeSelect);
+    }
+
+    // Function to limit visualization type dropdown to specific options
+    function limitVisualizationTypeOptions(allowedValues) {
+        // Store current selection
+        const currentValue = visualizationTypeSelect.value;
+        
+        // Clear the select element
+        visualizationTypeSelect.innerHTML = '';
+        
+        // Add only allowed options
+        const options = [
+            { value: 'sentiment', text: 'Sentiment Scores' },
+            { value: 'impact', text: 'Achievement Impact Scores' }
+        ];
+        
+        options.forEach(opt => {
+            if (allowedValues.includes(opt.value)) {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.text;
+                visualizationTypeSelect.appendChild(option);
+            }
+        });
+        
+        // Set a valid selection
+        if (allowedValues.includes(currentValue)) {
+            visualizationTypeSelect.value = currentValue;
+        } else {
+            visualizationTypeSelect.value = allowedValues[0];
+            filters.visualizationType = allowedValues[0];
+        }
+        
+        // Re-apply SearchableDropdown enhancement
+        SearchableDropdown.enhanceSimple(visualizationTypeSelect);
     }
 
     // Load departments for filter dropdown
@@ -933,11 +1067,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 // For impact scores, just show the number
                                 return value.toFixed(0);
                             }
+                                                        }
+
                         }
                     }
                 }
-            }
-        };
+            };
         
         // Create the chart
         impactChart = new Chart(impactTrendChart, config);
@@ -1403,9 +1538,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateSelectedCriteria();
             }
             
-            // Fetch data from API
+            // Make sure impact is not included in multi-criteria view
+            const filteredCriteria = filters.criteria.filter(criterion => criterion !== 'impact');
+            
+            // Ensure we still have at least one criterion after filtering
+            if (filteredCriteria.length === 0) {
+                // Default to sentiment if all criteria were removed
+                filteredCriteria.push('sentiment');
+                
+                // Update the UI to show sentiment selected
+                criteriaPills.forEach(pill => {
+                    pill.classList.toggle('active', pill.dataset.criteria === 'sentiment');
+                });
+                
+                // Update the selection count
+                if (criteriaSelectionCount) {
+                    criteriaSelectionCount.textContent = `1 of ${criteriaPills.length - 1} selected`;
+                }
+            }
+            
+            // Fetch data from API using filtered criteria
             const multiCriteriaData = await visualizationApi.getMultiCriteriaTrends(
-                filters.criteria,
+                filteredCriteria,
                 filters.employee_id,
                 filters.department,
                 filters.start_date,
@@ -1752,11 +1906,16 @@ document.addEventListener('DOMContentLoaded', function() {
         visualizationTypeSelect.value = 'sentiment';
         filters.visualizationType = 'sentiment';
         
-        // Reset criteria checkboxes to default (only sentiment checked)
-        criteriaCheckboxes.forEach(checkbox => {
-            checkbox.checked = checkbox.value === 'sentiment';
+        // Reset criteria pills to default (only sentiment checked)
+        criteriaPills.forEach(pill => {
+            if (pill.dataset.criteria === 'sentiment') {
+                pill.classList.add('active');
+            } else {
+                pill.classList.remove('active');
+            }
         });
         filters.criteria = ['sentiment'];
+        updateSelectedCriteria();
         
         // Reset department and employee filters
         departmentSelect.value = '';

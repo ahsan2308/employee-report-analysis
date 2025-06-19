@@ -71,42 +71,6 @@
                         </div>
                     </div>
                     
-                    <!-- Add new criteria selection section for multi-criteria visualization -->
-                    <div class="filter-group multi-criteria-only" style="display: none;">
-                        <div class="filter-item">
-                            <label><i class="fas fa-list-check"></i> Select Criteria to Compare:</label>
-                            <div class="criteria-checkboxes">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="criteriaCheckSentiment" value="sentiment" checked>
-                                    <label for="criteriaCheckSentiment">Sentiment</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="criteriaCheckRisk" value="risk">
-                                    <label for="criteriaCheckRisk">Risk Level</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="criteriaCheckCredibility" value="credibility">
-                                    <label for="criteriaCheckCredibility">Credibility</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="criteriaCheckConsistency" value="consistency">
-                                    <label for="criteriaCheckConsistency">Consistency</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="criteriaCheckPerformance" value="performance">
-                                    <label for="criteriaCheckPerformance">Performance</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="criteriaCheckImpact" value="impact">
-                                    <label for="criteriaCheckImpact">Impact</label>
-                                </div>
-                            </div>
-                            <div class="criteria-hint">
-                                <small><i class="fas fa-info-circle"></i> Select multiple criteria to compare them in a single chart.</small>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <div class="filter-group">
                         <div class="filter-item trend-only">
                             <label for="departmentSelect"><i class="fas fa-building"></i> Department:</label>
@@ -168,6 +132,29 @@
                     <p class="visualization-description">
                         This chart compares multiple criteria over time, allowing you to identify relationships between different metrics.
                     </p>
+                    
+                    <!-- New criteria selector -->
+                    <div class="criteria-selector-container">
+                        <div class="criteria-selector-header">
+                            <div class="criteria-selector-title">
+                                <i class="fas fa-list-check"></i> Select criteria to compare:
+                                <span class="criteria-selection-count">1 of 5 selected</span>
+                            </div>
+                            <div class="criteria-actions">
+                                <button type="button" class="criteria-action-btn" id="selectAllCriteria">Select All</button>
+                                <button type="button" class="criteria-action-btn" id="clearAllCriteria">Clear All</button>
+                            </div>
+                        </div>
+                        <div class="criteria-pills">
+                            <div class="criteria-pill active" data-criteria="sentiment">Sentiment</div>
+                            <div class="criteria-pill" data-criteria="risk">Risk Level</div>
+                            <div class="criteria-pill" data-criteria="credibility">Credibility</div>
+                            <div class="criteria-pill" data-criteria="consistency">Consistency</div>
+                            <div class="criteria-pill" data-criteria="performance">Performance</div>
+                            <!-- Impact pill removed -->
+                        </div>
+                    </div>
+                    
                     <div class="chart-container">
                         <canvas id="multiCriteriaTrendChart"></canvas>
                     </div>

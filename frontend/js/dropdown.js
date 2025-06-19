@@ -233,6 +233,14 @@ const SearchableDropdown = {
     enhanceSimple: function(selectElement) {
         if (!selectElement || selectElement.tagName !== 'SELECT') return;
         
+        // Check if the dropdown is already enhanced
+        const existingContainer = selectElement.closest('.searchable-dropdown-container');
+        if (existingContainer) {
+            // Just update the options without recreating the UI
+            this.updateEnhancedDropdownOptions(selectElement, existingContainer);
+            return selectElement;
+        }
+        
         // Create a container to wrap the select
         const container = document.createElement('div');
         container.className = 'searchable-dropdown-container';
@@ -351,5 +359,91 @@ const SearchableDropdown = {
         selectElement.setAttribute('data-consistent-style', 'true');
         
         return selectElement;
+    },
+    
+    /**
+     * Updates the options in an already enhanced dropdown without recreating the UI
+     * @param {HTMLSelectElement} selectElement - The select element
+     * @param {HTMLElement} container - The dropdown container
+     */
+    updateEnhancedDropdownOptions: function(selectElement, container) {
+        const dropdownHeader = container.querySelector('.searchable-dropdown-header');
+        const optionsList = container.querySelector('.searchable-options-list');
+        
+        if (!dropdownHeader || !optionsList) return;
+        
+        // Update header text
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        if (selectedOption && selectedOption.value) {
+            dropdownHeader.setAttribute('data-value', selectedOption.text);
+        } else {
+            dropdownHeader.removeAttribute('data-value');
+        }
+        
+        // Update options list
+        optionsList.innerHTML = '';
+        
+        // Add all options from select element
+        Array.from(selectElement.options).forEach(option => {
+            const li = document.createElement('li');
+            li.dataset.value = option.value;
+            li.textContent = option.text;
+            
+            // Mark as selected if it's the currently selected option
+            if (option.selected) {
+                li.className = 'selected';
+            }
+            
+            // Add click handler to select this option
+            li.addEventListener('click', () => {
+                selectElement.value = option.value;
+                
+                // Update header text
+                if (option.value) {
+                    dropdownHeader.setAttribute('data-value', option.text);
+                } else {
+                    dropdownHeader.removeAttribute('data-value');
+                }
+                
+                // Trigger change event on the original select
+                selectElement.dispatchEvent(new Event('change', { bubbles: true }));
+                
+                // Update visual selection
+                Array.from(optionsList.children).forEach(item => {
+                    item.className = item.dataset.value === option.value ? 'selected' : '';
+                });
+                
+                // Close the dropdown
+                const customDropdown = container.querySelector('.searchable-dropdown-popup');
+                if (customDropdown) {
+                    customDropdown.style.display = 'none';
+                }
+            });
+            
+            optionsList.appendChild(li);
+        });
+    },
+    
+    /**
+     * Destroy an enhanced dropdown and restore the original select
+     * @param {HTMLSelectElement} selectElement - The enhanced select element
+     */
+    destroyEnhancement: function(selectElement) {
+        const container = selectElement.closest('.searchable-dropdown-container');
+        if (!container) return;
+        
+        // Get the parent element before removing container
+        const parent = container.parentNode;
+        
+        // Move the select back to its original position
+        selectElement.style.display = '';
+        parent.insertBefore(selectElement, container);
+        
+        // Remove the container and all its children
+        container.remove();
+        
+        // Reset data attributes
+        selectElement.removeAttribute('data-consistent-style');
+        selectElement.removeAttribute('data-searchable');
     }
 };
