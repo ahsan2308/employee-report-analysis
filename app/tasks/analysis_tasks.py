@@ -85,18 +85,20 @@ def analyze_report_task(self, task_id: str):
         recent_count = len(recent_report_data)
         logger.info(f"Found {recent_count} recent reports for context")
         
-        # Determine cutoff date based on the oldest recent report or a fallback
+        
+
+        # # Determine cutoff date based on the oldest recent report or a fallback
         if recent_report_data and recent_count > 0:
             # Find the oldest report date in the returned data
             oldest_recent_report_date = min(report_data["date"] for report_data in recent_report_data)
             logger.info(f"Using oldest recent report date as cutoff: {oldest_recent_report_date}")
         else:
             # No recent reports, don't restrict the date range at all
-            oldest_recent_report_date = None
-            logger.info("No recent reports found, searching entire vector database without date restriction")
-        
+            oldest_recent_report_date = report.report_date
+            logger.info("No recent reports found")
+            
         # Get similar reports for context - use the dynamic cutoff date (or None for unrestricted search)
-        logger.info(f"Finding similar reports for context with cutoff: {oldest_recent_report_date or 'None (unrestricted)'} (task: {task_id})")
+        # logger.info(f"Finding similar reports for context with cutoff: {oldest_recent_report_date or 'None (unrestricted)'} (task: {task_id})")
         similar_reports_chunks = search_reports(
             query=report.report_text,
             employee_id=report.employee_id,
@@ -126,7 +128,7 @@ def analyze_report_task(self, task_id: str):
             formatted_vision_data,
             recent_report_data,     # Pass recent reports with date info
             similar_report_data,    # Pass similar reports with date info
-            num_ctx=40000
+            num_ctx=80000
         )
         
         # Extract key fields

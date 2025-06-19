@@ -571,7 +571,7 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
                     logger.error(f"Unsupported cutoff_date type: {type(cutoff_date)}")
                     cutoff_ts = None
                 
-                logger.info(f"DEBUG: Using cutoff date timestamp: {cutoff_ts} for {cutoff_date}")
+                logger.debug(f"DEBUG: Using cutoff date timestamp: {cutoff_ts} for {cutoff_date}")
                 
                 # Use timestamp field for filtering
                 if cutoff_ts:
