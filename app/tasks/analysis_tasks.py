@@ -71,8 +71,8 @@ def analyze_report_task(self, task_id: str):
         
         # Perform analysis
         # Get recent reports for context - with clearer parameters
-        target_recent_reports = 4  # Target number of recent reports
-        target_similar_reports = 3  # Target number of similar historical reports
+        target_recent_reports = 2  # Target number of recent reports
+        target_similar_reports = 0  # Target number of similar historical reports
         
         logger.info(f"Fetching {target_recent_reports} most recent reports for employee {report.employee_id} (task: {task_id})")
         recent_report_data = get_recent_employee_reports(

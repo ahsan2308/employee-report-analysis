@@ -369,7 +369,7 @@ CRITICAL INSTRUCTIONS:
    - Well-structured following the exact format above
    - ALWAYS ensure your response is valid JSON with no extraneous text
    - Do not write anything in the first person or use "I" or "we" in your analysis
-
+   - Make sure to replace hyphens in compound words (write "five day" instead of "five-day") to ensure proper JSON parsing. No hyphens should be used in the output.
 
 Your analysis will help managers understand employee progress, determine where support is needed, and identify potential credibility concerns that require attention.
 """

@@ -107,7 +107,7 @@ class OllamaProvider(LLMProvider):
             try:
                 return json.loads(output_text)
             except json.JSONDecodeError as e:
-                logger.error(f"Failed to parse JSON response: {e}, response: {output_text[:100]}...")
+                logger.error(f"Failed to parse JSON response: {e}, response: {output_text}")
                 return None
                 
         except Exception as e:
