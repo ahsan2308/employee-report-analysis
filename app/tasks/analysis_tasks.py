@@ -7,10 +7,12 @@ from sqlalchemy.orm import Session
 
 from app.worker.celery_app import celery_app
 from app.database import get_database
-from app.models.task_models import BackgroundTask, TaskStatus
-from app.models.db_models import Report, Employee, EmployeeAnalysis
+from app.models.task_models import BackgroundTask, TaskStatus, TaskType
+from app.models.db_models import Report, Employee, EmployeeAnalysis, MonthlyAnalysis
 from app.services.vector_store_service import search_reports
 from app.services.db_service import get_reports_for_vector_results, get_employee_vision_data, get_recent_employee_reports
+from app.services.db_service import get_monthly_analysis_by_params, store_monthly_analysis
+from app.services.monthly_analysis_service import get_monthly_data_for_analysis
 from app.services.llm_service import get_llm_service
 from app.services.additional_services import filter_vision_data, format_vision_data_for_prompt
 from app.core.logger import logger
@@ -236,6 +238,349 @@ def analyze_report_task(self, task_id: str):
             
     except Exception as e:
         logger.error(f"Error in analysis task {task_id}: {str(e)}")
+        
+        # Update task as failed
+        with db.create_session() as session:
+            try:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.FAILED.value
+                    task.completed_at = datetime.now()
+                    task.error_message = str(e)
+                    session.commit()
+            except Exception as update_error:
+                logger.error(f"Failed to update task status: {str(update_error)}")
+        
+        # Re-raise the exception for Celery to handle
+        raise
+
+@celery_app.task(bind=True)
+def analyze_monthly_reports_task(self, task_id: str):
+    """
+    Celery task to analyze an employee's monthly performance asynchronously.
+    
+    Args:
+        self: The Celery task instance (automatically provided)
+        task_id: The UUID of the BackgroundTask record
+    
+    Returns:
+        dict: The monthly analysis result data
+    """
+    celery_task_id = self.request.id
+    logger.info(f"Starting monthly analysis task {task_id} (Celery ID: {celery_task_id})")
+    
+    db = get_database()
+    
+    try:
+        # Update task status to RUNNING
+        with db.create_session() as session:
+            # Get the task record and associated parameters
+            task = session.query(BackgroundTask).filter(
+                BackgroundTask.task_id == uuid.UUID(task_id)
+            ).first()
+            
+            if not task:
+                logger.error(f"Task {task_id} not found")
+                return {"error": "Task not found"}
+            
+            # Verify this is a monthly analysis task
+            if task.task_type != TaskType.MONTHLY_ANALYSIS.value:
+                logger.error(f"Task {task_id} is not a monthly analysis task")
+                return {"error": "Incorrect task type"}
+            
+            # Update celery_task_id and status
+            task.celery_task_id = celery_task_id
+            task.status = TaskStatus.RUNNING.value
+            task.started_at = datetime.now()
+            session.commit()
+            
+            # Extract parameters
+            employee_id = task.employee_id
+            year = task.year
+            month = task.month
+            
+            if not all([employee_id, year, month]):
+                raise ValueError(f"Missing required parameters: employee_id={employee_id}, year={year}, month={month}")
+        
+        # Get employee data outside transaction to avoid holding connection
+        with db.create_session() as session:
+            employee = session.query(Employee).filter(Employee.id == employee_id).first()
+            if not employee:
+                raise ValueError(f"Employee {employee_id} not found")
+        
+        # Check if analysis already exists
+        existing_analysis = get_monthly_analysis_by_params(employee_id, year, month)
+        if existing_analysis:
+            logger.info(f"Monthly analysis for employee {employee_id}, {year}-{month} already exists")
+            
+            # Update task as completed with reference to existing analysis
+            with db.create_session() as session:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.COMPLETED.value
+                    task.completed_at = datetime.now()
+                    task.result_data = {
+                        "analysis_id": existing_analysis["analysis_id"],
+                        "employee_id": employee_id,
+                        "year": year,
+                        "month": month,
+                        "message": "Analysis already exists"
+                    }
+                    session.commit()
+                    
+            return {
+                "analysis_id": existing_analysis["analysis_id"],
+                "employee_id": employee_id,
+                "year": year,
+                "month": month,
+                "message": "Analysis already exists"
+            }
+        
+        # Gather monthly data using the monthly analysis service
+        logger.info(f"Gathering data for employee {employee_id}, {year}-{month}")
+        monthly_data = get_monthly_data_for_analysis(employee_id, year, month)
+        
+        # Check if we have any reports for this month
+        if not monthly_data["reports"] or len(monthly_data["reports"]) == 0:
+            logger.warning(f"No reports found for employee {employee_id} in {year}-{month}")
+            with db.create_session() as session:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.FAILED.value
+                    task.completed_at = datetime.now()
+                    task.error_message = f"No reports found for employee {employee_id} in {year}-{month}"
+                    session.commit()
+            
+            return {"error": f"No reports found for employee {employee_id} in {year}-{month}"}
+        
+        # Get LLM service and generate analysis
+        logger.info(f"Calling LLM service for monthly analysis (task: {task_id})")
+        llm_service = get_llm_service()
+        analysis_result = llm_service.analyze_monthly_reports(
+            monthly_data=monthly_data,
+            num_ctx=40000
+        )
+        
+        # Handle error in analysis generation
+        if "error" in analysis_result and analysis_result["error"]:
+            logger.error(f"Error in LLM analysis: {analysis_result['error']}")
+            with db.create_session() as session:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.FAILED.value
+                    task.completed_at = datetime.now()
+                    task.error_message = f"LLM analysis failed: {analysis_result['error']}"
+                    session.commit()
+            
+            return {"error": f"LLM analysis failed: {analysis_result['error']}"}
+        
+        # Extract key fields from analysis result
+        try:
+            # Extract progress trends
+            progress_trends = analysis_result.get("progress_trends", {})
+            performance_trend = progress_trends.get("performance_trend", "stable")
+            sentiment_trend = progress_trends.get("sentiment_trend", "stable")
+            risk_level_pattern = progress_trends.get("risk_level_pattern", "stable")
+            challenge_resolution_progress = progress_trends.get("challenge_resolution_progress", "unchanged")
+            
+            # Extract monthly achievements (maps to key_achievements in DB)
+            monthly_achievements = analysis_result.get("monthly_achievements", [])
+            
+            # Extract recurring challenges
+            recurring_challenges = analysis_result.get("recurring_challenges", [])
+            
+            # Extract consistency assessment
+            consistency_assessment = analysis_result.get("consistency_assessment", {})
+            task_completion_reliability = consistency_assessment.get("task_completion_reliability", "medium")
+            work_quality_consistency = consistency_assessment.get("work_quality_consistency", "medium")
+            performance_stability = consistency_assessment.get("performance_stability", "medium")  # Changed from performance_variability
+            consistency_notable_strengths = consistency_assessment.get("notable_strengths", [])
+            consistency_notable_weaknesses = consistency_assessment.get("notable_weaknesses", [])
+            
+            # Extract growth indicators
+            growth_indicators = analysis_result.get("growth_indicators", {})
+            complexity_of_tasks = growth_indicators.get("complexity_of_tasks", "unchanged")
+            skill_development_evidence = growth_indicators.get("skill_development_evidence", "medium")
+            confidence_level_change = growth_indicators.get("confidence_level_change", "unchanged") 
+            approach_to_challenges = growth_indicators.get("approach_to_challenges", "unchanged")
+            
+            # Extract focus areas (store as array)
+            focus_areas = analysis_result.get("focus_areas", [])
+            
+            # Extract risk assessment
+            monthly_risk_assessment = analysis_result.get("monthly_risk_assessment", {})
+            risk_level = monthly_risk_assessment.get("overall_risk_level", "medium")
+            risk_explanation = monthly_risk_assessment.get("risk_explanation", "")
+            significant_risks = monthly_risk_assessment.get("significant_risks", [])
+            escalating_risks = monthly_risk_assessment.get("escalating_risks", [])
+            risk_mitigation_recommendations = monthly_risk_assessment.get("risk_mitigation_recommendations", [])
+            
+            # Extract strategic recommendations
+            strategic_recommendations = analysis_result.get("strategic_recommendations", [])
+            
+            # Extract monthly summary
+            monthly_summary = analysis_result.get("monthly_summary", "")
+            
+            # Calculate achievement impact average if not already provided in metrics
+            achievement_impact_avg = monthly_data["metrics"].get("achievement_impact_avg", 0.0)
+            
+            # If no pre-calculated value, calculate it from the LLM-generated achievements
+            if achievement_impact_avg == 0.0:
+                impact_count = 0
+                impact_sum = 0.0
+                
+                for achievement in monthly_achievements:
+                    impact_str = achievement.get("impact", "0")
+                    # Extract numeric part if in format "8 (reason)"
+                    if impact_str and isinstance(impact_str, str):
+                        try:
+                            impact_value = int(impact_str.split(" ")[0])
+                            impact_sum += impact_value
+                            impact_count += 1
+                        except (ValueError, IndexError):
+                            pass
+                
+                if impact_count > 0:
+                    achievement_impact_avg = round(impact_sum / impact_count, 2)
+                    logger.info(f"Calculated achievement impact average from LLM results: {achievement_impact_avg}")
+            else:
+                logger.info(f"Using pre-calculated achievement impact average: {achievement_impact_avg}")
+        
+            # Get report IDs included in the analysis
+            report_ids = [str(report.get("report_id")) for report in monthly_data["reports"] if "report_id" in report]
+            
+            # Prepare data for storage with all fields
+            analysis_data = {
+                "employee_id": employee_id,
+                "year": year,
+                "month": month,
+                "period_start": monthly_data["period_start"],
+                "period_end": monthly_data["period_end"],
+                "weekly_report_ids": report_ids,
+                "avg_sentiment_score": monthly_data["metrics"]["avg_sentiment"],
+                
+                # Progress trends fields
+                "sentiment_trend": sentiment_trend,
+                "performance_trend": performance_trend,
+                "risk_level_pattern": risk_level_pattern,
+                "challenge_resolution_progress": challenge_resolution_progress,
+                
+                # Risk assessment fields
+                "risk_level": risk_level,
+                "risk_explanation": risk_explanation,
+                "significant_risks": significant_risks,
+                "escalating_risks": escalating_risks,
+                "risk_mitigation_recommendations": risk_mitigation_recommendations,
+                
+                # Monthly achievements & challenges
+                "monthly_achievements": monthly_achievements,
+                "recurring_challenges": recurring_challenges,
+                "achievement_impact_avg": achievement_impact_avg,
+                
+                # Consistency assessment fields
+                "task_completion_reliability": task_completion_reliability,
+                "work_quality_consistency": work_quality_consistency,
+                "performance_stability": performance_stability,
+                "consistency_notable_strengths": consistency_notable_strengths,
+                "consistency_notable_weaknesses": consistency_notable_weaknesses,
+                
+                # Growth indicators
+                "complexity_of_tasks": complexity_of_tasks,
+                "skill_development_evidence": skill_development_evidence,
+                "confidence_level_change": confidence_level_change,
+                "approach_to_challenges": approach_to_challenges,
+                
+                # Focus areas & recommendations
+                "focus_areas": focus_areas,
+                "strategic_recommendations": strategic_recommendations,
+                
+                # Summary and complete data
+                "monthly_summary": monthly_summary,
+                "full_analysis_json": analysis_result
+            }
+            
+            # Store analysis in the database
+            analysis_id = store_monthly_analysis(analysis_data)
+            
+            if not analysis_id:
+                logger.error("Failed to store monthly analysis")
+                with db.create_session() as session:
+                    task = session.query(BackgroundTask).filter(
+                        BackgroundTask.task_id == uuid.UUID(task_id)
+                    ).first()
+                    
+                    if task:
+                        task.status = TaskStatus.FAILED.value
+                        task.completed_at = datetime.now()
+                        task.error_message = "Failed to store monthly analysis"
+                        session.commit()
+                
+                return {"error": "Failed to store monthly analysis"}
+            
+            # Prepare task result
+            result_data = {
+                "analysis_id": analysis_id,
+                "employee_id": employee_id,
+                "employee_name": employee.name,
+                "year": year,
+                "month": month,
+                "period_start": monthly_data["period_start"].isoformat() if hasattr(monthly_data["period_start"], "isoformat") else monthly_data["period_start"],
+                "period_end": monthly_data["period_end"].isoformat() if hasattr(monthly_data["period_end"], "isoformat") else monthly_data["period_end"],
+                "performance_trend": performance_trend,
+                "sentiment_trend": sentiment_trend,
+                "risk_level": risk_level,
+                "achievement_count": len(monthly_achievements),
+                "challenge_count": len(recurring_challenges),
+                "monthly_summary": monthly_summary  # Added to provide high-level overview
+            }
+            
+            # Update task as completed with result
+            with db.create_session() as session:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.COMPLETED.value
+                    task.completed_at = datetime.now()
+                    task.result_data = result_data
+                    session.commit()
+                    
+                    logger.info(f"Monthly analysis task {task_id} completed successfully")
+                    return result_data
+                else:
+                    logger.error(f"Task {task_id} not found when updating status")
+                    return {"error": "Task not found when updating status"}
+                
+        except Exception as e:
+            logger.error(f"Error processing monthly analysis result: {str(e)}")
+            with db.create_session() as session:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.FAILED.value
+                    task.completed_at = datetime.now()
+                    task.error_message = f"Error processing analysis result: {str(e)}"
+                    session.commit()
+            
+            return {"error": f"Error processing analysis result: {str(e)}"}
+            
+    except Exception as e:
+        logger.error(f"Error in monthly analysis task {task_id}: {str(e)}")
         
         # Update task as failed
         with db.create_session() as session:

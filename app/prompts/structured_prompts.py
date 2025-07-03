@@ -7,6 +7,7 @@ you need consistent prompt templates for structured data generation.
 """
 from typing import Dict, Any, List
 import json
+from datetime import date
 
 class StructuredPrompts:
     """Collection of prompts for structured output generation."""
@@ -326,7 +327,7 @@ Structure your response as follows:
 {
   "achievements": [
     {"description": "Detailed achievement description in complete sentences", "impact": "8 (Brief reason for this impact rating)"},
-    {"description": "Another detailed achievement in complete sentences", "impact": "6 (Brief reason for this rating)"}
+    {"description": "Another detailed achievement", "impact": "6 (Brief reason for this rating)"}
   ],
   "challenges": [
     {"description": "Detailed challenge description", "severity": "low/medium/high"},
@@ -336,7 +337,7 @@ Structure your response as follows:
   "topics": ["Topic 1", "Topic 2", "Topic 3"],
   "action_items": ["Specific action recommendation 1", "Specific action recommendation 2"],
   "risk_level": "low/medium/high",
-  "risk_explanation": "Detailed explanation of why you assigned this risk level",
+  "risk_explanation": "Detailed explanation of why this risk level was assigned, including specific factors and trends observed across the month",
   "credibility_assessment": {
     "rating": "high/medium/low",
     "explanation": "Assessment of the report's credibility, focusing on potential exaggeration",
@@ -447,6 +448,307 @@ Guidelines:
     def combine_prompt(task_prompt: str, format_prompt: str) -> str:
         """Combine a task prompt with a format prompt."""
         return f"{task_prompt}\n\n{format_prompt}"
+    
+    @staticmethod
+    def monthly_analysis_prompt(monthly_data: Dict[str, Any]) -> str:
+        """
+        Generate a prompt for analyzing an employee's performance over a month.
+        
+        Args:
+            monthly_data: Dictionary containing all data needed for monthly analysis
+                
+        Returns:
+            Prompt for monthly employee performance analysis
+        """
+        # Extract key data from the monthly_data dictionary
+        employee_info = monthly_data.get("employee_info", {})
+        reports = monthly_data.get("reports", [])
+        analyses = monthly_data.get("analyses", [])
+        metrics = monthly_data.get("metrics", {})
+        period_start = monthly_data.get("period_start")
+        period_end = monthly_data.get("period_end")
+        month = monthly_data.get("month")
+        year = monthly_data.get("year")
+        
+        # Determine month name
+        month_names = ["January", "February", "March", "April", "May", "June", 
+                      "July", "August", "September", "October", "November", "December"]
+        month_name = month_names[month-1] if 1 <= month <= 12 else f"Month {month}"
+        
+        # Format employee information
+        employee_name = employee_info.get("name", "Unknown Employee")
+        employee_position = employee_info.get("position", "Unknown Position")
+        employee_wing = employee_info.get("wing", "Unknown Department")
+        
+        # Format reports section
+        reports_section = ""
+        for i, report in enumerate(reports):
+            report_date = report.get("date", "Unknown Date")
+            report_text = report.get("text", "No content")
+            if isinstance(report_date, date):
+                report_date = report_date.isoformat()
+            reports_section += f"\nREPORT {i+1} ({report_date}):\n{report_text}\n"
+        
+        # Format analyses section - include all important details
+        analyses_section = ""
+        for i, analysis in enumerate(analyses):
+            analysis_date = analysis.get("date", "Unknown Date")
+            if isinstance(analysis_date, date):
+                analysis_date = analysis_date.isoformat()
+                
+            # Extract key details from the analysis
+            sentiment = analysis.get("sentiment_score", 0.5)
+            risk = analysis.get("risk_level", "medium")
+            risk_explanation = analysis.get("risk_explanation", "No explanation provided")
+            achievements = analysis.get("achievements", [])
+            challenges = analysis.get("challenges", [])
+            action_items = analysis.get("action_items", [])
+            topics = analysis.get("topics", [])
+            
+            # Extract credibility assessment
+            credibility = analysis.get("credibility_rating", "medium")
+            credibility_explanation = analysis.get("credibility_explanation", "No explanation provided")
+            consistency_score = analysis.get("consistency_score", "medium")
+            
+            # Extract performance assessment
+            performance = analysis.get("performance_rating", "medium")
+            performance_summary = analysis.get("performance_summary", "No summary provided")
+            strengths = analysis.get("performance_strengths", [])
+            improvement_areas = analysis.get("performance_improvement_areas", [])
+            
+            # Format achievements and challenges for readability
+            achievements_text = ""
+            for achievement in achievements or []:  # Add 'or []' to handle None
+                desc = achievement.get("description", "No description")
+                impact = achievement.get("impact", "No impact")
+                achievements_text += f"- {desc} (Impact: {impact})\n"
+            
+            challenges_text = ""
+            for challenge in challenges or []:  # Add 'or []' to handle None
+                desc = challenge.get("description", "No description")
+                severity = challenge.get("severity", "medium")
+                challenges_text += f"- {desc} (Severity: {severity})\n"
+            
+            # Format action items - protect against None
+            action_items_text = "\n".join([f"- {item}" for item in action_items or []]) or "None provided"
+            
+            # Format topics
+            topics_text = ", ".join(topics or []) or "None identified"
+            
+            # Format strengths and improvement areas - FIX: Add null checks
+            strengths_text = "\n".join([f"- {strength}" for strength in (strengths or [])]) or "None identified"
+            improvement_areas_text = "\n".join([f"- {area}" for area in (improvement_areas or [])]) or "None identified"
+            
+            # Add formatted analysis to the section
+            analyses_section += f"""
+ANALYSIS {i+1} ({analysis_date}):
+Sentiment Score: {sentiment}
+Risk Level: {risk}
+Risk Explanation: {risk_explanation}
+
+Key Achievements:
+{achievements_text or "None reported"}
+
+Key Challenges:
+{challenges_text or "None reported"}
+
+Topics: {topics_text}
+
+Action Items:
+{action_items_text}
+
+Credibility Assessment:
+- Rating: {credibility}
+- Explanation: {credibility_explanation}
+- Consistency Score: {consistency_score}
+
+Performance Assessment:
+- Rating: {performance}
+- Summary: {performance_summary}
+- Key Strengths:
+{strengths_text}
+- Improvement Areas:
+{improvement_areas_text}
+"""
+        
+        # Format metrics
+        avg_sentiment = metrics.get("avg_sentiment", 0.5)
+        sentiment_trend = metrics.get("sentiment_trend", "stable")
+        report_count = metrics.get("report_count", 0)
+        achievement_count = metrics.get("achievement_count", 0)
+        challenge_count = metrics.get("challenge_count", 0)
+        recurring_topics = metrics.get("recurring_topics", [])
+        risk_levels = metrics.get("risk_levels", {})
+        
+        # Build the risk levels text with better formatting
+        risk_text = ""
+        if risk_levels:
+            for level, count in risk_levels.items():
+                risk_text += f"  • {level}: {count} reports\n"
+        else:
+            risk_text = "  • No risk data available\n"
+        
+        # Format recurring topics with better formatting
+        if recurring_topics:
+            topics_text = "\n".join([f"  • {topic}" for topic in recurring_topics])
+        else:
+            topics_text = "  • No recurring topics identified"
+        
+        # Build the full prompt
+        prompt = f"""
+You are an expert HR analyst conducting a monthly performance review. Your task is to analyze all weekly reports and analyses for an employee over the past month and synthesize the information into a comprehensive monthly assessment.
+
+EMPLOYEE INFORMATION:
+- Name: {employee_name}
+- Position: {employee_position}
+- Department: {employee_wing}
+- Analysis Period: {period_start} to {period_end} ({month_name} {year})
+
+MONTHLY SUMMARY METRICS:
+- Number of Reports: {report_count}
+- Total Achievements: {achievement_count}
+- Total Challenges: {challenge_count}
+- Average Sentiment: {avg_sentiment}
+- Sentiment Trend: {sentiment_trend}
+
+RISK LEVEL DISTRIBUTION:
+{risk_text}
+
+RECURRING TOPICS:
+{topics_text}
+
+WEEKLY REPORTS:
+{reports_section}
+
+WEEKLY ANALYSIS SUMMARIES:
+{analyses_section}
+
+Your task is to analyze this information and provide a comprehensive monthly assessment of the employee's performance, focusing on identifying patterns, trends, and key insights that may not be apparent in individual weekly analyses.
+
+Specifically, you should:
+
+1. PROGRESS TRENDS: Identify and analyze trends in the employee's progress across the month.
+   - Has performance been improving, declining, or remaining stable?
+   - How has the sentiment changed over the course of the month?
+   - Are there patterns in risk levels throughout the month?
+   - Has the employee shown progress in addressing challenges from earlier weeks?
+
+2. MONTHLY ACHIEVEMENTS: Identify the most significant achievements for the entire month.
+   - Which accomplishments had the highest impact?
+   - Which achievements represent substantial progress in ongoing projects?
+   - Are there achievements that build upon each other across weeks?
+   - What is the overall pattern of achievement focus areas?
+
+3. RECURRING CHALLENGES: Analyze challenges that have appeared multiple times.
+   - Which challenges have persisted throughout the month?
+   - Has the employee made progress in addressing recurring challenges?
+   - Are there escalating challenges that require intervention?
+   - What patterns exist in the types of challenges faced?
+
+
+4. CONSISTENCY ASSESSMENT: Evaluate the employee's consistency in performance over the month.
+   - How reliable has the employee been in completing planned tasks (task_completion_reliability)?
+   - Has work quality remained consistent throughout the month (work_quality_consistency)?
+   - How stable has the employee's performance been week-to-week (performance_stability)?
+   - Note that this assessment focuses on performance consistency over time, not the consistency of reports seen in weekly analyses. The consitency score from weekly reports represents a different field.
+
+5. GROWTH INDICATORS: Identify signs of professional growth during the month.
+   - Has the employee taken on increasingly complex tasks?
+   - Is there evidence of skill development or improved capabilities?
+   - Has the employee shown increased confidence or independence?
+   - Are there changes in how the employee approaches challenges?
+
+6. FOCUS AREAS: Determine the primary areas of work focus during the month.
+   - What projects or responsibilities dominated the employee's time?
+   - Has the focus shifted during the month, and if so, how?
+   - Are there emerging priorities that appear in later weeks?
+   - Is the employee's focus aligned with departmental priorities?
+
+7. MONTHLY RISK ASSESSMENT: Provide an overall risk assessment for the month.
+   - What are the most significant risks identified across all weeks?
+   - Are there escalating risk patterns that require attention?
+   - What is the overall risk level for the employee's projects and responsibilities?
+   - What specific factors contribute most to the current risk profile?
+   - For the risk explnation field, provide a detailed explanation of your risk assessment reasoning, including specific evidence and trends observed across the month that justify the assigned risk level.
+
+8. STRATEGIC RECOMMENDATIONS: Suggest strategic actions based on the monthly analysis.
+   - What specific interventions would help address persistent challenges?
+   - What support or resources would enhance the employee's strengths?
+   - What adjustments to workload or responsibilities might improve performance?
+   - What development opportunities would benefit the employee based on the monthly patterns?
+
+9. MONTHLY SUMMARY: Provide a comprehensive overview of the employee's performance for the entire month.
+   - Synthesize the key findings from all sections into a cohesive narrative
+   - Highlight the most significant achievements and challenges
+   - Evaluate overall performance trajectory and risk profile
+   - Consider both quantitative metrics and qualitative assessments
+   - Keep the summary concise but comprehensive (about 3-5 sentences)
+
+Please provide your analysis in the following structured format:
+{{
+  "progress_trends": {{
+    "performance_trend": "improving/declining/stable",
+    "sentiment_trend": "positive/negative/stable",
+    "risk_level_pattern": "increasing/decreasing/stable",
+    "challenge_resolution_progress": "improved/declined/unchanged"
+  }},
+  "monthly_achievements": [
+    {{"description": "Significant achievement description", "impact": "8 (Reason for high impact)"}},
+    {{"description": "Another significant achievement", "impact": "7 (Reason for substantial progress)"}}
+  ],
+  "recurring_challenges": [
+    {{"description": "Persistent challenge description", "severity": "medium/high", "status": "addressed/ongoing"}},
+    {{"description": "Another recurring challenge", "severity": "low/medium", "status": "resolved/ongoing"}}
+  ],
+  "consistency_assessment": {{
+    "task_completion_reliability": "high/medium/low",
+    "work_quality_consistency": "high/medium/low",
+    "performance_stability": "high/medium/low",
+    "notable_strengths": ["Consistent strength 1", "Consistent strength 2"],
+    "notable_weaknesses": ["Inconsistent area 1", "Inconsistent area 2"]
+  }},
+  "growth_indicators": {{
+    "complexity_of_tasks": "increased/decreased/unchanged",
+    "skill_development_evidence": "high/medium/low",
+    "confidence_level_change": "increased/decreased/unchanged",
+    "approach_to_challenges": "more proactive/more reactive/unchanged"
+  }},
+  "focus_areas": [
+    {{"project": "Primary project or responsibility", "time_investment": "high/medium/low", "priority_level": "high/medium/low"}},
+    {{"project": "Secondary project or responsibility", "time_investment": "medium/low", "priority_level": "medium/low"}}
+  ],
+  "monthly_risk_assessment": {{
+    "overall_risk_level": "low/medium/high",
+    "risk_explanation": "Detailed explanation of why this risk level was assigned, including specific factors and trends observed across the month",
+    "significant_risks": ["Risk factor 1", "Risk factor 2"],
+    "escalating_risks": ["Escalating risk 1", "Escalating risk 2"],
+    "risk_mitigation_recommendations": ["Recommendation 1", "Recommendation 2"]
+  }},
+  "strategic_recommendations": [
+    {{"action": "Specific action to address challenge or enhance performance", "priority": "high/medium/low"}},
+    {{"action": "Another strategic action", "priority": "high/medium/low"}}
+  ],
+  
+  "monthly_summary": "A concise but comprehensive narrative overview of the employee's performance during the month, highlighting key achievements, challenges, performance trajectory, and overall assessment."
+}}
+
+CRITICAL INSTRUCTIONS:
+1. Your analysis should focus on identifying patterns and trends across the monthly data, rather than re-evaluating individual reports.
+2. Pay special attention to:
+   - Changes in performance, sentiment, and risk levels over the month
+   - Recurring challenges and whether they have been addressed
+   - Consistency in task completion and work quality
+   - Significant achievements and their impact
+   - Areas of professional growth or concern
+   - Alignment of focus areas with organizational priorities
+   - Overall risk assessment based on cumulative data
+3. Ensure your recommendations are strategic and targeted at enhancing performance and addressing challenges.
+4. Structure your response exactly as specified, with clear and concise information in each section.
+5. Validate that your response is a well-formed JSON object before submission.
+6. Ensure your monthly summary provides a holistic view of the employee's performance that could stand alone as an executive briefing.
+"""
+        
+        return prompt
 
 
 # Add more specialized prompt templates as needed

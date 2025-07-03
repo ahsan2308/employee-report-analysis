@@ -141,6 +141,31 @@ const analysisApi = {
     // Get detailed analysis by ID
     getAnalysisDetails: async (analysisId) => {
         return await fetchApi(`/analyses/${analysisId}`);
+    },
+    
+    // Monthly analysis functions
+    analyzeMonthlyReports: async (employeeId, year, month) => {
+        return await fetchApi(`/analyses/monthly/analyze?employee_id=${employeeId}&year=${year}&month=${month}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    },
+    
+    // Get monthly analysis by ID
+    getMonthlyAnalysisById: async (analysisId) => {
+        return await fetchApi(`/analyses/monthly/${analysisId}`);
+    },
+    
+    // Get all monthly analyses for an employee
+    getEmployeeMonthlyAnalyses: async (employeeId) => {
+        return await fetchApi(`/analyses/monthly/employee/${employeeId}`);
+    },
+    
+    // Get monthly analysis by employee, year, and month
+    getMonthlyAnalysisByPeriod: async (employeeId, year, month) => {
+        return await fetchApi(`/analyses/monthly/employee/${employeeId}/${year}/${month}`);
     }
 };
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Index, Float, DateTime, Text, ARRAY
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Index, Float, DateTime, Text, ARRAY, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.models.base import Base
 from app.models.base import schema_name
@@ -16,6 +16,7 @@ class Employee(Base):
     
     # Add relationship to vision data
     vision_data = relationship("EmployeeVisionData", back_populates="employee")
+    monthly_analyses = relationship("MonthlyAnalysis", back_populates="employee", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Employee(id={self.id}, name='{self.name}', wing='{self.wing}', position='{self.position}')>"
@@ -105,3 +106,84 @@ class EmployeeAnalysis(Base):
 # Add relationship backref to existing models
 Report.analyses = relationship("EmployeeAnalysis", back_populates="report", cascade="all, delete-orphan")
 Employee.analyses = relationship("EmployeeAnalysis", back_populates="employee")
+
+class MonthlyAnalysis(Base):
+    """
+    Monthly aggregated analysis of employee reports.
+    Contains insights derived from multiple weekly reports over a month.
+    """
+    __tablename__ = "monthly_analyses"
+    
+    # Primary key and relationships
+    analysis_id = Column(Integer, primary_key=True, autoincrement=True)
+    employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)
+    
+    # Time fields - using separate year and month fields for optimization
+    year = Column(Integer, nullable=False, comment="Year of this analysis")
+    month = Column(Integer, nullable=False, comment="Month as integer (1-12)")
+    period_start = Column(Date, nullable=False, comment="Start date of the analysis period")
+    period_end = Column(Date, nullable=False, comment="End date of the analysis period")
+    
+    # Weekly report references
+    weekly_report_ids = Column(ARRAY(UUID), nullable=True, comment="List of weekly report IDs included in this analysis")
+    
+    # Analysis metrics
+    avg_sentiment_score = Column(Float, nullable=True, comment="Average sentiment score across all weekly reports")
+    
+    # Progress Trends fields (aligned with prompt structure)
+    sentiment_trend = Column(String, nullable=True, comment="Trend direction of sentiment (improving, declining, stable)")
+    performance_trend = Column(String, nullable=True, comment="Performance trend (improving, declining, stable)")
+    risk_level_pattern = Column(String, nullable=True, comment="Risk level pattern (increasing, decreasing, stable)")
+    challenge_resolution_progress = Column(String, nullable=True, comment="Progress in resolving challenges (improved, declined, unchanged)")
+    
+    # Risk Assessment fields (aligned with prompt structure)
+    risk_level = Column(String, nullable=True, comment="Overall risk assessment (low, medium, high)")
+    risk_explanation = Column(Text, nullable=True, comment="Explanation of risk assessment")
+    significant_risks = Column(JSONB, nullable=True, comment="List of significant risks identified")
+    escalating_risks = Column(JSONB, nullable=True, comment="List of escalating risks requiring attention")
+    risk_mitigation_recommendations = Column(JSONB, nullable=True, comment="Recommendations for mitigating identified risks")
+    
+    # Monthly Achievements & Challenges
+    monthly_achievements = Column(JSONB, nullable=True, comment="Most significant achievements with impact ratings")
+    recurring_challenges = Column(JSONB, nullable=True, comment="Challenges that appeared multiple times with severity and status")
+    achievement_impact_avg = Column(Float, nullable=True, comment="Average impact score of achievements")
+    
+    # Consistency Assessment fields (aligned with prompt structure)
+    task_completion_reliability = Column(String, nullable=True, comment="Reliability in completing planned tasks (high, medium, low)")
+    work_quality_consistency = Column(String, nullable=True, comment="Consistency of work quality (high, medium, low)")
+    performance_stability = Column(String, nullable=True, comment="Stability of performance across weeks (high, medium, low)")
+    consistency_notable_strengths = Column(JSONB, nullable=True, comment="Notable strengths in consistency")
+    consistency_notable_weaknesses = Column(JSONB, nullable=True, comment="Notable weaknesses in consistency")
+    
+    # Growth Indicators (detailed as per prompt)
+    complexity_of_tasks = Column(String, nullable=True, comment="Changes in task complexity (increased, decreased, unchanged)")
+    skill_development_evidence = Column(String, nullable=True, comment="Evidence of skill development (high, medium, low)")
+    confidence_level_change = Column(String, nullable=True, comment="Change in confidence level (increased, decreased, unchanged)")
+    approach_to_challenges = Column(String, nullable=True, comment="Approach to challenges (more proactive, more reactive, unchanged)")
+    
+    # Focus Areas
+    focus_areas = Column(JSONB, nullable=True, comment="Key projects with time investment and priority levels")
+    
+    # Recommendations
+    strategic_recommendations = Column(JSONB, nullable=True, comment="Strategic actions with priority levels")
+    
+    # Summary and complete data
+    monthly_summary = Column(Text, nullable=True, comment="Overall summary of the month's performance")
+    full_analysis_json = Column(JSONB, nullable=True, comment="Complete analysis results in JSON format")
+    
+    # Metadata
+    analysis_date = Column(DateTime, default=func.now(), nullable=False)
+    
+    # Define relationships
+    employee = relationship("Employee", back_populates="monthly_analyses")
+    
+    def __repr__(self):
+        """String representation for debugging and logging."""
+        month_name = {
+            1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
+            7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"
+        }.get(self.month, "Unknown")
+        
+        return f"<MonthlyAnalysis id={self.analysis_id} employee={self.employee_id} period={self.year}-{month_name}>"
+
+Employee.monthly_analyses = relationship("MonthlyAnalysis", back_populates="employee")

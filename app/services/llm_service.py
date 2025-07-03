@@ -10,7 +10,7 @@ import os
 from app.model_host import get_llm_provider
 from app.core.logger import logger
 from app.core.config_provider import get_config_provider
-from app.models.structured_models_llm import EmployeeAnalysis
+from app.models.structured_models_llm import EmployeeAnalysis, MonthlyAnalysis
 from app.prompts.structured_prompts import StructuredPrompts
 
 config = get_config_provider()
@@ -319,6 +319,99 @@ class LLMService:
                 )
         except Exception as e:
             logger.error(f"Error analyzing report: {e}")
+            return {"error": str(e), "status": "failed"}
+
+    def analyze_monthly_reports(
+        self,
+        monthly_data: Dict[str, Any],
+        use_custom_format: bool = False,
+        custom_format: Optional[Dict[str, Any]] = None,
+        num_ctx: int = 40000 
+    ) -> Dict[str, Any]:
+        """
+        Analyze an employee's performance over a month based on weekly reports and analyses.
+        
+        Args:
+            monthly_data: Dictionary containing all data needed for monthly analysis, including:
+                - employee_info: Basic information about the employee
+                - reports: List of raw reports for the month
+                - analyses: List of weekly analyses for the month
+                - metrics: Pre-calculated metrics for the month
+                - period_start: Start date of the analysis period
+                - period_end: End date of the analysis period
+            use_custom_format: If True, use custom_format instead of the Pydantic model
+            custom_format: Optional custom response format to use instead of Pydantic model
+            num_ctx: Maximum context length for the model
+            
+        Returns:
+            Analysis results as a dictionary
+        """
+        # Generate the prompt using the monthly analysis prompt template
+        prompt = StructuredPrompts.monthly_analysis_prompt(monthly_data)
+        logger.info(f"Generating monthly analysis for employee {monthly_data.get('employee_id')}")
+        
+        try:
+            # Decide whether to use the custom format or the Pydantic model
+            if use_custom_format:
+                if custom_format is None:
+                    # Provide a default format that matches our expected monthly analysis structure
+                    custom_format = {
+                        "progress_trends": {
+                            "performance_trend": "improving/declining/stable",
+                            "sentiment_trend": "positive/negative/stable",
+                            "risk_level_pattern": "increasing/decreasing/stable",
+                            "challenge_resolution_progress": "improved/declined/unchanged"
+                        },
+                        "monthly_achievements": [
+                            {"description": "Achievement description", "impact": "Impact rating and reason"}
+                        ],
+                        "recurring_challenges": [
+                            {"description": "Challenge description", "severity": "low/medium/high", "status": "addressed/ongoing"}
+                        ],
+                        "consistency_assessment": {
+                            "task_completion_reliability": "high/medium/low",
+                            "work_quality_consistency": "high/medium/low",
+                            "performance_variability": "high/medium/low",
+                            "notable_strengths": ["Strength 1", "Strength 2"],
+                            "notable_weaknesses": ["Weakness 1", "Weakness 2"]
+                        },
+                        "growth_indicators": {
+                            "complexity_of_tasks": "increased/decreased/unchanged",
+                            "skill_development_evidence": "high/medium/low",
+                            "confidence_level_change": "increased/decreased/unchanged",
+                            "approach_to_challenges": "more proactive/more reactive/unchanged"
+                        },
+                        "focus_areas": [
+                            {"project": "Project name", "time_investment": "high/medium/low", "priority_level": "high/medium/low"}
+                        ],
+                        "monthly_risk_assessment": {
+                            "overall_risk_level": "low/medium/high",
+                            "significant_risks": ["Risk 1", "Risk 2"],
+                            "escalating_risks": ["Escalating risk 1"],
+                            "risk_mitigation_recommendations": ["Recommendation 1", "Recommendation 2"]
+                        },
+                        "strategic_recommendations": [
+                            {"action": "Recommended action", "priority": "high/medium/low"}
+                        ],
+                        "monthly_summary": "A concise but comprehensive narrative overview of the employee's performance during the month, highlighting key achievements, challenges, performance trajectory, and overall assessment."
+                    }
+                
+                return self.get_structured_response(
+                    prompt=prompt,
+                    response_format=custom_format,
+                    temperature=0,
+                    num_ctx=num_ctx
+                )
+            else:
+                # Use the MonthlyAnalysis Pydantic model
+                return self.get_structured_response(
+                    prompt=prompt,
+                    pydantic_model=MonthlyAnalysis,
+                    temperature=0,
+                    num_ctx=num_ctx
+                )
+        except Exception as e:
+            logger.error(f"Error analyzing monthly reports: {e}")
             return {"error": str(e), "status": "failed"}
 
 
