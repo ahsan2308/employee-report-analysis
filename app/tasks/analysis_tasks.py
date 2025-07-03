@@ -405,7 +405,7 @@ def analyze_monthly_reports_task(self, task_id: str):
             consistency_assessment = analysis_result.get("consistency_assessment", {})
             task_completion_reliability = consistency_assessment.get("task_completion_reliability", "medium")
             work_quality_consistency = consistency_assessment.get("work_quality_consistency", "medium")
-            performance_stability = consistency_assessment.get("performance_stability", "medium")  # Changed from performance_variability
+            performance_stability = consistency_assessment.get("performance_stability", "medium") 
             consistency_notable_strengths = consistency_assessment.get("notable_strengths", [])
             consistency_notable_weaknesses = consistency_assessment.get("notable_weaknesses", [])
             

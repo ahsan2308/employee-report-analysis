@@ -149,7 +149,7 @@ class ConsistencyAssessment(BaseModel):
     work_quality_consistency: Literal["high", "medium", "low"] = Field(
         description="Consistency of work quality throughout the month"
     )
-    performance_variability: Literal["high", "medium", "low"] = Field(
+    performance_stability: Literal["high", "medium", "low"] = Field(
         description="Variability of performance week-to-week"
     )
     notable_strengths: List[str] = Field(
