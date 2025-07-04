@@ -8,50 +8,60 @@ A robust AI-powered system for analyzing employee reports to extract valuable in
 
 **Employee Report Analysis** is an intelligent application that leverages **Large Language Models (LLMs)** and **vector search** to automatically analyze employee reports. The system extracts key information such as:
 
-- Achievements  
-- Challenges  
-- Sentiment  
-- Risk assessments  
+- Achievements and their impact
+- Challenges and their severity
+- Sentiment analysis
+- Risk assessments
+- Credibility evaluation
+- Performance assessments
+- Recommended action items
 
-This provides **actionable insights** for management teams.
+The system also performs **monthly analysis** across all reports from an employee to identify trends, recurring challenges, and growth indicators.
 
 ---
 
 ## ✨ Key Features
 
-- **Automated Report Analysis**: Extract structured insights from unstructured employee reports  
-- **Semantic Search**: Find relevant reports based on context, not just keywords  
-- **Risk Assessment**: Automatically identify potential issues requiring attention  
-- **Sentiment Analysis**: Track employee sentiment over time  
-- **Historical Context**: Analyze reports in the context of previous submissions  
-- **Web Interface**: User-friendly frontend for submitting reports and viewing analyses  
-- **Interactive Dashboards**: View and manage employees, reports, and analyses through an intuitive UI  
-- **Data Visualization**: Visual representation of sentiment, risk levels, and key topics  
+- **Weekly Report Analysis**: Extract structured insights from unstructured employee reports
+- **Monthly Performance Analysis**: Analyze trends and patterns across all reports from a month
+- **Semantic Search**: Find relevant reports based on context, not just keywords
+- **Risk Assessment**: Automatically identify potential issues requiring attention
+- **Sentiment Analysis**: Track employee sentiment over time
+- **Credibility Evaluation**: Assess report credibility with specific exaggeration flags
+- **Performance Rating**: Provide balanced performance assessments with strengths and improvement areas
+- **Historical Context**: Analyze reports with previous submissions for reference
+- **Asynchronous Processing**: Background task processing for analysis requests
+- **Direct URL Sharing**: Share analysis results via URL parameters
+- **Interactive Visualizations**: Visual representation of sentiment, risk levels, and key metrics
 
 ---
 
 ## 🏗️ System Architecture
 
-- **API Layer**: RESTful endpoints for employees, reports, and analyses  
-- **Services Layer**: Business logic for report processing and analysis  
+- **API Layer**: RESTful endpoints for employees, reports, analyses, and tasks
+- **Services Layer**: Business logic for report processing and analysis
+- **Task Processing**: Celery for asynchronous task management
 - **Storage**:
-  - PostgreSQL for structured data  
-  - Qdrant for vector embeddings  
-- **LLM Integration**: Ollama for natural language understanding and structured output generation  
-- **Frontend Layer**: HTML, CSS, and JavaScript for user interaction  
+  - PostgreSQL for structured data
+  - Qdrant for vector embeddings
+  - Redis for task queue management
+- **LLM Integration**: Ollama for natural language understanding and structured output generation
+- **Frontend Layer**: HTML, CSS, and JavaScript for user interaction
 
 ---
 
 ## 🛠️ Technologies Used
 
-- **Backend**: FastAPI (Python)  
-- **Database**: PostgreSQL / MSSQL  
-- **Vector Store**: Qdrant  
-- **LLM Provider**: Ollama with LLaMA 3.1  
-- **Embeddings**: Sentence Transformers  
-- **Documentation**: Swagger / OpenAPI  
-- **Frontend**: HTML5, CSS3, JavaScript (vanilla)  
-- **UI Framework**: Custom responsive design  
+- **Backend**: FastAPI (Python)
+- **Database**: PostgreSQL
+- **Vector Store**: Qdrant
+- **Task Queue**: Celery with Redis
+- **LLM Provider**: Ollama with LLaMA 3.1
+- **Embeddings**: Sentence Transformers
+- **Documentation**: Swagger / OpenAPI
+- **Frontend**: HTML5, CSS3, JavaScript (vanilla)
+- **Containerization**: Docker for services (Redis, Qdrant)
+- **UI Framework**: Custom responsive design
 
 ---
 
@@ -59,52 +69,117 @@ This provides **actionable insights** for management teams.
 
 ### Prerequisites
 
-- Python 3.10+  
-- PostgreSQL database  
-- Ollama with the LLaMA 3.1 model  
-- Visual C++ build tools *(Windows only)*  
+- Python 3.10+
+- PostgreSQL database
+- Docker Desktop (for Redis and Qdrant containers)
+- Ollama with the LLaMA 3.1 model
+- Visual C++ build tools *(Windows only)*
 
 ### Installation Steps
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/employee-report-analysis.git
-   cd employee-report-analysis
-   ```
+1. **Install Required Tools**
 
-2. **Create a virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+   - **Python**: Download Python 3.10+ from [python.org](https://www.python.org/downloads/)
+     - During installation, check "Add Python to PATH"
 
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+   - **Visual Studio Build Tools** (Windows only):
+     - Download from [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+     - During installation, select only:
+       - C++ build tools
+       - MSVC v14.x
+       - Windows 10/11 SDK
 
-4. **Configure the environment**  
-   - Copy `.env.example` to `.env` and update the settings  
-   - Ensure database connection details are correct in `config.yaml`
+   - **PostgreSQL**:
+     - Download from [PostgreSQL Website](https://www.postgresql.org/download/)
+     - Remember your password during installation
+     - Create a new database named `employee_report_db`
+     - Create a schema named `employee_reports`
 
-5. **Initialize the database**
-   ```bash
-   alembic upgrade head
-   ```
+   - **Docker Desktop**:
+     - Download from [Docker Website](https://www.docker.com/products/docker-desktop/)
+     - Install and ensure it's running
 
-6. **Start the backend application**
-   ```bash
-   uvicorn app.main:app --reload
-   ```
+   - **Ollama**:
+     - Download from [Ollama.com](https://ollama.com/)
+     - After installation, run: `ollama pull llama3.1`
 
-7. **Access the frontend**
-   - Open `frontend/index.html` in your web browser  
-   - Alternatively, use a simple HTTP server:
+2. **Set Up Docker Containers**
+
+   - **Start Redis Container**:
+     ```powershell
+     docker run -d `
+       --name redis-container `
+       -p 6379:6379 `
+       redis redis-server --bind 0.0.0.0
+     ```
+
+   - **Start Qdrant Container**:
+     ```powershell
+     # Create directory for data persistence
+     New-Item -ItemType Directory -Path .\qdrant_data -Force
+
+     # Run Qdrant container
+     docker run -d `
+       --name qdrant-server `
+       -p 6333:6333 `
+       -p 6334:6334 `
+       -v ${PWD}/qdrant_data:/qdrant/storage `
+       --restart unless-stopped `
+       qdrant/qdrant:v1.13.3
+     ```
+
+   - **Verify Qdrant is running**:
+     ```powershell
+     (Invoke-WebRequest 'http://localhost:6333/collections' -UseBasicParsing).StatusCode  # Should return 200
+     ```
+
+3. **Set Up the Application**
+
+   - **Get the code**: 
+     - Clone the repository or extract the zip file
+     - Navigate to the directory in your terminal
+
+   - **Create a virtual environment**:
+     ```bash
+     python -m venv venv
+     venv\Scripts\activate  # On Windows
+     source venv/bin/activate  # On Linux/Mac
+     ```
+
+   - **Install dependencies**:
+     ```bash
+     pip install -r requirements.txt
+     ```
+
+   - **Configure environment variables**:
+     - Create a `.env` file in the application root with:
+     ```
+     DATABASE_URL=postgresql://username:password@localhost:5432/employee_report_db
+     VECTOR_STORE_URL=http://localhost:6333
+     OLLAMA_BASE_URL=http://localhost:11434
+     LLM_MODEL_NAME=llama3.1
+     ```
+
+4. **Start the Application**
+
+   - **Start the backend server**:
+     ```bash
+     uvicorn app.main:app --reload
+     ```
+   
+   - **Start the Celery worker** (in a separate terminal):
+     ```bash
+     celery -A app.worker.worker worker --loglevel=info
+     ```
+
+   - **Access the frontend**:
+     - Open `frontend/index.html` in your web browser, or
+     - Start a simple HTTP server:
      ```bash
      cd frontend
      python -m http.server 8080
      ```
-   - Then navigate to `http://localhost:8080` in your browser  
+     - Then navigate to `http://localhost:8080` in your browser
 
 ---
 
@@ -112,29 +187,57 @@ This provides **actionable insights** for management teams.
 
 ### Using the Web Interface
 
-- **Home Page**: Navigate to the main dashboard for an overview of the system  
-- **Employees Page**: Create, view, and manage employee profiles  
-- **Reports Page**: Submit new employee reports with structured fields for:
-  - Tasks completed  
-  - Impact/outcome  
-  - Challenges faced  
-  - Support required  
-  - Tasks planned for next week  
-  - Confidence level  
-- **Analysis Page**: Request and view AI-generated analyses of submitted reports, including:
-  - Sentiment analysis  
-  - Risk assessment  
-  - Key achievements  
-  - Major challenges  
-  - Recommended actions  
+- **Home Page**: Overview of the system's capabilities and getting started guide
+- **Employees Page**: Create, view, and manage employee profiles
+- **Reports Page**: Submit new employee reports with structured fields:
+  - Tasks completed
+  - Impact/outcome
+  - Challenges faced
+  - Support required
+  - Tasks planned for next week
+  - Confidence level
+- **Analysis Page**: Two analysis modes:
+  - **Weekly Analysis**: Analyze individual reports with detailed insights
+  - **Monthly Analysis**: Analyze patterns across an entire month with:
+    - Progress trends
+    - Monthly achievements
+    - Recurring challenges
+    - Consistency assessment
+    - Growth indicators
+    - Focus areas
+    - Risk assessment
+    - Strategic recommendations
+- **Visualizations Page**: Interactive charts showing performance trends
+
+### Analysis Features
+
+- **Weekly Analysis Provides**:
+  - Key achievements with impact ratings
+  - Challenges with severity assessment
+  - Overall sentiment
+  - Risk level and explanation
+  - Credibility assessment with potential exaggeration flags
+  - Performance assessment with strengths and improvement areas
+  - Recommended action items
+
+- **Monthly Analysis Provides**:
+  - Performance and sentiment trends
+  - Most significant achievements across the month
+  - Recurring challenges and their resolution status
+  - Performance consistency metrics
+  - Professional growth indicators
+  - Key focus areas for the employee
+  - Overall risk assessment with mitigation recommendations
+  - Strategic recommendations for management
 
 ### Using the API
 
-For programmatic access, use the REST API:
+The system provides a comprehensive REST API:
 
-- **Creating Employees**: `POST /api/employees`  
-- **Submitting Reports**: `POST /api/reports`  
-- **Analyzing Reports**: `POST /api/analyses`  
+- **Employee Management**: Create and retrieve employee information
+- **Report Management**: Submit and retrieve weekly reports
+- **Analysis**: Request weekly and monthly analyses
+- **Task Management**: Track the status of asynchronous analysis tasks
 
 API documentation is available at `/docs` when running the application.
 
@@ -142,90 +245,27 @@ API documentation is available at `/docs` when running the application.
 
 ## 🔮 Future Enhancements
 
-- **Background Processing**: Asynchronous analysis for improved performance  
-- **Batched Operations**: Process multiple reports in a single request  
-- **Caching Layer**: Optimize frequent queries and expensive computations  
-- **Enhanced UI**: Additional visualizations and interactive elements  
-- **Extended Analysis**: Trend analysis and comparative performance metrics  
-- **Export Functionality**: Generate PDF and Excel reports for stakeholders  
-- **Mobile Responsiveness**: Optimize frontend for mobile devices  
+- **Export Functionality**: Generate PDF and Excel reports for stakeholders
+- **Mobile Application**: Native mobile app for on-the-go report submission and analysis
+- **Team Analytics**: Aggregate insights across teams and departments
+- **Integration with HR Systems**: Connect with existing HR software for seamless workflow
+- **Advanced Visualizations**: More sophisticated charts and dashboards
+- **Customizable Analysis Criteria**: Allow managers to configure analysis parameters
+- **Notification System**: Alert managers to high-risk or critical issues
+- **Multi-language Support**: Analyze reports in multiple languages
+
+---
+
+## 🔍 Troubleshooting
+
+- **Database Connection Issues**: Verify PostgreSQL is running and credentials are correct
+- **Ollama Issues**: Make sure Ollama is running (check system tray) and the LLaMA model is downloaded
+- **Redis/Celery Issues**: Ensure Redis container is running (`docker ps`)
+- **Qdrant Issues**: Verify Qdrant is accessible at http://localhost:6333/
+- **Installation Errors**: Ensure Visual Studio Build Tools are properly installed on Windows
 
 ---
 
 ## 📝 License
 
 MIT License
-
-
-
-# employee-report-analysis
-
-Install https://visualstudio.microsoft.com/visual-cpp-build-tools/ before installing from requirements.txt
-    Click Modify under "Build Tools for Visual Studio".
-    
-    Ensure the following are checked:
-    
-    ✔️ C++ build tools
-    
-    ✔️ MSVC v14.x (any version 14.0 or newer is fine)
-    
-    ✔️ Windows 10 SDK (or Windows 11 SDK)
-
-Things to be done (potentially)
-Key Scaling Concepts for Employee Analysis System
-1. Pagination
-What it is: Dividing large result sets into manageable chunks ("pages") rather than returning all data at once.
-
-Why it matters for your project:
-
-Returning all employee analyses at once could be extremely inefficient as your database grows
-Helps manage memory usage on both server and client
-Improves response times for API requests
-Implementation concepts:
-
-Offset-based pagination: Using LIMIT and OFFSET in SQL queries (simple but less efficient for large datasets)
-Cursor-based pagination: Using a unique identifier and sort order to determine "where we left off" (more efficient for large datasets)
-Page number + page size approach for RESTful APIs
-2. Batch Operations
-What it is: Processing multiple items in a single operation rather than individual requests.
-
-Why it matters for your project:
-
-Analyzing multiple employee reports at once rather than one by one
-Reducing network overhead and database transactions
-Implementation concepts:
-
-Bulk database inserts/updates
-API endpoints that accept arrays of items
-Parallel processing of analyses
-Transaction management for atomic operations
-3. Caching Layer
-What it is: Temporarily storing frequently accessed or expensive-to-compute data for rapid retrieval.
-
-Why it matters for your project:
-
-Analysis results might be computationally expensive (LLM calls)
-Same reports might be viewed many times
-Database queries could become a bottleneck
-Implementation concepts:
-
-In-memory caching (Redis, Memcached)
-Multi-level caching (application level, database query results, HTTP responses)
-Cache invalidation strategies (TTL, event-based)
-Distributed caching for horizontal scaling
-4. Background Processing
-What it is: Moving time-consuming tasks to an asynchronous process rather than handling them in the main request/response cycle.
-
-Why it matters for your project:
-
-LLM analysis can take significant time
-Users shouldn't wait for analysis to complete
-Allows for batch processing of multiple reports
-Implementation concepts:
-
-Task queues (Celery, RQ)
-Worker processes separate from web servers
-Status tracking for long-running processes
-Webhook callbacks when tasks complete
-Scheduled tasks for regular analysis updates
-These patterns would significantly improve your system's scalability, making it more responsive and able to handle larger workloads as your application grows.
