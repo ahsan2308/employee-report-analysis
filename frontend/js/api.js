@@ -153,19 +153,26 @@ const analysisApi = {
         });
     },
     
-    // Get monthly analysis by ID
-    getMonthlyAnalysisById: async (analysisId) => {
-        return await fetchApi(`/analyses/monthly/${analysisId}`);
+    getMonthlyAnalysisResults: async (employeeId, year, month) => {
+        console.log(`Fetching monthly analysis for employee ID: ${employeeId}, ${year}-${month}`);
+        try {
+            const response = await fetchApi(`/analyses/monthly/employee/${employeeId}/${year}/${month}`);
+            console.log('Monthly API Response:', response);
+            return response;
+        } catch (error) {
+            console.error('Error in getMonthlyAnalysisResults:', error);
+            throw error;
+        }
     },
     
-    // Get all monthly analyses for an employee
+    // Get monthly analyses for an employee
     getEmployeeMonthlyAnalyses: async (employeeId) => {
         return await fetchApi(`/analyses/monthly/employee/${employeeId}`);
     },
     
-    // Get monthly analysis by employee, year, and month
-    getMonthlyAnalysisByPeriod: async (employeeId, year, month) => {
-        return await fetchApi(`/analyses/monthly/employee/${employeeId}/${year}/${month}`);
+    // Get detailed monthly analysis by ID
+    getMonthlyAnalysisDetails: async (analysisId) => {
+        return await fetchApi(`/analyses/monthly/${analysisId}`);
     }
 };
 

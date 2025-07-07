@@ -346,7 +346,7 @@ def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
                     "consistency_assessment": {
                         "task_completion_reliability": monthly_analysis["task_completion_reliability"],
                         "work_quality_consistency": monthly_analysis["work_quality_consistency"],
-                        "performance_variability": monthly_analysis["performance_stability"],
+                        "performance_stability": monthly_analysis["performance_stability"],
                         "notable_strengths": monthly_analysis["consistency_notable_strengths"],
                         "notable_weaknesses": monthly_analysis["consistency_notable_weaknesses"]
                     },

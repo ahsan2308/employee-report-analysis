@@ -371,7 +371,7 @@ class LLMService:
                         "consistency_assessment": {
                             "task_completion_reliability": "high/medium/low",
                             "work_quality_consistency": "high/medium/low",
-                            "performance_variability": "high/medium/low",
+                            "performance_stability": "high/medium/low",
                             "notable_strengths": ["Strength 1", "Strength 2"],
                             "notable_weaknesses": ["Weakness 1", "Weakness 2"]
                         },

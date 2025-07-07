@@ -518,24 +518,24 @@ Guidelines:
             
             # Format achievements and challenges for readability
             achievements_text = ""
-            for achievement in achievements or []:  # Add 'or []' to handle None
+            for achievement in achievements or []: 
                 desc = achievement.get("description", "No description")
                 impact = achievement.get("impact", "No impact")
                 achievements_text += f"- {desc} (Impact: {impact})\n"
             
             challenges_text = ""
-            for challenge in challenges or []:  # Add 'or []' to handle None
+            for challenge in challenges or []: 
                 desc = challenge.get("description", "No description")
                 severity = challenge.get("severity", "medium")
                 challenges_text += f"- {desc} (Severity: {severity})\n"
             
-            # Format action items - protect against None
+            # Format action items 
             action_items_text = "\n".join([f"- {item}" for item in action_items or []]) or "None provided"
             
             # Format topics
             topics_text = ", ".join(topics or []) or "None identified"
             
-            # Format strengths and improvement areas - FIX: Add null checks
+            # Format strengths and improvement areas 
             strengths_text = "\n".join([f"- {strength}" for strength in (strengths or [])]) or "None identified"
             improvement_areas_text = "\n".join([f"- {area}" for area in (improvement_areas or [])]) or "None identified"
             

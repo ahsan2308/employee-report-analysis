@@ -26,16 +26,17 @@
         
         <main>
             <section class="selection-panel card">
-                <h2><i class="fas fa-chart-pie"></i> Report Analysis</h2>
+                <h2><i class="fas fa-chart-pie"></i> Performance Analysis</h2>
                 <div id="statusMessage" style="display: none;"></div>
                 
-                <!-- Add analysis type toggle switch -->
-                <div class="analysis-type-toggle">
+                <!-- Add analysis mode toggle -->
+                <div class="analysis-mode-toggle">
+                    <span>Analysis Mode:</span>
                     <div class="toggle-container">
-                        <input type="radio" id="weeklyToggle" name="analysisType" value="weekly" checked>
-                        <label for="weeklyToggle">Weekly Analysis</label>
-                        <input type="radio" id="monthlyToggle" name="analysisType" value="monthly">
-                        <label for="monthlyToggle">Monthly Analysis</label>
+                        <input type="radio" id="weeklyToggle" name="analysisMode" value="weekly" checked>
+                        <label for="weeklyToggle">Weekly</label>
+                        <input type="radio" id="monthlyToggle" name="analysisMode" value="monthly">
+                        <label for="monthlyToggle">Monthly</label>
                     </div>
                 </div>
                 
@@ -47,49 +48,46 @@
                         </select>
                     </div>
                     
-                    <!-- Weekly selection (default visible) -->
-                    <div class="form-group weekly-controls">
+                    <!-- Weekly report selection (default) -->
+                    <div class="form-group" id="reportSelectGroup">
                         <label for="reportSelect"><i class="fas fa-file-alt"></i> Select Report:</label>
                         <select id="reportSelect" class="form-control">
                             <option value="">-- First Select Employee --</option>
                         </select>
                     </div>
                     
-                    <!-- Monthly selection (initially hidden) -->
-                    <div class="form-group monthly-controls" style="display: none;">
-                        <div class="date-selectors">
-                            <div class="month-selector">
-                                <label for="monthSelect"><i class="fas fa-calendar-alt"></i> Month:</label>
-                                <select id="monthSelect" class="form-control">
-                                    <option value="1">January</option>
-                                    <option value="2">February</option>
-                                    <option value="3">March</option>
-                                    <option value="4">April</option>
-                                    <option value="5">May</option>
-                                    <option value="6">June</option>
-                                    <option value="7">July</option>
-                                    <option value="8">August</option>
-                                    <option value="9">September</option>
-                                    <option value="10">October</option>
-                                    <option value="11">November</option>
-                                    <option value="12">December</option>
-                                </select>
-                            </div>
-                            <div class="year-selector">
-                                <label for="yearSelect"><i class="fas fa-calendar-day"></i> Year:</label>
-                                <select id="yearSelect" class="form-control">
-                                    <!-- Will be populated with JS -->
-                                </select>
-                            </div>
-                        </div>
+                    <!-- Monthly analysis period selection (initially hidden) -->
+                    <div class="form-group monthly-control" id="monthSelectGroup" style="display: none;">
+                        <label for="monthSelect"><i class="fas fa-calendar-alt"></i> Select Month:</label>
+                        <select id="monthSelect" class="form-control">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
                     </div>
                     
-                    <button id="analyzeButton" class="button primary-button" disabled data-weekly-text="Analyze Report" data-monthly-text="Analyze Monthly Performance"><i class="fas fa-cogs"></i> Analyze Report</button>
+                    <div class="form-group monthly-control" id="yearSelectGroup" style="display: none;">
+                        <label for="yearSelect"><i class="fas fa-calendar-year"></i> Select Year:</label>
+                        <select id="yearSelect" class="form-control">
+                            <!-- Years will be populated dynamically -->
+                        </select>
+                    </div>
+                    
+                    <button id="analyzeButton" class="button primary-button" disabled><i class="fas fa-cogs"></i> Analyze Report</button>
                 </div>
                 
                 <div id="loadingIndicator" class="loading" style="display: none;">
                     <div class="spinner"></div>
-                    <p>Analyzing report... This may take a moment.</p>
+                    <p>Analyzing... This may take a moment.</p>
                 </div>
             </section>
             
@@ -104,7 +102,7 @@
     </div>
     
     <script src="../js/api.js"></script>
-    <script src="../js/dropdown.js"></script>  <!-- Changed from searchable-dropdown.js -->
+    <script src="../js/dropdown.js"></script>
     <script src="../js/analysis.js"></script>
 </body>
 </html>

@@ -528,7 +528,7 @@ def store_monthly_analysis(analysis_data: Dict[str, Any]) -> Optional[int]:
                 if isinstance(consistency_assessment, dict):
                     task_completion_reliability = consistency_assessment.get("task_completion_reliability", "medium")
                     work_quality_consistency = consistency_assessment.get("work_quality_consistency", "medium")
-                    performance_stability = consistency_assessment.get("performance_variability", "medium")
+                    performance_stability = consistency_assessment.get("performance_stability", "medium")
                     consistency_notable_strengths = consistency_assessment.get("notable_strengths", [])
                     consistency_notable_weaknesses = consistency_assessment.get("notable_weaknesses", [])
                 else:
