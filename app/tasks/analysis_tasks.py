@@ -367,7 +367,7 @@ def analyze_monthly_reports_task(self, task_id: str):
         llm_service = get_llm_service()
         analysis_result = llm_service.analyze_monthly_reports(
             monthly_data=monthly_data,
-            num_ctx=40000
+            num_ctx=80000
         )
         
         # Handle error in analysis generation

@@ -744,8 +744,11 @@ CRITICAL INSTRUCTIONS:
    - Overall risk assessment based on cumulative data
 3. Ensure your recommendations are strategic and targeted at enhancing performance and addressing challenges.
 4. Structure your response exactly as specified, with clear and concise information in each section.
-5. Validate that your response is a well-formed JSON object before submission.
-6. Ensure your monthly summary provides a holistic view of the employee's performance that could stand alone as an executive briefing.
+5. Validate that your response is a well-formed JSON object with no extraneous text before submission.
+6. Do not write anything in the first person or use "I" or "we" in your analysis
+7. Make sure to replace hyphens in compound words (write "five day" instead of "five-day") to ensure proper JSON parsing. No hyphens should be used in the output.
+8. Ensure your monthly summary provides a holistic view of the employee's performance that could stand alone as an executive briefing.
+
 """
         
         return prompt
