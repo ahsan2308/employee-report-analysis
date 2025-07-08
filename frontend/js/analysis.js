@@ -772,7 +772,7 @@ document.addEventListener('DOMContentLoaded', function() {
             challengesSection.innerHTML = `<h5>Recurring Challenges
                 <span class="tooltip-trigger">
                     <i class="fas fa-info-circle"></i>
-                    <span class="tooltip">Issues that appeared multiple times throughout the month with their current status.</span>
+                    <span class="tooltip">Issues that appeared multiple times throughout the month with their current status and severity.</span>
                 </span>
             </h5>`;
             
@@ -795,6 +795,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     statusText = 'Ongoing';
                 }
                 
+                // Set severity and appropriate class
+                let severityClass = '';
+                let severityText = '';
+                
+                if (challenge.severity) {
+                    severityClass = `severity-${challenge.severity.toLowerCase()}`;
+                    severityText = challenge.severity.charAt(0).toUpperCase() + challenge.severity.slice(1);
+                } else {
+                    severityClass = 'severity-medium';
+                    severityText = 'Medium';
+                }
+                
                 challengeCard.className = `challenge-card`;
                 
                 // Create challenge content with consistent layout
@@ -803,7 +815,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${challenge.description || challenge}
                     </div>
                     <div class="challenge-footer">
-                        <div class="challenge-status ${statusClass}">${statusText}</div>
+                        <div class="challenge-severity ${severityClass}"> Severity: ${severityText}</div>
+                        <div class="challenge-severity ${statusClass}"> Status: ${statusText}</div>
                     </div>
                 `;
                 

@@ -1674,6 +1674,8 @@
     margin-top: auto; /* Push to bottom */
     padding-top: 12px;
     border-top: 1px dashed var(--border);
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 6px; /* Add gap between indicators when wrapped */
 }
 
 /* Improve status indicators */
@@ -1713,6 +1715,45 @@
     color: var(--danger);
 }
 .status-worsened::before { content: '\f057'; /* times-circle */ }
+
+/* Challenge severity indicator for recurring challenges */
+.challenge-severity {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    margin-right: 6px; /* Add space between severity and status */
+}
+
+.challenge-severity::before {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    margin-right: 4px;
+    font-size: 0.8rem;
+}
+
+.severity-high {
+    background-color: rgba(185, 28, 28, 0.1);
+    color: var(--danger);
+}
+.severity-high::before { content: '\f06d'; /* fire */ }
+
+.severity-medium {
+    background-color: rgba(180, 83, 9, 0.1);
+    color: var(--warning);
+}
+.severity-medium::before { content: '\f071'; /* exclamation-triangle */ }
+
+.severity-low {
+    background-color: rgba(21, 128, 61, 0.1);
+    color: var(--success);
+}
+.severity-low::before { content: '\f05a'; /* info-circle */ }
 
 /* Empty state */
 .no-challenges-message {

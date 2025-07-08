@@ -33,7 +33,7 @@ class LLMService:
         self.retry_delay = 1.0
         self.max_retries = 3
 
-    def generate_text(self, prompt: str, max_tokens: int = 1000,
+    def generate_text(self, prompt: str, max_tokens: int = 5000,
                     temperature: float = 0.7, retries: int = None,
                     num_ctx: int = 8192) -> str:
         """
@@ -113,7 +113,7 @@ class LLMService:
         prompt: str, 
         response_format: Optional[Dict[str, Any]] = None,
         temperature: float = 0.2, 
-        max_tokens: int = 1000,
+        max_tokens: int = 5000,
         pydantic_model: Optional[Type] = None,
         num_ctx: int = 8192
     ) -> Dict[str, Any]:

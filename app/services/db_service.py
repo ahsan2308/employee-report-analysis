@@ -510,63 +510,9 @@ def store_monthly_analysis(analysis_data: Dict[str, Any]) -> Optional[int]:
                 analysis = existing
             else:
                 logger.info(f"Creating new monthly analysis for employee {employee_id}, {year}-{month}")
-                # Map fields that have different names between API and DB
-                monthly_achievements = analysis_data.get("key_achievements") or analysis_data.get("monthly_achievements", [])
-                performance_trend = analysis_data.get("progress_assessment") or analysis_data.get("performance_trend", "stable")
                 
-                # Extract progress trends data
-                progress_trends = analysis_data.get("progress_trends", {})
-                if isinstance(progress_trends, dict):
-                    risk_level_pattern = progress_trends.get("risk_level_pattern", "stable")
-                    challenge_resolution_progress = progress_trends.get("challenge_resolution_progress", "unchanged")
-                else:
-                    risk_level_pattern = "stable"
-                    challenge_resolution_progress = "unchanged"
-                
-                # Extract consistency assessment data
-                consistency_assessment = analysis_data.get("consistency_assessment", {})
-                if isinstance(consistency_assessment, dict):
-                    task_completion_reliability = consistency_assessment.get("task_completion_reliability", "medium")
-                    work_quality_consistency = consistency_assessment.get("work_quality_consistency", "medium")
-                    performance_stability = consistency_assessment.get("performance_stability", "medium")
-                    consistency_notable_strengths = consistency_assessment.get("notable_strengths", [])
-                    consistency_notable_weaknesses = consistency_assessment.get("notable_weaknesses", [])
-                else:
-                    task_completion_reliability = "medium"
-                    work_quality_consistency = "medium"
-                    performance_stability = "medium"
-                    consistency_notable_strengths = []
-                    consistency_notable_weaknesses = []
-                
-                # Extract growth indicators data
-                growth_indicators = analysis_data.get("growth_indicators", {})
-                if isinstance(growth_indicators, dict):
-                    complexity_of_tasks = growth_indicators.get("complexity_of_tasks", "unchanged")
-                    skill_development_evidence = growth_indicators.get("skill_development_evidence", "medium")
-                    confidence_level_change = growth_indicators.get("confidence_level_change", "unchanged")
-                    approach_to_challenges = growth_indicators.get("approach_to_challenges", "unchanged")
-                else:
-                    complexity_of_tasks = "unchanged"
-                    skill_development_evidence = "medium"
-                    confidence_level_change = "unchanged"
-                    approach_to_challenges = "unchanged"
-                
-                # Extract risk assessment data
-                monthly_risk_assessment = analysis_data.get("monthly_risk_assessment", {})
-                if isinstance(monthly_risk_assessment, dict):
-                    risk_level = monthly_risk_assessment.get("overall_risk_level") or analysis_data.get("risk_level", "medium")
-                    risk_explanation = monthly_risk_assessment.get("risk_explanation") or analysis_data.get("risk_explanation", "")
-                    significant_risks = monthly_risk_assessment.get("significant_risks", [])
-                    escalating_risks = monthly_risk_assessment.get("escalating_risks", [])
-                    risk_mitigation_recommendations = monthly_risk_assessment.get("risk_mitigation_recommendations", [])
-                else:
-                    risk_level = analysis_data.get("risk_level", "medium")
-                    risk_explanation = analysis_data.get("risk_explanation", "")
-                    significant_risks = []
-                    escalating_risks = []
-                    risk_mitigation_recommendations = []
-                
-                # Create new analysis record with all fields
+                # Create new analysis record using fields directly from analysis_data
+                # rather than trying to re-extract from nested structures
                 analysis = MonthlyAnalysis(
                     employee_id=employee_id,
                     year=year,
@@ -578,34 +524,34 @@ def store_monthly_analysis(analysis_data: Dict[str, Any]) -> Optional[int]:
                     
                     # Progress trends fields
                     sentiment_trend=analysis_data.get("sentiment_trend"),
-                    performance_trend=performance_trend,
-                    risk_level_pattern=risk_level_pattern,
-                    challenge_resolution_progress=challenge_resolution_progress,
+                    performance_trend=analysis_data.get("performance_trend"),
+                    risk_level_pattern=analysis_data.get("risk_level_pattern"),
+                    challenge_resolution_progress=analysis_data.get("challenge_resolution_progress"),
                     
                     # Risk assessment fields
-                    risk_level=risk_level,
-                    risk_explanation=risk_explanation,
-                    significant_risks=significant_risks,
-                    escalating_risks=escalating_risks,
-                    risk_mitigation_recommendations=risk_mitigation_recommendations,
+                    risk_level=analysis_data.get("risk_level"),
+                    risk_explanation=analysis_data.get("risk_explanation"),
+                    significant_risks=analysis_data.get("significant_risks"),
+                    escalating_risks=analysis_data.get("escalating_risks"),
+                    risk_mitigation_recommendations=analysis_data.get("risk_mitigation_recommendations"),
                     
                     # Monthly achievements & challenges
-                    monthly_achievements=monthly_achievements,
+                    monthly_achievements=analysis_data.get("monthly_achievements"),
                     recurring_challenges=analysis_data.get("recurring_challenges"),
                     achievement_impact_avg=analysis_data.get("achievement_impact_avg"),
                     
                     # Consistency assessment fields
-                    task_completion_reliability=task_completion_reliability,
-                    work_quality_consistency=work_quality_consistency,
-                    performance_stability=performance_stability,
-                    consistency_notable_strengths=consistency_notable_strengths,
-                    consistency_notable_weaknesses=consistency_notable_weaknesses,
+                    task_completion_reliability=analysis_data.get("task_completion_reliability"),
+                    work_quality_consistency=analysis_data.get("work_quality_consistency"),
+                    performance_stability=analysis_data.get("performance_stability"),
+                    consistency_notable_strengths=analysis_data.get("consistency_notable_strengths"),
+                    consistency_notable_weaknesses=analysis_data.get("consistency_notable_weaknesses"),
                     
                     # Growth indicators
-                    complexity_of_tasks=complexity_of_tasks,
-                    skill_development_evidence=skill_development_evidence,
-                    confidence_level_change=confidence_level_change,
-                    approach_to_challenges=approach_to_challenges,
+                    complexity_of_tasks=analysis_data.get("complexity_of_tasks"),
+                    skill_development_evidence=analysis_data.get("skill_development_evidence"),
+                    confidence_level_change=analysis_data.get("confidence_level_change"),
+                    approach_to_challenges=analysis_data.get("approach_to_challenges"),
                     
                     # Focus areas & recommendations
                     focus_areas=analysis_data.get("focus_areas"),

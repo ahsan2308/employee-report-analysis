@@ -141,6 +141,22 @@ const SearchableDropdown = {
         
         // Function to open the dropdown
         const openDropdown = () => {
+            // Save original parent for later
+            customDropdown._originalParent = customDropdown.parentNode;
+            
+            // Get position of the header for correct positioning
+            const headerRect = dropdownHeader.getBoundingClientRect();
+            
+            // Move the dropdown to body to ensure proper stacking
+            document.body.appendChild(customDropdown);
+            
+            // Position the dropdown properly
+            customDropdown.style.position = 'absolute';
+            customDropdown.style.top = `${headerRect.bottom + window.scrollY}px`;
+            customDropdown.style.left = `${headerRect.left + window.scrollX}px`;
+            customDropdown.style.width = `${headerRect.width}px`;
+            customDropdown.style.zIndex = '9999';
+            
             customDropdown.style.display = 'block';
             searchInput.focus();
             updateOptions();
@@ -151,6 +167,19 @@ const SearchableDropdown = {
         const closeDropdown = () => {
             customDropdown.style.display = 'none';
             searchInput.value = ''; // Clear search on close
+            
+            // Move dropdown back to original container
+            if (customDropdown._originalParent && customDropdown.parentNode !== customDropdown._originalParent) {
+                customDropdown._originalParent.appendChild(customDropdown);
+                
+                // Reset positioning
+                customDropdown.style.position = '';
+                customDropdown.style.top = '';
+                customDropdown.style.left = '';
+                customDropdown.style.width = '';
+                customDropdown.style.zIndex = '';
+            }
+            
             document.removeEventListener('click', outsideClickHandler);
         };
         
@@ -325,6 +354,22 @@ const SearchableDropdown = {
         
         // Function to open the dropdown
         function openDropdown() {
+            // Save original parent for later
+            customDropdown._originalParent = customDropdown.parentNode;
+            
+            // Get position of the header for correct positioning
+            const headerRect = dropdownHeader.getBoundingClientRect();
+            
+            // Move the dropdown to body to ensure proper stacking
+            document.body.appendChild(customDropdown);
+            
+            // Position the dropdown properly
+            customDropdown.style.position = 'absolute';
+            customDropdown.style.top = `${headerRect.bottom + window.scrollY}px`;
+            customDropdown.style.left = `${headerRect.left + window.scrollX}px`;
+            customDropdown.style.width = `${headerRect.width}px`;
+            customDropdown.style.zIndex = '9999';
+            
             customDropdown.style.display = 'block';
             updateOptions();
             document.addEventListener('click', outsideClickHandler);
@@ -333,6 +378,19 @@ const SearchableDropdown = {
         // Function to close the dropdown
         function closeDropdown() {
             customDropdown.style.display = 'none';
+            
+            // Move dropdown back to original container
+            if (customDropdown._originalParent && customDropdown.parentNode !== customDropdown._originalParent) {
+                customDropdown._originalParent.appendChild(customDropdown);
+                
+                // Reset positioning
+                customDropdown.style.position = '';
+                customDropdown.style.top = '';
+                customDropdown.style.left = '';
+                customDropdown.style.width = '';
+                customDropdown.style.zIndex = '';
+            }
+            
             document.removeEventListener('click', outsideClickHandler);
         }
         

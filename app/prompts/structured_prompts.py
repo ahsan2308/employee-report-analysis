@@ -697,7 +697,7 @@ Please provide your analysis in the following structured format:
     {{"description": "Another significant achievement", "impact": "7 (Reason for substantial progress)"}}
   ],
   "recurring_challenges": [
-    {{"description": "Persistent challenge description", "severity": "medium/high", "status": "addressed/ongoing"}},
+    {{"description": "Persistent challenge description", "severity": "medium/high", "status": "resolved/ongoing"}},
     {{"description": "Another recurring challenge", "severity": "low/medium", "status": "resolved/ongoing"}}
   ],
   "consistency_assessment": {{
