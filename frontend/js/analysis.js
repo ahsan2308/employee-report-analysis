@@ -1062,6 +1062,76 @@ document.addEventListener('DOMContentLoaded', function() {
             mainContainer.appendChild(growthSection);
         }
         
+        // Add focus areas section
+        if (data.focus_areas && data.focus_areas.length > 0) {
+            const focusAreasSection = document.createElement('div');
+            focusAreasSection.className = 'monthly-assessment-section focus-areas-section';
+            
+            focusAreasSection.innerHTML = `<h5>Focus Areas
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">Main projects and responsibilities the employee focused on during this period.</span>
+                </span>
+            </h5>`;
+            
+            const focusAreasList = document.createElement('ul');
+            focusAreasList.className = 'focus-areas-list';
+            
+            data.focus_areas.forEach(focusArea => {
+                const focusAreaItem = document.createElement('li');
+                focusAreaItem.className = 'focus-area-item';
+                
+                // Project name
+                const focusAreaName = document.createElement('div');
+                focusAreaName.className = 'focus-area-name';
+                focusAreaName.textContent = focusArea.project;
+                focusAreaItem.appendChild(focusAreaName);
+                
+                // Create a badge container to hold both badges
+                const badgeContainer = document.createElement('div');
+                badgeContainer.className = 'focus-area-badges';
+                badgeContainer.style.display = 'flex';
+                badgeContainer.style.gap = '8px';
+                badgeContainer.style.alignItems = 'center';
+                
+                // Priority level
+                const priorityLevel = document.createElement('div');
+                priorityLevel.className = `focus-area-priority priority-${focusArea.priority_level.toLowerCase()}`;
+                priorityLevel.textContent = `Priority: ${capitalizeFirstLetter(focusArea.priority_level)}`;
+                badgeContainer.appendChild(priorityLevel);
+                
+                // Time investment (now side-by-side with priority)
+                const timeInvestment = document.createElement('div');
+                timeInvestment.className = 'focus-area-time';
+                timeInvestment.innerHTML = `<i class="fas fa-clock"></i> Time Investment: ${capitalizeFirstLetter(focusArea.time_investment)}`; // Changed back to clock icon with added label
+                badgeContainer.appendChild(timeInvestment);
+                
+                focusAreaItem.appendChild(badgeContainer);
+                focusAreasList.appendChild(focusAreaItem);
+            });
+            
+            focusAreasSection.appendChild(focusAreasList);
+            mainContainer.appendChild(focusAreasSection);
+        } else {
+            // Create empty state for no focus areas
+            const focusAreasSection = document.createElement('div');
+            focusAreasSection.className = 'monthly-assessment-section focus-areas-section';
+            
+            focusAreasSection.innerHTML = `
+                <h5>Focus Areas
+                    <span class="tooltip-trigger">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip">Main projects and responsibilities the employee focused on during this period.</span>
+                    </span>
+                </h5>
+                <div class="no-focus-areas-message">
+                    <i class="fas fa-info-circle"></i> No specific focus areas recorded for this period.
+                </div>
+            `;
+            
+            mainContainer.appendChild(focusAreasSection);
+        }
+        
         // Add risk assessment section
         if (data.monthly_risk_assessment) {
             const riskSection = document.createElement('div');

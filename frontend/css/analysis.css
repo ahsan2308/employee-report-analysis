@@ -880,7 +880,7 @@
 .recurring-challenges-section h5::before { content: '\f0e7'; color: var(--warning); }
 .consistency-assessment-section h5::before { content: '\f085'; color: var(--primary); }
 .growth-indicators-section h5::before { content: '\f0e7'; color: var(--primary); }
-.focus-areas-section h5::before { content: '\f05b'; color: var(--primary); }
+.focus-areas-section h5::before { content: '\f05b'; color: var(--primary); } /* Updated icon for focus areas */
 .monthly-risk-section h5::before { content: '\f071'; color: var(--warning); }
 .strategic-recommendations-section h5::before { content: '\f0eb'; color: var(--primary); }
 
@@ -989,9 +989,10 @@
 .focus-area-item {
     padding: 8px 12px;
     margin-bottom: 8px;
-    background-color: rgba(59, 130, 246, 0.05);
+    background-color: white; /* Changed to white background to match other sections */
     border-radius: var(--rounded);
-    border-left: 3px solid var(--primary);
+    border-left: 3px solid #8b5cf6; /* Keep the violet accent */
+    box-shadow: var(--shadow-sm); /* Add subtle shadow for depth */
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -1000,7 +1001,7 @@
 }
 
 .focus-area-item:hover {
-    background-color: rgba(59, 130, 246, 0.1);
+    background-color: #faf5ff; /* Very light violet on hover */
     transform: translateX(3px);
 }
 
@@ -1032,12 +1033,21 @@
 }
 
 .focus-area-time {
-    width: 100%;
-    font-size: 0.9rem;
-    color: var(--text-main);
-    opacity: 0.8;
-    margin-top: 4px;
-    margin-left: 24px;
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    background-color: rgba(139, 92, 246, 0.1); /* Violet bg */
+    color: #8b5cf6; /* Violet text */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    /* Removed width: 100% and margin-top that were forcing it to a new line */
+}
+
+.focus-area-time i {
+    color: #8b5cf6; /* Violet icon */
+    font-size: 0.75rem;
 }
 
 /* Strategic Recommendations section - Enhanced */
@@ -1600,7 +1610,7 @@
     background-color: rgba(59, 130, 246, 0.05);
 }
 
-/* Empty state styling */
+/* Empty state */
 .empty-list-message {
     color: #94a3b8;
     font-style: italic;
@@ -2049,4 +2059,26 @@
     margin: 0;
     padding-left: 28px; /* Make room for the quote icon */
     position: relative;
+}
+
+/* Empty state for focus areas */
+.no-focus-areas-message {
+    text-align: center;
+    padding: 24px;
+    background-color: #f8fafc;
+    border-radius: var(--rounded);
+    color: #94a3b8;
+    font-style: italic;
+    border: 1px dashed #e2e8f0;
+}
+
+/* Focus Areas Section Styling */
+.focus-areas-section {
+    background-color: #f5f3ff; /* Light violet background instead of blue */
+    border-left: 4px solid #8b5cf6; /* Violet border instead of blue */
+}
+
+.focus-areas-section h5::before { 
+    content: '\f05b'; /* Crosshairs icon for focus */
+    color: #8b5cf6; /* Changed to violet */
 }
