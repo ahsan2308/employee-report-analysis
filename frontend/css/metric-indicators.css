@@ -1,0 +1,451 @@
+/* Compact Metric Indicators - Space-efficient dashboard design */
+
+.compact-metrics-container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    margin: 16px 0 24px;
+    overflow: visible !important; /* Changed from hidden to visible to prevent tooltip clipping */
+    border: 1px solid var(--border);
+    gap: 1px; /* Add gap between metrics for visual separation */
+    position: relative; /* Add position relative for z-index context */
+    z-index: 1; /* Base z-index for the container */
+}
+
+.compact-metric {
+    flex: 1;
+    padding: 14px 12px 28px 12px; /* Increased bottom padding from 14px to 20px */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: help;
+    border-left: none;
+    border-right: 1px solid rgba(226, 232, 240, 0.5);
+    min-width: 0; 
+    overflow: visible;
+}
+
+.compact-metric:last-child {
+    border-right: none;
+}
+
+.compact-metric:hover {
+    background-color: #f8fafc;
+}
+
+/* Top border color indicators instead of left border */
+.compact-metric.metric-performance { border-top: 3px solid #3b82f6; }
+.compact-metric.metric-sentiment { border-top: 3px solid #8b5cf6; }
+.compact-metric.metric-risk { border-top: 3px solid #f59e0b; }
+.compact-metric.metric-challenges { border-top: 3px solid #ef4444; }
+.compact-metric.metric-complexity { border-top: 3px solid #6366f1; } /* Indigo */
+.compact-metric.metric-skill { border-top: 3px solid #059669; } /* Emerald */
+.compact-metric.metric-confidence { border-top: 3px solid #d97706; } /* Amber */
+.compact-metric.metric-approach { border-top: 3px solid #7c3aed; } /* Violet */
+.compact-metric.metric-reliability { border-top: 3px solid #4f46e5; } /* Indigo */
+.compact-metric.metric-quality { border-top: 3px solid #0ea5e9; } /* Sky */
+.compact-metric.metric-stability { border-top: 3px solid #0891b2; } /* Cyan */
+
+.metric-icon {
+    font-size: 0.9rem;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.metric-icon.performance { background-color: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.metric-icon.sentiment { background-color: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.metric-icon.risk { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.metric-icon.challenges { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.metric-icon.complexity { background-color: rgba(99, 102, 241, 0.1); color: #6366f1; } /* Indigo */
+.metric-icon.skill { background-color: rgba(5, 150, 105, 0.1); color: #059669; } /* Emerald */
+.metric-icon.confidence { background-color: rgba(217, 119, 6, 0.1); color: #d97706; } /* Amber */
+.metric-icon.approach { background-color: rgba(124, 58, 237, 0.1); color: #7c3aed; } /* Violet */
+.metric-icon.reliability { background-color: rgba(79, 70, 229, 0.1); color: #4f46e5; } /* Indigo */
+.metric-icon.quality { background-color: rgba(14, 165, 233, 0.1); color: #0ea5e9; } /* Sky */
+.metric-icon.stability { background-color: rgba(8, 145, 178, 0.1); color: #0891b2; } /* Cyan */
+
+.compact-metric-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Ensure text truncation works in flex items */
+    overflow: hidden; /* Prevent content from overflowing */
+}
+
+.metric-name {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.metric-value {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Status indicators as small pills */
+.status-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+    flex-shrink: 0;
+}
+
+.status-positive, .status-improving { background-color: var(--success); }
+.status-neutral, .status-stable { background-color: var(--primary); }
+.status-negative, .status-declining { background-color: var(--danger); }
+
+/* Add a wrapper class for tooltip positioning with improved z-index handling */
+.tooltip-wrapper {
+    position: relative;
+    width: 100%;
+    height: 0;
+    z-index: 10; /* Increased z-index */
+    margin-top: -30px; /* Add negative margin to position tooltip higher */
+}
+
+/* Tooltip for descriptions - Optimized positioning to prevent overlap and clipping */
+.compact-metric .metric-tooltip {
+    position: absolute;
+    bottom: 135%; /* Increased from 125% to position further up */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--text-main);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    width: 180px;
+    text-align: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s, visibility 0.2s;
+    z-index: 1000; /* Substantially increased z-index to ensure visibility */
+    pointer-events: none;
+    box-shadow: var(--shadow);
+}
+
+.compact-metric .metric-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: var(--text-main) transparent transparent transparent;
+}
+
+/* Ensure hovering over the entire metric shows the tooltip */
+.compact-metric:hover .metric-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Ensure tooltips don't get cut off by parent containers */
+.monthly-assessment-section {
+    overflow: visible !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Progress trends section needs special handling */
+.progress-trends-section {
+    overflow: visible !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure analysis container doesn't clip tooltips */
+.analysis-container {
+    overflow: visible !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Improved layout for metric content - icon next to title, centered */
+.metric-content-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    padding: 2px 0; /* Reduced padding from 4px to 2px */
+    margin-top: -4px; /* Added negative top margin to move content up */
+}
+
+/* New title row with icon and title side-by-side */
+.metric-content-layout .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px; /* Reduced from 8px to 6px */
+    gap: 8px;
+}
+
+.metric-content-layout .metric-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 1rem;
+    margin: 0; /* Remove margin to place next to title */
+}
+
+.metric-content-layout .metric-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #64748b;
+    margin: 0; /* Remove margin to place next to icon */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.metric-content-layout .compact-metric-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.metric-content-layout .metric-value {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    text-align: center;
+}
+
+/* Override compact-metric styling to accommodate vertical layout */
+.compact-metric {
+    flex: 1;
+    padding: 14px 12px 28px 12px; /* Increased bottom padding from 16px to 20px */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: help;
+    border-left: none;
+    border-right: 1px solid rgba(226, 232, 240, 0.5);
+    min-width: 0; 
+    overflow: visible;
+}
+
+/* Media query for mobile responsiveness */
+@media (max-width: 768px) {
+    .compact-metrics-container {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .compact-metric {
+        border-right: none;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+    }
+    
+    .compact-metric:last-child {
+        border-bottom: none;
+    }
+    
+    /* Adjust tooltip position for vertical layout */
+    .compact-metric .metric-tooltip {
+        width: 160px;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 135%; /* Match the increased bottom percentage */
+    }
+    
+    /* Ensure arrow points to the correct position */
+    .compact-metric .metric-tooltip::after {
+        left: 50%;
+    }
+}
+
+/* Larger screens: make metrics more compact if there are many */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .compact-metric {
+        padding: 10px 12px;
+    }
+    
+    .metric-name {
+        font-size: 0.7rem;
+    }
+    
+    .metric-value {
+        font-size: 0.8rem;
+    }
+}
+
+/* Ensure the growth-indicators-section allows overflow for tooltips */
+.growth-indicators-section {
+    overflow: visible !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure the consistency-assessment-section allows overflow for tooltips */
+.consistency-assessment-section {
+    overflow: visible !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Enhanced styling for growth metrics */
+.growth-indicators-section .compact-metrics-container {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    border: none;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.growth-indicators-section .compact-metric {
+    background-color: white;
+    margin: 2px;
+    border-radius: 6px;
+    border-right: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.25s ease;
+}
+
+.growth-indicators-section .compact-metric:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    background-color: #fafcff;
+}
+
+/* Slightly increase the title size for better readability */
+.growth-indicators-section .metric-content-layout .metric-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Make the value display more prominent */
+.growth-indicators-section .metric-content-layout .metric-value {
+    margin-top: 2px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    background-color: #f8fafc;
+}
+
+/* Status indicator enhancements */
+.growth-indicators-section .status-indicator {
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+}
+
+/* Enhanced styling for progress trends metrics - matching growth indicators */
+.progress-trends-section .compact-metrics-container {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    border: none;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.progress-trends-section .compact-metric {
+    background-color: white;
+    margin: 2px;
+    border-radius: 6px;
+    border-right: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.25s ease;
+}
+
+.progress-trends-section .compact-metric:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    background-color: #fafcff;
+}
+
+/* Slightly increase the title size for better readability */
+.progress-trends-section .metric-content-layout .metric-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Make the value display more prominent */
+.progress-trends-section .metric-content-layout .metric-value {
+    margin-top: 2px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    background-color: #f8fafc;
+}
+
+/* Status indicator enhancements */
+.progress-trends-section .status-indicator {
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+}
+
+/* Enhanced styling for consistency assessment metrics - matching growth and progress trends */
+.consistency-assessment-section .compact-metrics-container {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    border: none;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.consistency-assessment-section .compact-metric {
+    background-color: white;
+    margin: 2px;
+    border-radius: 6px;
+    border-right: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.25s ease;
+}
+
+.consistency-assessment-section .compact-metric:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    background-color: #fafcff;
+}
+
+/* Slightly increase the title size for better readability */
+.consistency-assessment-section .metric-content-layout .metric-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Make the value display more prominent */
+.consistency-assessment-section .metric-content-layout .metric-value {
+    margin-top: 2px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    background-color: #f8fafc;
+}
+
+/* Status indicator enhancements */
+.consistency-assessment-section .status-indicator {
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+}

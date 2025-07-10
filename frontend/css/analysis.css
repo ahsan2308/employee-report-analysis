@@ -2082,3 +2082,35 @@
     content: '\f05b'; /* Crosshairs icon for focus */
     color: #8b5cf6; /* Changed to violet */
 }
+
+/* Add performance rating styling consistent with other badges */
+.performance-rating {
+    color: var(--text-main);
+    background-color: rgba(59, 130, 246, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+.performance-rating::before {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+.performance-high {
+    color: var(--success);
+    background-color: rgba(21, 128, 61, 0.1);
+}
+.performance-high::before { content: '\f201'; }
+
+.performance-medium {
+    color: var(--warning);
+    background-color: rgba(180, 83, 9, 0.1);
+}
+.performance-medium::before { content: '\f201'; }
+
+.performance-low {
+    color: var(--danger);
+    background-color: rgba(185, 28, 28, 0.1);
+}
+.performance-low::before { content: '\f201'; }

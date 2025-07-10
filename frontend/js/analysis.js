@@ -620,59 +620,165 @@ document.addEventListener('DOMContentLoaded', function() {
                 </span>
             </h5>`;
             
-            // Create a grid-based container for trends similar to consistency metrics and growth indicators
+            // Create a compact metrics container instead of a grid
             const trendsContainer = document.createElement('div');
-            trendsContainer.className = 'trends-metrics';
+            trendsContainer.className = 'compact-metrics-container';
             
-            // Add performance trend card
-            const performanceTrendCard = document.createElement('div');
-            performanceTrendCard.className = 'trend-metric-item';
-            performanceTrendCard.innerHTML = `
-                <div class="trend-metric-label"><i class="fas fa-chart-line"></i> Performance Trend</div>
-                <div class="trend-value ${data.progress_trends.performance_trend.toLowerCase()}">${capitalizeFirstLetter(data.progress_trends.performance_trend)}</div>
-                <div class="metric-description">Overall trend in work performance throughout the month.</div>
+            // Add performance trend metric
+            const performanceTrendStatus = data.progress_trends.performance_trend.toLowerCase();
+            const performanceIcon = performanceTrendStatus === 'improving' ? 'fa-arrow-trend-up' : 
+                                  performanceTrendStatus === 'declining' ? 'fa-arrow-trend-down' : 'fa-minus';
+            
+            const performanceTrendMetric = document.createElement('div');
+            performanceTrendMetric.className = `compact-metric metric-performance`;
+            
+            // Create wrapper for tooltip
+            const performanceTooltipWrapper = document.createElement('div');
+            performanceTooltipWrapper.className = 'tooltip-wrapper';
+            performanceTooltipWrapper.innerHTML = `
+                <div class="metric-tooltip">
+                    Overall trend in work performance throughout the month.
+                </div>
             `;
-            trendsContainer.appendChild(performanceTrendCard);
             
-            // Add sentiment trend card
-            const sentimentTrendCard = document.createElement('div');
-            sentimentTrendCard.className = 'trend-metric-item';
-            
-            // Map sentiment trend values to appropriate CSS classes
-            const sentimentTrendClass = data.progress_trends.sentiment_trend === 'positive' ? 'improving' : 
-                                       data.progress_trends.sentiment_trend === 'negative' ? 'declining' : 'stable';
-            
-            sentimentTrendCard.innerHTML = `
-                <div class="trend-metric-label"><i class="fas fa-smile"></i> Sentiment Trend</div>
-                <div class="trend-value ${sentimentTrendClass}">${capitalizeFirstLetter(data.progress_trends.sentiment_trend)}</div>
-                <div class="metric-description">Trend in report sentiment over the month.</div>
+            // Create content with improved layout (icon and title side-by-side)
+            const performanceContent = document.createElement('div');
+            performanceContent.className = 'metric-content-layout';
+            performanceContent.innerHTML = `
+                <div class="title-row">
+                    <div class="metric-icon performance">
+                        <i class="fas ${performanceIcon}"></i>
+                    </div>
+                    <div class="metric-name">Performance Trend</div>
+                </div>
+                <div class="metric-value">
+                    <span class="status-indicator status-${performanceTrendStatus}"></span>
+                    ${capitalizeFirstLetter(data.progress_trends.performance_trend)}
+                </div>
             `;
-            trendsContainer.appendChild(sentimentTrendCard);
             
-            // Add risk level pattern card
-            const riskPatternCard = document.createElement('div');
-            riskPatternCard.className = 'trend-metric-item';
-            riskPatternCard.innerHTML = `
-                <div class="trend-metric-label"><i class="fas fa-exclamation-triangle"></i> Risk Level Pattern</div>
-                <div class="trend-value ${data.progress_trends.risk_level_pattern.toLowerCase()}">${capitalizeFirstLetter(data.progress_trends.risk_level_pattern)}</div>
-                <div class="metric-description">Pattern in risk assessment levels throughout the month.</div>
+            // Add content first, then tooltip
+            performanceTrendMetric.appendChild(performanceContent);
+            performanceTrendMetric.appendChild(performanceTooltipWrapper);
+            trendsContainer.appendChild(performanceTrendMetric);
+            
+            // Update sentiment trend metric with improved layout
+            const sentimentTrendStatus = data.progress_trends.sentiment_trend.toLowerCase();
+            let sentimentClass = sentimentTrendStatus === 'positive' ? 'improving' : 
+                                sentimentTrendStatus === 'negative' ? 'declining' : 'stable';
+            const sentimentIcon = sentimentTrendStatus === 'positive' ? 'fa-face-smile' : 
+                                sentimentTrendStatus === 'negative' ? 'fa-face-frown' : 'fa-face-meh';
+            
+            const sentimentTrendMetric = document.createElement('div');
+            sentimentTrendMetric.className = `compact-metric metric-sentiment`;
+            
+            // Create wrapper for tooltip
+            const sentimentTooltipWrapper = document.createElement('div');
+            sentimentTooltipWrapper.className = 'tooltip-wrapper';
+            sentimentTooltipWrapper.innerHTML = `
+                <div class="metric-tooltip">
+                    Trend in report sentiment over the month.
+                </div>
             `;
-            trendsContainer.appendChild(riskPatternCard);
             
-            // Add challenge resolution progress card
-            const challengeProgressCard = document.createElement('div');
-            challengeProgressCard.className = 'trend-metric-item';
-            
-            // Determine appropriate class for challenge resolution
-            const challengeProgressClass = data.progress_trends.challenge_resolution_progress === 'improved' ? 'improving' : 
-                                           data.progress_trends.challenge_resolution_progress === 'declined' ? 'declining' : 'stable';
-            
-            challengeProgressCard.innerHTML = `
-                <div class="trend-metric-label"><i class="fas fa-tasks"></i> Challenge Resolution</div>
-                <div class="trend-value ${challengeProgressClass}">${capitalizeFirstLetter(data.progress_trends.challenge_resolution_progress)}</div>
-                <div class="metric-description">Progress in resolving reported challenges.</div>
+            // Create content with improved layout
+            const sentimentContent = document.createElement('div');
+            sentimentContent.className = 'metric-content-layout';
+            sentimentContent.innerHTML = `
+                <div class="title-row">
+                    <div class="metric-icon sentiment">
+                        <i class="fas ${sentimentIcon}"></i>
+                    </div>
+                    <div class="metric-name">Sentiment Trend</div>
+                </div>
+                <div class="metric-value">
+                    <span class="status-indicator status-${sentimentClass}"></span>
+                    ${capitalizeFirstLetter(data.progress_trends.sentiment_trend)}
+                </div>
             `;
-            trendsContainer.appendChild(challengeProgressCard);
+            
+            // Add content first, then tooltip
+            sentimentTrendMetric.appendChild(sentimentContent);
+            sentimentTrendMetric.appendChild(sentimentTooltipWrapper);
+            trendsContainer.appendChild(sentimentTrendMetric);
+            
+            // Update risk pattern metric with improved layout
+            const riskPatternStatus = data.progress_trends.risk_level_pattern.toLowerCase();
+            const riskIcon = riskPatternStatus === 'improving' ? 'fa-shield' : 
+                           riskPatternStatus === 'declining' ? 'fa-triangle-exclamation' : 'fa-scale-balanced';
+            
+            const riskPatternMetric = document.createElement('div');
+            riskPatternMetric.className = `compact-metric metric-risk`;
+            
+            // Create wrapper for tooltip
+            const riskTooltipWrapper = document.createElement('div');
+            riskTooltipWrapper.className = 'tooltip-wrapper';
+            riskTooltipWrapper.innerHTML = `
+                <div class="metric-tooltip">
+                    Pattern in risk assessment levels throughout the month.
+                </div>
+            `;
+            
+            // Create content with improved layout
+            const riskContent = document.createElement('div');
+            riskContent.className = 'metric-content-layout';
+            riskContent.innerHTML = `
+                <div class="title-row">
+                    <div class="metric-icon risk">
+                        <i class="fas ${riskIcon}"></i>
+                    </div>
+                    <div class="metric-name">Risk Pattern</div>
+                </div>
+                <div class="metric-value">
+                    <span class="status-indicator status-${riskPatternStatus}"></span>
+                    ${capitalizeFirstLetter(data.progress_trends.risk_level_pattern)}
+                </div>
+            `;
+            
+            // Add content first, then tooltip
+            riskPatternMetric.appendChild(riskContent);
+            riskPatternMetric.appendChild(riskTooltipWrapper);
+            trendsContainer.appendChild(riskPatternMetric);
+            
+            // Update challenge resolution metric with improved layout
+            const challengeProgressStatus = data.progress_trends.challenge_resolution_progress;
+            let challengeClass = challengeProgressStatus === 'improved' ? 'improving' : 
+                               challengeProgressStatus === 'declined' ? 'declining' : 'stable';
+            const challengeIcon = challengeProgressStatus === 'improved' ? 'fa-circle-check' : 
+                                challengeProgressStatus === 'declined' ? 'fa-circle-xmark' : 'fa-circle-pause';
+            
+            const challengeProgressMetric = document.createElement('div');
+            challengeProgressMetric.className = `compact-metric metric-challenges`;
+            
+            // Create wrapper for tooltip
+            const challengeTooltipWrapper = document.createElement('div');
+            challengeTooltipWrapper.className = 'tooltip-wrapper';
+            challengeTooltipWrapper.innerHTML = `
+                <div class="metric-tooltip">
+                    Progress in resolving reported challenges.
+                </div>
+            `;
+            
+            // Create content with improved layout
+            const challengeContent = document.createElement('div');
+            challengeContent.className = 'metric-content-layout';
+            challengeContent.innerHTML = `
+                <div class="title-row">
+                    <div class="metric-icon challenges">
+                        <i class="fas ${challengeIcon}"></i>
+                    </div>
+                    <div class="metric-name">Challenge Resolution</div>
+                </div>
+                <div class="metric-value">
+                    <span class="status-indicator status-${challengeClass}"></span>
+                    ${capitalizeFirstLetter(data.progress_trends.challenge_resolution_progress)}
+                </div>
+            `;
+            
+            // Add content first, then tooltip
+            challengeProgressMetric.appendChild(challengeContent);
+            challengeProgressMetric.appendChild(challengeTooltipWrapper);
+            trendsContainer.appendChild(challengeProgressMetric);
             
             trendsSection.appendChild(trendsContainer);
             mainContainer.appendChild(trendsSection);
@@ -858,43 +964,127 @@ document.addEventListener('DOMContentLoaded', function() {
                 </span>
             </h5>`;
             
-            // Create assessment metrics using improved card layout
+            // Create a compact metrics container instead of a grid
             const metricsContainer = document.createElement('div');
-            metricsContainer.className = 'consistency-metrics';
+            metricsContainer.className = 'compact-metrics-container';
             
             // Task completion reliability
+            const reliabilityStatus = data.consistency_assessment.task_completion_reliability.toLowerCase();
+            const reliabilityIcon = 'fa-tasks';
+            
             const reliabilityMetric = document.createElement('div');
-            reliabilityMetric.className = 'consistency-metric-item';
-            reliabilityMetric.innerHTML = `
-                <div class="consistency-metric-label"><i class="fas fa-tasks"></i> Task Completion Reliability</div>
-                <div class="metric-value ${data.consistency_assessment.task_completion_reliability.toLowerCase()}">${capitalizeFirstLetter(data.consistency_assessment.task_completion_reliability)}</div>
-                <div class="metric-description">Measure of how reliably the employee completes assigned tasks on time.</div>
+            reliabilityMetric.className = `compact-metric metric-reliability`;
+            
+            // Create wrapper for tooltip
+            const reliabilityTooltipWrapper = document.createElement('div');
+            reliabilityTooltipWrapper.className = 'tooltip-wrapper';
+            reliabilityTooltipWrapper.innerHTML = `
+                <div class="metric-tooltip">
+                    Measure of how reliably the employee completes assigned tasks on time.
+                </div>
             `;
+            
+            // Create content with improved layout
+            const reliabilityContent = document.createElement('div');
+            reliabilityContent.className = 'metric-content-layout';
+            reliabilityContent.innerHTML = `
+                <div class="title-row">
+                    <div class="metric-icon reliability">
+                        <i class="fas ${reliabilityIcon}"></i>
+                    </div>
+                    <div class="metric-name">Task Completion Reliability</div>
+                </div>
+                <div class="metric-value">
+                    <span class="status-indicator status-${reliabilityStatus === 'high' ? 'improving' : 
+                                                  reliabilityStatus === 'low' ? 'declining' : 'stable'}"></span>
+                    ${capitalizeFirstLetter(data.consistency_assessment.task_completion_reliability)}
+                </div>
+            `;
+            
+            // Add content first, then tooltip
+            reliabilityMetric.appendChild(reliabilityContent);
+            reliabilityMetric.appendChild(reliabilityTooltipWrapper);
             metricsContainer.appendChild(reliabilityMetric);
             
             // Work quality consistency
+            const qualityStatus = data.consistency_assessment.work_quality_consistency.toLowerCase();
+            const qualityIcon = 'fa-star';
+            
             const qualityMetric = document.createElement('div');
-            qualityMetric.className = 'consistency-metric-item';
-            qualityMetric.innerHTML = `
-                <div class="consistency-metric-label"><i class="fas fa-star"></i> Work Quality Consistency</div>
-                <div class="metric-value ${data.consistency_assessment.work_quality_consistency.toLowerCase()}">${capitalizeFirstLetter(data.consistency_assessment.work_quality_consistency)}</div>
-                <div class="metric-description">Consistency in the quality of work delivered throughout the month.</div>
+            qualityMetric.className = `compact-metric metric-quality`;
+            
+            // Create wrapper for tooltip
+            const qualityTooltipWrapper = document.createElement('div');
+            qualityTooltipWrapper.className = 'tooltip-wrapper';
+            qualityTooltipWrapper.innerHTML = `
+                <div class="metric-tooltip">
+                    Consistency in the quality of work delivered throughout the month.
+                </div>
             `;
+            
+            // Create content with improved layout
+            const qualityContent = document.createElement('div');
+            qualityContent.className = 'metric-content-layout';
+            qualityContent.innerHTML = `
+                <div class="title-row">
+                    <div class="metric-icon quality">
+                        <i class="fas ${qualityIcon}"></i>
+                    </div>
+                    <div class="metric-name">Work Quality Consistency</div>
+                </div>
+                <div class="metric-value">
+                    <span class="status-indicator status-${qualityStatus === 'high' ? 'improving' : 
+                                                  qualityStatus === 'low' ? 'declining' : 'stable'}"></span>
+                    ${capitalizeFirstLetter(data.consistency_assessment.work_quality_consistency)}
+                </div>
+            `;
+            
+            // Add content first, then tooltip
+            qualityMetric.appendChild(qualityContent);
+            qualityMetric.appendChild(qualityTooltipWrapper);
             metricsContainer.appendChild(qualityMetric);
             
             // Performance stability
+            const stabilityStatus = data.consistency_assessment.performance_stability.toLowerCase();
+            const stabilityIcon = 'fa-balance-scale';
+            
             const stabilityMetric = document.createElement('div');
-            stabilityMetric.className = 'consistency-metric-item';
-            stabilityMetric.innerHTML = `
-                <div class="consistency-metric-label"><i class="fas fa-balance-scale"></i> Performance Stability</div>
-                <div class="metric-value ${data.consistency_assessment.performance_stability.toLowerCase()}">${capitalizeFirstLetter(data.consistency_assessment.performance_stability)}</div>
-                <div class="metric-description">Overall stability and predictability of the employee's performance.</div>
+            stabilityMetric.className = `compact-metric metric-stability`;
+            
+            // Create wrapper for tooltip
+            const stabilityTooltipWrapper = document.createElement('div');
+            stabilityTooltipWrapper.className = 'tooltip-wrapper';
+            stabilityTooltipWrapper.innerHTML = `
+                <div class="metric-tooltip">
+                    Overall stability and predictability of the employee's performance.
+                </div>
             `;
+            
+            // Create content with improved layout
+            const stabilityContent = document.createElement('div');
+            stabilityContent.className = 'metric-content-layout';
+            stabilityContent.innerHTML = `
+                <div class="title-row">
+                    <div class="metric-icon stability">
+                        <i class="fas ${stabilityIcon}"></i>
+                    </div>
+                    <div class="metric-name">Performance Stability</div>
+                </div>
+                <div class="metric-value">
+                    <span class="status-indicator status-${stabilityStatus === 'high' ? 'improving' : 
+                                                  stabilityStatus === 'low' ? 'declining' : 'stable'}"></span>
+                    ${capitalizeFirstLetter(data.consistency_assessment.performance_stability)}
+                </div>
+            `;
+            
+            // Add content first, then tooltip
+            stabilityMetric.appendChild(stabilityContent);
+            stabilityMetric.appendChild(stabilityTooltipWrapper);
             metricsContainer.appendChild(stabilityMetric);
             
             consistencySection.appendChild(metricsContainer);
             
-            // Create container for strengths and weaknesses
+            // Keep the existing details container with strengths and weaknesses unchanged
             const detailsContainer = document.createElement('div');
             detailsContainer.className = 'consistency-details-container';
             
@@ -966,264 +1156,249 @@ document.addEventListener('DOMContentLoaded', function() {
                 </span>
             </h5>`;
             
-            // Create growth metrics
+            // Create a compact metrics container instead of a grid
             const growthContainer = document.createElement('div');
-            growthContainer.className = 'growth-metrics';
+            growthContainer.className = 'compact-metrics-container';
             
             // Complexity of tasks
-            const complexityTrend = data.growth_indicators.complexity_of_tasks === 'increased' ? 'improving' :
-                                   data.growth_indicators.complexity_of_tasks === 'decreased' ? 'declining' : 'stable';
+            const complexityTrendStatus = data.growth_indicators.complexity_of_tasks.toLowerCase();
+            const complexityIcon = complexityTrendStatus === 'increased' ? 'fa-arrow-trend-up' : 
+                                 complexityTrendStatus === 'decreased' ? 'fa-arrow-trend-down' : 'fa-layer-group';
+            let complexityClass = complexityTrendStatus === 'increased' ? 'improving' : 
+                                complexityTrendStatus === 'decreased' ? 'declining' : 'stable';
             
             const complexityMetric = document.createElement('div');
-            complexityMetric.className = `metric-item complexity-metric metric-${data.growth_indicators.complexity_of_tasks === 'increased' ? 'improved' : 
-                                     data.growth_indicators.complexity_of_tasks === 'decreased' ? 'declined' : 'unchanged'}`;
+            complexityMetric.className = `compact-metric metric-complexity`;
             
-            if (data.growth_indicators.complexity_of_tasks === 'increased' || 
-                data.growth_indicators.complexity_of_tasks === 'decreased') {
-                // For changed complexity, keep existing format but uppercase the displayed value
-                complexityMetric.innerHTML = `
-                    <div class="metric-label"><i class="fas fa-layer-group"></i> Task Complexity</div>
-                    <div class="trend-indicator trend-${complexityTrend}">${capitalizeFirstLetter(data.growth_indicators.complexity_of_tasks)}</div>
-                    <div class="metric-description">Changes in the complexity level of assigned tasks during this period.</div>
-                `;
-            } else {
-                // For unchanged complexity, uppercase the displayed value
-                complexityMetric.innerHTML = `
-                    <div class="metric-label"><i class="fas fa-layer-group"></i> Task Complexity</div>
-                    <div class="status-unchanged">${capitalizeFirstLetter(data.growth_indicators.complexity_of_tasks)}</div>
-                    <div class="metric-description">The complexity level of assigned tasks has remained consistent.</div>
-                `;
-            }
+            // Create wrapper for tooltip
+            const complexityTooltipWrapper = document.createElement('div');
+            complexityTooltipWrapper.className = 'tooltip-wrapper';
+            complexityTooltipWrapper.innerHTML = `
+                <div class="metric-tooltip">
+                    Changes in the complexity level of assigned tasks during this period.
+                </div>
+            `;
+            
+            // Create content with improved layout (icon and title side-by-side)
+            const complexityContent = document.createElement('div');
+            complexityContent.className = 'metric-content-layout';
+            complexityContent.innerHTML = `
+                <div class="title-row">
+                    <div class="metric-icon complexity">
+                        <i class="fas ${complexityIcon}"></i>
+                    </div>
+                    <div class="metric-name">Task Complexity</div>
+                </div>
+                <div class="metric-value">
+                    <span class="status-indicator status-${complexityClass}"></span>
+                    ${capitalizeFirstLetter(data.growth_indicators.complexity_of_tasks)}
+                </div>
+            `;
+            
+            // Add content first, then tooltip
+            complexityMetric.appendChild(complexityContent);
+            complexityMetric.appendChild(complexityTooltipWrapper);
             growthContainer.appendChild(complexityMetric);
             
             // Skill development evidence
+            const skillStatus = data.growth_indicators.skill_development_evidence.toLowerCase();
+            let skillIcon = 'fa-graduation-cap';
+            
             const skillMetric = document.createElement('div');
-            skillMetric.className = `metric-item skill-metric`;
-            skillMetric.innerHTML = `
-                <div class="metric-label"><i class="fas fa-graduation-cap"></i> Skill Development</div>
-                <div class="metric-value ${data.growth_indicators.skill_development_evidence.toLowerCase()}">${capitalizeFirstLetter(data.growth_indicators.skill_development_evidence)}</div>
-                <div class="metric-description">Evidence of new skills or improvement in existing skills during this period.</div>
+            skillMetric.className = `compact-metric metric-skill`;
+            
+            // Create wrapper for tooltip
+            const skillTooltipWrapper = document.createElement('div');
+            skillTooltipWrapper.className = 'tooltip-wrapper';
+            skillTooltipWrapper.innerHTML = `
+                <div class="metric-tooltip">
+                    Evidence of new skills or improvement in existing skills during this period.
+                </div>
             `;
+            
+            // Create content with improved layout
+            const skillContent = document.createElement('div');
+            skillContent.className = 'metric-content-layout';
+            skillContent.innerHTML = `
+                <div class="title-row">
+                    <div class="metric-icon skill">
+                        <i class="fas ${skillIcon}"></i>
+                    </div>
+                    <div class="metric-name">Skill Development</div>
+                </div>
+                <div class="metric-value">
+                    <span class="status-indicator status-${skillStatus === 'high' || skillStatus === 'strong' ? 'improving' : 
+                                                  skillStatus === 'low' || skillStatus === 'weak' ? 'declining' : 'stable'}"></span>
+                    ${capitalizeFirstLetter(data.growth_indicators.skill_development_evidence)}
+                </div>
+            `;
+            
+            // Add content first, then tooltip
+            skillMetric.appendChild(skillContent);
+            skillMetric.appendChild(skillTooltipWrapper);
             growthContainer.appendChild(skillMetric);
             
             // Confidence level change
-            const confidenceTrend = data.growth_indicators.confidence_level_change === 'increased' ? 'improving' :
-                                   data.growth_indicators.confidence_level_change === 'decreased' ? 'declining' : 'stable';
+            const confidenceTrendStatus = data.growth_indicators.confidence_level_change.toLowerCase();
+            const confidenceIcon = confidenceTrendStatus === 'increased' ? 'fa-arrow-trend-up' : 
+                                 confidenceTrendStatus === 'decreased' ? 'fa-arrow-trend-down' : 'fa-chart-line';
+            let confidenceClass = confidenceTrendStatus === 'increased' ? 'improving' : 
+                                confidenceTrendStatus === 'decreased' ? 'declining' : 'stable';
             
             const confidenceMetric = document.createElement('div');
-            confidenceMetric.className = `metric-item confidence-metric metric-${data.growth_indicators.confidence_level_change === 'increased' ? 'improved' : 
-                                     data.growth_indicators.confidence_level_change === 'decreased' ? 'declined' : 'unchanged'}`;
+            confidenceMetric.className = `compact-metric metric-confidence`;
             
-            if (data.growth_indicators.confidence_level_change === 'increased' || 
-                data.growth_indicators.confidence_level_change === 'decreased') {
-                // For changed confidence, uppercase the displayed value
-                confidenceMetric.innerHTML = `
-                    <div class="metric-label"><i class="fas fa-chart-line"></i> Confidence Level</div>
-                    <div class="trend-indicator trend-${confidenceTrend}">${capitalizeFirstLetter(data.growth_indicators.confidence_level_change)}</div>
-                    <div class="metric-description">Changes in how confidently the employee approaches tasks and challenges.</div>
-                `;
-            } else {
-                // For unchanged confidence, uppercase the displayed value
-                confidenceMetric.innerHTML = `
-                    <div class="metric-label"><i class="fas fa-chart-line"></i> Confidence Level</div>
-                    <div class="status-unchanged">${capitalizeFirstLetter(data.growth_indicators.confidence_level_change)}</div>
-                    <div class="metric-description">Employee's confidence level has remained stable throughout the period.</div>
-                `;
-            }
+            // Create wrapper for tooltip
+            const confidenceTooltipWrapper = document.createElement('div');
+            confidenceTooltipWrapper.className = 'tooltip-wrapper';
+            confidenceTooltipWrapper.innerHTML = `
+                <div class="metric-tooltip">
+                    Changes in how confidently the employee approaches tasks and challenges.
+                </div>
+            `;
+            
+            // Create content with improved layout
+            const confidenceContent = document.createElement('div');
+            confidenceContent.className = 'metric-content-layout';
+            confidenceContent.innerHTML = `
+                <div class="title-row">
+                    <div class="metric-icon confidence">
+                        <i class="fas ${confidenceIcon}"></i>
+                    </div>
+                    <div class="metric-name">Confidence Level</div>
+                </div>
+                <div class="metric-value">
+                    <span class="status-indicator status-${confidenceClass}"></span>
+                    ${capitalizeFirstLetter(data.growth_indicators.confidence_level_change)}
+                </div>
+            `;
+            
+            // Add content first, then tooltip
+            confidenceMetric.appendChild(confidenceContent);
+            confidenceMetric.appendChild(confidenceTooltipWrapper);
             growthContainer.appendChild(confidenceMetric);
             
             // Approach to challenges
-            const approachTrend = data.growth_indicators.approach_to_challenges === 'more proactive' ? 'improving' :
-                                 data.growth_indicators.approach_to_challenges === 'more reactive' ? 'declining' : 'stable';
+            const approachTrendStatus = data.growth_indicators.approach_to_challenges.toLowerCase();
+            let approachClass = approachTrendStatus.includes('proactive') ? 'improving' : 
+                              approachTrendStatus.includes('reactive') ? 'declining' : 'stable';
+            const approachIcon = approachClass === 'improving' ? 'fa-shield' : 
+                               approachClass === 'declining' ? 'fa-triangle-exclamation' : 'fa-fire-extinguisher';
             
             const approachMetric = document.createElement('div');
-            approachMetric.className = `metric-item approach-metric metric-${data.growth_indicators.approach_to_challenges === 'more proactive' ? 'improved' : 
-                                   data.growth_indicators.approach_to_challenges === 'more reactive' ? 'declined' : 'unchanged'}`;
+            approachMetric.className = `compact-metric metric-approach`;
             
-            if (data.growth_indicators.approach_to_challenges === 'more proactive' || 
-                data.growth_indicators.approach_to_challenges === 'more reactive') {
-                // For changed approach, uppercase the displayed value
-                approachMetric.innerHTML = `
-                    <div class="metric-label"><i class="fas fa-fire-extinguisher"></i> Approach to Challenges</div>
-                    <div class="trend-indicator trend-${approachTrend}">${capitalizeFirstLetter(data.growth_indicators.approach_to_challenges)}</div>
-                    <div class="metric-description">How the employee addresses obstacles and challenges in their work.</div>
-                `;
-            } else {
-                // For unchanged approach, uppercase the displayed value
-                approachMetric.innerHTML = `
-                    <div class="metric-label"><i class="fas fa-fire-extinguisher"></i> Approach to Challenges</div>
-                    <div class="status-unchanged">${capitalizeFirstLetter(data.growth_indicators.approach_to_challenges)}</div>
-                    <div class="metric-description">The employee's approach to challenges has remained consistent.</div>
-                `;
-            }
+            // Create wrapper for tooltip
+            const approachTooltipWrapper = document.createElement('div');
+            approachTooltipWrapper.className = 'tooltip-wrapper';
+            approachTooltipWrapper.innerHTML = `
+                <div class="metric-tooltip">
+                    How the employee addresses obstacles and challenges in their work.
+                </div>
+            `;
+            
+            // Create content with improved layout
+            const approachContent = document.createElement('div');
+            approachContent.className = 'metric-content-layout';
+            approachContent.innerHTML = `
+                <div class="title-row">
+                    <div class="metric-icon approach">
+                        <i class="fas ${approachIcon}"></i>
+                    </div>
+                    <div class="metric-name">Approach to Challenges</div>
+                </div>
+                <div class="metric-value">
+                    <span class="status-indicator status-${approachClass}"></span>
+                    ${capitalizeFirstLetter(data.growth_indicators.approach_to_challenges)}
+                </div>
+            `;
+            
+            // Add content first, then tooltip
+            approachMetric.appendChild(approachContent);
+            approachMetric.appendChild(approachTooltipWrapper);
             growthContainer.appendChild(approachMetric);
             
             growthSection.appendChild(growthContainer);
             mainContainer.appendChild(growthSection);
         }
-        
-        // Add focus areas section
+
+        // Add focus areas section (NEW)
         if (data.focus_areas && data.focus_areas.length > 0) {
             const focusAreasSection = document.createElement('div');
             focusAreasSection.className = 'monthly-assessment-section focus-areas-section';
-            
+
             focusAreasSection.innerHTML = `<h5>Focus Areas
                 <span class="tooltip-trigger">
                     <i class="fas fa-info-circle"></i>
-                    <span class="tooltip">Main projects and responsibilities the employee focused on during this period.</span>
+                    <span class="tooltip">Key projects or responsibilities where the employee invested significant time and effort, with priority and time investment levels.</span>
                 </span>
             </h5>`;
-            
+
             const focusAreasList = document.createElement('ul');
             focusAreasList.className = 'focus-areas-list';
-            
-            data.focus_areas.forEach(focusArea => {
-                const focusAreaItem = document.createElement('li');
-                focusAreaItem.className = 'focus-area-item';
-                
+
+            data.focus_areas.forEach(area => {
+                const item = document.createElement('li');
+                item.className = 'focus-area-item';
+
                 // Project name
-                const focusAreaName = document.createElement('div');
-                focusAreaName.className = 'focus-area-name';
-                focusAreaName.textContent = focusArea.project;
-                focusAreaItem.appendChild(focusAreaName);
+                const name = document.createElement('span');
+                name.className = 'focus-area-name';
+                const focusIcon = document.createElement('i');
+                focusIcon.className = 'fas fa-bullseye';
+                focusIcon.style.color = '#8b5cf6';
+                focusIcon.style.marginRight = '8px';
+                name.appendChild(focusIcon);
+                name.appendChild(document.createTextNode(area.project));
                 
-                // Create a badge container to hold both badges
-                const badgeContainer = document.createElement('div');
-                badgeContainer.className = 'focus-area-badges';
-                badgeContainer.style.display = 'flex';
-                badgeContainer.style.gap = '8px';
-                badgeContainer.style.alignItems = 'center';
-                
-                // Priority level
-                const priorityLevel = document.createElement('div');
-                priorityLevel.className = `focus-area-priority priority-${focusArea.priority_level.toLowerCase()}`;
-                priorityLevel.textContent = `Priority: ${capitalizeFirstLetter(focusArea.priority_level)}`;
-                badgeContainer.appendChild(priorityLevel);
-                
-                // Time investment (now side-by-side with priority)
-                const timeInvestment = document.createElement('div');
-                timeInvestment.className = 'focus-area-time';
-                timeInvestment.innerHTML = `<i class="fas fa-clock"></i> Time Investment: ${capitalizeFirstLetter(focusArea.time_investment)}`; // Changed back to clock icon with added label
-                badgeContainer.appendChild(timeInvestment);
-                
-                focusAreaItem.appendChild(badgeContainer);
-                focusAreasList.appendChild(focusAreaItem);
+
+                // Priority badge
+                const priority = document.createElement('span');
+                let priorityClass = '';
+                if (area.priority_level === 'high') priorityClass = 'priority-high';
+                else if (area.priority_level === 'medium') priorityClass = 'priority-medium';
+                else priorityClass = 'priority-low';
+                priority.className = `focus-area-priority ${priorityClass}`;
+                priority.textContent = `Priority: ${area.priority_level.charAt(0).toUpperCase() + area.priority_level.slice(1)}`;
+
+                // Time investment badge
+                const time = document.createElement('span');
+                time.className = 'focus-area-time';
+                let timeIcon = '<i class="fas fa-clock"></i>';
+                if (area.time_investment === 'high') timeIcon = '<i class="fas fa-hourglass-start"></i>';
+                else if (area.time_investment === 'medium') timeIcon = '<i class="fas fa-hourglass-half"></i>';
+                else if (area.time_investment === 'low') timeIcon = '<i class="fas fa-hourglass-end"></i>';
+                time.innerHTML = `${timeIcon} ${area.time_investment.charAt(0).toUpperCase() + area.time_investment.slice(1)} Time`;
+
+                // Add to item
+                item.appendChild(name);
+                item.appendChild(priority);
+                item.appendChild(time);
+
+                focusAreasList.appendChild(item);
             });
-            
+
             focusAreasSection.appendChild(focusAreasList);
             mainContainer.appendChild(focusAreasSection);
         } else {
-            // Create empty state for no focus areas
+            // Empty state for no focus areas
             const focusAreasSection = document.createElement('div');
             focusAreasSection.className = 'monthly-assessment-section focus-areas-section';
-            
             focusAreasSection.innerHTML = `
                 <h5>Focus Areas
                     <span class="tooltip-trigger">
                         <i class="fas fa-info-circle"></i>
-                        <span class="tooltip">Main projects and responsibilities the employee focused on during this period.</span>
+                        <span class="tooltip">Key projects or responsibilities where the employee invested significant time and effort, with priority and time investment levels.</span>
                     </span>
                 </h5>
                 <div class="no-focus-areas-message">
                     <i class="fas fa-info-circle"></i> No specific focus areas recorded for this period.
                 </div>
             `;
-            
             mainContainer.appendChild(focusAreasSection);
         }
-        
-        // Add risk assessment section
-        if (data.monthly_risk_assessment) {
-            const riskSection = document.createElement('div');
-            riskSection.className = 'monthly-assessment-section monthly-risk-section';
-            
-            riskSection.innerHTML = `<h5>Monthly Risk Assessment
-                <span class="tooltip-trigger">
-                    <i class="fas fa-info-circle"></i>
-                    <span class="tooltip">Identification and evaluation of potential risks based on the employee's performance and recurring challenges.</span>
-                </span>
-            </h5>`;
-            
-            // Add risk explanation with improved styling
-            if (data.monthly_risk_assessment.risk_explanation) {
-                const riskExplanation = document.createElement('div');
-                riskExplanation.className = 'risk-explanation-text';
-                riskExplanation.textContent = data.monthly_risk_assessment.risk_explanation;
-                riskSection.appendChild(riskExplanation);
-            }
-            
-            // Add significant risks if available
-            if (data.monthly_risk_assessment.significant_risks && data.monthly_risk_assessment.significant_risks.length > 0) {
-                const significantRisksContainer = document.createElement('div');
-                significantRisksContainer.className = 'risks-container';
-                significantRisksContainer.innerHTML = `<h6><i class="fas fa-exclamation-circle"></i> Significant Risks:</h6>`;
-                
-                const risksList = document.createElement('ul');
-                risksList.className = 'risks-list';
-                
-                data.monthly_risk_assessment.significant_risks.forEach(risk => {
-                    const riskItem = document.createElement('li');
-                    riskItem.className = 'significant-risk';
-                    riskItem.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span>${risk}</span>`;
-                    risksList.appendChild(riskItem);
-                });
-                
-                significantRisksContainer.appendChild(risksList);
-                riskSection.appendChild(significantRisksContainer);
-            }
-            
-            // Add escalating risks if available
-            if (data.monthly_risk_assessment.escalating_risks && data.monthly_risk_assessment.escalating_risks.length > 0) {
-                const escalatingRisksContainer = document.createElement('div');
-                escalatingRisksContainer.className = 'risks-container';
-                escalatingRisksContainer.innerHTML = `<h6><i class="fas fa-arrow-trend-up"></i> Escalating Risks:</h6>`;
-                
-                const escalatingList = document.createElement('ul');
-                escalatingList.className = 'risks-list';
-                
-                data.monthly_risk_assessment.escalating_risks.forEach(risk => {
-                    const riskItem = document.createElement('li');
-                    riskItem.className = 'escalating-risk';
-                    riskItem.innerHTML = `<i class="fas fa-arrow-alt-circle-up"></i> <span>${risk}</span>`;
-                    escalatingList.appendChild(riskItem);
-                });
-                
-                escalatingRisksContainer.appendChild(escalatingList);
-                riskSection.appendChild(escalatingRisksContainer);
-            }
-            
-            // Add risk mitigation recommendations if available
-            if (data.monthly_risk_assessment.risk_mitigation_recommendations && 
-                data.monthly_risk_assessment.risk_mitigation_recommendations.length > 0) {
-                const mitigationContainer = document.createElement('div');
-                mitigationContainer.className = 'risks-container';
-                mitigationContainer.innerHTML = `<h6><i class="fas fa-shield-alt"></i> Risk Mitigation Recommendations:</h6>`;
-                
-                const mitigationList = document.createElement('ul');
-                mitigationList.className = 'mitigation-list';
-                
-                data.monthly_risk_assessment.risk_mitigation_recommendations.forEach(recommendation => {
-                    const recItem = document.createElement('li');
-                    recItem.innerHTML = `<i class="fas fa-lightbulb"></i> <span>${recommendation}</span>`;
-                    mitigationList.appendChild(recItem);
-                });
-                
-                mitigationContainer.appendChild(mitigationList);
-                riskSection.appendChild(mitigationContainer);
-            }
-            
-            // Add a message when no risks are found in any category
-            if ((!data.monthly_risk_assessment.significant_risks || data.monthly_risk_assessment.significant_risks.length === 0) &&
-                (!data.monthly_risk_assessment.escalating_risks || data.monthly_risk_assessment.escalating_risks.length === 0)) {
-                const noRisksMessage = document.createElement('p');
-                noRisksMessage.className = 'no-risks-message';
-                noRisksMessage.textContent = 'No significant or escalating risks identified for this period.';
-                riskSection.appendChild(noRisksMessage);
-            }
-            
-            mainContainer.appendChild(riskSection);
-        }
-        
+
+
         // Add strategic recommendations section with improved styling
         if (data.strategic_recommendations && data.strategic_recommendations.length > 0) {
             const recommendationsSection = document.createElement('div');
