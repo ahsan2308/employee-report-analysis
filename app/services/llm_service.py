@@ -33,7 +33,7 @@ class LLMService:
         self.retry_delay = 1.0
         self.max_retries = 3
 
-    def generate_text(self, prompt: str, max_tokens: int = 5000,
+    def generate_text(self, prompt: str, max_tokens: int = 2000,
                     temperature: float = 0.7, retries: int = None,
                     num_ctx: int = 8192) -> str:
         """

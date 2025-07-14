@@ -784,6 +784,97 @@ document.addEventListener('DOMContentLoaded', function() {
             mainContainer.appendChild(trendsSection);
         }
         
+        if (data.monthly_risk_assessment) {
+            const riskSection = document.createElement('div');
+            riskSection.className = 'monthly-assessment-section monthly-risk-section';
+
+            riskSection.innerHTML = `<h5>Risk Assessment
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">Summary of significant and escalating risks for the month, with recommendations for mitigation.</span>
+                </span>
+            </h5>`;
+
+            // Risk explanation
+            if (data.monthly_risk_assessment.risk_explanation) {
+                const riskExplanation = document.createElement('div');
+                riskExplanation.className = 'risk-explanation-text';
+                riskExplanation.innerHTML = `<i class="fas fa-octagon-exclamation" style="color:#b45309;margin-right:8px;"></i>${data.monthly_risk_assessment.risk_explanation}`;
+                riskSection.appendChild(riskExplanation);
+            }
+
+            // Significant Risks
+            const risksContainer = document.createElement('div');
+            risksContainer.className = 'risks-container';
+
+            const significantRisks = data.monthly_risk_assessment.significant_risks || [];
+            if (significantRisks.length > 0) {
+                const sigTitle = document.createElement('h6');
+                sigTitle.innerHTML = `<i class="fas fa-exclamation-circle"></i> Significant Risks`;
+                risksContainer.appendChild(sigTitle);
+
+                const sigList = document.createElement('ul');
+                sigList.className = 'risks-list';
+                significantRisks.forEach(risk => {
+                    const li = document.createElement('li');
+                    li.className = 'significant-risk';
+                    li.innerHTML = `<i class="fas fa-siren-on"></i> ${risk}`;
+                    sigList.appendChild(li);
+                });
+                risksContainer.appendChild(sigList);
+            }
+
+            // Escalating Risks
+            const escalatingRisks = data.monthly_risk_assessment.escalating_risks || [];
+            if (escalatingRisks.length > 0) {
+                const escTitle = document.createElement('h6');
+                escTitle.innerHTML = `<i class="fas fa-arrow-up"></i> Escalating Risks`;
+                risksContainer.appendChild(escTitle);
+
+                const escList = document.createElement('ul');
+                escList.className = 'risks-list';
+                escalatingRisks.forEach(risk => {
+                    const li = document.createElement('li');
+                    li.className = 'escalating-risk';
+                    li.innerHTML = `<i class="fas fa-fire"></i> ${risk}`;
+                    escList.appendChild(li);
+                });
+                risksContainer.appendChild(escList);
+            }
+
+            // Mitigation Recommendations
+            const mitigations = data.monthly_risk_assessment.risk_mitigation_recommendations || [];
+            if (mitigations.length > 0) {
+                const mitTitle = document.createElement('h6');
+                mitTitle.innerHTML = `<i class="fas fa-lightbulb"></i> Mitigation Recommendations`;
+                risksContainer.appendChild(mitTitle);
+
+                const mitList = document.createElement('ul');
+                mitList.className = 'mitigation-list';
+                mitigations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<i class="fas fa-check-circle"></i> ${rec}`;
+                    mitList.appendChild(li);
+                });
+                risksContainer.appendChild(mitList);
+            }
+
+            // Empty state if no risks
+            if (
+                significantRisks.length === 0 &&
+                escalatingRisks.length === 0 &&
+                mitigations.length === 0
+            ) {
+                const noRisks = document.createElement('div');
+                noRisks.className = 'no-risks-message';
+                noRisks.innerHTML = `<i class="fas fa-check-circle"></i> No significant or escalating risks identified for this period.`;
+                risksContainer.appendChild(noRisks);
+            }
+
+            riskSection.appendChild(risksContainer);
+            mainContainer.appendChild(riskSection);
+        }
+
         // Add monthly achievements section
         if (data.monthly_achievements && data.monthly_achievements.length > 0) {
             const achievementsSection = document.createElement('div');
