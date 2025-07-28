@@ -24,7 +24,7 @@ class VisionDataProcessor(BaseCSVProcessor):
     
     # Required headers for Vision data CSV format
     REQUIRED_HEADERS = [
-        "Employee_ID", "From_Date", "To_Date", "Main_Entity", "Sub_Entities"
+        "Employee_ID", "From_Date", "To_Date", "Main_Entity", "Sub_Entities", "Sub_Entities_Content"
     ]
     
     def __init__(self, db: Session, error_handler: ImportErrorHandler):
@@ -92,7 +92,23 @@ class VisionDataProcessor(BaseCSVProcessor):
                     row_data=row_data
                 )
                 return False
-            
+
+            # Parse sub-entities content JSON
+            sub_entities_content_json = row_dict.get('Sub_Entities_Content')
+            try:
+                if isinstance(sub_entities_content_json, str):
+                    sub_entities_content = json.loads(sub_entities_content_json)
+                else:
+                    sub_entities_content = sub_entities_content_json
+            except json.JSONDecodeError:
+                self.error_handler.add_validation_error(
+                    row_number=row_number,
+                    error_message="Invalid JSON format in Sub_Entities_Content field",
+                    field_name="Sub_Entities_Content",
+                    row_data=row_data
+                )
+                return False
+
             # Check for existing record
             existing_record = self.db.query(EmployeeVisionData).filter(
                 EmployeeVisionData.employee_id == employee_id,
@@ -100,10 +116,11 @@ class VisionDataProcessor(BaseCSVProcessor):
                 EmployeeVisionData.to_date == row_dict.get('To_Date'),
                 EmployeeVisionData.main_entity == row_dict.get('Main_Entity')
             ).first()
-            
+
             if existing_record:
                 # Update existing record
                 existing_record.sub_entities = sub_entities
+                existing_record.sub_entities_content = sub_entities_content
                 self.vision_records_updated += 1
             else:
                 # Create new record
@@ -112,11 +129,12 @@ class VisionDataProcessor(BaseCSVProcessor):
                     from_date=row_dict.get('From_Date'),
                     to_date=row_dict.get('To_Date'),
                     main_entity=row_dict.get('Main_Entity'),
-                    sub_entities=sub_entities
+                    sub_entities=sub_entities,
+                    sub_entities_content=sub_entities_content
                 )
                 self.db.add(new_record)
                 self.vision_records_created += 1
-            
+
             self.db.commit()
             self.successful_rows += 1
             return True
@@ -240,14 +258,26 @@ class VisionDataProcessor(BaseCSVProcessor):
                 except json.JSONDecodeError:
                     logger.warning(f"Invalid JSON in Sub_Entities for employee {row['Employee_ID']}: {sub_entities_json}")
                     continue
-                
+
+                # Parse sub-entities content JSON if needed
+                sub_entities_content_json = row.get('Sub_Entities_Content')
+                try:
+                    if isinstance(sub_entities_content_json, str):
+                        sub_entities_content = json.loads(sub_entities_content_json)
+                    else:
+                        sub_entities_content = sub_entities_content_json
+                except json.JSONDecodeError:
+                    logger.warning(f"Invalid JSON in Sub_Entities_Content for employee {row['Employee_ID']}: {sub_entities_content_json}")
+                    continue
+
                 # Add to bulk data
                 vision_data.append({
                     'employee_id': row['Employee_ID'],
                     'from_date': row['From_Date'],
                     'to_date': row['To_Date'],
                     'main_entity': row['Main_Entity'],
-                    'sub_entities': sub_entities
+                    'sub_entities': sub_entities,
+                    'sub_entities_content': sub_entities_content
                 })
             
             # Skip if no data to process
@@ -259,7 +289,8 @@ class VisionDataProcessor(BaseCSVProcessor):
             stmt = stmt.on_conflict_do_update(
                 index_elements=['employee_id', 'from_date', 'to_date', 'main_entity'],
                 set_={
-                    'sub_entities': stmt.excluded.sub_entities
+                    'sub_entities': stmt.excluded.sub_entities,
+                    'sub_entities_content': stmt.excluded.sub_entities_content
                 }
             )
             
@@ -301,7 +332,7 @@ class VisionDataProcessor(BaseCSVProcessor):
         """
         Determine if this processor can handle a CSV with the given headers.
         
-        For Vision data, we need Employee_ID, From_date, To_date, Main_entity, and Sub_entities.
+        For Vision data, we need Employee_ID, From_date, To_date, Main_entity, Sub_entities, and Sub_entities_content.
         """
-        essential_headers = ["Employee_ID", "From_Date", "To_Date", "Main_Entity", "Sub_Entities"]
+        essential_headers = ["Employee_ID", "From_Date", "To_Date", "Main_Entity", "Sub_Entities", "Sub_Entities_Content"]
         return all(header in headers for header in essential_headers)

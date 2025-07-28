@@ -27,6 +27,7 @@ class EmployeeVisionData(Base):
     # Entity data
     main_entity = Column(String, nullable=False, index=True)
     sub_entities = Column(JSONB, nullable=False)  # Stores all quantitative sub-entity data
+    sub_entities_content = Column(JSONB, nullable=True)  # Stores all qualitative sub-entity content
     
     # Audit fields
     created_at = Column(DateTime, default=func.now(), nullable=False)

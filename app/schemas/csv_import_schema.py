@@ -481,6 +481,9 @@ class VisionDataCSVRow(BaseModel):
     Sub_Entities: str = Field(
         description="Quantitative data about sub-entities in format 'Name1:Count1, Name2:Count2, ...'"
     )
+    Sub_Entities_Content: str = Field(
+        description="Content for each sub-entity as a string: 'Cases:[], Activities:[{...}], ...'. Not a full JSON object, but a comma-separated list of key:list pairs."
+    )
     
     # Configuration
     model_config = {
@@ -624,6 +627,42 @@ class VisionDataCSVRow(BaseModel):
             
         # Return the string representation for downstream processing
         return json.dumps(sub_entities_dict)
+    
+    @field_validator('Sub_Entities_Content')
+    @classmethod
+    def validate_sub_entities_content(cls, v):
+        """
+        Validate that Sub_Entities_Content is a string in the format:
+        'Cases:[], Activities:[{...}], ...'
+        Each value must be a list (possibly empty) of dicts, but the whole string is not a JSON object.
+        """
+        import re
+        import json
+        if not v or not v.strip():
+            return ""
+        # Split by comma, but not inside brackets
+        # This regex splits on commas that are not inside square brackets
+        parts = re.split(r',\s*(?![^[]*\])', v)
+        for part in parts:
+            if ':' not in part:
+                raise ValueError(f"Invalid Sub_Entities_Content part: '{part}'. Expected format 'Key:[...]'")
+            key, value = part.split(':', 1)
+            key = key.strip()
+            value = value.strip()
+            # Value must start with [ and end with ]
+            if not (value.startswith('[') and value.endswith(']')):
+                raise ValueError(f"Value for '{key}' must be a list enclosed in []")
+            try:
+                # Try to parse the list
+                items = json.loads(value)
+                if not isinstance(items, list):
+                    raise ValueError(f"Value for '{key}' must be a list")
+                for item in items:
+                    if not isinstance(item, dict):
+                        raise ValueError(f"Each item in list for '{key}' must be a JSON object/dict")
+            except Exception as e:
+                raise ValueError(f"Invalid JSON list for '{key}' in Sub_Entities_Content: {e}")
+        return v
     
     @model_validator(mode='after')
     def convert_date_strings(self):

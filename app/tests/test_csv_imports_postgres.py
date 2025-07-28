@@ -164,7 +164,7 @@ class TestCSVImportsPostgres:
         # Create a temporary CSV file
         fd, path = tempfile.mkstemp(suffix='.csv')
         os.close(fd)
-        
+
         # Sample data for vision data
         data = {
             'Employee_ID': self.test_employee_ids,
@@ -172,16 +172,21 @@ class TestCSVImportsPostgres:
             'To_Date': [date.today().strftime('%Y-%m-%d') for _ in range(3)],
             'Main_Entity': ["Tasks", "Persons", "Organizations"],
             'Sub_Entities': [
-                "Task1:5, Task2:3, Task3:2",
-                "Person1:10, Person2:7, Person3:4",
-                "Org1:2, Org2:3, Org3:1"
+                json.dumps({"Task1": 5, "Task2": 3, "Task3": 2}),
+                json.dumps({"Person1": 10, "Person2": 7, "Person3": 4}),
+                json.dumps({"Org1": 2, "Org2": 3, "Org3": 1})
+            ],
+            'Sub_Entities_Content': [
+                json.dumps({"Task1": [{"id": 1, "desc": "A"}], "Task2": [], "Task3": []}),
+                json.dumps({"Person1": [], "Person2": [{"id": 2, "desc": "B"}], "Person3": []}),
+                json.dumps({"Org1": [], "Org2": [], "Org3": [{"id": 3, "desc": "C"}]})
             ]
         }
-        
+
         # Create a DataFrame and save to CSV
         df = pd.DataFrame(data)
         df.to_csv(path, index=False)
-        
+
         return path
     
     def test_employee_report_import(self):
@@ -290,8 +295,8 @@ class TestCSVImportsPostgres:
                 ).all()
                 print(f"Employee {emp_id} has {len(vision_data)} vision data records")
                 for record in vision_data:
-                    print(f"  Entity: {record.main_entity}, sub-entities: {record.sub_entities}")
-            
+                    print(f"  Entity: {record.main_entity}, sub-entities: {record.sub_entities}, sub-entities-content: {record.sub_entities_content}")
+
             # Verify metrics
             metrics = result.get('metrics', {})
             print(f"CSV Type: {result.get('csv_type')}")
