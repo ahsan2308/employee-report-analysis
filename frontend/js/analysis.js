@@ -797,13 +797,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Risk explanation
             if (data.monthly_risk_assessment.risk_explanation) {
-                const riskExplanation = document.createElement('div');
-                riskExplanation.className = 'risk-explanation-text';
-                riskExplanation.innerHTML = `<i class="fas fa-octagon-exclamation" style="color:#b45309;margin-right:8px;"></i>${data.monthly_risk_assessment.risk_explanation}`;
-                riskSection.appendChild(riskExplanation);
+            const riskExplanation = document.createElement('div');
+            riskExplanation.className = 'risk-explanation-text';
+            riskExplanation.textContent = data.monthly_risk_assessment.risk_explanation;
+            riskSection.appendChild(riskExplanation);
             }
 
-            // Significant Risks
+            // Significant Risk
             const risksContainer = document.createElement('div');
             risksContainer.className = 'risks-container';
 
@@ -818,7 +818,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 significantRisks.forEach(risk => {
                     const li = document.createElement('li');
                     li.className = 'significant-risk';
-                    li.innerHTML = `<i class="fas fa-siren-on"></i> ${risk}`;
+                    li.innerHTML = `<i class="fas fa-triangle-exclamation" style="position:relative; top:3px;"></i> ${risk}`;
                     sigList.appendChild(li);
                 });
                 risksContainer.appendChild(sigList);
@@ -836,7 +836,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 escalatingRisks.forEach(risk => {
                     const li = document.createElement('li');
                     li.className = 'escalating-risk';
-                    li.innerHTML = `<i class="fas fa-fire"></i> ${risk}`;
+                    li.innerHTML = `<i class="fas fa-fire" style="position:relative; top:3px;"></i> ${risk}`;
                     escList.appendChild(li);
                 });
                 risksContainer.appendChild(escList);
@@ -853,7 +853,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 mitList.className = 'mitigation-list';
                 mitigations.forEach(rec => {
                     const li = document.createElement('li');
-                    li.innerHTML = `<i class="fas fa-check-circle"></i> ${rec}`;
+                    li.innerHTML = `<i class="fas fa-check-circle" style="position:relative; top:3px;"></i> ${rec}`;
                     mitList.appendChild(li);
                 });
                 risksContainer.appendChild(mitList);
