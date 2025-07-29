@@ -454,6 +454,73 @@ class ImportErrorsResponse(BaseModel):
         "from_attributes": True
     }
 
+import json
+
+def _top_level_split(s: str, delimiter: str = ','):
+    """
+    Split on delimiter only when not inside [], {}, or quotes. Handles escapes.
+    """
+    if s is None:
+        return []
+    parts, buf = [], []
+    depth_square = depth_curly = 0
+    in_str = False
+    esc = False
+    quote_char = ''
+    for ch in str(s):
+        if esc:
+            buf.append(ch); esc = False; continue
+        if ch == '\\':
+            buf.append(ch); esc = True; continue
+        if in_str:
+            buf.append(ch)
+            if ch == quote_char:
+                in_str = False
+            continue
+        if ch in ('"', "'"):
+            in_str = True
+            quote_char = ch
+            buf.append(ch)
+            continue
+        if ch == '[': depth_square += 1
+        elif ch == ']': depth_square = max(0, depth_square - 1)
+        elif ch == '{': depth_curly += 1
+        elif ch == '}': depth_curly = max(0, depth_curly - 1)
+        if ch == delimiter and depth_square == 0 and depth_curly == 0:
+            parts.append(''.join(buf).strip()); buf = []
+        else:
+            buf.append(ch)
+    if buf:
+        parts.append(''.join(buf).strip())
+    return parts
+
+def _json_list_with_fixes(value: str):
+    """
+    Try to json.loads a list; if it fails, apply light fixes:
+    - replace unescaped single quotes with double quotes
+    - remove trailing commas before ] or }
+    - strip control chars
+    Returns: list | None
+    """
+    if value is None:
+        return None
+    try:
+        parsed = json.loads(value)
+        return parsed if isinstance(parsed, list) else None
+    except Exception:
+        pass
+
+    repaired = str(value).strip()
+    repaired = re.sub(r'(?<!\\)\'', '"', repaired)
+    repaired = re.sub(r',\s*([\]\}])', r'\1', repaired)
+    repaired = ''.join(ch for ch in repaired if ch >= ' ')
+
+    try:
+        parsed = json.loads(repaired)
+        return parsed if isinstance(parsed, list) else None
+    except Exception:
+        return None
+
 class VisionDataCSVRow(BaseModel):
     """
     Schema for validating a single row of vision system data in a CSV file.
@@ -636,34 +703,31 @@ class VisionDataCSVRow(BaseModel):
         'Cases:[], Activities:[{...}], ...'
         Each value must be a list (possibly empty) of dicts, but the whole string is not a JSON object.
         """
-        import re
-        import json
         if not v or not v.strip():
             return ""
-        # Split by comma, but not inside brackets
-        # This regex splits on commas that are not inside square brackets
-        parts = re.split(r',\s*(?![^[]*\])', v)
+
+        parts = _top_level_split(v, delimiter=',')
         for part in parts:
             if ':' not in part:
                 raise ValueError(f"Invalid Sub_Entities_Content part: '{part}'. Expected format 'Key:[...]'")
             key, value = part.split(':', 1)
             key = key.strip()
             value = value.strip()
-            # Value must start with [ and end with ]
+
+            # Value must be a list (JSON array)
             if not (value.startswith('[') and value.endswith(']')):
                 raise ValueError(f"Value for '{key}' must be a list enclosed in []")
-            try:
-                # Try to parse the list
-                items = json.loads(value)
-                if not isinstance(items, list):
-                    raise ValueError(f"Value for '{key}' must be a list")
-                for item in items:
-                    if not isinstance(item, dict):
-                        raise ValueError(f"Each item in list for '{key}' must be a JSON object/dict")
-            except Exception as e:
-                raise ValueError(f"Invalid JSON list for '{key}' in Sub_Entities_Content: {e}")
-        return v
-    
+
+            items = _json_list_with_fixes(value)
+            if items is None:
+                raise ValueError(f"Invalid JSON list for '{key}' in Sub_Entities_Content")
+            if not isinstance(items, list):
+                raise ValueError(f"Value for '{key}' must be a list")
+            for item in items:
+                if not isinstance(item, dict):
+                    raise ValueError(f"Each item in list for '{key}' must be a JSON object/dict")
+
+        return v    
     @model_validator(mode='after')
     def convert_date_strings(self):
         """Convert date strings to actual date objects after all validation."""
