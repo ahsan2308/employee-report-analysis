@@ -249,7 +249,7 @@ EMPLOYEE REPORT:
         # Add both current and historical vision data together if available
         if formatted_vision_data:
             prompt += f"""
-OBJECTIVE TRACKING DATA FROM VISION SYSTEM:
+OBJECTIVE TRACKING DATA FROM VISION SYSTEM (Activities that can be used for verifying claims in weekly reports as well as for overall analysis):
 
 === CURRENT PERIOD ACTIVITY DATA ===
 {current_data}

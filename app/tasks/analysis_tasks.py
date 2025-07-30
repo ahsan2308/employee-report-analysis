@@ -131,7 +131,7 @@ def analyze_report_task(self, task_id: str):
             formatted_vision_data,
             recent_report_data,     # Pass recent reports with date info
             similar_report_data,    # Pass similar reports with date info
-            num_ctx=80000
+            num_ctx=40000
         )
         
         # Extract key fields
