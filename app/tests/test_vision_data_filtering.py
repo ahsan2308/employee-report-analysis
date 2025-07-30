@@ -178,14 +178,14 @@ def test_with_unknown_entities():
     
     # Find the unknown entities in the formatted text
     if "UnknownEntity1" in formatted_text:
-        print("✓ UnknownEntity1 is included with empty description")
+        print("OK: UnknownEntity1 is included with empty description")
     else:
-        print("✗ UnknownEntity1 is missing from the output")
+        print("X: UnknownEntity1 is missing from the output")
         
     if "UnknownEntity2" in formatted_text:
-        print("✓ UnknownEntity2 is included with empty description")
+        print("OK: UnknownEntity2 is included with empty description")
     else:
-        print("✗ UnknownEntity2 is missing from the output")
+        print("X: UnknownEntity2 is missing from the output")
     
     print("\nUnknown entities test completed")
 
@@ -265,10 +265,10 @@ def test_mixed_value_entities():
     print(formatted_mixed)
     
     # More specific checks that look for formatted entries rather than just string presence
-    assert "- ZeroValue1:" not in formatted_mixed, "Zero value should not appear as a formatted entry"
-    assert "- ZeroValue2:" not in formatted_mixed, "Zero value should not appear as a formatted entry"
-    assert "- NonZeroValue1:" in formatted_mixed, "Non-zero value should appear as a formatted entry"
-    assert "- NonZeroValue2:" in formatted_mixed, "Non-zero value should appear as a formatted entry"
+    assert "Number of ZeroValue1:" not in formatted_mixed, "Zero value should not appear as a formatted entry"
+    assert "Number of ZeroValue2:" not in formatted_mixed, "Zero value should not appear as a formatted entry"
+    assert "Number of NonZeroValue1:" in formatted_mixed, "Non-zero value should appear as a formatted entry"
+    assert "Number of NonZeroValue2:" in formatted_mixed, "Non-zero value should appear as a formatted entry"
     
     print("Mixed value entity tests passed!")
 
@@ -358,6 +358,55 @@ def test_all_zero_entities():
     
     print("All-zero entities filtering tests passed!")
 
+def test_sub_entity_content_limit():
+    """Test that the entity limit per sub-entity content is respected and 'and X more...' is shown."""
+    logger.info("Testing sub-entity content limit in formatted vision data")
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+
+    # Create sample vision data with sub_entities_content
+    sample_data = {
+        "date_context": {"report_date": today.isoformat()},
+        "current_data": [
+            {
+                "main_entity": "Tasks",
+                "sub_entities": {
+                    "DFA": 5,
+                    "Correspondence": 2
+                },
+                "sub_entities_content": {
+                    "DFA": [
+                        {"Correspondence_Title": "A", "Correspondence_Report": "Attached", "Correspondence_Date": "2025-06-27"},
+                        {"Correspondence_Title": "B", "Correspondence_Report": "Attached", "Correspondence_Date": "2025-06-28"},
+                        {"Correspondence_Title": "C", "Correspondence_Report": "Attached", "Correspondence_Date": "2025-06-29"},
+                        {"Correspondence_Title": "D", "Correspondence_Report": "Attached", "Correspondence_Date": "2025-06-30"},
+                        {"Correspondence_Title": "E", "Correspondence_Report": "Attached", "Correspondence_Date": "2025-07-01"},
+                        {"Correspondence_Title": "F", "Correspondence_Report": "Attached", "Correspondence_Date": "2025-07-02"}
+                    ],
+                    "Correspondence": [
+                        {"Correspondence_Title": "G", "Correspondence_Report": "Attached", "Correspondence_Date": "2025-07-03"}
+                    ]
+                },
+                "from_date": yesterday.isoformat(),
+                "to_date": today.isoformat()
+            }
+        ],
+        "previous_data": []
+    }
+
+    # Pass sample_data through filter_vision_data to match expected structure
+    filtered_data = filter_vision_data(sample_data)
+    max_items = 3
+    formatted_text = format_vision_data_for_prompt(filtered_data, max_content_items_per_entity=max_items)
+    print("\n===== TESTING SUB-ENTITY CONTENT LIMIT =====")
+    print(formatted_text)
+
+    # Check that only max_items are shown for DFA and the "and X more..." line appears
+    assert formatted_text.count("---> Correspondence_Title:") == max_items + 1, "Should show only max_items for DFA plus one for Correspondence"
+    assert "and 3 more..." in formatted_text, "'and X more...' message should appear for DFA"
+    assert "Correspondence_Title: G" in formatted_text, "Single Correspondence item should be shown"
+    print("Sub-entity content limit test passed!")
+
 if __name__ == "__main__":
     # Run all tests
     test_vision_data_filtering()
@@ -366,5 +415,6 @@ if __name__ == "__main__":
     test_mixed_value_entities()
     test_description_formatting()
     test_all_zero_entities()
+    test_sub_entity_content_limit()
     
     print("\n===== ALL TESTS COMPLETED SUCCESSFULLY =====")

@@ -120,6 +120,7 @@ def get_employee_vision_data(employee_id: int, report_date: date, num_previous_w
                 result["current_data"].append({
                     "main_entity": record.main_entity,
                     "sub_entities": record.sub_entities,
+                    "sub_entities_content": record.sub_entities_content,
                     "from_date": record.from_date.isoformat() if record.from_date else None,
                     "to_date": record.to_date.isoformat() if record.to_date else None
                 })
@@ -136,6 +137,7 @@ def get_employee_vision_data(employee_id: int, report_date: date, num_previous_w
                 result["previous_data"].append({
                     "main_entity": record.main_entity,
                     "sub_entities": record.sub_entities,
+                    "sub_entities_content": record.sub_entities_content,
                     "from_date": record.from_date.isoformat() if record.from_date else None,
                     "to_date": record.to_date.isoformat() if record.to_date else None
                 })

@@ -21,6 +21,7 @@ from app.core.config_provider import get_config_provider
 # Get configuration
 config = get_config_provider()
 VECTOR_SEARCH_HNSW_EF = config.get("hnsw_ef", 128, section="vector_db.search")
+MAX_CONTENT_ITEMS_PER_ENTITY = config.get("max_content_items_per_entity", 10, section="vector_db.search")
 
 @celery_app.task(bind=True)
 def analyze_report_task(self, task_id: str):
@@ -120,7 +121,7 @@ def analyze_report_task(self, task_id: str):
         # Get vision data, filter it, and format it
         raw_vision_data = get_employee_vision_data(report.employee_id, report.report_date, num_previous_weeks=4)
         filtered_vision_data = filter_vision_data(raw_vision_data)
-        formatted_vision_data = format_vision_data_for_prompt(filtered_vision_data)
+        formatted_vision_data = format_vision_data_for_prompt(filtered_vision_data, max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY)
 
         # Get LLM service and generate analysis
         logger.info(f"Calling LLM service for analysis (task: {task_id})")

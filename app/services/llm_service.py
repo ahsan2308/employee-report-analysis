@@ -276,7 +276,9 @@ class LLMService:
             similar_reports
         )
         logger.debug(report_text)
-        
+
+        logger.info(f"Generated prompt: {prompt}")
+
         try:
             # Decide whether to use the custom format or the Pydantic model
             if use_custom_format:

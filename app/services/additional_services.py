@@ -16,7 +16,7 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
         return {}
         
     if not sub_entity_descriptions:
-        # Add descriptions for all sub-entities based on the screenshots
+        # Descriptions for all sub-entities
         sub_entity_descriptions = {
             # Persons
             "Persons": "New Person records created",
@@ -45,7 +45,11 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
             "Particulars": "Particulars / organized and comprehensive details added with organizations",
             "Attachments": "Attachments uploaded with organization Particulars",
             "OPs": "Organization profiles created",
-            
+            "Groups": "Long term categorization of an organization (e.g. its type, etc.)",
+            "Label": "Short term (task-specific) categorization of the organization",
+            "Lookup": "A general purpose repository where records are stored for later reference, usually includes generic fields like Name, Description, Reference/Purpose of Entry, etc.",
+            "Special Reports": "On-demand reports which are created on special request from the HQ and contain information specific to a subject as requested by the authority.",
+
             # Links
             "Per-Per": "Persons linked with another Person (Family, Friends, Allies etc.)",
             "Per-Org": "Persons linked with Organizations (with Portfolio like Chairman, Vice chairman etc.)",
@@ -87,6 +91,7 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
             "DFA": "Correspondence created with status as Draft",
             "Correspondence": "Correspondence created with status as Sent",
             "Notings": "Notings added with correspondence",
+            "Attachments": "Attachments added with correspondence",
             
             # Events
             "Events": "Event records created (Incidents, Protests, Strikes, Press conferences, etc.)",
@@ -95,6 +100,7 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
             "Labels": "Events marked with specific labels",
             "Groups": "Events marked with specific groups (muli-level labeling)",
             "Special Reports": "Special report attachments uploaded with events",
+            "Attachments": "Attachments uploaded with events",
             
             # Activities and Cases
             "Activities": "Activities created (Minor events, Meetings / Movements of politicians, diplomats etc.)",
@@ -111,7 +117,17 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
             "News/Media Reports Briefs": "Briefs added with news / media reports",
             "SM Profiles": "Social media profiles added",
             "SM Attachments": "Profile pictures added with social media profiles",
-            
+
+            # PER (Performance Evaluation Reports)
+            "Initiated": "PER initiated by HR department and sent to Reporting Officer (RO)",
+            "Drafted as RO": "PER drafted and saved by Reporting Officer (RO)",
+            "Received as RO": "PER received by Reporting Officer (RO) for review or action",
+            "Submitted as RO": "PER submitted by Reporting Officer (RO) after completion",
+            "Received as CSO2": "PER received by Counter Signing Officer 2 (CSO2) for review",
+            "Recieved as CSO1": "PER received by Counter Signing Officer 1 (CSO1) for review",
+            "Submitted as CSO1": "PER submitted by Counter Signing Officer 1 (CSO1) after review",
+            "Submitted as CSO2": "PER submitted by Counter Signing Officer 2 (CSO2) after review",
+
             # Nadra
             "Files Uploaded": "Files containing Citizenship Verification requests by NADRA",
             "Requests": "NADRA person verification requests added",
@@ -181,12 +197,17 @@ def _process_entity_data(entity_data: List[Dict[str, Any]], sub_entity_descripti
     
     return processed_data
 
-def format_vision_data_for_prompt(vision_data: Dict[str, Any]) -> str:
+def format_vision_data_for_prompt(
+    vision_data: Dict[str, Any], 
+    max_content_items_per_entity: int = 5
+) -> str:
     """
     Format filtered vision data into a string representation suitable for prompt inclusion.
+    Integrates sub_entities_content for each sub-entity, limiting the number of entities shown.
     
     Args:
         vision_data: Filtered vision data with descriptions
+        max_content_items_per_entity: Maximum number of entities to show per sub-entity's content list
         
     Returns:
         Formatted string for inclusion in prompts
@@ -194,6 +215,24 @@ def format_vision_data_for_prompt(vision_data: Dict[str, Any]) -> str:
     if not vision_data:
         return ""
     
+    def format_sub_entity_content(sub_entity, item):
+        content = item.get("sub_entities_content", {})
+        entity_items = content.get(sub_entity, [])
+        if not entity_items:
+            return ""
+        lines = []
+        display_count = min(len(entity_items), max_content_items_per_entity)
+        for entry in entity_items[:display_count]:
+            if entry:
+                entry_str = ", ".join(f"{k}: {v}" for k, v in entry.items() if v)
+                if entry_str:
+                    lines.append(f"      ---> {entry_str}")  
+        if len(entity_items) > max_content_items_per_entity:
+            lines.append(f"      ---> and {len(entity_items) - max_content_items_per_entity} more...")
+        if lines:
+            return "\n".join(lines)
+        return ""
+
     formatted_text = ""
     
     # Format current data
@@ -205,7 +244,10 @@ def format_vision_data_for_prompt(vision_data: Dict[str, Any]) -> str:
             formatted_text += "  Details:\n"
             
             for sub_entity, data in item.get("sub_entities", {}).items():
-                formatted_text += f"    - {sub_entity}: {data['value']} ({data['description']})\n"
+                formatted_text += f"    - Number of {sub_entity}: {data['value']} ({data['description']})\n"
+                sub_content = format_sub_entity_content(sub_entity, item)
+                if sub_content:
+                    formatted_text += f"{sub_content}\n"
     
     # Format previous data
     if vision_data.get("previous_data"):
@@ -216,6 +258,9 @@ def format_vision_data_for_prompt(vision_data: Dict[str, Any]) -> str:
             formatted_text += "  Details:\n"
             
             for sub_entity, data in item.get("sub_entities", {}).items():
-                formatted_text += f"    - {sub_entity}: {data['value']} ({data['description']})\n"
+                formatted_text += f"    - Number of {sub_entity}: {data['value']} ({data['description']})\n"
+                sub_content = format_sub_entity_content(sub_entity, item)
+                if sub_content:
+                    formatted_text += f"{sub_content}\n"
     
     return formatted_text
