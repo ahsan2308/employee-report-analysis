@@ -1683,58 +1683,80 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Add key strengths if available
             if (performance_assessment.key_strengths && performance_assessment.key_strengths.length > 0) {
+                // Use card-style container for strengths (weekly)
                 const strengthsContainer = document.createElement('div');
-                strengthsContainer.className = 'strengths-container';
-                
+                strengthsContainer.className = 'strengths-container card-style-container'; // Add card-style class
+
                 const strengthsTitle = document.createElement('h6');
-                strengthsTitle.innerHTML = `Key Strengths:
+                strengthsTitle.innerHTML = `<i class="fas fa-plus-circle"></i> Key Strengths
                     <span class="tooltip-trigger">
                         <i class="fas fa-info-circle"></i>
                         <span class="tooltip">Notable areas where the employee demonstrates strong performance and capabilities.</span>
                     </span>`;
                 strengthsContainer.appendChild(strengthsTitle);
-                
+
                 const strengthsList = document.createElement('ul');
                 strengthsList.className = 'strengths-list';
-                
+
                 performance_assessment.key_strengths.forEach(strength => {
                     const strengthItem = document.createElement('li');
-                    strengthItem.className = 'flag-item';
-                    strengthItem.innerHTML = `<i class="fas fa-check-circle"></i> ${strength}`;
+                    strengthItem.className = 'strength-item';
+                    strengthItem.innerHTML = `${strength}`;
                     strengthsList.appendChild(strengthItem);
                 });
-                
+
                 strengthsContainer.appendChild(strengthsList);
                 performanceSection.appendChild(strengthsContainer);
+            } else {
+                // Empty state for strengths (weekly)
+                const strengthsContainer = document.createElement('div');
+                strengthsContainer.className = 'strengths-container card-style-container';
+                strengthsContainer.innerHTML = `<h6><i class="fas fa-plus-circle"></i> Key Strengths</h6>`;
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-list-message';
+                emptyMessage.textContent = 'No notable strengths identified for this period.';
+                strengthsContainer.appendChild(emptyMessage);
+                performanceSection.appendChild(strengthsContainer);
             }
-            
+
             // Add improvement areas if available
             if (performance_assessment.improvement_areas && performance_assessment.improvement_areas.length > 0) {
+                // Use card-style container for improvements (weekly)
                 const improvementContainer = document.createElement('div');
-                improvementContainer.className = 'improvement-areas-container';
-                
+                improvementContainer.className = 'improvement-areas-container card-style-container'; // Add card-style class
+
                 const improvementTitle = document.createElement('h6');
-                improvementTitle.innerHTML = `Areas for Improvement:
+                improvementTitle.innerHTML = `<i class="fas fa-lightbulb"></i> Areas for Improvement
                     <span class="tooltip-trigger">
                         <i class="fas fa-info-circle"></i>
                         <span class="tooltip">Specific areas where the employee could enhance their performance and effectiveness.</span>
                     </span>`;
                 improvementContainer.appendChild(improvementTitle);
-                
+
                 const improvementList = document.createElement('ul');
                 improvementList.className = 'improvement-list';
-                
+
                 performance_assessment.improvement_areas.forEach(area => {
                     const areaItem = document.createElement('li');
                     areaItem.className = 'improvement-item';
-                    areaItem.innerHTML = `<i class="fas fa-arrow-alt-circle-up"></i> ${area}`;
+                    areaItem.innerHTML = `${area}`;
                     improvementList.appendChild(areaItem);
                 });
-                
+
                 improvementContainer.appendChild(improvementList);
                 performanceSection.appendChild(improvementContainer);
+            } else {
+                // Empty state for improvements (weekly)
+                const improvementContainer = document.createElement('div');
+                improvementContainer.className = 'improvement-areas-container card-style-container';
+                improvementContainer.innerHTML = `<h6><i class="fas fa-lightbulb"></i> Areas for Improvement</h6>`;
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-list-message';
+                emptyMessage.textContent = 'No specific areas for improvement identified for this period.';
+                improvementContainer.appendChild(emptyMessage);
+                performanceSection.appendChild(improvementContainer);
             }
-            
+
             mainContainer.appendChild(performanceSection);
         }
         
