@@ -14,14 +14,16 @@ from app.services.db_service import get_reports_for_vector_results, get_employee
 from app.services.db_service import get_monthly_analysis_by_params, store_monthly_analysis
 from app.services.monthly_analysis_service import get_monthly_data_for_analysis
 from app.services.llm_service import get_llm_service
-from app.services.additional_services import filter_vision_data, format_vision_data_for_prompt
+from app.services.additional_services import filter_vision_data, format_vision_data_for_weekly_analysis_prompt, format_vision_data_for_monthly_analysis_prompt
 from app.core.logger import logger
 from app.core.config_provider import get_config_provider
+from app.services.db_service import get_employee_vision_data_for_month
 
 # Get configuration
 config = get_config_provider()
 VECTOR_SEARCH_HNSW_EF = config.get("hnsw_ef", 128, section="vector_db.search")
-MAX_CONTENT_ITEMS_PER_ENTITY = config.get("max_content_items_per_entity", 10, section="vector_db.search")
+MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS = config.get("max_content_items_per_entity", 10, section="vector_db.search")
+MAX_CONTENT_ITEMS_PER_ENTITY_FOR_MONTHLY_ANALYSIS = config.get("max_content_items_per_entity", 10, section="vector_db.search")
 
 @celery_app.task(bind=True)
 def analyze_report_task(self, task_id: str):
@@ -121,7 +123,7 @@ def analyze_report_task(self, task_id: str):
         # Get vision data, filter it, and format it
         raw_vision_data = get_employee_vision_data(report.employee_id, report.report_date, num_previous_weeks=4)
         filtered_vision_data = filter_vision_data(raw_vision_data)
-        formatted_vision_data = format_vision_data_for_prompt(filtered_vision_data, max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY)
+        formatted_vision_data = format_vision_data_for_weekly_analysis_prompt(filtered_vision_data, max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS)
 
         # Get LLM service and generate analysis
         logger.info(f"Calling LLM service for analysis (task: {task_id})")
@@ -346,7 +348,15 @@ def analyze_monthly_reports_task(self, task_id: str):
         # Gather monthly data using the monthly analysis service
         logger.info(f"Gathering data for employee {employee_id}, {year}-{month}")
         monthly_data = get_monthly_data_for_analysis(employee_id, year, month)
-        
+
+        # Add vision data for the month
+        raw_monthly_vision_data = get_employee_vision_data_for_month(employee_id, year, month)
+        filtered_monthly_vision_data = filter_vision_data(raw_monthly_vision_data)
+        formatted_monthly_vision_data = format_vision_data_for_monthly_analysis_prompt(filtered_monthly_vision_data, max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_MONTHLY_ANALYSIS)
+        monthly_data["formatted_vision_data"] = formatted_monthly_vision_data
+
+        logger.info(f"Formatted vision data for employee {employee_id}, {year}-{month}: {formatted_monthly_vision_data}")
+
         # Check if we have any reports for this month
         if not monthly_data["reports"] or len(monthly_data["reports"]) == 0:
             logger.warning(f"No reports found for employee {employee_id} in {year}-{month}")
@@ -370,7 +380,7 @@ def analyze_monthly_reports_task(self, task_id: str):
             monthly_data=monthly_data,
             num_ctx=80000
         )
-        
+
         # Handle error in analysis generation
         if "error" in analysis_result and analysis_result["error"]:
             logger.error(f"Error in LLM analysis: {analysis_result['error']}")

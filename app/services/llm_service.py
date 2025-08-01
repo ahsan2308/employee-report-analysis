@@ -351,6 +351,7 @@ class LLMService:
         # Generate the prompt using the monthly analysis prompt template
         prompt = StructuredPrompts.monthly_analysis_prompt(monthly_data)
         logger.info(f"Generating monthly analysis for employee {monthly_data.get('employee_id')}")
+        logger.info(f"Generated prompt: {prompt}")  
         
         try:
             # Decide whether to use the custom format or the Pydantic model

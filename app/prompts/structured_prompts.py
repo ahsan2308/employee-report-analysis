@@ -453,10 +453,9 @@ Guidelines:
     def monthly_analysis_prompt(monthly_data: Dict[str, Any]) -> str:
         """
         Generate a prompt for analyzing an employee's performance over a month.
-        
+
         Args:
             monthly_data: Dictionary containing all data needed for monthly analysis
-                
         Returns:
             Prompt for monthly employee performance analysis
         """
@@ -619,7 +618,19 @@ RECURRING TOPICS:
 
 WEEKLY REPORTS:
 {reports_section}
+"""
 
+        # Insert vision data from monthly_data
+        formatted_vision_data = monthly_data.get("formatted_vision_data", "")
+        if formatted_vision_data:
+            prompt += f"""
+VISION SYSTEM ACTIVITY DATA (Week-wise objective tracking for monthly analysis):
+{formatted_vision_data}
+
+"""
+
+        # Continue with weekly analysis summaries and the rest of the prompt
+        prompt += f"""
 WEEKLY ANALYSIS SUMMARIES:
 {analyses_section}
 
@@ -748,6 +759,9 @@ CRITICAL INSTRUCTIONS:
 6. Do not write anything in the first person or use "I" or "we" in your analysis
 7. Make sure to replace hyphens in compound words (write "five day" instead of "five-day") to ensure proper JSON parsing. No hyphens should be used in the output.
 8. Ensure your monthly summary provides a holistic view of the employee's performance that could stand alone as an executive briefing.
+9. INSTRUCTIONS FOR USING VISION SYSTEM DATA:
+    - Use the week-wise vision system activity data to cross-validate reported achievements, challenges, and trends.
+    - This data provides objective evidence for the employee’s activities and should inform your monthly synthesis, risk assessment, and recommendations.
 
 """
         

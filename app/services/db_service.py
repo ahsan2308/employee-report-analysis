@@ -577,3 +577,68 @@ def store_monthly_analysis(analysis_data: Dict[str, Any]) -> Optional[int]:
         import traceback
         logger.error(traceback.format_exc())
         return None
+
+def get_employee_vision_data_for_month(employee_id: int, year: int, month: int) -> Dict[str, Any]:
+    """
+    Fetch vision data for an employee for all weeks in a given month.
+    
+    Args:
+        employee_id: The ID of the employee
+        year: Year (e.g., 2025)
+        month: Month as integer (1-12)
+        
+    Returns:
+        Dictionary containing a list of week-wise data for the month
+    """
+    from datetime import date, timedelta
+    import calendar
+
+    db_instance = get_database()
+    start_date, end_date = get_month_date_range(year, month)
+    result = {
+        "date_context": {
+            "month": month,
+            "year": year,
+            "period_start": start_date.isoformat(),
+            "period_end": end_date.isoformat(),
+        },
+        "weeks_data": []
+    }
+
+    try:
+        with db_instance.create_session() as session:
+            # Query all vision data for the month
+            records = session.query(EmployeeVisionData).filter(
+                EmployeeVisionData.employee_id == employee_id,
+                EmployeeVisionData.to_date >= start_date,
+                EmployeeVisionData.to_date <= end_date
+            ).order_by(EmployeeVisionData.to_date.asc()).all()
+
+            # Group records by week (ISO week number)
+            week_map = {}
+            for record in records:
+                week_num = record.to_date.isocalendar()[1]
+                if week_num not in week_map:
+                    week_map[week_num] = []
+                week_map[week_num].append({
+                    "main_entity": record.main_entity,
+                    "sub_entities": record.sub_entities,
+                    "sub_entities_content": record.sub_entities_content,
+                    "from_date": record.from_date.isoformat() if record.from_date else None,
+                    "to_date": record.to_date.isoformat() if record.to_date else None
+                })
+
+            # Build week-wise data list
+            for idx, (week_num, items) in enumerate(sorted(week_map.items())):
+                result["weeks_data"].append({
+                    "week_number": idx + 1,
+                    "iso_week": week_num,
+                    "activities": items
+                })
+
+            logger.info(f"Retrieved vision data for employee {employee_id} for {year}-{month}: {len(result['weeks_data'])} weeks")
+            return result
+
+    except Exception as e:
+        logger.error(f"Error fetching monthly vision data for employee {employee_id}: {e}")
+        return result

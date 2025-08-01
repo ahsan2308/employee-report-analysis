@@ -14,7 +14,7 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
     """
     if not vision_data:
         return {}
-        
+
     if not sub_entity_descriptions:
         # Descriptions for all sub-entities
         sub_entity_descriptions = {
@@ -141,17 +141,32 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
     result = {
         "date_context": vision_data.get("date_context", {}),
         "current_data": [],
-        "previous_data": []
+        "previous_data": [],
+        "weeks_data": []
     }
     
-    # Process current data
-    if "current_data" in vision_data:
-        result["current_data"] = _process_entity_data(vision_data["current_data"], sub_entity_descriptions)
-    
-    # Process previous data
-    if "previous_data" in vision_data:
-        result["previous_data"] = _process_entity_data(vision_data["previous_data"], sub_entity_descriptions)
-    
+    # Handle weekly format
+    if "current_data" in vision_data or "previous_data" in vision_data:
+        if "current_data" in vision_data:
+            result["current_data"] = _process_entity_data(vision_data["current_data"], sub_entity_descriptions)
+        if "previous_data" in vision_data:
+            result["previous_data"] = _process_entity_data(vision_data["previous_data"], sub_entity_descriptions)
+        return result
+
+    # Handle monthly format (weeks_data)
+    if "weeks_data" in vision_data:
+        processed_weeks = []
+        for week in vision_data["weeks_data"]:
+            processed_activities = _process_entity_data(week.get("activities", []), sub_entity_descriptions)
+            if processed_activities:
+                processed_weeks.append({
+                    "week_number": week.get("week_number"),
+                    "iso_week": week.get("iso_week"),
+                    "activities": processed_activities
+                })
+        result["weeks_data"] = processed_weeks
+        return result
+
     return result
 
 def _process_entity_data(entity_data: List[Dict[str, Any]], sub_entity_descriptions: Dict[str, str]) -> List[Dict[str, Any]]:
@@ -197,13 +212,13 @@ def _process_entity_data(entity_data: List[Dict[str, Any]], sub_entity_descripti
     
     return processed_data
 
-def format_vision_data_for_prompt(
+def format_vision_data_for_weekly_analysis_prompt(
     vision_data: Dict[str, Any], 
     max_content_items_per_entity: int = 5
 ) -> str:
     """
     Format filtered vision data into a string representation suitable for prompt inclusion.
-    Integrates sub_entities_content for each sub-entity, limiting the number of entities shown.
+    Integrates sub_entities_content for each sub-entity, limiting the number of entities to show.
     
     Args:
         vision_data: Filtered vision data with descriptions
@@ -214,7 +229,7 @@ def format_vision_data_for_prompt(
     """
     if not vision_data:
         return ""
-    
+
     def format_sub_entity_content(sub_entity, item):
         content = item.get("sub_entities_content", {})
         entity_items = content.get(sub_entity, [])
@@ -234,33 +249,94 @@ def format_vision_data_for_prompt(
         return ""
 
     formatted_text = ""
+
+    # Handle weekly format
+    if vision_data.get("current_data") or vision_data.get("previous_data"):
+        if vision_data.get("current_data"):
+            formatted_text += "\nCurrent Report Period Activity Data:\n"
+            for item in vision_data["current_data"]:
+                formatted_text += f"\n- Time Period: {item.get('from_date')} to {item.get('to_date')}\n"
+                formatted_text += f"  Main Activity: {item.get('main_entity')}\n"
+                formatted_text += "  Details:\n"
+                
+                for sub_entity, data in item.get("sub_entities", {}).items():
+                    formatted_text += f"    - Number of {sub_entity}: {data['value']} ({data['description']})\n"
+                    sub_content = format_sub_entity_content(sub_entity, item)
+                    if sub_content:
+                        formatted_text += f"{sub_content}\n"
+        if vision_data.get("previous_data"):
+            formatted_text += "\nHistorical Activity Data:\n"
+            for item in vision_data["previous_data"]:
+                formatted_text += f"\n- Time Period: {item.get('from_date')} to {item.get('to_date')}\n"
+                formatted_text += f"  Main Activity: {item.get('main_entity')}\n"
+                formatted_text += "  Details:\n"
+                
+                for sub_entity, data in item.get("sub_entities", {}).items():
+                    formatted_text += f"    - Number of {sub_entity}: {data['value']} ({data['description']})\n"
+                    sub_content = format_sub_entity_content(sub_entity, item)
+                    if sub_content:
+                        formatted_text += f"{sub_content}\n"
+        return formatted_text
+
+    return formatted_text
+
+def format_vision_data_for_monthly_analysis_prompt(
+    vision_data: Dict[str, Any],
+    max_content_items_per_entity: int = 5
+) -> str:
+    """
+    Format filtered vision data into a string representation suitable for monthly analysis prompt.
+    Displays week-wise activity data, efficiently using the weekly format logic, but labels each section as "Week N".
     
-    # Format current data
-    if vision_data.get("current_data"):
-        formatted_text += "\nCurrent Report Period Activity Data:\n"
-        for item in vision_data["current_data"]:
-            formatted_text += f"\n- Time Period: {item.get('from_date')} to {item.get('to_date')}\n"
-            formatted_text += f"  Main Activity: {item.get('main_entity')}\n"
-            formatted_text += "  Details:\n"
-            
-            for sub_entity, data in item.get("sub_entities", {}).items():
-                formatted_text += f"    - Number of {sub_entity}: {data['value']} ({data['description']})\n"
-                sub_content = format_sub_entity_content(sub_entity, item)
-                if sub_content:
-                    formatted_text += f"{sub_content}\n"
+    Args:
+        vision_data: Filtered vision data with descriptions
+        max_content_items_per_entity: Maximum number of entities to show per sub-entity's content list
+        
+    Returns:
+        Formatted string for inclusion in monthly analysis prompts
+    """
+
+    logger.info(f"Formatting vision data for monthly analysis: {vision_data.keys()}")
+    if not vision_data:
+        return ""
+
+    def format_sub_entity_content(sub_entity, item):
+        content = item.get("sub_entities_content", {})
+        entity_items = content.get(sub_entity, [])
+        if not entity_items:
+            return ""
+        lines = []
+        display_count = min(len(entity_items), max_content_items_per_entity)
+        for entry in entity_items[:display_count]:
+            if entry:
+                entry_str = ", ".join(f"{k}: {v}" for k, v in entry.items() if v)
+                if entry_str:
+                    lines.append(f"      ---> {entry_str}")
+        if len(entity_items) > max_content_items_per_entity:
+            lines.append(f"      ---> and {len(entity_items) - max_content_items_per_entity} more...")
+        if lines:
+            return "\n".join(lines)
+        return ""
     
-    # Format previous data
-    if vision_data.get("previous_data"):
-        formatted_text += "\nHistorical Activity Data:\n"
-        for item in vision_data["previous_data"]:
-            formatted_text += f"\n- Time Period: {item.get('from_date')} to {item.get('to_date')}\n"
-            formatted_text += f"  Main Activity: {item.get('main_entity')}\n"
-            formatted_text += "  Details:\n"
-            
-            for sub_entity, data in item.get("sub_entities", {}).items():
-                formatted_text += f"    - Number of {sub_entity}: {data['value']} ({data['description']})\n"
-                sub_content = format_sub_entity_content(sub_entity, item)
-                if sub_content:
-                    formatted_text += f"{sub_content}\n"
-    
+    formatted_text = ""
+
+    # Handle monthly format (weeks_data)
+    if vision_data.get("weeks_data"):
+        for week in vision_data["weeks_data"]:
+            week_number = week.get("week_number")
+            activities = week.get("activities", [])
+            if activities:
+                from_date = activities[0].get('from_date')
+                to_date = activities[0].get('to_date')
+                formatted_text += f"\nWeek {week_number} Activity Data ({from_date} to {to_date}):\n"
+                for item in activities:
+                    formatted_text += f"  Main Activity: {item.get('main_entity')}\n"
+                    formatted_text += "  Details:\n"
+                    for sub_entity, data in item.get("sub_entities", {}).items():
+                        formatted_text += f"    - Number of {sub_entity}: {data['value']} ({data['description']})\n"
+                        sub_content = format_sub_entity_content(sub_entity, item)
+                        if sub_content:
+                            formatted_text += f"{sub_content}\n"
+        return formatted_text
+
     return formatted_text
