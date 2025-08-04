@@ -56,7 +56,7 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Database**: PostgreSQL
 - **Vector Store**: Qdrant
 - **Task Queue**: Celery with Redis
-- **LLM Provider**: Ollama with LLaMA 3.1
+- **LLM Provider**: Ollama
 - **Embeddings**: Sentence Transformers
 - **Documentation**: Swagger / OpenAPI
 - **Frontend**: HTML5, CSS3, JavaScript (vanilla)
