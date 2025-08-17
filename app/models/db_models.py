@@ -17,6 +17,7 @@ class Employee(Base):
     # Add relationship to vision data
     vision_data = relationship("EmployeeVisionData", back_populates="employee")
     monthly_analyses = relationship("MonthlyAnalysis", back_populates="employee", cascade="all, delete-orphan")
+    quarterly_analyses = relationship("QuarterlyAnalysis", back_populates="employee", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Employee(id={self.id}, name='{self.name}', wing='{self.wing}', position='{self.position}')>"
@@ -187,3 +188,78 @@ class MonthlyAnalysis(Base):
         return f"<MonthlyAnalysis id={self.analysis_id} employee={self.employee_id} period={self.year}-{month_name}>"
 
 Employee.monthly_analyses = relationship("MonthlyAnalysis", back_populates="employee")
+
+class QuarterlyAnalysis(Base):
+    """
+    Quarterly aggregated analysis of employee performance.
+    Contains strategic insights derived from three months of performance data.
+    """
+    __tablename__ = "quarterly_analyses"
+    
+    # Primary key and relationships
+    analysis_id = Column(Integer, primary_key=True, autoincrement=True)
+    employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)
+    
+    # Time fields
+    year = Column(Integer, nullable=False, comment="Year of this analysis")
+    quarter = Column(Integer, nullable=False, comment="Quarter as integer (1-4)")
+    period_start = Column(Date, nullable=False, comment="Start date of the analysis period")
+    period_end = Column(Date, nullable=False, comment="End date of the analysis period")
+    
+    # References to monthly analyses
+    monthly_analysis_ids = Column(ARRAY(Integer), nullable=True, comment="List of monthly analysis IDs included in this quarterly analysis")
+    
+    # Strategic alignment (high value fields extracted)
+    organizational_impact = Column(String, nullable=True, comment="Scope of impact: individual/team/department/organization")
+    
+    # Performance trajectory fields
+    performance_trend = Column(String, nullable=True, comment="Overall trend: improving/stable/declining/mixed")
+    task_completion_reliability = Column(String, nullable=True, comment="Reliability in completing tasks: high/medium/low")
+    work_quality_consistency = Column(String, nullable=True, comment="Consistency of work quality: high/medium/low")
+    performance_stability = Column(String, nullable=True, comment="Performance stability: high/medium/low")
+    
+    # Cross-functional impact
+    collaboration_effectiveness = Column(String, nullable=True, comment="Effectiveness of collaboration: high/medium/low")
+    stakeholder_count = Column(Integer, nullable=True, comment="Number of stakeholders impacted")
+    
+    # Risk assessment
+    risk_level = Column(String, nullable=True, comment="Overall risk assessment: low/medium/high")
+    risk_trend = Column(String, nullable=True, comment="Risk trend: increasing/stable/decreasing")
+    
+    # Skills and development
+    learning_agility = Column(String, nullable=True, comment="Learning agility: high/medium/low")
+    autonomy_level = Column(String, nullable=True, comment="Level of independence: high/medium/low")
+    development_focus = Column(Text, nullable=True, comment="Recommended skill to develop next")
+    
+    # Credibility metrics
+    credibility_rating = Column(String, nullable=True, comment="Overall credibility: high/medium/low") 
+    vision_data_alignment = Column(String, nullable=True, comment="Alignment with vision data: high/medium/low")
+    
+    # Challenge patterns
+    adaptation_effectiveness = Column(String, nullable=True, comment="Effectiveness in adapting to challenges: high/medium/low")
+    
+    # Complex structures stored as JSONB
+    strategic_alignment_json = Column(JSONB, nullable=True, comment="Complete strategic alignment assessment with key initiatives")
+    achievement_themes_json = Column(JSONB, nullable=True, comment="Achievement themes with related achievements and impact")
+    performance_trajectory_json = Column(JSONB, nullable=True, comment="Significant shifts in performance during the quarter")
+    challenge_patterns_json = Column(JSONB, nullable=True, comment="Recurring challenges and their patterns")
+    cross_functional_impact_json = Column(JSONB, nullable=True, comment="Impact across teams and departments")
+    skill_development_json = Column(JSONB, nullable=True, comment="Skills demonstrated and developed during the quarter")
+    behavioral_assessment_json = Column(JSONB, nullable=True, comment="Assessment of key workplace behaviors")
+    risk_assessment_json = Column(JSONB, nullable=True, comment="Complete risk assessment with factors and strategies")
+    credibility_assessment_json = Column(JSONB, nullable=True, comment="Complete credibility assessment")
+    forward_planning_json = Column(JSONB, nullable=True, comment="Recommendations for activities to continue, improve, start, and stop")
+    
+    # Summary and complete data
+    quarterly_summary = Column(Text, nullable=True, comment="Executive summary of quarterly performance")
+    full_analysis_json = Column(JSONB, nullable=True, comment="Complete analysis results in JSON format")
+    
+    # Metadata
+    analysis_date = Column(DateTime, default=func.now(), nullable=False)
+    
+    # Define relationships
+    employee = relationship("Employee", back_populates="quarterly_analyses")
+    
+    def __repr__(self):
+        """String representation for debugging and logging."""
+        return f"<QuarterlyAnalysis id={self.analysis_id} employee={self.employee_id} period=Q{self.quarter}/{self.year}>"

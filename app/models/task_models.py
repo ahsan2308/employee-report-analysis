@@ -19,6 +19,7 @@ class TaskType(Enum):
     """Enum for task types."""
     REPORT_ANALYSIS = "REPORT_ANALYSIS"
     MONTHLY_ANALYSIS = "MONTHLY_ANALYSIS"
+    QUARTERLY_ANALYSIS = "QUARTERLY_ANALYSIS"
 
 class BackgroundTask(Base):
     """Model for tracking background tasks."""
@@ -37,6 +38,7 @@ class BackgroundTask(Base):
     employee_id = Column(Integer, ForeignKey(f"{schema_name}.employees.id", ondelete="CASCADE"), nullable=True)
     year = Column(Integer, nullable=True)
     month = Column(Integer, nullable=True)
+    quarter = Column(Integer, nullable=True)
     
     # Task status and timing information
     status = Column(String, nullable=False, default=TaskStatus.PENDING.value)

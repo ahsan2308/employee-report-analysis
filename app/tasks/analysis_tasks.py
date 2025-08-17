@@ -8,22 +8,26 @@ from sqlalchemy.orm import Session
 from app.worker.celery_app import celery_app
 from app.database import get_database
 from app.models.task_models import BackgroundTask, TaskStatus, TaskType
-from app.models.db_models import Report, Employee, EmployeeAnalysis, MonthlyAnalysis
+from app.models.db_models import Report, Employee, EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
 from app.services.vector_store_service import search_reports
 from app.services.db_service import get_reports_for_vector_results, get_employee_vision_data, get_recent_employee_reports
 from app.services.db_service import get_monthly_analysis_by_params, store_monthly_analysis
-from app.services.monthly_analysis_service import get_monthly_data_for_analysis
+from app.services.db_service import get_quarterly_analysis_by_params, store_quarterly_analysis
+from app.services.monthly_analysis_db_service import get_monthly_data_for_analysis
+from app.services.quarterly_analysis_db_service import get_quarterly_data_for_analysis
 from app.services.llm_service import get_llm_service
-from app.services.additional_services import filter_vision_data, format_vision_data_for_weekly_analysis_prompt, format_vision_data_for_monthly_analysis_prompt
+from app.services.additional_services import filter_vision_data, format_vision_data_for_weekly_analysis_prompt
+from app.services.additional_services import format_vision_data_for_monthly_analysis_prompt, format_vision_data_for_quarterly_analysis_prompt
 from app.core.logger import logger
 from app.core.config_provider import get_config_provider
-from app.services.db_service import get_employee_vision_data_for_month
+from app.services.db_service import get_employee_vision_data_for_month, get_employee_vision_data_for_quarter
 
 # Get configuration
 config = get_config_provider()
 VECTOR_SEARCH_HNSW_EF = config.get("hnsw_ef", 128, section="vector_db.search")
 MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS = config.get("max_content_items_per_entity", 10, section="vector_db.search")
 MAX_CONTENT_ITEMS_PER_ENTITY_FOR_MONTHLY_ANALYSIS = config.get("max_content_items_per_entity", 10, section="vector_db.search")
+MAX_CONTENT_ITEMS_PER_ENTITY_FOR_QUARTERLY_ANALYSIS = config.get("max_content_items_per_entity", 10, section="vector_db.search")
 
 @celery_app.task(bind=True)
 def analyze_report_task(self, task_id: str):
@@ -592,6 +596,360 @@ def analyze_monthly_reports_task(self, task_id: str):
             
     except Exception as e:
         logger.error(f"Error in monthly analysis task {task_id}: {str(e)}")
+        
+        # Update task as failed
+        with db.create_session() as session:
+            try:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.FAILED.value
+                    task.completed_at = datetime.now()
+                    task.error_message = str(e)
+                    session.commit()
+            except Exception as update_error:
+                logger.error(f"Failed to update task status: {str(update_error)}")
+        
+        # Re-raise the exception for Celery to handle
+        raise
+
+@celery_app.task(bind=True)
+def analyze_quarterly_reports_task(self, task_id: str):
+    """
+    Celery task to analyze an employee's quarterly performance asynchronously.
+    
+    Args:
+        self: The Celery task instance (automatically provided)
+        task_id: The UUID of the BackgroundTask record
+    
+    Returns:
+        dict: The quarterly analysis result data
+    """
+    celery_task_id = self.request.id
+    logger.info(f"Starting quarterly analysis task {task_id} (Celery ID: {celery_task_id})")
+    
+    db = get_database()
+    
+    try:
+        # Update task status to RUNNING
+        with db.create_session() as session:
+            # Get the task record and associated parameters
+            task = session.query(BackgroundTask).filter(
+                BackgroundTask.task_id == uuid.UUID(task_id)
+            ).first()
+            
+            if not task:
+                logger.error(f"Task {task_id} not found")
+                return {"error": "Task not found"}
+            
+            # Verify this is a quarterly analysis task
+            if task.task_type != TaskType.QUARTERLY_ANALYSIS.value:
+                logger.error(f"Task {task_id} is not a quarterly analysis task")
+                return {"error": "Incorrect task type"}
+            
+            # Update celery_task_id and status
+            task.celery_task_id = celery_task_id
+            task.status = TaskStatus.RUNNING.value
+            task.started_at = datetime.now()
+            session.commit()
+            
+            # Extract parameters
+            employee_id = task.employee_id
+            year = task.year
+            quarter = task.quarter
+            
+            if not all([employee_id, year, quarter]):
+                raise ValueError(f"Missing required parameters: employee_id={employee_id}, year={year}, quarter={quarter}")
+        
+        # Get employee data outside transaction to avoid holding connection
+        with db.create_session() as session:
+            employee = session.query(Employee).filter(Employee.id == employee_id).first()
+            if not employee:
+                raise ValueError(f"Employee {employee_id} not found")
+        
+        # Check if analysis already exists using a service function (to be implemented)
+        # get_quarterly_analysis_by_params will need to be implemented in db_service.py
+        existing_analysis = get_quarterly_analysis_by_params(employee_id, year, quarter)
+        if existing_analysis:
+            logger.info(f"Quarterly analysis for employee {employee_id}, {year}-Q{quarter} already exists")
+            
+            # Update task as completed with reference to existing analysis
+            with db.create_session() as session:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.COMPLETED.value
+                    task.completed_at = datetime.now()
+                    task.result_data = {
+                        "analysis_id": existing_analysis["analysis_id"],
+                        "employee_id": employee_id,
+                        "year": year,
+                        "quarter": quarter,
+                        "message": "Analysis already exists"
+                    }
+                    session.commit()
+                    
+            return {
+                "analysis_id": existing_analysis["analysis_id"],
+                "employee_id": employee_id,
+                "year": year,
+                "quarter": quarter,
+                "message": "Analysis already exists"
+            }
+        
+        # Gather quarterly data using the quarterly analysis service
+        # get_quarterly_data_for_analysis will need to be implemented
+        logger.info(f"Gathering data for employee {employee_id}, {year}-Q{quarter}")
+        quarterly_data = get_quarterly_data_for_analysis(employee_id, year, quarter)
+
+        # Add vision data for the quarter
+        # get_employee_vision_data_for_quarter will need to be implemented
+        raw_quarterly_vision_data = get_employee_vision_data_for_quarter(employee_id, year, quarter)
+        filtered_quarterly_vision_data = filter_vision_data(raw_quarterly_vision_data)
+        
+        # format_vision_data_for_quarterly_analysis_prompt will need to be implemented
+        formatted_quarterly_vision_data = format_vision_data_for_quarterly_analysis_prompt(
+            filtered_quarterly_vision_data, 
+            max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS
+        )
+        quarterly_data["formatted_vision_data"] = formatted_quarterly_vision_data
+
+        logger.info(f"Formatted vision data for employee {employee_id}, {year}-Q{quarter}")
+
+        # Check if we have any monthly analyses for this quarter
+        if not quarterly_data["monthly_analyses"] or len(quarterly_data["monthly_analyses"]) == 0:
+            logger.warning(f"No monthly analyses found for employee {employee_id} in {year}-Q{quarter}")
+            with db.create_session() as session:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.FAILED.value
+                    task.completed_at = datetime.now()
+                    task.error_message = f"No monthly analyses found for employee {employee_id} in {year}-Q{quarter}"
+                    session.commit()
+            
+            return {"error": f"No monthly analyses found for employee {employee_id} in {year}-Q{quarter}"}
+        
+        # Get LLM service and generate analysis
+        logger.info(f"Calling LLM service for quarterly analysis (task: {task_id})")
+        llm_service = get_llm_service()
+        analysis_result = llm_service.analyze_quarterly_reports(
+            quarterly_data=quarterly_data,
+            num_ctx=100000  # Large context window for quarterly analysis
+        )
+
+        # Handle error in analysis generation
+        if "error" in analysis_result and analysis_result["error"]:
+            logger.error(f"Error in LLM analysis: {analysis_result['error']}")
+            with db.create_session() as session:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.FAILED.value
+                    task.completed_at = datetime.now()
+                    task.error_message = f"LLM analysis failed: {analysis_result['error']}"
+                    session.commit()
+            
+            return {"error": f"LLM analysis failed: {analysis_result['error']}"}
+        
+        # Extract key fields from analysis result
+        try:
+            # Extract strategic alignment
+            strategic_alignment = analysis_result.get("strategic_alignment", {})
+            organizational_impact = strategic_alignment.get("organizational_impact", "individual")
+            key_initiatives = strategic_alignment.get("key_initiatives", [])
+            
+            # Extract achievement themes
+            achievement_themes = analysis_result.get("achievement_themes", [])
+            
+            # Extract performance trajectory
+            performance_trajectory = analysis_result.get("performance_trajectory", {})
+            performance_trend = performance_trajectory.get("trend", "stable")
+            consistency_metrics = performance_trajectory.get("consistency", {})
+            task_completion_reliability = consistency_metrics.get("task_completion_reliability", "medium")
+            work_quality_consistency = consistency_metrics.get("work_quality_consistency", "medium")
+            performance_stability = consistency_metrics.get("performance_stability", "medium")
+            notable_shifts = performance_trajectory.get("notable_shifts", [])
+            
+            # Extract challenge patterns
+            challenge_patterns = analysis_result.get("challenge_patterns", {})
+            recurring_challenges = challenge_patterns.get("recurring_challenges", [])
+            adaptation_effectiveness = challenge_patterns.get("adaptation_effectiveness", "medium")
+            
+            # Extract cross-functional impact
+            cross_functional_impact = analysis_result.get("cross_functional_impact", {})
+            collaboration_effectiveness = cross_functional_impact.get("collaboration_effectiveness", "medium")
+            stakeholder_impacts = cross_functional_impact.get("stakeholder_impacts", [])
+            knowledge_sharing = cross_functional_impact.get("knowledge_sharing", [])
+            
+            # Calculate stakeholder count
+            stakeholder_count = len(stakeholder_impacts)
+            
+            # Extract risk assessment
+            risk_assessment = analysis_result.get("risk_assessment", {})
+            risk_level = risk_assessment.get("overall_risk_level", "medium")
+            risk_trend = risk_assessment.get("risk_trend", "stable")
+            key_risk_factors = risk_assessment.get("key_risk_factors", [])
+            mitigation_strategies = risk_assessment.get("mitigation_strategies", [])
+            
+            # Extract skill development
+            skill_development = analysis_result.get("skill_development", {})
+            key_capabilities = skill_development.get("key_capabilities", [])
+            learning_agility = skill_development.get("learning_agility", "medium")
+            autonomy_level = skill_development.get("autonomy_level", "medium")
+            development_focus = skill_development.get("development_focus", "")
+            
+            # Extract behavioral assessment
+            behavioral_assessment = analysis_result.get("behavioral_assessment", {})
+            
+            # Extract credibility assessment
+            credibility_assessment = analysis_result.get("credibility_assessment", {})
+            credibility_rating = credibility_assessment.get("rating", "medium")
+            vision_data_alignment = credibility_assessment.get("vision_data_alignment", "medium")
+            
+            # Extract forward planning
+            forward_planning = analysis_result.get("forward_planning", {})
+            
+            # Extract quarterly summary
+            quarterly_summary = analysis_result.get("quarterly_summary", "")
+            
+            # Get monthly analysis IDs included in this analysis
+            monthly_analysis_ids = [ma.get("analysis_id") for ma in quarterly_data["monthly_analyses"] if "analysis_id" in ma]
+            
+            # Prepare data for storage with all fields
+            analysis_data = {
+                "employee_id": employee_id,
+                "year": year,
+                "quarter": quarter,
+                "period_start": quarterly_data["period_start"],
+                "period_end": quarterly_data["period_end"],
+                "monthly_analysis_ids": monthly_analysis_ids,
+                
+                # Strategic alignment fields
+                "organizational_impact": organizational_impact,
+                
+                # Performance trajectory fields
+                "performance_trend": performance_trend,
+                "task_completion_reliability": task_completion_reliability,
+                "work_quality_consistency": work_quality_consistency,
+                "performance_stability": performance_stability,
+                
+                # Cross-functional impact
+                "collaboration_effectiveness": collaboration_effectiveness,
+                "stakeholder_count": stakeholder_count,
+                
+                # Risk assessment
+                "risk_level": risk_level,
+                "risk_trend": risk_trend,
+                
+                # Skills and development
+                "learning_agility": learning_agility,
+                "autonomy_level": autonomy_level,
+                "development_focus": development_focus,
+                
+                # Credibility metrics
+                "credibility_rating": credibility_rating,
+                "vision_data_alignment": vision_data_alignment,
+                
+                # Challenge patterns
+                "adaptation_effectiveness": adaptation_effectiveness,
+                
+                # Complex structures stored as JSONB
+                "strategic_alignment_json": strategic_alignment,
+                "achievement_themes_json": achievement_themes,
+                "performance_trajectory_json": performance_trajectory,
+                "challenge_patterns_json": challenge_patterns,
+                "cross_functional_impact_json": cross_functional_impact,
+                "skill_development_json": skill_development,
+                "behavioral_assessment_json": behavioral_assessment,
+                "risk_assessment_json": risk_assessment,
+                "credibility_assessment_json": credibility_assessment,
+                "forward_planning_json": forward_planning,
+                
+                # Summary and complete data
+                "quarterly_summary": quarterly_summary,
+                "full_analysis_json": analysis_result
+            }
+            
+            # Store analysis in the database using a service function (to be implemented)
+            # store_quarterly_analysis will need to be implemented in db_service.py
+            analysis_id = store_quarterly_analysis(analysis_data)
+            
+            if not analysis_id:
+                logger.error("Failed to store quarterly analysis")
+                with db.create_session() as session:
+                    task = session.query(BackgroundTask).filter(
+                        BackgroundTask.task_id == uuid.UUID(task_id)
+                    ).first()
+                    
+                    if task:
+                        task.status = TaskStatus.FAILED.value
+                        task.completed_at = datetime.now()
+                        task.error_message = "Failed to store quarterly analysis"
+                        session.commit()
+                
+                return {"error": "Failed to store quarterly analysis"}
+            
+            # Prepare task result
+            result_data = {
+                "analysis_id": analysis_id,
+                "employee_id": employee_id,
+                "employee_name": employee.name,
+                "year": year,
+                "quarter": quarter,
+                "period_start": quarterly_data["period_start"].isoformat() if hasattr(quarterly_data["period_start"], "isoformat") else quarterly_data["period_start"],
+                "period_end": quarterly_data["period_end"].isoformat() if hasattr(quarterly_data["period_end"], "isoformat") else quarterly_data["period_end"],
+                "performance_trend": performance_trend,
+                "risk_level": risk_level,
+                "risk_trend": risk_trend,
+                "organizational_impact": organizational_impact,
+                "achievement_theme_count": len(achievement_themes),
+                "quarterly_summary": quarterly_summary
+            }
+            
+            # Update task as completed with result
+            with db.create_session() as session:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.COMPLETED.value
+                    task.completed_at = datetime.now()
+                    task.result_data = result_data
+                    session.commit()
+                    
+                    logger.info(f"Quarterly analysis task {task_id} completed successfully")
+                    return result_data
+                else:
+                    logger.error(f"Task {task_id} not found when updating status")
+                    return {"error": "Task not found when updating status"}
+                
+        except Exception as e:
+            logger.error(f"Error processing quarterly analysis result: {str(e)}")
+            with db.create_session() as session:
+                task = session.query(BackgroundTask).filter(
+                    BackgroundTask.task_id == uuid.UUID(task_id)
+                ).first()
+                
+                if task:
+                    task.status = TaskStatus.FAILED.value
+                    task.completed_at = datetime.now()
+                    task.error_message = f"Error processing analysis result: {str(e)}"
+                    session.commit()
+            
+            return {"error": f"Error processing analysis result: {str(e)}"}
+            
+    except Exception as e:
+        logger.error(f"Error in quarterly analysis task {task_id}: {str(e)}")
         
         # Update task as failed
         with db.create_session() as session:

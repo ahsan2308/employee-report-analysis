@@ -1,5 +1,5 @@
 """
-Monthly Analysis Service
+Monthly Analysis DB Service
 
 Provides functionality for aggregating and analyzing monthly employee data.
 This service acts as a layer between the database and analysis tasks.
@@ -47,7 +47,7 @@ def get_monthly_data_for_analysis(employee_id: int, year: int, month: int) -> Di
             "recurring_topics": [],
             "achievement_count": 0,
             "challenge_count": 0,
-            "achievement_impact_avg": 0.0  # Add new metric for achievement impact average
+            "achievement_impact_avg": 0.0 
         }
     }
     

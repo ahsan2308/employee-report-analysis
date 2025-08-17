@@ -713,435 +713,656 @@ CRITICAL INSTRUCTIONS:
 """
         
         return prompt
-
-#     @staticmethod
-#     def periodic_analysis_prompt(periodic_data: Dict[str, Any]) -> str:
-#         """
-#         Generate a prompt for analyzing an employee's performance over a flexible time period.
-#         This is for periods longer than 1 month, as single-month analysis should use monthly_analysis_prompt.
+    
+    @staticmethod
+    def quarterly_analysis_prompt(quarterly_data: Dict[str, Any]) -> str:
+        """
+        Generate a prompt for analyzing an employee's performance over a quarter (3 months).
         
-#         Args:
-#             periodic_data: Dictionary containing all data needed for periodic analysis
-#         Returns:
-#             Prompt for periodic employee performance analysis
-#         """
-#         # Extract key data from the periodic_data dictionary
-#         employee_info = periodic_data.get("employee_info", {})
-#         reports = periodic_data.get("reports", [])
-#         analyses = periodic_data.get("analyses", [])
-#         monthly_analyses = periodic_data.get("monthly_analyses", [])
-#         metrics = periodic_data.get("metrics", {})
-#         period_start = periodic_data.get("period_start")
-#         period_end = periodic_data.get("period_end")
-#         period_length_months = periodic_data.get("period_length_months", 0)
+        Args:
+            quarterly_data: Dictionary containing all data needed for quarterly analysis
+                including employee info, monthly analyses, weekly analyses, and vision data
+        Returns:
+            Prompt for quarterly employee performance analysis
+        """
+        # Extract key data from the quarterly_data dictionary
+        employee_info = quarterly_data.get("employee_info", {})
+        monthly_analyses = quarterly_data.get("monthly_analyses", [])
+        metrics = quarterly_data.get("metrics", {})
+        period_start = quarterly_data.get("period_start")
+        period_end = quarterly_data.get("period_end")
+        quarter = quarterly_data.get("quarter")
+        year = quarterly_data.get("year")
         
-#         # Early exit with error message if period is exactly 1 month
-#         if period_length_months == 1:
-#             return "Error: For 1-month periods, use monthly_analysis_prompt instead of periodic_analysis_prompt."
+        # Format employee information
+        employee_name = employee_info.get("name", "Unknown Employee")
+        employee_position = employee_info.get("position", "Unknown Position")
+        employee_wing = employee_info.get("wing", "Unknown Department")
         
-#         # Format employee information
-#         employee_name = employee_info.get("name", "Unknown Employee")
-#         employee_position = employee_info.get("position", "Unknown Position")
-#         employee_department = employee_info.get("department", "Unknown Department")
+        # Format quarter information
+        quarter_name = f"Q{quarter}" if quarter else "Quarter"
+        quarter_description = f"{quarter_name} {year}" if year else quarter_name
         
-#         # Create a description of the period for the prompt
-#         period_description = f"{period_start} to {period_end}"
-#         if period_length_months <= 3:
-#             period_type = f"{period_length_months} months (short-term)"
-#         elif period_length_months <= 12:
-#             period_type = f"{period_length_months} months (medium-term)"
-#         else:
-#             years = period_length_months // 12
-#             remaining_months = period_length_months % 12
-#             period_type = f"{years} year{'s' if years > 1 else ''}"
-#             if remaining_months > 0:
-#                 period_type += f" and {remaining_months} month{'s' if remaining_months > 1 else ''}"
-#             period_type += " (long-term)"
-        
-#         # Format monthly analyses section
-#         monthly_analyses_section = ""
-#         for i, analysis in enumerate(monthly_analyses):
-#             month = analysis.get("month", "Unknown")
-#             year = analysis.get("year", "Unknown")
-#             summary = analysis.get("monthly_summary", "No summary provided")
-#             performance_trend = analysis.get("performance_trend", "stable")
-#             sentiment_trend = analysis.get("sentiment_trend", "stable")
-#             risk_level = analysis.get("risk_level", "medium")
-#             achievements = analysis.get("monthly_achievements", [])
-#             challenges = analysis.get("recurring_challenges", [])
+        # Format monthly analyses section with weekly analyses included
+        monthly_analyses_section = ""
+        for i, monthly_analysis in enumerate(monthly_analyses):
+            month_name = monthly_analysis.get("month_name", f"Month {i+1}")
+            month_start = monthly_analysis.get("period_start", "Unknown Start")
+            month_end = monthly_analysis.get("period_end", "Unknown End")
             
-#             # Format achievements and challenges for readability
-#             achievements_text = ""
-#             for achievement in achievements or []: 
-#                 desc = achievement.get("description", "No description")
-#                 impact = achievement.get("impact", "No impact")
-#                 achievements_text += f"- {desc} (Impact: {impact})\n"
+            # Extract key metrics from monthly analysis
+            performance_trend = monthly_analysis.get("progress_trends", {}).get("performance_trend", "stable")
+            sentiment_trend = monthly_analysis.get("progress_trends", {}).get("sentiment_trend", "stable")
+            risk_level = monthly_analysis.get("monthly_risk_assessment", {}).get("overall_risk_level", "medium")
             
-#             challenges_text = ""
-#             for challenge in challenges or []: 
-#                 desc = challenge.get("description", "No description")
-#                 severity = challenge.get("severity", "medium")
-#                 status = challenge.get("status", "ongoing")
-#                 challenges_text += f"- {desc} (Severity: {severity}, Status: {status})\n"
+            # Extract achievements and challenges
+            achievements = monthly_analysis.get("monthly_achievements", [])
+            challenges = monthly_analysis.get("recurring_challenges", [])
             
-#             monthly_analyses_section += f"""
-# MONTHLY ANALYSIS {i+1} ({month}/{year}):
-# Summary: {summary}
-# Performance Trend: {performance_trend}
-# Sentiment Trend: {sentiment_trend}
-# Risk Level: {risk_level}
-
-# Key Achievements:
-# {achievements_text or "None reported"}
-
-# Key Challenges:
-# {challenges_text or "None reported"}
-# """
-        
-#         # Format metrics (adapt based on period length)
-#         avg_sentiment = metrics.get("avg_sentiment", 0.5)
-#         sentiment_trend = metrics.get("sentiment_trend", "stable")
-#         report_count = metrics.get("report_count", 0)
-#         achievement_count = metrics.get("achievement_count", 0)
-#         challenge_count = metrics.get("challenge_count", 0)
-#         recurring_topics = metrics.get("recurring_topics", [])
-#         risk_levels = metrics.get("risk_levels", {})
-        
-#         # Build the risk levels text with better formatting
-#         risk_text = ""
-#         if risk_levels:
-#             for level, count in risk_levels.items():
-#                 risk_text += f"  • {level}: {count} reports\n"
-#         else:
-#             risk_text = "  • No risk data available\n"
-        
-#         # Format recurring topics with better formatting
-#         if recurring_topics:
-#             topics_text = "\n".join([f"  • {topic}" for topic in recurring_topics])
-#         else:
-#             topics_text = "  • No recurring topics identified"
-        
-#         # Build the full prompt
-#         prompt = f"""
-# You are an expert HR analyst conducting a comprehensive performance review over a flexible time period. Your task is to analyze an employee's performance over {period_type} and synthesize this information into a strategic assessment.
-
-# EMPLOYEE INFORMATION:
-# - Name: {employee_name}
-# - Position: {employee_position}
-# - Department: {employee_department}
-# - Analysis Period: {period_description} ({period_type})
-
-# PERIOD SUMMARY METRICS:
-# - Number of Reports: {report_count}
-# - Total Achievements: {achievement_count}
-# - Total Challenges: {challenge_count}
-# - Average Sentiment: {avg_sentiment}
-# - Overall Sentiment Trend: {sentiment_trend}
-
-# RISK LEVEL DISTRIBUTION:
-# {risk_text}
-
-# RECURRING TOPICS:
-# {topics_text}
-# """
-
-#         # Include different levels of detail based on period length
-#         if period_length_months <= 3:
-#             # For short periods (1-3 months), include all weekly reports
-#             reports_section = ""
-#             for i, report in enumerate(reports):
-#                 report_date = report.get("date", "Unknown Date")
-#                 report_text = report.get("text", "No content")
-#                 if isinstance(report_date, date):
-#                     report_date = report_date.isoformat()
-#                 reports_section += f"\nREPORT {i+1} ({report_date}):\n{report_text}\n"
+            # Extract consistency assessment
+            consistency = monthly_analysis.get("consistency_assessment", {})
+            task_reliability = consistency.get("task_completion_reliability", "medium")
+            work_quality = consistency.get("work_quality_consistency", "medium")
+            performance_stability = consistency.get("performance_stability", "medium")
             
-#             prompt += f"""
-# WEEKLY REPORTS:
-# {reports_section}
-# """
+            # Extract growth indicators
+            growth = monthly_analysis.get("growth_indicators", {})
+            
+            # Extract focus areas
+            focus_areas = monthly_analysis.get("focus_areas", [])
+            
+            # Extract recommendations
+            recommendations = monthly_analysis.get("strategic_recommendations", [])
+            
+            # Extract summary
+            summary = monthly_analysis.get("monthly_summary", "No summary provided")
+            
+            # Format achievements and challenges for readability
+            achievements_text = ""
+            for achievement in achievements or []: 
+                desc = achievement.get("description", "No description")
+                impact = achievement.get("impact", "No impact")
+                achievements_text += f"- {desc} (Impact: {impact})\n"
+            
+            challenges_text = ""
+            for challenge in challenges or []: 
+                desc = challenge.get("description", "No description")
+                severity = challenge.get("severity", "medium")
+                status = challenge.get("status", "ongoing")
+                challenges_text += f"- {desc} (Severity: {severity}, Status: {status})\n"
+            
+            # Format focus areas
+            focus_text = ""
+            for focus in focus_areas or []:
+                project = focus.get("project", "Unknown project")
+                time_inv = focus.get("time_investment", "medium")
+                priority = focus.get("priority_level", "medium")
+                focus_text += f"- {project} (Time: {time_inv}, Priority: {priority})\n"
+            
+            # Format recommendations
+            recommendations_text = ""
+            for rec in recommendations or []:
+                action = rec.get("action", "No action")
+                priority = rec.get("priority", "medium")
+                recommendations_text += f"- {action} (Priority: {priority})\n"
+            
+            # Add formatted monthly analysis to the section
+            monthly_analyses_section += f"""
+MONTHLY ANALYSIS: {month_name} ({month_start} to {month_end})
+Summary: {summary}
+
+Performance: {performance_trend}
+Sentiment: {sentiment_trend}
+Risk Level: {risk_level}
+
+Key Achievements:
+{achievements_text or "None reported"}
+
+Key Challenges:
+{challenges_text or "None reported"}
+
+Consistency Assessment:
+- Task Completion: {task_reliability}
+- Work Quality: {work_quality}
+- Performance Stability: {performance_stability}
+
+Growth Indicators:
+- Task Complexity: {growth.get("complexity_of_tasks", "unchanged")}
+- Skill Development: {growth.get("skill_development_evidence", "medium")}
+- Confidence Level: {growth.get("confidence_level_change", "unchanged")}
+- Challenge Approach: {growth.get("approach_to_challenges", "unchanged")}
+
+Focus Areas:
+{focus_text or "None specified"}
+
+Strategic Recommendations:
+{recommendations_text or "None provided"}
+"""
+
+            # Format and add weekly analyses for this month if available
+            weekly_analyses = monthly_analysis.get("weekly_analyses", [])
+            if weekly_analyses:
+                weekly_analyses_section = f"\nWEEKLY ANALYSES FOR {month_name.upper()}:\n"
+                
+                for w, weekly_analysis in enumerate(weekly_analyses):
+                    # Extract weekly data
+                    week_start = weekly_analysis.get("period_start", "Unknown")
+                    week_end = weekly_analysis.get("period_end", "Unknown")
+                    week_sentiment = weekly_analysis.get("sentiment", "neutral")
+                    week_risk = weekly_analysis.get("risk_level", "medium")
+                    week_risk_explanation = weekly_analysis.get("risk_explanation", "No explanation provided")
+                    
+                    # Extract achievements and challenges
+                    week_achievements = weekly_analysis.get("achievements", [])
+                    week_challenges = weekly_analysis.get("challenges", [])
+                    week_topics = weekly_analysis.get("topics", [])
+                    week_action_items = weekly_analysis.get("action_items", [])
+                    
+                    # Extract credibility assessment
+                    credibility = weekly_analysis.get("credibility_assessment", {})
+                    credibility_rating = credibility.get("rating", "medium")
+                    credibility_explanation = credibility.get("explanation", "No explanation provided")
+                    consistency_score = credibility.get("consistency_score", "medium")
+                    exaggeration_flags = credibility.get("exaggeration_flags", [])
+                    
+                    # Extract performance assessment
+                    performance = weekly_analysis.get("performance_assessment", {})
+                    performance_rating = performance.get("rating", "medium")
+                    performance_summary = performance.get("summary", "No summary provided")
+                    strengths = performance.get("key_strengths", [])
+                    improvement_areas = performance.get("improvement_areas", [])
+                    
+                    # Format achievements and challenges
+                    week_achievements_text = ""
+                    for achievement in week_achievements or []: 
+                        desc = achievement.get("description", "No description")
+                        impact = achievement.get("impact", "No impact")
+                        week_achievements_text += f"- {desc} (Impact: {impact})\n"
+                    
+                    week_challenges_text = ""
+                    for challenge in week_challenges or []: 
+                        desc = challenge.get("description", "No description")
+                        severity = challenge.get("severity", "medium")
+                        week_challenges_text += f"- {desc} (Severity: {severity})\n"
+                    
+                    # Format other elements
+                    week_topics_text = ", ".join(week_topics or []) or "None identified"
+                    week_action_items_text = "\n".join([f"- {item}" for item in week_action_items or []]) or "None provided"
+                    exaggeration_flags_text = "\n".join([f"- {flag}" for flag in exaggeration_flags or []]) or "None identified"
+                    strengths_text = "\n".join([f"- {strength}" for strength in strengths or []]) or "None identified"
+                    improvement_areas_text = "\n".join([f"- {area}" for area in improvement_areas or []]) or "None identified"
+                    
+                    # Add formatted weekly analysis
+                    weekly_analyses_section += f"""
+WEEK {w+1} ({week_start} to {week_end}):
+Sentiment: {week_sentiment}
+Risk Level: {week_risk}
+Risk Explanation: {week_risk_explanation}
+
+Weekly Achievements:
+{week_achievements_text or "None reported"}
+
+Weekly Challenges:
+{week_challenges_text or "None reported"}
+
+Topics: {week_topics_text}
+
+Action Items:
+{week_action_items_text}
+
+Credibility Assessment:
+- Rating: {credibility_rating}
+- Explanation: {credibility_explanation}
+- Consistency Score: {consistency_score}
+- Exaggeration Flags:
+{exaggeration_flags_text}
+
+Performance Assessment:
+- Rating: {performance_rating}
+- Summary: {performance_summary}
+- Key Strengths:
+{strengths_text}
+- Improvement Areas:
+{improvement_areas_text}
+"""
+                
+                # Add all weekly analyses for this month to the monthly section
+                monthly_analyses_section += weekly_analyses_section
         
-#         # Include monthly analyses summaries for all period lengths
-#         if monthly_analyses and monthly_analyses_section:
-#             prompt += f"""
-# MONTHLY ANALYSIS SUMMARIES:
-# {monthly_analyses_section}
-# """
+        # Format quarterly metrics
+        avg_sentiment = metrics.get("avg_sentiment", 0.5)
+        sentiment_trend = metrics.get("sentiment_trend", "stable")
+        achievement_count = metrics.get("achievement_count", 0)
+        challenge_count = metrics.get("challenge_count", 0)
+        recurring_topics = metrics.get("recurring_topics", [])
+        risk_levels = metrics.get("risk_levels", {})
+        
+        # Additional aggregated metrics from weekly analyses
+        weekly_report_count = metrics.get("weekly_report_count", 0)
+        performance_stability = metrics.get("performance_stability", "medium")
 
-#         # Insert vision data from periodic_data if available
-#         formatted_vision_data = periodic_data.get("formatted_vision_data", "")
-#         if formatted_vision_data:
-#             prompt += f"""
-# VISION SYSTEM ACTIVITY DATA (Objective tracking data across the period):
-# {formatted_vision_data}
+        
+        # Build the risk levels text with better formatting
+        risk_text = ""
+        if risk_levels:
+            for level, count in risk_levels.items():
+                risk_text += f"  • {level}: {count} reports/analyses\n"
+        else:
+            risk_text = "  • No risk data available\n"
+        
+        
+        # Format recurring topics with better formatting
+        if recurring_topics:
+            topics_text = "\n".join([f"  • {topic}" for topic in recurring_topics])
+        else:
+            topics_text = "  • No recurring topics identified"
+        
+        # Build the full prompt
+        prompt = f"""
+# QUARTERLY EMPLOYEE PERFORMANCE ANALYSIS
 
-# """
+## TASK OVERVIEW AND EXPECTED OUTPUT
+You are an expert HR analyst conducting a quarterly performance review. Your task is to analyze an employee's performance across three months and synthesize a comprehensive quarterly assessment that identifies patterns, trends, and business impact not visible in shorter timeframes.
 
-#         # Add specific analysis instructions based on period length
-#         prompt += f"""
-# Your task is to analyze this information and provide a comprehensive assessment of the employee's performance over this {period_type}, focusing on identifying long-term patterns, development trajectories, and strategic insights.
+Your analysis must be strategic, evidence-based, and focused on both evaluation and development. You should identify broader patterns and trends rather than focusing on individual events, evaluate business impact as a primary lens, and provide a forward-looking orientation for the next quarter.
 
-# """
+Your quarterly analysis must be provided as valid JSON following the exact structure specified later in this prompt.
 
-#         # Add specific analysis sections with appropriate instructions based on period length
-#         if period_length_months <= 3:
-#             # Short-term period instructions (more detailed)
-#             prompt += """
-# For this short-term analysis, focus on:
-# - Detailed progress in specific projects
-# - Immediate impact of achievements
-# - Resolution status of recent challenges
-# - Short-term skill development indicators
-# - Concrete next steps for improvement
-# """
-#         elif period_length_months <= 12:
-#             # Medium-term period instructions
-#             prompt += """
-# For this medium-term analysis, focus on:
-# - Quarterly progress patterns
-# - Skill development trajectories
-# - Recurring challenges and resolution patterns
-# - Consistency in performance across months
-# - Medium-term career development opportunities
-# """
-#         else:
-#             # Long-term period instructions
-#             prompt += """
-# For this long-term analysis, focus on:
-# - Career trajectory and development milestones
-# - Evaluate readiness for significant role advancements
-# - Provide more strategic long-term recommendations
-# - Assess organizational impact at a broader level
-# - Focus on pattern recognition and development arcs
-# - Use aggregated monthly/quarterly data rather than individual reports
+## EMPLOYEE INFORMATION
+- Name: {employee_name}
+- Position: {employee_position}
+- Department: {employee_wing}
+- Analysis Period: {period_start} to {period_end} ({quarter_description})
 
-# """
+## QUARTERLY SUMMARY METRICS
+- Total Achievements: {achievement_count}
+- Total Challenges: {challenge_count}
+- Average Sentiment: {avg_sentiment}
+- Sentiment Trend: {sentiment_trend}
+- Performance Stability: {performance_stability}
+- Weekly Reports Analyzed: {weekly_report_count}
 
-#         # Continue with the main analysis sections
-#         prompt += """
-# Specifically, you should analyze and provide the following:
+RISK LEVEL DISTRIBUTION:
+{risk_text}
 
-# 1. LONG-TERM TRAJECTORY ANALYSIS: Analyze the overall career and performance direction.
-#    - Evaluate the overall arc of the employee's development during this period
-#    - Identify inflection points where performance significantly changed
-#    - Assess whether the employee is on an upward, stable, or declining trajectory
-#    - Determine if the employee's career progression aligns with organizational needs
+RECURRING TOPICS:
+{topics_text}
 
-# 2. DEVELOPMENT MILESTONES: Identify key moments of growth or significant challenges.
-#    - Highlight major achievements that represent meaningful career progression
-#    - Note significant challenges that tested or developed the employee's capabilities
-#    - Identify periods of accelerated growth or learning
-#    - Recognize formal or informal role expansions that occurred
+## MONTHLY AND WEEKLY ANALYSES SUMMARIES
+{monthly_analyses_section}
+"""
 
-# 3. CONSISTENCY EVALUATION: Assess reliability and stability throughout the period.
-#    - Evaluate the predictability of the employee's performance quality
-#    - Analyze work output consistency across different projects and timeframes
-#    - Assess reliability in meeting commitments and deadlines
-#    - Identify any cyclical patterns in performance (seasonal effects, project-dependent variation)
+        # Insert vision data from quarterly_data if available
+        formatted_vision_data = quarterly_data.get("formatted_vision_data", "")
+        if formatted_vision_data:
+            prompt += f"""
+## VISION SYSTEM ACTIVITY DATA
+The following vision system data provides objective evidence to validate claims and identify patterns across the quarter:
 
-# 4. SKILL ACQUISITION TIMELINE: Document how capabilities evolved throughout the period.
-#    - Track the development of technical skills relevant to the role
-#    - Assess growth in soft skills and leadership capabilities
-#    - Identify skills that have plateaued or require further development
-#    - Evaluate the employee's learning agility and adaptation to new requirements
+{formatted_vision_data}
 
-# 5. PERFORMANCE TREND ANALYSIS: Analyze changes in performance indicators over time.
-#    - Trace the evolution of performance ratings across the period
-#    - Identify trends in the impact and significance of achievements
-#    - Assess changes in the employee's ability to handle challenges
-#    - Evaluate trends in risk levels and their underlying causes
-#    - Analyze sentiment patterns and their correlation with performance
+### USING THIS OBJECTIVE DATA IN YOUR ANALYSIS:
+- Use this data as primary evidence to validate achievement claims and business impact
+- Identify patterns in activity types, focus areas, and intensity over the quarter
+- Note any discrepancies between reported work and objectively tracked activities
+- Consider shifts in work patterns as indicators of changing priorities or responsibilities
+- Cross-reference against claimed achievements for credibility assessment
+- Compare objective data across months to identify trends and trajectory
+"""
 
-# 6. RECURRING CHALLENGE PATTERNS: Identify persistent obstacles and resolution approaches.
-#    - Highlight challenges that have appeared multiple times throughout the period
-#    - Assess the employee's evolving approach to addressing recurring challenges
-#    - Evaluate the effectiveness of resolution strategies
-#    - Identify systemic issues that may require organizational intervention
+        # Continue with comprehensive analysis requirements
+        prompt += """
+## COMPREHENSIVE ANALYSIS REQUIREMENTS
+Analyze the quarterly data and provide the following comprehensive assessment:
 
-# 7. STRATEGIC CONTRIBUTION ASSESSMENT: Evaluate alignment with organizational goals.
-#    - Assess how the employee's work has contributed to strategic objectives
-#    - Evaluate the cumulative impact of achievements on department/organizational success
-#    - Identify shifts in the employee's strategic focus areas over time
-#    - Determine if the employee's contributions have grown in scope and impact
+1. STRATEGIC ALIGNMENT ASSESSMENT:
+   - Identify how the employee's work connects to department/organizational goals
+   - Evaluate the scope of impact (individual/team/department/organization)
+   - Assess alignment between reported work and strategic priorities
+   - Identify key initiatives and their business outcomes
+   - Consider vision data as validation of strategic contributions
+   - Provide 2-3 concrete examples of strategic alignment
+   - Format as assessment of overall alignment with specific initiatives
 
-# 8. ROLE READINESS ASSESSMENT: Evaluate preparation for advancement opportunities.
-#    - Assess readiness for promotion or role expansion based on demonstrated capabilities
-#    - Identify specific role transitions the employee appears prepared for
-#    - Highlight development areas needed before advancement can be recommended
-#    - Compare current capabilities against requirements for next-level positions
+2. ACHIEVEMENT THEME IDENTIFICATION:
+   - Cluster related achievements from across the quarter into 3-7 themes
+   - Name each theme based on business function or outcome area
+   - Link 2-4 specific achievements under each theme
+   - Rate impact on 1-10 scale with specific business justification
+   - Indicate which achievements are verified by vision data
+   - Identify compounding or sequential achievements that build on each other
+   - Format as themed clusters with constituent achievements and cumulative impact
 
-# 9. STRATEGIC RECOMMENDATIONS: Provide long-term development suggestions.
-#    - Recommend specific development opportunities aligned with career trajectory
-#    - Suggest role adjustments to better leverage the employee's strengths
-#    - Identify formal learning or experiential opportunities to address skill gaps
-#    - Propose mentorship or exposure opportunities to accelerate development
-#    - Recommend strategic project assignments for the coming period
+3. PERFORMANCE TRAJECTORY ANALYSIS:
+   - Analyze direction of performance (improving/stable/declining/mixed)
+   - Evaluate consistency across task completion, quality, and stability
+   - Identify any significant shifts during the quarter
+   - Determine factors driving performance changes
+   - Consider vision data as objective performance indicator
+   - Analyze relationship between workload and performance
+   - Identify any notable shifts with month, description, and contributing factors
+   - Incorporate week-to-week patterns to identify micro-trends within monthly data
+   - Detect early warning signals in weekly data that developed into monthly challenges
+   - Analyze weekly volatility within seemingly stable months
 
-# 10. COMPREHENSIVE PERIOD SUMMARY: Provide an executive summary of the entire period.
-#     - Synthesize key findings across all sections into a cohesive narrative
-#     - Highlight the most significant achievements, challenges, and growth areas
-#     - Evaluate overall performance trajectory and readiness for advancement
-#     - Keep the summary concise but comprehensive (about 4-6 sentences)
+4. CHALLENGE PATTERN ANALYSIS:
+   - Identify challenges that appeared multiple times across the quarter
+   - Categorize as internal (organizational) or external
+   - Assess frequency pattern (constant/intermittent/increasing/decreasing)
+   - Evaluate resolution status and effectiveness
+   - Determine if challenges are systemic or individual
+   - Consider vision data for challenge validation
+   - Format as list of recurring challenges with pattern analysis
+   - Incorporate weekly challenge data to track the evolution of issues over time
+   - Identify challenges that appeared frequently in weekly reports but were resolved before monthly aggregation
 
-# Please provide your analysis in the following structured format:
-# {
-#   "long_term_trajectory": {
-#     "direction": "upward/stable/downward/mixed",
-#     "assessment": "Detailed assessment of the employee's career trajectory",
-#     "key_inflection_points": [
-#       {"time_period": "Month/Year or Quarter", "description": "Description of significant change in trajectory"},
-#       {"time_period": "Month/Year or Quarter", "description": "Another significant change point"}
-#     ]
-#   },
-#   "development_milestones": [
-#     {"type": "achievement/challenge/role_expansion", "time_period": "Month/Year", "description": "Description of the milestone", "significance": "Impact on employee's development"},
-#     {"type": "achievement/challenge/role_expansion", "time_period": "Month/Year", "description": "Another milestone", "significance": "Impact on employee's development"}
-#   ],
-#   "consistency_evaluation": {
-#     "overall_consistency": "high/medium/low",
-#     "quality_consistency": "high/medium/low",
-#     "reliability_rating": "high/medium/low",
-#     "pattern_description": "Description of any patterns or cycles in performance",
-#     "stability_factors": ["Factor contributing to stability", "Another stability factor"],
-#     "variability_factors": ["Factor contributing to variability", "Another variability factor"]
-#   },
-#   "skill_acquisition_timeline": [
-#     {"skill": "Specific skill name", "development_level": "beginner/intermediate/advanced/expert", "progression": "improved/plateau/declined", "evidence": "Evidence supporting this assessment"},
-#     {"skill": "Another skill name", "development_level": "beginner/intermediate/advanced/expert", "progression": "improved/plateau/declined", "evidence": "Evidence supporting this assessment"}
-#   ],
-#   "performance_trend_analysis": {
-#     "overall_trend": "improving/stable/declining/fluctuating",
-#     "achievement_impact_trend": "increasing/stable/decreasing",
-#     "challenge_handling_trend": "improving/stable/declining",
-#     "risk_level_trend": "increasing/decreasing/stable",
-#     "sentiment_pattern": "improving/declining/cyclical/stable",
-#     "notable_performance_periods": [
-#       {"period": "Month/Year or Quarter", "performance_level": "high/medium/low", "key_factors": ["Factor 1", "Factor 2"]}
-#     ]
-#   },
-#   "recurring_challenge_patterns": [
-#     {"challenge": "Description of recurring challenge", "frequency": "constant/intermittent/decreasing/increasing", "resolution_trend": "improving/stable/worsening", "impact": "high/medium/low"},
-#     {"challenge": "Another recurring challenge", "frequency": "constant/intermittent/decreasing/increasing", "resolution_trend": "improving/stable/worsening", "impact": "high/medium/low"}
-#   ],
-#   "strategic_contribution_assessment": {
-#     "overall_contribution_level": "high/medium/low",
-#     "contribution_trend": "increasing/stable/decreasing",
-#     "impact_scope": "individual/team/department/organization",
-#     "key_strategic_contributions": [
-#       {"area": "Strategic area", "impact": "Description of impact", "alignment": "high/medium/low"}
-#     ],
-#     "strategic_focus_evolution": "Description of how strategic focus has evolved"
-#   },
-#   "role_readiness_assessment": {
-#     "current_role_mastery": "complete/substantial/partial",
-#     "advancement_readiness": "ready_now/ready_soon/not_ready",
-#     "recommended_next_role": "Specific role recommendation",
-#     "readiness_timeline": "immediate/6_months/1_year/2+_years",
-#     "critical_development_needs": ["Development need 1", "Development need 2"]
-#   },
-#   "strategic_recommendations": [
-#     {"category": "skill_development/role_adjustment/experience/mentorship/education", "recommendation": "Specific recommendation", "priority": "high/medium/low", "timeline": "immediate/short_term/long_term"},
-#     {"category": "skill_development/role_adjustment/experience/mentorship/education", "recommendation": "Another recommendation", "priority": "high/medium/low", "timeline": "immediate/short_term/long_term"}
-#   ],
-#   "comprehensive_period_summary": "A concise but comprehensive narrative overview of the employee's performance during the entire period, highlighting key achievements, challenges, growth trajectory, and overall assessment."
-# }
+5. CROSS-FUNCTIONAL IMPACT ASSESSMENT:
+   - Identify collaborations with other teams/departments
+   - Assess effectiveness of cross-functional work
+   - Evaluate impact on stakeholders outside immediate team
+   - Identify knowledge sharing and capability building
+   - Consider vision data for collaboration evidence
+   - Format as collaboration effectiveness rating with stakeholder impact examples
+   - Use weekly collaboration patterns to identify relationship-building trends
 
-# INSTRUCTIONS FOR ADAPTING ANALYSIS BASED ON PERIOD LENGTH:
-# For shorter periods (1-3 months):
-# - Focus more on specific achievements and direct evidence
-# - Provide more detailed short-term recommendations
-# - Be more conservative in trajectory assessments
-# - Use weekly reports as primary data sources
-# - Consider this a snapshot rather than a definitive assessment
+6. SKILL DEVELOPMENT EVALUATION:
+   - Identify key capabilities demonstrated or developed during the quarter
+   - Assess proficiency level for each key skill
+   - Evaluate growth trajectory for each capability
+   - Determine learning agility and adaptability
+   - Assess autonomy level in role execution
+   - Recommend next development focus area
+   - Format as capability assessment with growth indicators
+   - Use weekly performance data to identify gradual skill improvements not apparent at monthly level
 
-# For medium periods (4-12 months):
-# - Focus on quarterly patterns and medium-term trends
-# - Evaluate consistency across different projects and responsibilities
-# - Assess skill development progression more definitively
-# - Balance between specific examples and pattern recognition
-# - Use monthly analyses as primary data sources with selected weekly examples
+7. BEHAVIORAL ASSESSMENT:
+   - Evaluate five key behaviors with specific evidence:
+     a) Ownership and accountability
+     b) Collaboration and teamwork
+     c) Communication effectiveness
+     d) Problem-solving approach
+     e) Quality standards and craft
+   - For each behavior, provide specific observed examples
+   - Rate as below/meets/exceeds expectations
+   - Consider consistency of behaviors across quarter
+   - Format as behavior-by-behavior assessment with evidence
+   - Incorporate weekly credibility assessments to evaluate behavioral patterns over time
 
-# For longer periods (>12 months):
-# - Emphasize career trajectory and development milestones
-# - Evaluate readiness for significant role advancements
-# - Provide more strategic long-term recommendations
-# - Assess organizational impact at a broader level
-# - Focus on pattern recognition and development arcs
-# - Use aggregated monthly/quarterly data rather than individual reports
+8. RISK ASSESSMENT:
+   - Determine overall risk level for next quarter
+   - Analyze risk trend (increasing/stable/decreasing)
+   - Identify specific risk factors with potential impact
+   - Recommend mitigation strategies for each risk
+   - Consider credibility assessment in risk evaluation
+   - Format as risk profile with specific factors and mitigations
+   - Use weekly risk assessments to create a detailed risk trajectory
+   - Identify risk volatility patterns and potential leading indicators
 
-# DATA HIERARCHICAL APPROACH:
-# - For short periods: Analyze individual reports and achievements directly
-# - For medium periods: Focus on monthly analyses with selective examples
-# - For longer periods: Synthesize quarterly or semi-annual patterns
-# 8. Do not write anything in the first person or use "I" or "we" in your analysis.
-# 9. Make sure to replace hyphens in compound words (write "five day" instead of "five-day") to ensure proper JSON parsing.
-# 10. INSTRUCTIONS FOR USING VISION SYSTEM DATA:
-#    - Use the vision system activity data to cross-validate reported achievements and trends
-#    - This data provides objective evidence for the employee's activities
-#    - For longer periods, focus on identifying shifts in activity patterns rather than specific instances
-#    - Use vision data to validate consistency between reported and observed work patterns
-# """
-# """
-#   "recurring_challenge_patterns": [
-#     {"challenge": "Description of recurring challenge", "frequency": "constant/intermittent/decreasing/increasing", "resolution_trend": "improving/stable/worsening", "impact": "high/medium/low"},
-#     {"challenge": "Another recurring challenge", "frequency": "constant/intermittent/decreasing/increasing", "resolution_trend": "improving/stable/worsening", "impact": "high/medium/low"}
-#   ],
-#   "strategic_contribution_assessment": {
-#     "overall_contribution_level": "high/medium/low",
-#     "contribution_trend": "increasing/stable/decreasing",
-#     "impact_scope": "individual/team/department/organization",
-#     "key_strategic_contributions": [
-#       {"area": "Strategic area", "impact": "Description of impact", "alignment": "high/medium/low"}
-#     ],
-#     "strategic_focus_evolution": "Description of how strategic focus has evolved"
-#   },
-#   "role_readiness_assessment": {
-#     "current_role_mastery": "complete/substantial/partial",
-#     "advancement_readiness": "ready_now/ready_soon/not_ready",
-#     "recommended_next_role": "Specific role recommendation",
-#     "readiness_timeline": "immediate/6_months/1_year/2+_years",
-#     "critical_development_needs": ["Development need 1", "Development need 2"]
-#   },
-#   "strategic_recommendations": [
-#     {"category": "skill_development/role_adjustment/experience/mentorship/education", "recommendation": "Specific recommendation", "priority": "high/medium/low", "timeline": "immediate/short_term/long_term"},
-#     {"category": "skill_development/role_adjustment/experience/mentorship/education", "recommendation": "Another recommendation", "priority": "high/medium/low", "timeline": "immediate/short_term/long_term"}
-#   ],
-#   "comprehensive_period_summary": "A concise but comprehensive narrative overview of the employee's performance during the entire period, highlighting key achievements, challenges, growth trajectory, and overall assessment."
-# }
+9. CREDIBILITY ASSESSMENT:
+   - Apply consistent credibility framework from weekly/monthly analyses
+   - Evaluate alignment between self-reported and vision-tracked activities
+   - Assess consistency of reporting across quarter
+   - Identify any exaggeration patterns
+   - Determine impact on overall evaluation
+   - Format as credibility rating with explanation and impact statement
+   - Synthesize weekly credibility assessments to identify reporting pattern trends
+   - Track exaggeration flags over time to detect improvement or deterioration in reporting accuracy
 
-# INSTRUCTIONS FOR ADAPTING ANALYSIS BASED ON PERIOD LENGTH:
-# For shorter periods (1-3 months):
-# - Focus more on specific achievements and direct evidence
-# - Provide more detailed short-term recommendations
-# - Be more conservative in trajectory assessments
-# - Use weekly reports as primary data sources
-# - Consider this a snapshot rather than a definitive assessment
+10. FORWARD PLANNING:
+    - Recommend activities to continue (demonstrating value)
+    - Suggest areas for improvement (addressing weaknesses)
+    - Propose new initiatives to start (growth opportunities)
+    - Identify activities to stop (low value or ineffective)
+    - Specify support needed (resources, training, etc.)
+    - Format as actionable KSBS framework
+    - Incorporate trends from weekly action items to ensure continuous follow-through
 
-# For medium periods (4-12 months):
-# - Focus on quarterly patterns and medium-term trends
-# - Evaluate consistency across different projects and responsibilities
-# - Assess skill development progression more definitively
-# - Balance between specific examples and pattern recognition
-# - Use monthly analyses as primary data sources with selected weekly examples
+11. QUARTERLY SUMMARY:
+    - Provide a comprehensive executive summary (4-6 sentences)
+    - Highlight most significant achievements and impact
+    - Note important trends or pattern changes
+    - Identify critical risk factors or support needs
+    - Include forward-looking perspective
+    - Balance positives and development areas
+    - Focus on business impact and value creation
 
-# For longer periods (>12 months):
-# - Emphasize career trajectory and development milestones
-# - Evaluate readiness for significant role advancements
-# - Provide more strategic long-term recommendations
-# - Assess organizational impact at a broader level
-# - Focus on pattern recognition and development arcs
-# - Use aggregated monthly/quarterly data rather than individual reports
+## HIERARCHICAL DATA ANALYSIS APPROACH
+For this quarterly analysis, integrate data across three time levels:
 
-# DATA HIERARCHICAL APPROACH:
-# - For short periods: Analyze individual reports and achievements directly
-# - For medium periods: Focus on monthly analyses with selective examples
-# - For longer periods: Synthesize quarterly or semi-annual patterns
-# 8. Do not write anything in the first person or use "I" or "we" in your analysis.
-# 9. Make sure to replace hyphens in compound words (write "five day" instead of "five-day") to ensure proper JSON parsing.
-# 10. INSTRUCTIONS FOR USING VISION SYSTEM DATA:
-#    - Use the vision system activity data to cross-validate reported achievements and trends
-#    - This data provides objective evidence for the employee's activities
-#    - For longer periods, focus on identifying shifts in activity patterns rather than specific instances
-#    - Use vision data to validate consistency between reported and observed work patterns
-# """
+1. WEEKLY LEVEL (Most Granular):
+   - Use weekly analyses to identify micro-trends and early signals
+   - Track the evolution of specific challenges, achievements, and performance ratings
+   - Identify volatility patterns that may be smoothed out in monthly aggregations
+   - Consider week-to-week consistency as a performance indicator
+   - Use weekly credibility assessments to evaluate reporting patterns
+
+2. MONTHLY LEVEL (Middle Layer):
+   - Use monthly analyses to identify medium-term patterns and trends
+   - Compare monthly summaries to detect trajectory changes
+   - Evaluate consistency between months as a stability indicator
+   - Identify recurring themes across multiple months
+   - Use monthly growth indicators to track development progress
+
+3. QUARTERLY LEVEL (Strategic Overview):
+   - Synthesize insights from both weekly and monthly data
+   - Focus on business impact and strategic alignment
+   - Identify long-term patterns and significant trends
+   - Evaluate overall trajectory and development path
+   - Provide forward-looking recommendations based on comprehensive data
+   - Assess readiness for advancement or role expansion
+
+When integrating across levels, prioritize:
+- Identifying patterns that persist across multiple time frames
+- Detecting contradictions or anomalies between time levels
+- Using granular weekly data to validate or challenge monthly conclusions
+- Tracking the progression of specific issues/achievements over time
+- Evaluating consistency as a performance metric in itself
+
+## EVIDENCE STANDARDS AND ANALYSIS FRAMEWORK
+
+### Evidence Requirements
+- Each achievement theme needs 2-3 specific examples
+- Behavioral assessments require concrete examples
+- Performance trajectory claims need month-by-month evidence
+- Risk assessments need specific supporting factors
+- Any claim of "high" impact requires business outcome evidence
+
+### Pattern Recognition Guidance
+- Look for temporal patterns (changes over three months)
+- Identify thematic patterns (recurring topics or areas of focus)
+- Observe behavioral patterns (consistent approaches or styles)
+- Analyze challenge patterns (recurring obstacles or barriers)
+- Examine performance patterns (consistency or variability)
+
+### Balance and Proportionality
+- Balance achievement recognition with development opportunities
+- Balance forward-looking vs. retrospective analysis
+- Consider both individual and systemic factors
+- Balance tactical and strategic focus
+- Evaluate both process and outcome
+
+### Bias Mitigation
+- Avoid recency bias (overweighting last month)
+- Avoid halo/horn effect (letting one area influence others)
+- Consider both personal and situational factors
+- Evaluate evidence objectively rather than confirming initial impressions
+- Judge processes independently from outcomes
+
+### Credibility Governance
+- If credibility is "medium": Apply 15% discount to achievement impact ratings
+- If credibility is "low": Apply 40% discount to achievement impact ratings and increase risk level
+- Add verification steps to forward planning when credibility concerns exist
+- Require stronger evidence for claims when credibility rating is lower
+
+## OUTPUT STRUCTURE AND FORMAT
+Your analysis must be provided as valid JSON following this exact structure:
+
+{
+  "strategic_alignment": {
+    "organizational_impact": "individual/team/department/organization",
+    "key_initiatives": [
+      {
+        "initiative": "Initiative name",
+        "alignment": "high/medium/low",
+        "outcomes": "Concrete business outcomes achieved"
+      }
+    ]
+  },
+  "achievement_themes": [
+    {
+      "theme": "Theme name",
+      "related_achievements": ["Achievement 1", "Achievement 2"],
+      "impact": "8 (Reason for high impact)",
+      "business_outcome": "Specific measurable results",
+      "vision_verified": true/false
+    }
+  ],
+  "performance_trajectory": {
+    "trend": "improving/stable/declining/mixed",
+    "consistency": {
+      "task_completion_reliability": "high/medium/low",
+      "work_quality_consistency": "high/medium/low",
+      "performance_stability": "high/medium/low"
+    },
+    "notable_shifts": [
+      {"month": "Month name", "description": "What changed", "factors": "Why it changed"}
+    ]
+  },
+  "challenge_patterns": {
+    "recurring_challenges": [
+      {
+        "description": "Challenge description",
+        "type": "internal/external",
+        "frequency": "constant/intermittent/decreasing/increasing", 
+        "resolution_status": "resolved/ongoing",
+        "systemic": true/false
+      }
+    ],
+    "adaptation_effectiveness": "high/medium/low"
+  },
+  "cross_functional_impact": {
+    "collaboration_effectiveness": "high/medium/low",
+    "stakeholder_impacts": [
+      {"stakeholder": "Team/department", "impact": "Impact description", "evidence": "Concrete example"}
+    ],
+    "knowledge_sharing": ["Specific knowledge sharing example"]
+  },
+  "risk_assessment": {
+    "overall_risk_level": "low/medium/high",
+    "risk_trend": "increasing/stable/decreasing",
+    "key_risk_factors": ["Risk factor 1", "Risk factor 2"],
+    "mitigation_strategies": ["Mitigation 1", "Mitigation 2"]
+  },
+  "skill_development": {
+    "key_capabilities": [
+      {"skill": "Skill name", "proficiency": "developing/proficient/advanced", "growth": "improved/stable/declined"}
+    ],
+    "learning_agility": "high/medium/low",
+    "autonomy_level": "high/medium/low",
+    "development_focus": "Next capability to develop"
+  },
+  "behavioral_assessment": {
+    "ownership": {
+      "rating": "below/meets/exceeds",
+      "evidence": "Observable behavior example"
+    },
+    "collaboration": {
+      "rating": "below/meets/exceeds",
+      "evidence": "Observable behavior example"
+    },
+    "communication": {
+      "rating": "below/meets/exceeds",
+      "evidence": "Observable behavior example"
+    },
+    "problem_solving": {
+      "rating": "below/meets/exceeds",
+      "evidence": "Observable behavior example"
+    },
+    "quality_standards": {
+      "rating": "below/meets/exceeds",
+      "evidence": "Observable behavior example"
+    }
+  },
+  "credibility_assessment": {
+    "rating": "high/medium/low",
+    "explanation": "Assessment rationale",
+    "vision_data_alignment": "high/medium/low",
+    "impact_on_evaluation": "Description of how credibility affected overall assessment"
+  },
+  "forward_planning": {
+    "keep_doing": ["Activity to continue"],
+    "improve": ["Area to improve"],
+    "start": ["New initiative to begin"],
+    "stop": ["Activity to discontinue"],
+    "support_needed": ["Resource/support required"]
+  },
+  "quarterly_summary": "Executive summary of quarterly performance"
+}
+
+## EXAMPLE OUTPUT SECTIONS
+Below are abbreviated examples for key sections. Your full analysis should be more comprehensive:
+
+STRATEGIC ALIGNMENT EXAMPLE:
+{
+  "organizational_impact": "department",
+  "key_initiatives": [
+    {
+      "initiative": "Customer Experience Transformation",
+      "alignment": "high",
+      "outcomes": "Reduced customer complaint rate by 15% through implementation of new response protocols"
+    }
+  ]
+}
+
+ACHIEVEMENT THEME EXAMPLE:
+{
+  "theme": "Data Quality Improvement",
+  "related_achievements": [
+    "Implemented automated validation system for customer records",
+    "Trained team on new data quality standards",
+    "Reduced error rate in monthly reporting by 40%"
+  ],
+  "impact": "8 (Significantly improved decision-making reliability for leadership team)",
+  "business_outcome": "40% reduction in reporting errors leading to $50K in avoided rework costs",
+  "vision_verified": true
+}
+
+PERFORMANCE TRAJECTORY EXAMPLE:
+{
+  "trend": "improving",
+  "consistency": {
+    "task_completion_reliability": "high",
+    "work_quality_consistency": "medium",
+    "performance_stability": "high"
+  },
+  "notable_shifts": [
+    {
+      "month": "February",
+      "description": "Significant improvement in work quality",
+      "factors": "Completed advanced training program and implemented new quality assurance steps"
+    }
+  ]
+}
+
+## TECHNICAL REQUIREMENTS
+- Format your response as valid JSON with no markdown code fences or explanatory text
+- Replace hyphens in compound words (write "five day" instead of "five-day") for proper JSON parsing
+- Ensure your analysis contains no first-person references ("I" or "we")
+- Use complete sentences in descriptions
+- Verify all required fields are completed before submission
+- Ensure your quarterly summary provides a holistic view that could stand alone as an executive briefing
+- Apply credibility governance appropriately to achievement impact ratings and risk assessments
+
+## CONTEXT PRIORITIZATION
+If context limitations require prioritizing information:
+- Monthly analyses take precedence over individual weekly reports
+- Pattern indicators are more important than individual instances
+- Vision-verified achievements have higher priority than self-reported only
+- Significant changes or anomalies are more important than expected performance
+- Forward-looking insights are more valuable than historical details
+- When analyzing weekly data, focus on trends and patterns rather than isolated incidents
+- Prioritize weekly data that shows progression or evolution of important issues
+
+"""
+
 

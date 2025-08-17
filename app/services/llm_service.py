@@ -10,7 +10,7 @@ import os
 from app.model_host import get_llm_provider
 from app.core.logger import logger
 from app.core.config_provider import get_config_provider
-from app.models.structured_models_llm import EmployeeAnalysis, MonthlyAnalysis
+from app.models.structured_models_llm import EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
 from app.prompts.structured_prompts import StructuredPrompts
 
 config = get_config_provider()
@@ -415,6 +415,162 @@ class LLMService:
                 )
         except Exception as e:
             logger.error(f"Error analyzing monthly reports: {e}")
+            return {"error": str(e), "status": "failed"}
+
+    def analyze_quarterly_reports(
+        self,
+        quarterly_data: Dict[str, Any],
+        use_custom_format: bool = False,
+        custom_format: Optional[Dict[str, Any]] = None,
+        num_ctx: int = 40000 
+    ) -> Dict[str, Any]:
+        """
+        Analyze an employee's performance over a quarter based on monthly analyses and weekly reports.
+        
+        Args:
+            quarterly_data: Dictionary containing all data needed for quarterly analysis, including:
+                - employee_info: Basic information about the employee
+                - monthly_analyses: List of monthly analyses for the quarter
+                - metrics: Pre-calculated metrics for the quarter
+                - period_start: Start date of the analysis period
+                - period_end: End date of the analysis period
+                - quarter: Quarter number (1-4)
+                - year: Year of the analysis
+            use_custom_format: If True, use custom_format instead of the Pydantic model
+            custom_format: Optional custom response format to use instead of Pydantic model
+            num_ctx: Maximum context length for the model
+            
+        Returns:
+            Analysis results as a dictionary
+        """
+        # Generate the prompt using the quarterly analysis prompt template
+        prompt = StructuredPrompts.quarterly_analysis_prompt(quarterly_data)
+        logger.info(f"Generating quarterly analysis for employee {quarterly_data.get('employee_info', {}).get('name')}")
+        logger.debug(f"Generated prompt: {prompt}")  
+        
+        try:
+            # Decide whether to use the custom format or the Pydantic model
+            if use_custom_format:
+                if custom_format is None:
+                    # Provide a default format that matches our expected quarterly analysis structure
+                    custom_format = {
+                        "strategic_alignment": {
+                            "organizational_impact": "individual/team/department/organization",
+                            "key_initiatives": [
+                                {
+                                    "initiative": "Initiative name",
+                                    "alignment": "high/medium/low",
+                                    "outcomes": "Concrete business outcomes achieved"
+                                }
+                            ]
+                        },
+                        "achievement_themes": [
+                            {
+                                "theme": "Theme name",
+                                "related_achievements": ["Achievement 1", "Achievement 2"],
+                                "impact": "8 (Reason for high impact)",
+                                "business_outcome": "Specific measurable results",
+                                "vision_verified": True
+                            }
+                        ],
+                        "performance_trajectory": {
+                            "trend": "improving/stable/declining/mixed",
+                            "consistency": {
+                                "task_completion_reliability": "high/medium/low",
+                                "work_quality_consistency": "high/medium/low",
+                                "performance_stability": "high/medium/low"
+                            },
+                            "notable_shifts": [
+                                {"month": "Month name", "description": "What changed", "factors": "Why it changed"}
+                            ]
+                        },
+                        "challenge_patterns": {
+                            "recurring_challenges": [
+                                {
+                                    "description": "Challenge description",
+                                    "type": "internal/external",
+                                    "frequency": "constant/intermittent/decreasing/increasing",
+                                    "resolution_status": "resolved/ongoing",
+                                    "systemic": True
+                                }
+                            ],
+                            "adaptation_effectiveness": "high/medium/low"
+                        },
+                        "cross_functional_impact": {
+                            "collaboration_effectiveness": "high/medium/low",
+                            "stakeholder_impacts": [
+                                {"stakeholder": "Team/department", "impact": "Impact description", "evidence": "Concrete example"}
+                            ],
+                            "knowledge_sharing": ["Specific knowledge sharing example"]
+                        },
+                        "risk_assessment": {
+                            "overall_risk_level": "low/medium/high",
+                            "risk_trend": "increasing/stable/decreasing",
+                            "key_risk_factors": ["Risk factor 1", "Risk factor 2"],
+                            "mitigation_strategies": ["Mitigation 1", "Mitigation 2"]
+                        },
+                        "skill_development": {
+                            "key_capabilities": [
+                                {"skill": "Skill name", "proficiency": "developing/proficient/advanced", "growth": "improved/stable/declined"}
+                            ],
+                            "learning_agility": "high/medium/low",
+                            "autonomy_level": "high/medium/low",
+                            "development_focus": "Next capability to develop"
+                        },
+                        "behavioral_assessment": {
+                            "ownership": {
+                                "rating": "below/meets/exceeds",
+                                "evidence": "Observable behavior example"
+                            },
+                            "collaboration": {
+                                "rating": "below/meets/exceeds",
+                                "evidence": "Observable behavior example"
+                            },
+                            "communication": {
+                                "rating": "below/meets/exceeds",
+                                "evidence": "Observable behavior example"
+                            },
+                            "problem_solving": {
+                                "rating": "below/meets/exceeds",
+                                "evidence": "Observable behavior example"
+                            },
+                            "quality_standards": {
+                                "rating": "below/meets/exceeds",
+                                "evidence": "Observable behavior example"
+                            }
+                        },
+                        "credibility_assessment": {
+                            "rating": "high/medium/low",
+                            "explanation": "Assessment rationale",
+                            "vision_data_alignment": "high/medium/low",
+                            "impact_on_evaluation": "Description of how credibility affected overall assessment"
+                        },
+                        "forward_planning": {
+                            "keep_doing": ["Activity to continue"],
+                            "improve": ["Area to improve"],
+                            "start": ["New initiative to begin"],
+                            "stop": ["Activity to discontinue"],
+                            "support_needed": ["Resource/support required"]
+                        },
+                        "quarterly_summary": "Executive summary of quarterly performance"
+                    }
+                
+                return self.get_structured_response(
+                    prompt=prompt,
+                    response_format=custom_format,
+                    temperature=0,
+                    num_ctx=num_ctx
+                )
+            else:
+                # Use the QuarterlyAnalysis Pydantic model
+                return self.get_structured_response(
+                    prompt=prompt,
+                    pydantic_model=QuarterlyAnalysis,
+                    temperature=0,
+                    num_ctx=num_ctx
+                )
+        except Exception as e:
+            logger.error(f"Error analyzing quarterly reports: {e}")
             return {"error": str(e), "status": "failed"}
 
 

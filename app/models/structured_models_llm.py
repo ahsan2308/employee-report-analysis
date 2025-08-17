@@ -241,5 +241,255 @@ class MonthlyAnalysis(BaseModel):
     class Config:
         from_attributes = True
 
+# Models for Quarterly Analysis
+class KeyInitiative(BaseModel):
+    initiative: str = Field(
+        description="Name of the strategic initiative"
+    )
+    alignment: Literal["high", "medium", "low"] = Field(
+        description="Level of alignment with organizational priorities"
+    )
+    outcomes: str = Field(
+        description="Concrete business outcomes achieved through this initiative"
+    )
+
+class StrategicAlignment(BaseModel):
+    organizational_impact: Literal["individual", "team", "department", "organization"] = Field(
+        description="Scope of impact the employee's work has had"
+    )
+    key_initiatives: List[KeyInitiative] = Field(
+        description="Strategic initiatives the employee has contributed to"
+    )
+
+class AchievementTheme(BaseModel):
+    theme: str = Field(
+        description="Name of the achievement theme grouping related accomplishments"
+    )
+    related_achievements: List[str] = Field(
+        description="List of specific achievements related to this theme"
+    )
+    impact: str = Field(
+        description="Format must be: 'N (reason)' where N is an integer rating 1-10, followed by a concise reason for the rating"
+    )
+    business_outcome: str = Field(
+        description="Specific measurable results or business impact of these achievements"
+    )
+    vision_verified: bool = Field(
+        description="Whether this achievement theme is verified by vision system data"
+    )
+
+class ConsistencyMetrics(BaseModel):
+    task_completion_reliability: Literal["high", "medium", "low"] = Field(
+        description="Reliability in completing planned tasks"
+    )
+    work_quality_consistency: Literal["high", "medium", "low"] = Field(
+        description="Consistency of work quality throughout the quarter"
+    )
+    performance_stability: Literal["high", "medium", "low"] = Field(
+        description="Stability of performance across the quarter"
+    )
+
+class NotableShift(BaseModel):
+    month: str = Field(
+        description="Month when a notable performance shift occurred"
+    )
+    description: str = Field(
+        description="Description of what changed in performance"
+    )
+    factors: str = Field(
+        description="Factors that contributed to this change"
+    )
+
+class PerformanceTrajectory(BaseModel):
+    trend: Literal["improving", "stable", "declining", "mixed"] = Field(
+        description="Overall trend in employee's performance over the quarter"
+    )
+    consistency: ConsistencyMetrics = Field(
+        description="Metrics related to performance consistency"
+    )
+    notable_shifts: List[NotableShift] = Field(
+        description="Significant shifts in performance during the quarter"
+    )
+
+class RecurringChallenge(BaseModel):
+    description: str = Field(
+        description="Description of a recurring challenge"
+    )
+    type: Literal["internal", "external"] = Field(
+        description="Whether the challenge is internal (organizational) or external"
+    )
+    frequency: Literal["constant", "intermittent", "decreasing", "increasing"] = Field(
+        description="Pattern of occurrence for this challenge"
+    )
+    resolution_status: Literal["resolved", "ongoing"] = Field(
+        description="Current status of this challenge"
+    )
+    systemic: bool = Field(
+        description="Whether this is a systemic issue or specific to the employee"
+    )
+
+class ChallengePatterns(BaseModel):
+    recurring_challenges: List[RecurringChallenge] = Field(
+        description="Challenges that recurred throughout the quarter"
+    )
+    adaptation_effectiveness: Literal["high", "medium", "low"] = Field(
+        description="How effectively the employee adapted to challenges"
+    )
+
+class StakeholderImpact(BaseModel):
+    stakeholder: str = Field(
+        description="Team or department impacted by the employee's work"
+    )
+    impact: str = Field(
+        description="Description of the impact on this stakeholder"
+    )
+    evidence: str = Field(
+        description="Concrete example demonstrating this impact"
+    )
+
+class CrossFunctionalImpact(BaseModel):
+    collaboration_effectiveness: Literal["high", "medium", "low"] = Field(
+        description="Effectiveness of collaboration with other teams/departments"
+    )
+    stakeholder_impacts: List[StakeholderImpact] = Field(
+        description="Specific impacts on different stakeholders"
+    )
+    knowledge_sharing: List[str] = Field(
+        description="Examples of knowledge sharing with other teams/individuals"
+    )
+
+class Capability(BaseModel):
+    skill: str = Field(
+        description="Name of the skill or capability"
+    )
+    proficiency: Literal["developing", "proficient", "advanced"] = Field(
+        description="Current proficiency level in this skill"
+    )
+    growth: Literal["improved", "stable", "declined"] = Field(
+        description="How this skill has changed over the quarter"
+    )
+
+class SkillDevelopment(BaseModel):
+    key_capabilities: List[Capability] = Field(
+        description="Key skills demonstrated or developed during the quarter"
+    )
+    learning_agility: Literal["high", "medium", "low"] = Field(
+        description="Employee's ability to learn and adapt to new information"
+    )
+    autonomy_level: Literal["high", "medium", "low"] = Field(
+        description="Level of independence in executing responsibilities"
+    )
+    development_focus: str = Field(
+        description="Recommended skill or capability to develop next"
+    )
+
+class BehaviorAssessment(BaseModel):
+    rating: Literal["below", "meets", "exceeds"] = Field(
+        description="Rating relative to expectations"
+    )
+    evidence: str = Field(
+        description="Observable example of this behavior"
+    )
+
+class BehavioralAssessment(BaseModel):
+    ownership: BehaviorAssessment = Field(
+        description="Assessment of ownership and accountability"
+    )
+    collaboration: BehaviorAssessment = Field(
+        description="Assessment of collaboration and teamwork"
+    )
+    communication: BehaviorAssessment = Field(
+        description="Assessment of communication effectiveness"
+    )
+    problem_solving: BehaviorAssessment = Field(
+        description="Assessment of problem-solving approach"
+    )
+    quality_standards: BehaviorAssessment = Field(
+        description="Assessment of quality standards and craft"
+    )
+
+class QuarterlyRiskAssessment(BaseModel):
+    overall_risk_level: Literal["low", "medium", "high"] = Field(
+        description="Overall risk assessment for the quarter"
+    )
+    risk_trend: Literal["increasing", "stable", "decreasing"] = Field(
+        description="Trend in risk level over the quarter"
+    )
+    key_risk_factors: List[str] = Field(
+        description="Specific factors contributing to risk"
+    )
+    mitigation_strategies: List[str] = Field(
+        description="Recommended strategies to mitigate identified risks"
+    )
+
+class QuarterlyCredibilityAssessment(BaseModel):
+    rating: Literal["high", "medium", "low"] = Field(
+        description="Overall credibility rating of the employee's reporting"
+    )
+    explanation: str = Field(
+        description="Rationale for the credibility assessment"
+    )
+    vision_data_alignment: Literal["high", "medium", "low"] = Field(
+        description="Alignment between self-reported activities and vision system data"
+    )
+    impact_on_evaluation: str = Field(
+        description="How credibility concerns affected the overall assessment"
+    )
+
+class ForwardPlanning(BaseModel):
+    keep_doing: List[str] = Field(
+        description="Activities the employee should continue"
+    )
+    improve: List[str] = Field(
+        description="Areas where the employee should focus on improvement"
+    )
+    start: List[str] = Field(
+        description="New initiatives or activities the employee should begin"
+    )
+    stop: List[str] = Field(
+        description="Activities the employee should discontinue"
+    )
+    support_needed: List[str] = Field(
+        description="Resources or support required for success"
+    )
+
+class QuarterlyAnalysis(BaseModel):
+    strategic_alignment: StrategicAlignment = Field(
+        description="Assessment of alignment with organizational goals"
+    )
+    achievement_themes: List[AchievementTheme] = Field(
+        description="Thematic grouping of achievements across the quarter"
+    )
+    performance_trajectory: PerformanceTrajectory = Field(
+        description="Analysis of performance trends over the quarter"
+    )
+    challenge_patterns: ChallengePatterns = Field(
+        description="Analysis of recurring challenges and adaptation"
+    )
+    cross_functional_impact: CrossFunctionalImpact = Field(
+        description="Assessment of impact across teams and departments"
+    )
+    risk_assessment: QuarterlyRiskAssessment = Field(
+        description="Assessment of risks for the next quarter"
+    )
+    skill_development: SkillDevelopment = Field(
+        description="Evaluation of skills demonstrated and developed"
+    )
+    behavioral_assessment: BehavioralAssessment = Field(
+        description="Assessment of key workplace behaviors"
+    )
+    credibility_assessment: QuarterlyCredibilityAssessment = Field(
+        description="Assessment of reporting credibility"
+    )
+    forward_planning: ForwardPlanning = Field(
+        description="Recommendations for future focus"
+    )
+    quarterly_summary: str = Field(
+        description="Executive summary of quarterly performance"
+    )
+
+    class Config:
+        from_attributes = True
+
 
 

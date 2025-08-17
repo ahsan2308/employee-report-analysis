@@ -10,10 +10,10 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.models.task_models import BackgroundTask, TaskStatus, TaskType
-from app.models.db_models import Employee, Report, EmployeeAnalysis, MonthlyAnalysis
+from app.models.db_models import Employee, Report, EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
 from app.tasks.analysis_tasks import analyze_report_task
 from app.core.logger import logger
-from app.services.db_service import get_monthly_analysis_by_params
+from app.services.db_service import get_monthly_analysis_by_params, get_quarterly_analysis_by_params
 
 def find_active_task_for_report(db: Session, report_id: UUID) -> Optional[BackgroundTask]:
     """
@@ -80,6 +80,47 @@ def find_active_task_for_monthly_analysis(db: Session, employee_id: int, year: i
             logger.warning(f"Found task {active_task.task_id} for monthly analysis ({employee_id}, {year}-{month}) with no analysis. Marking as failed.")
             active_task.status = TaskStatus.FAILED.value
             active_task.error_message = "Task failed to produce monthly analysis"
+            active_task.completed_at = datetime.now()
+            db.commit()
+            return None  # Return None so a new task will be created
+    
+    return active_task
+
+def find_active_task_for_quarterly_analysis(db: Session, employee_id: int, year: int, quarter: int) -> Optional[BackgroundTask]:
+    """
+    Find any active (PENDING or RUNNING) task for a quarterly analysis.
+    Used to prevent duplicate concurrent tasks for the same quarter/employee.
+    
+    Args:
+        db: Database session
+        employee_id: Employee ID
+        year: Year for the analysis
+        quarter: Quarter for the analysis (1-4)
+        
+    Returns:
+        Active task if found, None otherwise
+    """
+    active_task = db.query(BackgroundTask).filter(
+        BackgroundTask.employee_id == employee_id,
+        BackgroundTask.year == year,
+        BackgroundTask.quarter == quarter,
+        BackgroundTask.task_type == TaskType.QUARTERLY_ANALYSIS.value,
+        BackgroundTask.status.in_([TaskStatus.PENDING.value, TaskStatus.RUNNING.value])
+    ).first()
+    
+    if active_task:
+        # Check if any quarterly analysis exists for these parameters
+        analysis_exists = db.query(QuarterlyAnalysis).filter(
+            QuarterlyAnalysis.employee_id == employee_id,
+            QuarterlyAnalysis.year == year,
+            QuarterlyAnalysis.quarter == quarter
+        ).first() is not None
+        
+        if not analysis_exists:
+            # If no analysis was created despite having an active task, consider it failed
+            logger.warning(f"Found task {active_task.task_id} for quarterly analysis ({employee_id}, {year}-Q{quarter}) with no analysis. Marking as failed.")
+            active_task.status = TaskStatus.FAILED.value
+            active_task.error_message = "Task failed to produce quarterly analysis"
             active_task.completed_at = datetime.now()
             db.commit()
             return None  # Return None so a new task will be created
@@ -220,6 +261,82 @@ def create_task_for_monthly_analysis(
         # Import will be at the top of this file
         from app.tasks.analysis_tasks import analyze_monthly_reports_task
         analyze_monthly_reports_task.delay(str(task.task_id))
+        
+    return task
+
+def create_task_for_quarterly_analysis(
+    db: Session,
+    employee_id: int,
+    year: int,
+    quarter: int,
+    existing_analysis: Optional[Dict[str, Any]] = None
+) -> BackgroundTask:
+    """
+    Create a background task for quarterly analysis.
+    
+    Args:
+        db: Database session
+        employee_id: Employee ID
+        year: Year for the analysis
+        quarter: Quarter for the analysis (1-4)
+        existing_analysis: Optional existing analysis data from get_quarterly_analysis_by_params
+        
+    Returns:
+        The created BackgroundTask instance
+    """
+    # First check if there's already an active task
+    active_task = find_active_task_for_quarterly_analysis(db, employee_id, year, quarter)
+    if active_task:
+        logger.info(f"Found existing active task {active_task.task_id} for quarterly analysis ({employee_id}, {year}-Q{quarter})")
+        return active_task
+    
+    # Check if the employee exists
+    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    if not employee:
+        logger.error(f"Employee with ID {employee_id} not found")
+        raise ValueError(f"Employee with ID {employee_id} not found")
+    
+    if existing_analysis:
+        # Store reference for existing analysis to avoid reprocessing
+        task = BackgroundTask(
+            task_id=uuid.uuid4(),
+            celery_task_id="immediate",
+            task_type=TaskType.QUARTERLY_ANALYSIS.value,
+            employee_id=employee_id,
+            year=year,
+            quarter=quarter,
+            status=TaskStatus.COMPLETED.value,
+            started_at=datetime.now(),
+            completed_at=datetime.now(),
+            result_data={
+                "analysis_id": existing_analysis["analysis_id"],
+                "employee_id": employee_id,
+                "year": year,
+                "quarter": quarter
+            }
+        )
+    else:
+        # Create a new pending task
+        task = BackgroundTask(
+            task_id=uuid.uuid4(),
+            celery_task_id="pending",
+            task_type=TaskType.QUARTERLY_ANALYSIS.value,
+            employee_id=employee_id,
+            year=year,
+            quarter=quarter,
+            status=TaskStatus.PENDING.value
+        )
+    
+    # Save to database
+    db.add(task)
+    db.commit()
+    db.refresh(task)
+    
+    # Submit to Celery if it's a new task
+    if not existing_analysis:
+        # Import will be at the top of this file
+        from app.tasks.analysis_tasks import analyze_quarterly_reports_task
+        analyze_quarterly_reports_task.delay(str(task.task_id))
         
     return task
 
@@ -379,6 +496,63 @@ def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
                     
                     # Full analysis for reference
                     "full_analysis_json": monthly_analysis["full_analysis_json"]
+                }
+    elif task.task_type == TaskType.QUARTERLY_ANALYSIS.value:
+        # Quarterly analysis task
+        if result_data and "analysis_id" in result_data and len(result_data) <= 4:
+            # This is a reference to a quarterly analysis - fetch complete data
+            employee_id = task.employee_id
+            year = task.year
+            quarter = task.quarter
+            
+            # Use db_service function to get full analysis data
+            quarterly_analysis = get_quarterly_analysis_by_params(employee_id, year, quarter)
+            
+            if quarterly_analysis:
+                # Get employee info for the result
+                employee = db.query(Employee).filter(
+                    Employee.id == employee_id
+                ).first()
+                
+                # Format the result data with updated field structure
+                result_data = {
+                    "analysis_id": quarterly_analysis["analysis_id"],
+                    "employee_id": employee_id,
+                    "employee_name": employee.name if employee else None,
+                    "year": year,
+                    "quarter": quarter,
+                    "period_start": quarterly_analysis["period_start"],
+                    "period_end": quarterly_analysis["period_end"],
+                    
+                    # Strategic alignment
+                    "organizational_impact": quarterly_analysis["organizational_impact"],
+                    "strategic_alignment": quarterly_analysis["strategic_alignment_json"],
+                    
+                    # Performance assessment
+                    "performance_trend": quarterly_analysis["performance_trend"],
+                    "achievement_themes": quarterly_analysis["achievement_themes_json"],
+                    "performance_trajectory": quarterly_analysis["performance_trajectory_json"],
+                    
+                    # Cross-functional and challenge data
+                    "challenge_patterns": quarterly_analysis["challenge_patterns_json"],
+                    "cross_functional_impact": quarterly_analysis["cross_functional_impact_json"],
+                    
+                    # Risk assessment
+                    "risk_assessment": quarterly_analysis["risk_assessment_json"],
+                    
+                    # Skills and behaviors
+                    "skill_development": quarterly_analysis["skill_development_json"],
+                    "behavioral_assessment": quarterly_analysis["behavioral_assessment_json"],
+                    
+                    # Credibility and planning
+                    "credibility_assessment": quarterly_analysis["credibility_assessment_json"],
+                    "forward_planning": quarterly_analysis["forward_planning_json"],
+                    
+                    # Summary
+                    "quarterly_summary": quarterly_analysis["quarterly_summary"],
+                    
+                    # Full analysis for reference
+                    "full_analysis_json": quarterly_analysis["full_analysis_json"]
                 }
     
     return {
