@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/analysis.css">
     <link rel="stylesheet" href="../css/metric-indicators.css">
+    <link rel="stylesheet" href="../css/quarterly-components.css">
     <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
 </head>
 <body>
@@ -38,6 +39,8 @@
                         <label for="weeklyToggle">Weekly</label>
                         <input type="radio" id="monthlyToggle" name="analysisMode" value="monthly">
                         <label for="monthlyToggle">Monthly</label>
+                        <input type="radio" id="quarterlyToggle" name="analysisMode" value="quarterly">
+                        <label for="quarterlyToggle">Quarterly</label>
                     </div>
                 </div>
                 
@@ -83,6 +86,17 @@
                         </select>
                     </div>
                     
+                    <!-- Quarter selection for quarterly analysis (initially hidden) -->
+                    <div class="form-group quarterly-control" id="quarterSelectGroup" style="display: none;">
+                        <label for="quarterSelect"><i class="fas fa-calendar-alt"></i> Select Quarter:</label>
+                        <select id="quarterSelect" class="form-control">
+                            <option value="1">Q1 (Jan-Mar)</option>
+                            <option value="2">Q2 (Apr-Jun)</option>
+                            <option value="3">Q3 (Jul-Sep)</option>
+                            <option value="4">Q4 (Oct-Dec)</option>
+                        </select>
+                    </div>
+                    
                     <button id="analyzeButton" class="button primary-button" disabled><i class="fas fa-cogs"></i> Analyze Report</button>
                 </div>
                 
@@ -105,5 +119,6 @@
     <script src="../js/api.js"></script>
     <script src="../js/dropdown.js"></script>
     <script src="../js/analysis.js"></script>
+    <script src="../js/quarterly-analysis.js"></script>
 </body>
 </html>

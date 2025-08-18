@@ -42,18 +42,6 @@
     grid-column: span 2;
 }
 
-#analyzeButton {
-    margin-top: 0.5rem;  /* Reduced from 1.25rem to create less space */
-    padding: 0.85rem;
-    background-color: var(--primary-dark);
-    width: auto; /* Change from 100% to auto */
-    min-width: 220px; /* Use min-width instead of max-width */
-    max-width: none; /* Remove max-width constraint */
-    justify-self: start;
-    transition: var(--transition);
-    box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
-    white-space: nowrap; /* Prevent text wrapping */
-}
 
 #analyzeButton:hover:not(:disabled) {
     background-color: #1d4ed8;
@@ -668,10 +656,6 @@
         padding: 1.25rem;
     }
     
-    #analyzeButton {
-        max-width: 100%;
-    }
-
     .credibility-rating,
     .consistency-score {
         display: flex;
@@ -939,17 +923,20 @@
 /* Fix analyze button proportions in monthly mode */
 #analyzeButton {
     margin-top: 0.5rem;
-    padding: 0.85rem 1.5rem; /* Add horizontal padding */
+    padding: 0.85rem 1.5rem;
     background-color: var(--primary-dark);
     width: auto;
-    min-width: 100%; /* Make button fill its container */
-    max-width: none;
-    justify-self: stretch; /* Make button stretch to fill its container */
+    min-width: 220px;
+    max-width: 280px;
+    justify-self: start;
     transition: var(--transition);
     box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
     white-space: nowrap;
-    text-align: center; /* Center text in button */
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-align: center;
 }
+
 
 /* Adjust control layout to make button and dropdowns proportional */
 .analysis-controls {
@@ -967,10 +954,22 @@
     gap: 1.25rem;
 }
 
-/* Make button container same width as select containers in monthly mode */
 .monthly-control .form-group:last-child {
     flex: 1; /* Make button container flex to match others */
     margin-bottom: 0; /* Remove bottom margin to align properly */
+}
+
+/* --- Add quarterly control rules (mirror monthly) --- */
+.quarterly-control {
+    grid-column: 1 / -1; /* Span all columns so controls take full width */
+    display: flex;
+    align-items: flex-end; /* Align items to bottom so button sits below selects visually */
+    gap: 1.25rem;
+}
+
+.quarterly-control .form-group:last-child {
+    flex: 1; /* Make the last form-group expand so button width matches other controls */
+    margin-bottom: 0; /* Remove extra bottom margin for tighter alignment */
 }
 
 /* Monthly controls */

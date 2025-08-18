@@ -173,6 +173,33 @@ const analysisApi = {
     // Get detailed monthly analysis by ID
     getMonthlyAnalysisDetails: async (analysisId) => {
         return await fetchApi(`/analyses/monthly/${analysisId}`);
+    },
+    
+    // Quarterly analysis functions
+    analyzeQuarterlyReports: async (employeeId, year, quarter) => {
+        return await fetchApi(`/analyses/quarterly/analyze?employee_id=${employeeId}&year=${year}&quarter=${quarter}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    },
+    
+    getQuarterlyAnalysisResults: async (employeeId, year, quarter) => {
+        console.log(`Fetching quarterly analysis for employee ID: ${employeeId}, ${year}-Q${quarter}`);
+        try {
+            const response = await fetchApi(`/analyses/quarterly/employee/${employeeId}/${year}/${quarter}`);
+            console.log('Quarterly API Response:', response);
+            return response;
+        } catch (error) {
+            console.error('Error in getQuarterlyAnalysisResults:', error);
+            throw error;
+        }
+    },
+    
+    // Get detailed quarterly analysis by ID
+    getQuarterlyAnalysisDetails: async (analysisId) => {
+        return await fetchApi(`/analyses/quarterly/${analysisId}`);
     }
 };
 

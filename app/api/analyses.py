@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
 from app.database import get_database
 from app.models.db_models import EmployeeAnalysis, Report, Employee, MonthlyAnalysis, QuarterlyAnalysis
@@ -508,7 +508,10 @@ def analyze_quarterly_reports(
         raise HTTPException(status_code=500, detail=f"Error submitting analysis: {str(e)}")
 
 @router.get("/quarterly/{analysis_id}", response_model=QuarterlyAnalysisResponse)
-def get_quarterly_analysis(analysis_id: int, db: Session = Depends(get_db)):
+def get_quarterly_analysis(
+    analysis_id: int = Path(..., description="ID of the quarterly analysis to retrieve"),
+    db: Session = Depends(get_db)
+):
     """Get a specific quarterly analysis by ID."""
     try:
         analysis = db.query(QuarterlyAnalysis).filter(
@@ -586,9 +589,9 @@ def get_quarterly_analysis(analysis_id: int, db: Session = Depends(get_db)):
 
 @router.get("/quarterly/employee/{employee_id}/{year}/{quarter}", response_model=QuarterlyAnalysisResponse)
 def get_employee_quarterly_analysis_by_period(
-    employee_id: int, 
-    year: int, 
-    quarter: int = Query(..., ge=1, le=4), 
+    employee_id: int = Path(..., description="Employee ID"),
+    year: int = Path(..., description="Year of analysis", ge=2000, le=2100),
+    quarter: int = Path(..., description="Quarter (1-4)", ge=1, le=4),
     db: Session = Depends(get_db)
 ):
     """Get a specific quarterly analysis by employee, year and quarter."""

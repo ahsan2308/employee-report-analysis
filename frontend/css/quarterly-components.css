@@ -1,0 +1,294 @@
+/* Quarterly Analysis Components - Styles specific to quarterly analysis */
+
+:root {
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --primary-light: #eff6ff;
+    --success: #15803d;
+    --warning: #b45309;
+    --danger: #b91c1c;
+    --border: #e2e8f0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+    --shadow: 0 4px 12px rgba(0,0,0,0.05);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+    --text-main: #334155;
+    --rounded: 8px;
+    --transition: all 0.3s ease;
+}
+
+/* Quarterly-specific container styling */
+.quarterly-container {
+    background-color: var(--container-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: fadeIn 0.8s forwards;
+}
+
+.quarterly-container:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Quarterly header styling */
+.quarterly-header {
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+.quarterly-header h3 {
+    color: var(--heading-color);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* Quarter meta information styling */
+.quarterly-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+/* Section styling specific to quarterly analysis */
+.quarterly-section {
+    background-color: var(--section-bg);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+    animation: slideIn 0.5s forwards;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.quarterly-section:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quarterly-section h5 {
+    font-size: 1.1rem;
+    color: var(--heading-color);
+    margin-bottom: 15px;
+    position: relative;
+    padding-left: 25px;
+    display: flex;
+    align-items: center;
+}
+
+.quarterly-section h5::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* Strategic alignment section */
+.strategic-alignment-section h5::before {
+    content: '\f0e8'; /* sitemap icon */
+    color: var(--primary);
+}
+
+/* Achievement themes section */
+.achievement-themes-section h5::before {
+    content: '\f005'; /* star icon */
+    color: var(--success);
+}
+
+/* Cross-functional impact section */
+.cross-functional-section h5::before {
+    content: '\f0c0'; /* users icon */
+    color: var(--info);
+}
+
+/* Performance trajectory section */
+.performance-trajectory-section h5::before {
+    content: '\f201'; /* chart line icon */
+    color: var(--primary);
+}
+
+/* Quarterly risk assessment section */
+.quarterly-risk-section h5::before {
+    content: '\f071'; /* exclamation-triangle icon */
+    color: var(--warning);
+}
+
+/* Skill development section */
+.skill-development-section h5::before {
+    content: '\f085'; /* cogs icon */
+    color: var(--primary);
+}
+
+/* Forward planning section */
+.forward-planning-section h5::before {
+    content: '\f064'; /* arrow-up-right icon */
+    color: var(--success);
+}
+
+/* Additional badge styles for quarterly metrics */
+.impact-scope, .org-impact, .learning-agility, .autonomy-level, .risk-trend {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+.impact-scope::before, .org-impact::before, .learning-agility::before, 
+.autonomy-level::before, .risk-trend::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    margin-right: 8px;
+}
+
+/* Organizational impact badges */
+.impact-individual {
+    background-color: #e9f5ff;
+    color: #0070d1;
+}
+.impact-individual::before {
+    content: '\f007'; /* user icon */
+}
+
+.impact-team {
+    background-color: #e5f6fd;
+    color: #00a0d1;
+}
+.impact-team::before {
+    content: '\f0c0'; /* users icon */
+}
+
+.impact-department {
+    background-color: #e0f2ff;
+    color: #0052cc;
+}
+.impact-department::before {
+    content: '\f1ad'; /* building icon */
+}
+
+.impact-organization {
+    background-color: #e0e8ff;
+    color: #3c55e8;
+}
+.impact-organization::before {
+    content: '\f19c'; /* university/organization icon */
+}
+
+/* Risk trend badges */
+.trend-increasing {
+    background-color: #fff0f0;
+    color: #d13030;
+}
+.trend-increasing::before {
+    content: '\f062'; /* arrow-up icon */
+}
+
+.trend-stable {
+    background-color: #f0f8ff;
+    color: #0070d1;
+}
+.trend-stable::before {
+    content: '\f057'; /* minus icon */
+}
+
+.trend-decreasing {
+    background-color: #f0fff5;
+    color: #28a745;
+}
+.trend-decreasing::before {
+    content: '\f063'; /* arrow-down icon */
+}
+
+/* Learning agility badges */
+.agility-high {
+    background-color: #f0fff5;
+    color: #28a745;
+}
+.agility-high::before {
+    content: '\f135'; /* rocket icon */
+}
+
+.agility-medium {
+    background-color: #fff9e6;
+    color: #d18d00;
+}
+.agility-medium::before {
+    content: '\f110'; /* spinner icon */
+}
+
+.agility-low {
+    background-color: #fff0f0;
+    color: #d13030;
+}
+.agility-low::before {
+    content: '\f05e'; /* ban icon */
+}
+
+/* Autonomy level badges */
+.autonomy-high {
+    background-color: #f0fff5;
+    color: #28a745;
+}
+.autonomy-high::before {
+    content: '\f183'; /* person icon */
+}
+
+.autonomy-medium {
+    background-color: #fff9e6;
+    color: #d18d00;
+}
+.autonomy-medium::before {
+    content: '\f4fc'; /* user-check icon */
+}
+
+.autonomy-low {
+    background-color: #fff0f0;
+    color: #d13030;
+}
+.autonomy-low::before {
+    content: '\f4fb'; /* user-clock icon */
+}
+
+/* Quarterly list items styling */
+.achievement-theme, .stakeholder-impact, .key-capability {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 5px;
+    padding: 12px 15px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.achievement-theme:hover, .stakeholder-impact:hover, .key-capability:hover {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Animation delays for quarterly sections */
+.quarterly-section:nth-child(2) { animation-delay: 0.1s; }
+.quarterly-section:nth-child(3) { animation-delay: 0.2s; }
+.quarterly-section:nth-child(4) { animation-delay: 0.3s; }
+.quarterly-section:nth-child(5) { animation-delay: 0.4s; }
+.quarterly-section:nth-child(6) { animation-delay: 0.5s; }
+.quarterly-section:nth-child(7) { animation-delay: 0.6s; }
+.quarterly-section:nth-child(8) { animation-delay: 0.7s; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .quarterly-meta {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .quarterly-section {
+        padding: 15px;
+    }
+}

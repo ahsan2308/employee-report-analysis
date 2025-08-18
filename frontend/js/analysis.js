@@ -12,9 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Toggle elements
     const weeklyToggle = document.getElementById('weeklyToggle');
     const monthlyToggle = document.getElementById('monthlyToggle');
+    const quarterlyToggle = document.getElementById('quarterlyToggle');
     const reportSelectGroup = document.getElementById('reportSelectGroup');
     const monthSelectGroup = document.getElementById('monthSelectGroup');
     const yearSelectGroup = document.getElementById('yearSelectGroup');
+    const quarterSelectGroup = document.getElementById('quarterSelectGroup');
+    const quarterSelect = document.getElementById('quarterSelect');
     
     // Analysis mode
     let currentMode = 'weekly';
@@ -29,15 +32,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const employeeIdFromUrl = urlParams.get('employee_id');
     const yearFromUrl = urlParams.get('year');
     const monthFromUrl = urlParams.get('month');
+    const quarterFromUrl = urlParams.get('quarter');
     
     // Track the current analysis task
     let currentTask = null;
     
     // Initialize mode from URL if present
-    if (modeFromUrl && (modeFromUrl === 'weekly' || modeFromUrl === 'monthly')) {
+    if (modeFromUrl && (modeFromUrl === 'weekly' || modeFromUrl === 'monthly' || modeFromUrl === 'quarterly')) {
         currentMode = modeFromUrl;
         if (modeFromUrl === 'monthly') {
             monthlyToggle.checked = true;
+        } else if (modeFromUrl === 'quarterly') {
+            quarterlyToggle.checked = true;
         } else {
             weeklyToggle.checked = true;
         }
@@ -91,6 +97,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    quarterlyToggle.addEventListener('change', () => {
+        if (quarterlyToggle.checked) {
+            currentMode = 'quarterly';
+            applyAnalysisMode(currentMode);
+            updateUrlParameter('mode', 'quarterly');
+            
+            // Clear results when switching modes
+            if (analysisResults.style.display !== 'none') {
+                analysisResults.style.display = 'none';
+                analysisResults.innerHTML = '';
+            }
+        }
+    });
+    
     // If we have a report ID and auto_analyze is true, show loading immediately
     if ((reportIdFromUrl && autoAnalyze === 'true') || 
         (employeeIdFromUrl && yearFromUrl && monthFromUrl && autoAnalyze === 'true')) {
@@ -119,12 +139,20 @@ document.addEventListener('DOMContentLoaded', function() {
             reportSelectGroup.style.display = 'block';
             monthSelectGroup.style.display = 'none';
             yearSelectGroup.style.display = 'none';
+            quarterSelectGroup.style.display = 'none';
             analyzeButton.innerHTML = '<i class="fas fa-cogs"></i> Analyze Report';
         } else if (mode === 'monthly') {
             reportSelectGroup.style.display = 'none';
             monthSelectGroup.style.display = 'block';
             yearSelectGroup.style.display = 'block';
+            quarterSelectGroup.style.display = 'none';
             analyzeButton.innerHTML = '<i class="fas fa-cogs"></i> Analyze Monthly Performance';
+        } else if (mode === 'quarterly') {
+            reportSelectGroup.style.display = 'none';
+            monthSelectGroup.style.display = 'none';
+            yearSelectGroup.style.display = 'block';
+            quarterSelectGroup.style.display = 'block';
+            analyzeButton.innerHTML = '<i class="fas fa-cogs"></i> Analyze Quarterly Performance';
         }
         
         toggleAnalyzeButton();
@@ -135,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentMode === 'weekly') {
             loadReportsForEmployee();
         } else {
-            // For monthly mode, just check if employee is selected
+            // For monthly and quarterly modes, just check if employee is selected
             toggleAnalyzeButton();
         }
     }
@@ -144,8 +172,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleAnalyzeClick() {
         if (currentMode === 'weekly') {
             analyzeSelectedReport();
-        } else {
+        } else if (currentMode === 'monthly') {
             analyzeMonthlyPerformance();
+        } else if (currentMode === 'quarterly') {
+            analyzeQuarterlyPerformance();
         }
     }
     
@@ -153,7 +183,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleAnalyzeButton() {
         if (currentMode === 'weekly') {
             analyzeButton.disabled = !reportSelect.value;
-        } else {
+        } else if (currentMode === 'monthly') {
+            analyzeButton.disabled = !employeeSelect.value;
+        } else if (currentMode === 'quarterly') {
             analyzeButton.disabled = !employeeSelect.value;
         }
     }
@@ -196,6 +228,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 yearSelect.setAttribute('data-consistent-style', 'true');
             }
             
+            // Apply consistent styling to quarter dropdown
+            if (!quarterSelect.hasAttribute('data-consistent-style')) {
+                SearchableDropdown.enhanceSimple(quarterSelect);
+                quarterSelect.setAttribute('data-consistent-style', 'true');
+            }
+            
             // If we have parameters from URL, initialize accordingly
             if (modeFromUrl === 'monthly' && employeeIdFromUrl) {
                 employeeSelect.value = employeeIdFromUrl;
@@ -211,6 +249,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Auto-analyze if requested
                 if (autoAnalyze === 'true') {
                     analyzeMonthlyPerformance();
+                }
+            } else if (modeFromUrl === 'quarterly' && employeeIdFromUrl) {
+                employeeSelect.value = employeeIdFromUrl;
+                
+                if (yearFromUrl) {
+                    yearSelect.value = yearFromUrl;
+                }
+                
+                if (quarterFromUrl) {
+                    quarterSelect.value = quarterFromUrl;
+                }
+                
+                // Auto-analyze if requested
+                if (autoAnalyze === 'true') {
+                    setTimeout(() => {
+                        analyzeQuarterlyPerformance();
+                    }, 500);
                 }
             } else if (reportIdFromUrl) {
                 console.log("Found report ID in URL:", reportIdFromUrl);
@@ -521,6 +576,65 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error analyzing monthly performance:', error);
+            showMessage('Analysis failed: ' + error.message, 'error');
+        } finally {
+            currentTask = null;
+            showLoading(false);
+        }
+    }
+    
+    // Add function to analyze quarterly performance
+    async function analyzeQuarterlyPerformance() {
+        const employeeId = employeeSelect.value;
+        const year = yearSelect.value;
+        const quarter = quarterSelect.value;
+        
+        if (!employeeId) {
+            showMessage('Please select an employee', 'error');
+            return;
+        }
+        
+        // Clear previous results
+        if (analysisResults.style.display !== 'none') {
+            analysisResults.style.display = 'none';
+            analysisResults.innerHTML = '';
+        }
+        
+        showLoading(true);
+        
+        try {
+            // Start the quarterly analysis and get a task
+            const taskData = await analysisApi.analyzeQuarterlyReports(employeeId, year, quarter);
+            currentTask = taskData.task_id;
+            console.log('Quarterly analysis task created:', taskData);
+            
+            // If already complete (existing analysis), get results immediately
+            const resultData = taskData.is_complete
+                ? await taskApi.getTaskResult(taskData.task_id)
+                : await TaskManager.pollTaskUntilComplete(taskData.task_id, {
+                    onStatusUpdate: updateLoadingStatus
+                });
+            
+            if (resultData.error_message) {
+                showMessage(`Analysis failed: ${resultData.error_message}`, 'error');
+                return;
+            }
+            
+            // Use the quarterly-specific display function
+            window.quarterlyAnalysis.displayQuarterlyAnalysisResults(resultData.result);
+            showMessage('Quarterly analysis completed successfully', 'success');
+            
+            // Update URL without reload to include the parameters
+            if (window.history && window.history.pushState) {
+                const url = new URL(window.location);
+                url.searchParams.set('mode', 'quarterly');
+                url.searchParams.set('employee_id', employeeId);
+                url.searchParams.set('year', year);
+                url.searchParams.set('quarter', quarter);
+                window.history.pushState({}, '', url);
+            }
+        } catch (error) {
+            console.error('Error analyzing quarterly performance:', error);
             showMessage('Analysis failed: ' + error.message, 'error');
         } finally {
             currentTask = null;
@@ -1747,7 +1861,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 performanceSection.appendChild(improvementContainer);
             } else {
                 // Empty state for improvements (weekly)
-                const improvementContainer = document.createElement('div');
+                const improvementContainer = documentElement('div');
                 improvementContainer.className = 'improvement-areas-container card-style-container';
                 improvementContainer.innerHTML = `<h6><i class="fas fa-lightbulb"></i> Areas for Improvement</h6>`;
                 const emptyMessage = document.createElement('div');
