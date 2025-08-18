@@ -123,3 +123,92 @@ class MonthlyAnalysisSummary(BaseModel):
     
     class Config:
         from_attributes = True
+
+# Schemas for quarterly analysis
+class StrategicAlignment(BaseModel):
+    """Schema for strategic alignment assessment."""
+    organizational_impact: str = Field(description="Scope of impact: individual/team/department/organization")
+    key_initiatives: List[Dict[str, Any]] = Field(description="Key strategic initiatives the employee contributed to")
+    alignment_rating: str = Field(description="How well the employee's work aligns with organizational goals")
+
+class PerformanceTrajectory(BaseModel):
+    """Schema for quarterly performance trajectory."""
+    trend: str = Field(description="Overall trend: improving/stable/declining/mixed")
+    consistency: Dict[str, Any] = Field(description="Metrics for work consistency and reliability")
+    notable_shifts: List[Dict[str, Any]] = Field(description="Significant shifts in performance during the quarter")
+
+class CrossFunctionalImpact(BaseModel):
+    """Schema for cross-functional impact assessment."""
+    collaboration_effectiveness: str = Field(description="Effectiveness of collaboration: high/medium/low")
+    stakeholder_impacts: List[Dict[str, Any]] = Field(description="Impact on various stakeholders")
+    knowledge_sharing: List[Dict[str, Any]] = Field(description="Knowledge sharing contributions")
+
+class RiskAssessment(BaseModel):
+    """Schema for quarterly risk assessment."""
+    overall_risk_level: str = Field(description="Overall risk assessment: low/medium/high")
+    risk_trend: str = Field(description="Risk trend: increasing/stable/decreasing")
+    key_risk_factors: List[Dict[str, Any]] = Field(description="Key factors contributing to risk assessment")
+    mitigation_strategies: List[Dict[str, Any]] = Field(description="Recommended strategies for risk mitigation")
+
+class SkillDevelopment(BaseModel):
+    """Schema for quarterly skill development assessment."""
+    key_capabilities: List[Dict[str, Any]] = Field(description="Key capabilities demonstrated during the quarter")
+    learning_agility: str = Field(description="Learning agility: high/medium/low")
+    autonomy_level: str = Field(description="Level of independence: high/medium/low")
+    development_focus: str = Field(description="Recommended skill to develop next")
+
+class QuarterlyAnalysisResponse(BaseModel):
+    """Schema for quarterly analysis response."""
+    analysis_id: int
+    employee_id: int
+    employee_name: str
+    year: int
+    quarter: int
+    period_start: date
+    period_end: date
+    monthly_analysis_ids: Optional[List[int]] = None
+    
+    # Strategic alignment
+    organizational_impact: str
+    strategic_alignment: Dict[str, Any]
+    
+    # Performance metrics
+    performance_trend: str
+    task_completion_reliability: str
+    work_quality_consistency: str
+    performance_stability: str
+    achievement_themes: List[Dict[str, Any]]
+    performance_trajectory: Dict[str, Any]
+    
+    # Cross-functional impact
+    collaboration_effectiveness: str
+    stakeholder_count: int
+    challenge_patterns: Dict[str, Any]
+    cross_functional_impact: Dict[str, Any]
+    adaptation_effectiveness: str
+    
+    # Risk assessment
+    risk_level: str
+    risk_trend: str
+    risk_assessment: Dict[str, Any]
+    
+    # Skills and development
+    learning_agility: str
+    autonomy_level: str
+    development_focus: str
+    skill_development: Dict[str, Any]
+    behavioral_assessment: Dict[str, Any]
+    
+    # Credibility assessment
+    credibility_rating: str
+    vision_data_alignment: str
+    credibility_assessment: Dict[str, Any]
+    
+    # Forward planning
+    forward_planning: Dict[str, Any]
+    
+    # Summary
+    quarterly_summary: str
+    
+    class Config:
+        from_attributes = True

@@ -258,7 +258,6 @@ def create_task_for_monthly_analysis(
     # Submit to Celery if it's a new task - will add analyze_monthly_reports_task
     if not existing_analysis:
         # Will add this task when we create analysis_tasks.py
-        # Import will be at the top of this file
         from app.tasks.analysis_tasks import analyze_monthly_reports_task
         analyze_monthly_reports_task.delay(str(task.task_id))
         
@@ -523,6 +522,8 @@ def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
                     "quarter": quarter,
                     "period_start": quarterly_analysis["period_start"],
                     "period_end": quarterly_analysis["period_end"],
+                    "monthly_analysis_ids": quarterly_analysis["monthly_analysis_ids"],
+                    "analysis_date": quarterly_analysis["analysis_date"],
                     
                     # Strategic alignment
                     "organizational_impact": quarterly_analysis["organizational_impact"],
@@ -530,22 +531,37 @@ def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
                     
                     # Performance assessment
                     "performance_trend": quarterly_analysis["performance_trend"],
+                    "task_completion_reliability": quarterly_analysis["task_completion_reliability"],
+                    "work_quality_consistency": quarterly_analysis["work_quality_consistency"],
+                    "performance_stability": quarterly_analysis["performance_stability"],
                     "achievement_themes": quarterly_analysis["achievement_themes_json"],
                     "performance_trajectory": quarterly_analysis["performance_trajectory_json"],
                     
                     # Cross-functional and challenge data
+                    "collaboration_effectiveness": quarterly_analysis["collaboration_effectiveness"],
+                    "stakeholder_count": quarterly_analysis["stakeholder_count"],
                     "challenge_patterns": quarterly_analysis["challenge_patterns_json"],
                     "cross_functional_impact": quarterly_analysis["cross_functional_impact_json"],
+                    "adaptation_effectiveness": quarterly_analysis["adaptation_effectiveness"],
                     
                     # Risk assessment
+                    "risk_level": quarterly_analysis["risk_level"],
+                    "risk_trend": quarterly_analysis["risk_trend"],
                     "risk_assessment": quarterly_analysis["risk_assessment_json"],
                     
-                    # Skills and behaviors
+                    # Skills and development
+                    "learning_agility": quarterly_analysis["learning_agility"],
+                    "autonomy_level": quarterly_analysis["autonomy_level"],
+                    "development_focus": quarterly_analysis["development_focus"],
                     "skill_development": quarterly_analysis["skill_development_json"],
                     "behavioral_assessment": quarterly_analysis["behavioral_assessment_json"],
                     
-                    # Credibility and planning
+                    # Credibility assessment
+                    "credibility_rating": quarterly_analysis["credibility_rating"],
+                    "vision_data_alignment": quarterly_analysis["vision_data_alignment"],
                     "credibility_assessment": quarterly_analysis["credibility_assessment_json"],
+                    
+                    # Forward planning
                     "forward_planning": quarterly_analysis["forward_planning_json"],
                     
                     # Summary

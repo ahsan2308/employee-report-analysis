@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.database import get_database
-from app.models.db_models import EmployeeAnalysis, Report, Employee, MonthlyAnalysis
-from app.schemas.analysis_schema import AnalysisResponse, MonthlyAnalysisResponse, MonthlyAnalysisSummary
+from app.models.db_models import EmployeeAnalysis, Report, Employee, MonthlyAnalysis, QuarterlyAnalysis
+from app.schemas.analysis_schema import AnalysisResponse, MonthlyAnalysisResponse, MonthlyAnalysisSummary, QuarterlyAnalysisResponse
 from app.services.llm_service import get_llm_service
-from app.services.db_service import get_reports_for_vector_results, get_monthly_analysis_by_params
+from app.services.db_service import get_reports_for_vector_results, get_monthly_analysis_by_params, get_quarterly_analysis_by_params
 from app.services.vector_store_service import search_reports
 from app.core.logger import logger
 import uuid
@@ -16,7 +16,7 @@ from typing import List
 from app.models.task_models import BackgroundTask, TaskStatus, TaskType
 from app.tasks.analysis_tasks import analyze_report_task
 from app.schemas.task_schema import TaskStatusResponse
-from app.services.task_service import create_task_for_analysis, create_task_for_monthly_analysis
+from app.services.task_service import create_task_for_analysis, create_task_for_monthly_analysis, create_task_for_quarterly_analysis
 
 # Initialize Router
 router = APIRouter(prefix="/analyses", tags=["Analyses"])
@@ -460,6 +460,210 @@ def get_employee_monthly_analysis_by_period(
         
     except Exception as e:
         logger.error(f"Error retrieving monthly analysis by period: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+# Quarterly Analysis Endpoints
+@router.post("/quarterly/analyze", response_model=TaskStatusResponse)
+def analyze_quarterly_reports(
+    employee_id: int,
+    year: int = Query(..., ge=2000, le=2100),
+    quarter: int = Query(..., ge=1, le=4),
+    db: Session = Depends(get_db)
+):
+    """
+    Submit a quarterly analysis task for an employee.
+    
+    This endpoint initiates asynchronous processing of quarterly performance for the given employee.
+    The analysis will aggregate data from the three months in the specified quarter.
+    """
+    logger.info(f"Request received to analyze quarterly performance for employee {employee_id}, period {year}-Q{quarter}")
+    try:
+        # Check if employee exists
+        employee = db.query(Employee).filter(Employee.id == employee_id).first()
+        if not employee:
+            raise HTTPException(status_code=404, detail="Employee not found")
+            
+        # Check if analysis already exists
+        existing_analysis = get_quarterly_analysis_by_params(employee_id, year, quarter)
+        
+        # Create task (either with existing analysis or as a new task)
+        task = create_task_for_quarterly_analysis(db, employee_id, year, quarter, existing_analysis)
+            
+        return {
+            "task_id": task.task_id,
+            "celery_task_id": task.celery_task_id,
+            "status": task.status,
+            "created_at": task.created_at,
+            "started_at": task.started_at,
+            "completed_at": task.completed_at,
+            "is_complete": task.status in (TaskStatus.COMPLETED.value, TaskStatus.FAILED.value)
+        }
+        
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=f"Invalid parameter: {str(ve)}")
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error submitting quarterly analysis task: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error submitting analysis: {str(e)}")
+
+@router.get("/quarterly/{analysis_id}", response_model=QuarterlyAnalysisResponse)
+def get_quarterly_analysis(analysis_id: int, db: Session = Depends(get_db)):
+    """Get a specific quarterly analysis by ID."""
+    try:
+        analysis = db.query(QuarterlyAnalysis).filter(
+            QuarterlyAnalysis.analysis_id == analysis_id
+        ).first()
+        
+        if not analysis:
+            raise HTTPException(status_code=404, detail="Quarterly analysis not found")
+            
+        # Get employee details
+        employee = db.query(Employee).filter(
+            Employee.id == analysis.employee_id
+        ).first()
+        
+        if not employee:
+            raise HTTPException(status_code=404, detail="Employee not found")
+        
+        # Prepare structured response
+        return {
+            "analysis_id": analysis.analysis_id,
+            "employee_id": analysis.employee_id,
+            "employee_name": employee.name,
+            "year": analysis.year,
+            "quarter": analysis.quarter,
+            "period_start": analysis.period_start,
+            "period_end": analysis.period_end,
+            "monthly_analysis_ids": analysis.monthly_analysis_ids,
+            
+            # Strategic alignment
+            "organizational_impact": analysis.organizational_impact,
+            "strategic_alignment": analysis.strategic_alignment_json,
+            
+            # Performance assessment
+            "performance_trend": analysis.performance_trend,
+            "task_completion_reliability": analysis.task_completion_reliability,
+            "work_quality_consistency": analysis.work_quality_consistency,
+            "performance_stability": analysis.performance_stability,
+            "achievement_themes": analysis.achievement_themes_json,
+            "performance_trajectory": analysis.performance_trajectory_json,
+            
+            # Cross-functional and challenge data
+            "collaboration_effectiveness": analysis.collaboration_effectiveness,
+            "stakeholder_count": analysis.stakeholder_count,
+            "challenge_patterns": analysis.challenge_patterns_json,
+            "cross_functional_impact": analysis.cross_functional_impact_json,
+            "adaptation_effectiveness": analysis.adaptation_effectiveness,
+            
+            # Risk assessment
+            "risk_level": analysis.risk_level,
+            "risk_trend": analysis.risk_trend,
+            "risk_assessment": analysis.risk_assessment_json,
+            
+            # Skills and development
+            "learning_agility": analysis.learning_agility,
+            "autonomy_level": analysis.autonomy_level,
+            "development_focus": analysis.development_focus,
+            "skill_development": analysis.skill_development_json,
+            "behavioral_assessment": analysis.behavioral_assessment_json,
+            
+            # Credibility assessment
+            "credibility_rating": analysis.credibility_rating,
+            "vision_data_alignment": analysis.vision_data_alignment,
+            "credibility_assessment": analysis.credibility_assessment_json,
+            
+            # Forward planning
+            "forward_planning": analysis.forward_planning_json,
+            
+            # Summary
+            "quarterly_summary": analysis.quarterly_summary
+        }
+        
+    except Exception as e:
+        logger.error(f"Error retrieving quarterly analysis: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@router.get("/quarterly/employee/{employee_id}/{year}/{quarter}", response_model=QuarterlyAnalysisResponse)
+def get_employee_quarterly_analysis_by_period(
+    employee_id: int, 
+    year: int, 
+    quarter: int = Query(..., ge=1, le=4), 
+    db: Session = Depends(get_db)
+):
+    """Get a specific quarterly analysis by employee, year and quarter."""
+    try:
+        # Check if employee exists
+        employee = db.query(Employee).filter(Employee.id == employee_id).first()
+        if not employee:
+            raise HTTPException(status_code=404, detail="Employee not found")
+            
+        # Get the specific quarterly analysis
+        analysis = db.query(QuarterlyAnalysis).filter(
+            QuarterlyAnalysis.employee_id == employee_id,
+            QuarterlyAnalysis.year == year,
+            QuarterlyAnalysis.quarter == quarter
+        ).first()
+        
+        if not analysis:
+            raise HTTPException(status_code=404, detail=f"Quarterly analysis not found for {year}-Q{quarter}")
+        
+        # Return formatted response
+        return {
+            "analysis_id": analysis.analysis_id,
+            "employee_id": analysis.employee_id,
+            "employee_name": employee.name,
+            "year": analysis.year,
+            "quarter": analysis.quarter,
+            "period_start": analysis.period_start,
+            "period_end": analysis.period_end,
+            "monthly_analysis_ids": analysis.monthly_analysis_ids,
+            
+            # Strategic alignment
+            "organizational_impact": analysis.organizational_impact,
+            "strategic_alignment": analysis.strategic_alignment_json,
+            
+            # Performance assessment
+            "performance_trend": analysis.performance_trend,
+            "task_completion_reliability": analysis.task_completion_reliability,
+            "work_quality_consistency": analysis.work_quality_consistency,
+            "performance_stability": analysis.performance_stability,
+            "achievement_themes": analysis.achievement_themes_json,
+            "performance_trajectory": analysis.performance_trajectory_json,
+            
+            # Cross-functional and challenge data
+            "collaboration_effectiveness": analysis.collaboration_effectiveness,
+            "stakeholder_count": analysis.stakeholder_count,
+            "challenge_patterns": analysis.challenge_patterns_json,
+            "cross_functional_impact": analysis.cross_functional_impact_json,
+            "adaptation_effectiveness": analysis.adaptation_effectiveness,
+            
+            # Risk assessment
+            "risk_level": analysis.risk_level,
+            "risk_trend": analysis.risk_trend,
+            "risk_assessment": analysis.risk_assessment_json,
+            
+            # Skills and development
+            "learning_agility": analysis.learning_agility,
+            "autonomy_level": analysis.autonomy_level,
+            "development_focus": analysis.development_focus,
+            "skill_development": analysis.skill_development_json,
+            "behavioral_assessment": analysis.behavioral_assessment_json,
+            
+            # Credibility assessment
+            "credibility_rating": analysis.credibility_rating,
+            "vision_data_alignment": analysis.vision_data_alignment,
+            "credibility_assessment": analysis.credibility_assessment_json,
+            
+            # Forward planning
+            "forward_planning": analysis.forward_planning_json,
+            
+            # Summary
+            "quarterly_summary": analysis.quarterly_summary
+        }
+        
+    except Exception as e:
+        logger.error(f"Error retrieving quarterly analysis by period: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
