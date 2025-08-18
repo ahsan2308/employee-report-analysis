@@ -558,7 +558,7 @@ def analyze_monthly_reports_task(self, task_id: str):
                 "risk_level": risk_level,
                 "achievement_count": len(monthly_achievements),
                 "challenge_count": len(recurring_challenges),
-                "monthly_summary": monthly_summary  # Added to provide high-level overview
+                "monthly_summary": monthly_summary  
             }
             
             # Update task as completed with result
@@ -714,7 +714,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
         # format_vision_data_for_quarterly_analysis_prompt will need to be implemented
         formatted_quarterly_vision_data = format_vision_data_for_quarterly_analysis_prompt(
             filtered_quarterly_vision_data, 
-            max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS
+            max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_QUARTERLY_ANALYSIS  
         )
         quarterly_data["formatted_vision_data"] = formatted_quarterly_vision_data
 
@@ -741,7 +741,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
         llm_service = get_llm_service()
         analysis_result = llm_service.analyze_quarterly_reports(
             quarterly_data=quarterly_data,
-            num_ctx=100000  # Large context window for quarterly analysis
+            num_ctx=40000  
         )
 
         # Handle error in analysis generation
@@ -879,8 +879,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
                 "full_analysis_json": analysis_result
             }
             
-            # Store analysis in the database using a service function (to be implemented)
-            # store_quarterly_analysis will need to be implemented in db_service.py
+            # store_quarterly_analysis
             analysis_id = store_quarterly_analysis(analysis_data)
             
             if not analysis_id:

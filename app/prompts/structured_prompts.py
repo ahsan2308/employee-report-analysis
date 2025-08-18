@@ -728,6 +728,7 @@ CRITICAL INSTRUCTIONS:
         # Extract key data from the quarterly_data dictionary
         employee_info = quarterly_data.get("employee_info", {})
         monthly_analyses = quarterly_data.get("monthly_analyses", [])
+        weekly_analyses = quarterly_data.get("weekly_analyses", [])  
         metrics = quarterly_data.get("metrics", {})
         period_start = quarterly_data.get("period_start")
         period_end = quarterly_data.get("period_end")
@@ -743,10 +744,11 @@ CRITICAL INSTRUCTIONS:
         quarter_name = f"Q{quarter}" if quarter else "Quarter"
         quarter_description = f"{quarter_name} {year}" if year else quarter_name
         
-        # Format monthly analyses section with weekly analyses included
+        # Format monthly analyses section
         monthly_analyses_section = ""
         for i, monthly_analysis in enumerate(monthly_analyses):
             month_name = monthly_analysis.get("month_name", f"Month {i+1}")
+            month_num = monthly_analysis.get("month", i+1)
             month_start = monthly_analysis.get("period_start", "Unknown Start")
             month_end = monthly_analysis.get("period_end", "Unknown End")
             
@@ -839,61 +841,67 @@ Strategic Recommendations:
 {recommendations_text or "None provided"}
 """
 
-            # Format and add weekly analyses for this month if available
-            weekly_analyses = monthly_analysis.get("weekly_analyses", [])
-            if weekly_analyses:
-                weekly_analyses_section = f"\nWEEKLY ANALYSES FOR {month_name.upper()}:\n"
+        # Find weekly analyses for this month
+        month_weekly_analyses = []
+        for weekly_analysis in weekly_analyses:
+            week_date = weekly_analysis.get("date")
+            if week_date and hasattr(week_date, "month") and week_date.month == month_num:
+                month_weekly_analyses.append(weekly_analysis)
+        
+        # Format and add weekly analyses for this month if available
+        if month_weekly_analyses:
+            weekly_analyses_section = f"\nWEEKLY ANALYSES FOR {month_name.upper()}:\n"
+            
+            for w, weekly_analysis in enumerate(month_weekly_analyses):
+                # Extract weekly data
+                week_start = weekly_analysis.get("period_start", "Unknown")
+                week_end = weekly_analysis.get("period_end", "Unknown")
+                week_sentiment = weekly_analysis.get("sentiment", "neutral")
+                week_risk = weekly_analysis.get("risk_level", "medium")
+                week_risk_explanation = weekly_analysis.get("risk_explanation", "No explanation provided")
                 
-                for w, weekly_analysis in enumerate(weekly_analyses):
-                    # Extract weekly data
-                    week_start = weekly_analysis.get("period_start", "Unknown")
-                    week_end = weekly_analysis.get("period_end", "Unknown")
-                    week_sentiment = weekly_analysis.get("sentiment", "neutral")
-                    week_risk = weekly_analysis.get("risk_level", "medium")
-                    week_risk_explanation = weekly_analysis.get("risk_explanation", "No explanation provided")
-                    
-                    # Extract achievements and challenges
-                    week_achievements = weekly_analysis.get("achievements", [])
-                    week_challenges = weekly_analysis.get("challenges", [])
-                    week_topics = weekly_analysis.get("topics", [])
-                    week_action_items = weekly_analysis.get("action_items", [])
-                    
-                    # Extract credibility assessment
-                    credibility = weekly_analysis.get("credibility_assessment", {})
-                    credibility_rating = credibility.get("rating", "medium")
-                    credibility_explanation = credibility.get("explanation", "No explanation provided")
-                    consistency_score = credibility.get("consistency_score", "medium")
-                    exaggeration_flags = credibility.get("exaggeration_flags", [])
-                    
-                    # Extract performance assessment
-                    performance = weekly_analysis.get("performance_assessment", {})
-                    performance_rating = performance.get("rating", "medium")
-                    performance_summary = performance.get("summary", "No summary provided")
-                    strengths = performance.get("key_strengths", [])
-                    improvement_areas = performance.get("improvement_areas", [])
-                    
-                    # Format achievements and challenges
-                    week_achievements_text = ""
-                    for achievement in week_achievements or []: 
-                        desc = achievement.get("description", "No description")
-                        impact = achievement.get("impact", "No impact")
-                        week_achievements_text += f"- {desc} (Impact: {impact})\n"
-                    
-                    week_challenges_text = ""
-                    for challenge in week_challenges or []: 
-                        desc = challenge.get("description", "No description")
-                        severity = challenge.get("severity", "medium")
-                        week_challenges_text += f"- {desc} (Severity: {severity})\n"
-                    
-                    # Format other elements
-                    week_topics_text = ", ".join(week_topics or []) or "None identified"
-                    week_action_items_text = "\n".join([f"- {item}" for item in week_action_items or []]) or "None provided"
-                    exaggeration_flags_text = "\n".join([f"- {flag}" for flag in exaggeration_flags or []]) or "None identified"
-                    strengths_text = "\n".join([f"- {strength}" for strength in strengths or []]) or "None identified"
-                    improvement_areas_text = "\n".join([f"- {area}" for area in improvement_areas or []]) or "None identified"
-                    
-                    # Add formatted weekly analysis
-                    weekly_analyses_section += f"""
+                # Extract achievements and challenges
+                week_achievements = weekly_analysis.get("achievements", [])
+                week_challenges = weekly_analysis.get("challenges", [])
+                week_topics = weekly_analysis.get("topics", [])
+                week_action_items = weekly_analysis.get("action_items", [])
+                
+                # Extract credibility assessment
+                credibility = weekly_analysis.get("credibility_assessment", {})
+                credibility_rating = credibility.get("rating", "medium")
+                credibility_explanation = credibility.get("explanation", "No explanation provided")
+                consistency_score = credibility.get("consistency_score", "medium")
+                exaggeration_flags = credibility.get("exaggeration_flags", [])
+                
+                # Extract performance assessment
+                performance = weekly_analysis.get("performance_assessment", {})
+                performance_rating = performance.get("rating", "medium")
+                performance_summary = performance.get("summary", "No summary provided")
+                strengths = performance.get("key_strengths", [])
+                improvement_areas = performance.get("improvement_areas", [])
+                
+                # Format achievements and challenges
+                week_achievements_text = ""
+                for achievement in week_achievements or []: 
+                    desc = achievement.get("description", "No description")
+                    impact = achievement.get("impact", "No impact")
+                    week_achievements_text += f"- {desc} (Impact: {impact})\n"
+                
+                week_challenges_text = ""
+                for challenge in week_challenges or []: 
+                    desc = challenge.get("description", "No description")
+                    severity = challenge.get("severity", "medium")
+                    week_challenges_text += f"- {desc} (Severity: {severity})\n"
+                
+                # Format other elements
+                week_topics_text = ", ".join(week_topics or []) or "None identified"
+                week_action_items_text = "\n".join([f"- {item}" for item in week_action_items or []]) or "None provided"
+                exaggeration_flags_text = "\n".join([f"- {flag}" for flag in exaggeration_flags or []]) or "None identified"
+                strengths_text = "\n".join([f"- {strength}" for strength in strengths or []]) or "None identified"
+                improvement_areas_text = "\n".join([f"- {area}" for area in improvement_areas or []]) or "None identified"
+                
+                # Add formatted weekly analysis
+                weekly_analyses_section += f"""
 WEEK {w+1} ({week_start} to {week_end}):
 Sentiment: {week_sentiment}
 Risk Level: {week_risk}
@@ -925,10 +933,10 @@ Performance Assessment:
 - Improvement Areas:
 {improvement_areas_text}
 """
-                
-                # Add all weekly analyses for this month to the monthly section
-                monthly_analyses_section += weekly_analyses_section
-        
+            
+            # Add all weekly analyses for this month to the monthly section
+            monthly_analyses_section += weekly_analyses_section
+    
         # Format quarterly metrics
         avg_sentiment = metrics.get("avg_sentiment", 0.5)
         sentiment_trend = metrics.get("sentiment_trend", "stable")
@@ -937,10 +945,79 @@ Performance Assessment:
         recurring_topics = metrics.get("recurring_topics", [])
         risk_levels = metrics.get("risk_levels", {})
         
-        # Additional aggregated metrics from weekly analyses
+        # Additional aggregated metrics from quarterly data
         weekly_report_count = metrics.get("weekly_report_count", 0)
         performance_stability = metrics.get("performance_stability", "medium")
-
+        task_reliability_trend = metrics.get("task_reliability_trend", "stable")
+        quality_consistency_trend = metrics.get("quality_consistency_trend", "stable")
+        risk_trend = metrics.get("risk_trend", "stable")
+        challenge_resolution_trend = metrics.get("challenge_resolution_trend", "stable")
+        achievement_impact_avg = metrics.get("achievement_impact_avg", 0.0)
+        
+        # Get credibility data
+        weekly_credibility_data = metrics.get("weekly_credibility_data", {})
+        avg_credibility_rating = weekly_credibility_data.get("avg_credibility_rating", "medium")
+        credibility_trend = weekly_credibility_data.get("credibility_trend", "stable")
+        exaggeration_frequency = weekly_credibility_data.get("exaggeration_frequency", 0)
+        
+        # Get detailed topics
+        detailed_topics = metrics.get("detailed_topics", [])
+        detailed_topics_text = ""
+        if detailed_topics:
+            for topic_data in detailed_topics:
+                topic = topic_data.get("topic", "Unknown")
+                frequency = topic_data.get("frequency", 0)
+                detailed_topics_text += f"  • {topic} (Frequency: {frequency})\n"
+        else:
+            detailed_topics_text = "  • No detailed topic data available\n"
+        
+        # Get performance rating data
+        performance_rating_data = metrics.get("performance_rating_aggregation", {})
+        most_common_rating = performance_rating_data.get("most_common_rating", "medium")
+        rating_trend = performance_rating_data.get("rating_trend", "stable")
+        rating_distribution = performance_rating_data.get("rating_distribution", {})
+        rating_distribution_text = ""
+        if rating_distribution:
+            for rating, percentage in rating_distribution.items():
+                rating_distribution_text += f"  • {rating}: {percentage:.1%}\n"
+        else:
+            rating_distribution_text = "  • No rating distribution data available\n"
+        
+        # Get monthly progress trends
+        monthly_progress_trends = metrics.get("monthly_progress_trends", [])
+        progress_trends_text = ""
+        if monthly_progress_trends:
+            for trend_data in monthly_progress_trends:
+                month_num = trend_data.get("month", 0)
+                month_names = ["January", "February", "March", "April", "May", "June", 
+                              "July", "August", "September", "October", "November", "December"]
+                month_name = month_names[month_num-1] if 1 <= month_num <= 12 else f"Month {month_num}"
+                
+                perf_trend = trend_data.get("performance_trend", "stable")
+                sent_trend = trend_data.get("sentiment_trend", "stable")
+                risk_pattern = trend_data.get("risk_level_pattern", "stable")
+                challenge_prog = trend_data.get("challenge_resolution_progress", "unchanged")
+                
+                progress_trends_text += f"""
+      • {month_name}:
+        - Performance: {perf_trend}
+        - Sentiment: {sent_trend}
+        - Risk Pattern: {risk_pattern}
+        - Challenge Resolution: {challenge_prog}
+    """
+        else:
+            progress_trends_text = "  • No monthly progress trend data available\n"
+        
+        # Get monthly summaries
+        monthly_summaries = metrics.get("monthly_summaries", [])
+        monthly_summaries_text = ""
+        if monthly_summaries:
+            for summary_data in monthly_summaries:
+                month = summary_data.get("month", "Unknown month")
+                summary = summary_data.get("summary", "No summary available")
+                monthly_summaries_text += f"  • {month}: {summary}\n"
+        else:
+            monthly_summaries_text = "  • No monthly summary data available\n"
         
         # Build the risk levels text with better formatting
         risk_text = ""
@@ -950,7 +1027,6 @@ Performance Assessment:
         else:
             risk_text = "  • No risk data available\n"
         
-        
         # Format recurring topics with better formatting
         if recurring_topics:
             topics_text = "\n".join([f"  • {topic}" for topic in recurring_topics])
@@ -959,38 +1035,63 @@ Performance Assessment:
         
         # Build the full prompt
         prompt = f"""
-# QUARTERLY EMPLOYEE PERFORMANCE ANALYSIS
+    # QUARTERLY EMPLOYEE PERFORMANCE ANALYSIS
 
-## TASK OVERVIEW AND EXPECTED OUTPUT
-You are an expert HR analyst conducting a quarterly performance review. Your task is to analyze an employee's performance across three months and synthesize a comprehensive quarterly assessment that identifies patterns, trends, and business impact not visible in shorter timeframes.
+    ## TASK OVERVIEW AND EXPECTED OUTPUT
+    You are an expert HR analyst conducting a quarterly performance review. Your task is to analyze an employee's performance across three months and synthesize a comprehensive quarterly assessment that identifies patterns, trends, and business impact not visible in shorter timeframes.
 
-Your analysis must be strategic, evidence-based, and focused on both evaluation and development. You should identify broader patterns and trends rather than focusing on individual events, evaluate business impact as a primary lens, and provide a forward-looking orientation for the next quarter.
+    Your analysis must be strategic, evidence-based, and focused on both evaluation and development. You should identify broader patterns and trends rather than focusing on individual events, evaluate business impact as a primary lens, and provide a forward-looking orientation for the next quarter.
 
-Your quarterly analysis must be provided as valid JSON following the exact structure specified later in this prompt.
+    Your quarterly analysis must be provided as valid JSON following the exact structure specified later in this prompt.
 
-## EMPLOYEE INFORMATION
-- Name: {employee_name}
-- Position: {employee_position}
-- Department: {employee_wing}
-- Analysis Period: {period_start} to {period_end} ({quarter_description})
+    ## EMPLOYEE INFORMATION
+    - Name: {employee_name}
+    - Position: {employee_position}
+    - Department: {employee_wing}
+    - Analysis Period: {period_start} to {period_end} ({quarter_description})
 
-## QUARTERLY SUMMARY METRICS
-- Total Achievements: {achievement_count}
-- Total Challenges: {challenge_count}
-- Average Sentiment: {avg_sentiment}
-- Sentiment Trend: {sentiment_trend}
-- Performance Stability: {performance_stability}
-- Weekly Reports Analyzed: {weekly_report_count}
+    ## QUARTERLY SUMMARY METRICS
+    - Total Achievements: {achievement_count}
+    - Total Challenges: {challenge_count}
+    - Average Sentiment: {avg_sentiment}
+    - Sentiment Trend: {sentiment_trend}
+    - Performance Stability: {performance_stability}
+    - Weekly Reports Analyzed: {weekly_report_count}
+    - Task Reliability Trend: {task_reliability_trend}
+    - Quality Consistency Trend: {quality_consistency_trend}
+    - Risk Trend: {risk_trend}
+    - Challenge Resolution Trend: {challenge_resolution_trend}
+    - Achievement Impact Average: {achievement_impact_avg}
 
-RISK LEVEL DISTRIBUTION:
-{risk_text}
+    RISK LEVEL DISTRIBUTION:
+    {risk_text}
 
-RECURRING TOPICS:
-{topics_text}
+    RECURRING TOPICS:
+    {topics_text}
 
-## MONTHLY AND WEEKLY ANALYSES SUMMARIES
-{monthly_analyses_section}
-"""
+    DETAILED TOPIC FREQUENCY:
+    {detailed_topics_text}
+
+    PERFORMANCE RATING DISTRIBUTION:
+    - Most Common Rating: {most_common_rating}
+    - Rating Trend: {rating_trend}
+    - Distribution:
+    {rating_distribution_text}
+
+    CREDIBILITY ASSESSMENT:
+    - Average Credibility Rating: {avg_credibility_rating}
+    - Credibility Trend: {credibility_trend}
+    - Exaggeration Frequency: {exaggeration_frequency}
+
+    MONTHLY PROGRESS TRENDS:
+    {progress_trends_text}
+
+    MONTHLY SUMMARIES:
+    {monthly_summaries_text}
+
+    ## MONTHLY AND WEEKLY ANALYSES SUMMARIES
+    {monthly_analyses_section}
+    """
 
         # Insert vision data from quarterly_data if available
         formatted_vision_data = quarterly_data.get("formatted_vision_data", "")
@@ -1364,5 +1465,7 @@ If context limitations require prioritizing information:
 - Prioritize weekly data that shows progression or evolution of important issues
 
 """
+
+        return prompt
 
 

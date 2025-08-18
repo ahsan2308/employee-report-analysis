@@ -142,7 +142,8 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
         "date_context": vision_data.get("date_context", {}),
         "current_data": [],
         "previous_data": [],
-        "weeks_data": []
+        "weeks_data": [],
+        "months_data": []
     }
     
     # Handle weekly format
@@ -165,6 +166,30 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
                     "activities": processed_activities
                 })
         result["weeks_data"] = processed_weeks
+        return result
+    
+    # Handle quarterly format (months_data with nested weeks_data)
+    if "months_data" in vision_data:
+        processed_months = []
+        for month in vision_data["months_data"]:
+            # Create a temporary structure for processing this month's weeks_data
+            month_data = {
+                "date_context": month.get("date_context", {}),
+                "weeks_data": month.get("weeks_data", [])
+            }
+            
+            # Process the month's weeks_data using the monthly format logic
+            filtered_month = filter_vision_data(month_data)
+            
+            # Only include months with non-empty weeks_data
+            if filtered_month.get("weeks_data"):
+                processed_months.append({
+                    "month_name": month.get("month_name", "Unknown"),
+                    "date_context": month.get("date_context", {}),
+                    "weeks_data": filtered_month.get("weeks_data", [])
+                })
+        
+        result["months_data"] = processed_months
         return result
 
     return result
@@ -355,9 +380,54 @@ def format_vision_data_for_quarterly_analysis_prompt(vision_data: Dict[str, Any]
     if not vision_data or not vision_data.get("months_data"):
         return "No vision data available for the quarter."
     
-    # Format each month's data
-    formatted_months = []
+    # Quarter header information
+    quarter_info = (
+        f"# QUARTERLY VISION DATA ({vision_data['date_context']['year']}-Q{vision_data['date_context']['quarter']})\n"
+        f"Period: {vision_data['date_context']['period_start']} to {vision_data['date_context']['period_end']}\n\n"
+    )
     
+    # Add quarter-level summary
+    total_weeks = sum(len(month.get("weeks_data", [])) for month in vision_data.get("months_data", []))
+    total_entities = set()
+    for month in vision_data.get("months_data", []):
+        for week in month.get("weeks_data", []):
+            for activity in week.get("activities", []):
+                total_entities.add(activity.get("main_entity"))
+    
+    quarter_summary = (
+        f"**Quarter Summary:**\n"
+        f"- Data spans {len(vision_data.get('months_data', []))} months with {total_weeks} total weeks of activity\n"
+        f"- {len(total_entities)} main activity types recorded: {', '.join(sorted(total_entities))}\n\n"
+    )
+    
+    formatted_text = quarter_info + quarter_summary
+    
+    # Helper function for formatting content similar to weekly/monthly functions
+    def format_sub_entity_content(sub_entity, content_dict, max_items):
+        entity_items = content_dict.get(sub_entity, [])
+        if not entity_items:
+            return ""
+        
+        lines = []
+        display_count = min(len(entity_items), max_items)
+        for entry in entity_items[:display_count]:
+            if entry:
+                if isinstance(entry, dict):
+                    entry_str = ", ".join(f"{k}: {v}" for k, v in entry.items() if v)
+                else:
+                    entry_str = str(entry)
+                
+                if entry_str:
+                    lines.append(f"      ---> {entry_str}")
+        
+        if len(entity_items) > max_items:
+            lines.append(f"      ---> and {len(entity_items) - max_items} more...")
+        
+        if lines:
+            return "\n".join(lines)
+        return ""
+    
+    # Format each month's data
     for month_data in vision_data.get("months_data", []):
         month_name = month_data.get("month_name", "Unknown Month")
         weeks_data = month_data.get("weeks_data", [])
@@ -365,86 +435,32 @@ def format_vision_data_for_quarterly_analysis_prompt(vision_data: Dict[str, Any]
         if not weeks_data:
             continue
         
-        # Start with month header
-        month_text = f"## {month_name.upper()} VISION DATA\n\n"
+        formatted_text += f"\n## {month_name.upper()} ACTIVITY DATA\n"
         
-        # Combine all entity data for the month
-        all_entities = {}
-        
+        # Process each week
         for week in weeks_data:
+            week_number = week.get("week_number")
             activities = week.get("activities", [])
             
-            for activity in activities:
-                entity_name = activity.get("main_entity", "Unknown Entity")
+            if activities:
+                from_date = activities[0].get('from_date')
+                to_date = activities[0].get('to_date')
+                formatted_text += f"\nWeek {week_number} Activity Data ({from_date} to {to_date}):\n"
                 
-                if entity_name not in all_entities:
-                    all_entities[entity_name] = {
-                        "sub_entities": [],
-                        "sub_entities_content": [],
-                        "weeks": []
-                    }
-                
-                # Add week to this entity's tracked weeks
-                week_number = week.get("week_number", "Unknown")
-                if week_number not in all_entities[entity_name]["weeks"]:
-                    all_entities[entity_name]["weeks"].append(week_number)
-                
-                # Add sub-entities and content
-                sub_entities = activity.get("sub_entities", [])
-                for sub_entity in sub_entities:
-                    if sub_entity not in all_entities[entity_name]["sub_entities"]:
-                        all_entities[entity_name]["sub_entities"].append(sub_entity)
-                
-                sub_content = activity.get("sub_entities_content", [])
-                for content in sub_content:
-                    if content not in all_entities[entity_name]["sub_entities_content"]:
-                        all_entities[entity_name]["sub_entities_content"].append(content)
-        
-        # Format each entity for the month
-        entity_sections = []
-        
-        for entity_name, entity_data in all_entities.items():
-            # Start with entity header
-            entity_text = f"### {entity_name}\n"
-            entity_text += f"Tracked in {len(entity_data['weeks'])} weeks of {month_name}\n\n"
-            
-            # Add sub-entities
-            sub_entities = entity_data["sub_entities"][:max_content_items_per_entity]
-            if sub_entities:
-                entity_text += "**Sub-Entities:**\n"
-                for sub in sub_entities:
-                    entity_text += f"- {sub}\n"
-                
-                # Indicate if items were truncated
-                if len(entity_data["sub_entities"]) > max_content_items_per_entity:
-                    remaining = len(entity_data["sub_entities"]) - max_content_items_per_entity
-                    entity_text += f"- ... and {remaining} more sub-entities\n"
-            
-            # Add sub-entity content
-            content_items = entity_data["sub_entities_content"][:max_content_items_per_entity]
-            if content_items:
-                entity_text += "\n**Activity Content:**\n"
-                for item in content_items:
-                    entity_text += f"- {item}\n"
-                
-                # Indicate if items were truncated
-                if len(entity_data["sub_entities_content"]) > max_content_items_per_entity:
-                    remaining = len(entity_data["sub_entities_content"]) - max_content_items_per_entity
-                    entity_text += f"- ... and {remaining} more content items\n"
-            
-            entity_sections.append(entity_text)
-        
-        # Combine all entity sections for this month
-        if entity_sections:
-            month_text += "\n".join(entity_sections)
-            formatted_months.append(month_text)
+                # Process each activity in the week (similar to monthly format)
+                for item in activities:
+                    formatted_text += f"  Main Activity: {item.get('main_entity')}\n"
+                    formatted_text += "  Details:\n"
+                    
+                    for sub_entity, data in item.get("sub_entities", {}).items():
+                        formatted_text += f"    - Number of {sub_entity}: {data['value']} ({data['description']})\n"
+                        # Format sub-entity content similar to weekly/monthly
+                        sub_content = format_sub_entity_content(
+                            sub_entity, 
+                            item.get("sub_entities_content", {}), 
+                            max_content_items_per_entity
+                        )
+                        if sub_content:
+                            formatted_text += f"{sub_content}\n"
     
-    # Combine all months into a single formatted string
-    if formatted_months:
-        quarter_info = (
-            f"# QUARTERLY VISION DATA ({vision_data['date_context']['year']}-Q{vision_data['date_context']['quarter']})\n"
-            f"Period: {vision_data['date_context']['period_start']} to {vision_data['date_context']['period_end']}\n\n"
-        )
-        return quarter_info + "\n\n".join(formatted_months)
-    else:
-        return "No structured vision data available for the quarter."
+    return formatted_text
