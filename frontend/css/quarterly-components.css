@@ -14,262 +14,713 @@
     --text-main: #334155;
     --rounded: 8px;
     --transition: all 0.3s ease;
+    
+    /* Quarterly-specific colors */
+    --quarterly-primary: #4F46E5; /* Indigo */
+    --quarterly-primary-light: #EEF2FF;
+    --quarterly-secondary: #8B5CF6; /* Violet */
+    --quarterly-success: #10B981; /* Emerald */
+    --quarterly-warning: #F59E0B; /* Amber */
+    --quarterly-danger: #E11D48; /* Rose */
+    --quarterly-info: #0EA5E9; /* Sky */
+    --quarterly-neutral: #64748B; /* Slate */
+    
+    /* Strategic alignment section specific colors */
+    --strategic-primary: #6366f1; /* Indigo */
+    --strategic-light: #f5f7ff; /* Very light indigo background - lighter than before */
+    --strategic-dark: #4f46e5; /* Dark indigo for text/accents */
+    --strategic-border: #c7d2fe; /* Light border color */
+    --strategic-hover: #eef2ff; /* Hover state background */
+    --outcomes-bg: #f5f0ff; /* Light purple for outcomes box */
+    --outcomes-border: #e6dcff; /* Border for outcomes box */
+    
+    /* Performance trajectory section specific colors */
+    --performance-light: #f0f4ff; /* Light blue background */
+    --performance-dark: #4f46e5; /* Indigo for text/accents */
+    --performance-border: #c7d2fe; /* Light border color */
+    --performance-hover: #eef2ff; /* Hover state background */
+    --performance-increase: #ecfdf5; /* Light green for positive trends */
+    --performance-decrease: #fee2e2; /* Light red for negative trends */
+    --performance-increase-text: #047857; /* Green text for positive trends */
+    
+
+    /* Quarterly summary section specific colors */
+    --summary-light: #f0f7ff; /* Light blue background */
+    --summary-dark: #1e40af; /* Navy blue for text/accents */
+    --summary-border: #bfdbfe; /* Light border color */
+    --summary-hover: #f5f9ff; /* Hover state background */
+    --summary-highlight-bg: #eff6ff; /* Background for key highlights */
+    --summary-highlight-border: #93c5fd; /* Border for key highlights */
 }
 
 /* Quarterly-specific container styling */
 .quarterly-container {
-    background-color: var(--container-bg);
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 25px;
-    margin-bottom: 30px;
-    transition: all 0.3s ease;
-    opacity: 0;
-    animation: fadeIn 0.8s forwards;
+    background-color: white;
+    border-radius: var(--rounded);
+    box-shadow: var(--shadow);
+    padding: 1.75rem;
+    margin-bottom: 2.5rem;
+    border: 1px solid var(--border);
+    transition: var(--transition);
+    animation: fadeIn 0.5s ease-out;
 }
 
 .quarterly-container:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-lg);
 }
 
 /* Quarterly header styling */
 .quarterly-header {
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.75rem;
 }
 
 .quarterly-header h3 {
-    color: var(--heading-color);
-    margin-bottom: 15px;
+    color: var(--quarterly-primary);
+    font-size: 1.5rem;
     font-weight: 600;
+    margin-bottom: 15px;
 }
 
 /* Quarter meta information styling */
 .quarterly-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 15px;
+    gap: 8px; /* Reduced gap from 12px */
+    margin: 1rem 0;
+    justify-content: flex-start;
 }
 
-/* Section styling specific to quarterly analysis */
-.quarterly-section {
-    background-color: var(--section-bg);
-    border-radius: 6px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
-    animation: slideIn 0.5s forwards;
-    opacity: 0;
-    transform: translateY(10px);
-}
-
-.quarterly-section:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.quarterly-section h5 {
-    font-size: 1.1rem;
-    color: var(--heading-color);
-    margin-bottom: 15px;
+/* Completely revised metrics badge styling to match the screenshot */
+.quarterly-metric-badge {
     position: relative;
-    padding-left: 25px;
+    display: flex;
+    flex-direction: column;
+    width: 150px; /* Reduced width from 180px */
+    padding: 10px 14px; /* Reduced padding */
+    border-radius: 10px; /* Slightly reduced border radius */
+    margin: 4px;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    background-color: #f8fafc;
+}
+
+.quarterly-metric-badge:hover {
+    transform: translateY(-2px); /* Reduced hover effect */
+    box-shadow: var(--shadow);
+}
+
+.quarterly-metric-badge .metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px; /* Reduced margin */
+}
+
+.quarterly-metric-badge .metric-label {
+    font-size: 0.75rem; /* Reduced font size */
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.quarterly-metric-badge .tooltip-trigger {
+    color: #94a3b8;
+    cursor: help;
+    font-size: 0.75rem; /* Added size for tooltip icon */
+}
+
+.quarterly-metric-badge .metric-value-container {
     display: flex;
     align-items: center;
 }
 
+.quarterly-metric-badge .metric-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; /* Increased from 20px for better visibility */
+    height: 24px; /* Increased from 20px for better visibility */
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-right: 8px;
+    color: white;
+    font-size: 0.8rem; /* Increased from 0.7rem for better visibility */
+    background-color: inherit; /* Ensure background color is applied */
+}
+
+.quarterly-metric-badge .metric-icon i {
+    color: white !important; /* Ensure icon is white with !important */
+    font-size: 0.8rem; /* Consistent sizing */
+    display: inline-block; /* Ensure proper display */
+    width: auto; /* Allow natural width */
+    height: auto; /* Allow natural height */
+    line-height: 1; /* Ensure proper vertical alignment */
+}
+
+.quarterly-metric-badge .metric-value {
+    font-weight: 600;
+    font-size: 0.95rem; /* Reduced font size */
+    color: #334155;
+}
+
+/* Impact badge styles */
+.quarterly-metric-badge.impact-badge {
+    background-color: #dbeafe; /* Light blue background */
+    border-left: 3px solid #3b82f6;
+    color: #1e40af;
+}
+
+.quarterly-metric-badge.impact-badge .metric-icon {
+    background-color: #3b82f6; /* Ensure background color is applied */
+}
+
+/* Trend badge styles */
+.quarterly-metric-badge.trend-badge {
+    background-color: #f1f5f9; /* Light slate background */
+    border-left: 3px solid #8b5cf6;
+    color: #6d28d9;
+}
+
+.quarterly-metric-badge.trend-badge .metric-icon {
+    background-color: #8b5cf6; /* Ensure background color is applied */
+}
+
+/* Risk badge styles */
+.quarterly-metric-badge.risk-badge {
+    background-color: #fee2e2; /* Light red background */
+    border-left: 3px solid #ef4444;
+    color: #b91c1c;
+}
+
+.quarterly-metric-badge.risk-badge .metric-icon {
+    background-color: #ef4444; /* Ensure background color is applied */
+}
+
+/* Agility badge styles */
+.quarterly-metric-badge.agility-badge {
+    background-color: #d1fae5; /* Light green background */
+    border-left: 3px solid #10b981;
+    color: #047857;
+}
+
+.quarterly-metric-badge.agility-badge .metric-icon {
+    background-color: #10b981; /* Ensure background color is applied */
+}
+
+/* Autonomy badge styles */
+.quarterly-metric-badge.autonomy-badge {
+    background-color: #dbeafe; /* Light blue background */
+    border-left: 3px solid #06b6d4;
+    color: #0e7490;
+}
+
+.quarterly-metric-badge.autonomy-badge .metric-icon {
+    background-color: #06b6d4; /* Ensure background color is applied */
+}
+
+/* Credibility badge styles */
+.quarterly-metric-badge.credibility-badge {
+    background-color: #f0fdfa; /* Light teal background */
+    border-left: 3px solid #14b8a6;
+    color: #0f766e;
+}
+
+.quarterly-metric-badge.credibility-badge .metric-icon {
+    background-color: #14b8a6; /* Ensure background color is applied */
+}
+
+/* Vision alignment badge styles */
+.quarterly-metric-badge.vision-alignment-badge {
+    background-color: #ede9fe; /* Light purple background */
+    border-left: 3px solid #6366f1;
+    color: #4338ca;
+}
+
+.quarterly-metric-badge.vision-alignment-badge .metric-icon {
+    background-color: #6366f1; /* Ensure background color is applied */
+}
+
+/* Section styling specific to quarterly analysis */
+.quarterly-section {
+    background-color: #f8fafc;
+    border-radius: var(--rounded);
+    padding: 1.5rem;
+    margin-bottom: 1.75rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+    animation: slideIn 0.4s ease-out;
+    animation-fill-mode: both;
+    position: relative;
+    overflow: hidden;
+}
+
+.quarterly-section:hover {
+    background-color: #f1f5f9;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+}
+
+.quarterly-section h5 {
+    color: var(--quarterly-primary);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .quarterly-section h5::before {
-    font-family: "Font Awesome 5 Free";
+    font-family: "Font Awesome 6 Free";
     font-weight: 900;
-    position: absolute;
-    left: 0;
-    top: 0;
 }
 
 /* Strategic alignment section */
+.strategic-alignment-section {
+    background-color: var(--strategic-light);
+    border-radius: 0.75rem;
+    border-left: 4px solid var(--strategic-dark);
+    box-shadow: 0 2px 10px rgba(99, 102, 241, 0.1);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.strategic-alignment-section h5 {
+    color: var(--strategic-dark);
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--strategic-border);
+}
+
 .strategic-alignment-section h5::before {
     content: '\f0e8'; /* sitemap icon */
-    color: var(--primary);
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--strategic-dark);
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
 }
 
-/* Achievement themes section */
-.achievement-themes-section h5::before {
-    content: '\f005'; /* star icon */
-    color: var(--success);
+/* Key strategic initiatives title */
+.strategic-alignment-section h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #7c3aed; /* Purple for subheadings to match screenshot */
+    margin: 1.25rem 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* Cross-functional impact section */
-.cross-functional-section h5::before {
-    content: '\f0c0'; /* users icon */
-    color: var(--info);
+.strategic-alignment-section h6::before {
+    content: '\f0eb'; /* lightbulb icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #7c3aed;
+    font-size: 0.9rem;
 }
 
-/* Performance trajectory section */
-.performance-trajectory-section h5::before {
-    content: '\f201'; /* chart line icon */
-    color: var(--primary);
+/* Initiative cards grid */
+.initiatives-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
-/* Quarterly risk assessment section */
-.quarterly-risk-section h5::before {
-    content: '\f071'; /* exclamation-triangle icon */
-    color: var(--warning);
+/* Initiative card styling */
+.initiative-card {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-left: 3px solid #6366f1;
+    transition: var(--transition);
 }
 
-/* Skill development section */
-.skill-development-section h5::before {
-    content: '\f085'; /* cogs icon */
-    color: var(--primary);
+.initiative-card:hover {
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+    transform: translateY(-3px);
+    background-color: var(--strategic-hover);
 }
 
-/* Forward planning section */
-.forward-planning-section h5::before {
-    content: '\f064'; /* arrow-up-right icon */
-    color: var(--success);
+.initiative-card h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151; /* Dark gray for title */
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    padding-left: 1.75rem; /* Make space for the icon */
+    position: relative;
+    border-bottom: none; /* Remove border from h6 in cards */
 }
 
-/* Additional badge styles for quarterly metrics */
-.impact-scope, .org-impact, .learning-agility, .autonomy-level, .risk-trend {
+/* Add icon before the initiative title */
+.initiative-card h6::before {
+    content: '\f0b1'; /* briefcase icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #6366f1; /* Indigo icon */
+    font-size: 0.9rem;
+}
+
+/* Outcomes box styling - making it similar to screenshot */
+.initiative-outcome {
+    background-color: var(--outcomes-bg);
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--outcomes-border);
+    font-style: italic; /* Restore the italic style */
+    align-self: flex-start;
+    width: 100%;
+}
+
+.initiative-outcome strong {
+    display: block; /* Put "Outcomes:" on its own line */
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    color: #6b21a8; /* Darker purple */
+    font-style: normal; /* Keep the label non-italic */
+}
+
+/* Description styling */
+.initiative-description {
+    color: #4b5563;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    flex: 1; /* Allow description to take up available space */
+}
+
+/* Alignment badge styling */
+.alignment-rating {
     display: inline-flex;
     align-items: center;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    margin-right: 10px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
     font-weight: 500;
+    margin-top: auto; /* Push to bottom */
+    background-color: rgba(99, 102, 241, 0.1);
+    color: var(--strategic-dark);
 }
 
-.impact-scope::before, .org-impact::before, .learning-agility::before, 
-.autonomy-level::before, .risk-trend::before {
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    margin-right: 8px;
+.alignment-high {
+    background-color: rgba(16, 185, 129, 0.1); /* Green background */
+    color: #047857; /* Green text */
 }
 
-/* Organizational impact badges */
-.impact-individual {
-    background-color: #e9f5ff;
-    color: #0070d1;
-}
-.impact-individual::before {
-    content: '\f007'; /* user icon */
+.alignment-medium {
+    background-color: rgba(245, 158, 11, 0.1); /* Amber background */
+    color: #b45309; /* Amber text */
 }
 
-.impact-team {
-    background-color: #e5f6fd;
-    color: #00a0d1;
-}
-.impact-team::before {
-    content: '\f0c0'; /* users icon */
+.alignment-low {
+    background-color: rgba(239, 68, 68, 0.1); /* Red background */
+    color: #b91c1c; /* Red text */
 }
 
-.impact-department {
-    background-color: #e0f2ff;
-    color: #0052cc;
-}
-.impact-department::before {
-    content: '\f1ad'; /* building icon */
+
+/* Quarterly Summary Section - Enhanced styling */
+.quarterly-summary-section {
+    background-color: var(--summary-light);
+    border-radius: 0.75rem;
+    border-left: 4px solid var(--summary-dark);
+    box-shadow: 0 2px 10px rgba(30, 64, 175, 0.1);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 
-.impact-organization {
-    background-color: #e0e8ff;
-    color: #3c55e8;
-}
-.impact-organization::before {
-    content: '\f19c'; /* university/organization icon */
-}
-
-/* Risk trend badges */
-.trend-increasing {
-    background-color: #fff0f0;
-    color: #d13030;
-}
-.trend-increasing::before {
-    content: '\f062'; /* arrow-up icon */
+.quarterly-summary-section h5 {
+    color: var(--summary-dark);
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--summary-border);
 }
 
-.trend-stable {
-    background-color: #f0f8ff;
-    color: #0070d1;
-}
-.trend-stable::before {
-    content: '\f057'; /* minus icon */
+.quarterly-summary-section h5 i.fa-clipboard-list {
+    color: var(--summary-dark);
+    font-size: 0.9rem;
 }
 
-.trend-decreasing {
-    background-color: #f0fff5;
-    color: #28a745;
-}
-.trend-decreasing::before {
-    content: '\f063'; /* arrow-down icon */
+.summary-content {
+    color: var(--text-main);
+    font-size: 0.95rem;
+    line-height: 1.6;
 }
 
-/* Learning agility badges */
-.agility-high {
-    background-color: #f0fff5;
-    color: #28a745;
-}
-.agility-high::before {
-    content: '\f135'; /* rocket icon */
+.summary-content p {
+    margin-bottom: 1rem;
 }
 
-.agility-medium {
-    background-color: #fff9e6;
-    color: #d18d00;
-}
-.agility-medium::before {
-    content: '\f110'; /* spinner icon */
+.summary-content p:last-child {
+    margin-bottom: 0;
 }
 
-.agility-low {
-    background-color: #fff0f0;
-    color: #d13030;
-}
-.agility-low::before {
-    content: '\f05e'; /* ban icon */
-}
-
-/* Autonomy level badges */
-.autonomy-high {
-    background-color: #f0fff5;
-    color: #28a745;
-}
-.autonomy-high::before {
-    content: '\f183'; /* person icon */
+/* Key highlights styling */
+.summary-key-points {
+    background-color: var(--summary-highlight-bg);
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    margin-top: 1.25rem;
+    border: 1px solid var(--summary-highlight-border);
 }
 
-.autonomy-medium {
-    background-color: #fff9e6;
-    color: #d18d00;
-}
-.autonomy-medium::before {
-    content: '\f4fc'; /* user-check icon */
-}
-
-.autonomy-low {
-    background-color: #fff0f0;
-    color: #d13030;
-}
-.autonomy-low::before {
-    content: '\f4fb'; /* user-clock icon */
+.key-points-title {
+    font-weight: 600;
+    color: var(--summary-dark);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-/* Quarterly list items styling */
-.achievement-theme, .stakeholder-impact, .key-capability {
+.key-points-title i {
+    color: #4338ca;
+    font-size: 0.9rem;
+}
+
+.key-highlights-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.key-highlights-list li {
     position: relative;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 5px;
-    padding: 12px 15px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
 }
 
-.achievement-theme:hover, .stakeholder-impact:hover, .key-capability:hover {
-    background-color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+.key-highlights-list li:last-child {
+    margin-bottom: 0;
+}
+
+.key-highlights-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0.5rem;
+    color: var(--summary-dark);
+    font-weight: bold;
+}
+
+/* Hover effects */
+.quarterly-summary-section:hover {
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
+    transform: translateY(-3px);
+    background-color: var(--summary-hover);
+}
+
+/* Overall organizational impact display */
+.organizational-impact {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    margin-top: 1rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.organizational-impact i {
+    color: #6366f1; /* Indigo icon */
+}
+
+.organizational-impact strong {
+    margin-right: 0.25rem;
+}
+
+/* Remove previous overall_alignment which doesn't match design */
+.overall-alignment {
+    display: none;
+}
+
+/* Achievement Themes section - Enhanced styling */
+.achievement-themes-section {
+    background-color: #f0fdf4; /* Light green background */
+    border-radius: 0.75rem; /* Match strategic alignment border radius */
+    border-left: 4px solid #16a34a; /* Green accent border */
+    box-shadow: 0 2px 10px rgba(22, 163, 74, 0.1);
+    padding: 1.25rem; /* Match strategic alignment padding */
+    margin-bottom: 1.5rem;
+}
+
+.achievement-themes-section h5 {
+    color: #16a34a; /* Green heading color */
+    font-size: 1.1rem; /* Match strategic alignment font size */
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1.5px solid #47b26ca1; /* Increased thickness for divider */
+}
+
+/* Achievement themes title */
+.achievement-themes-section h6 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #16a34a; 
+    margin: 1.25rem 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Themes container grid layout */
+.themes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Achievement theme card styling */
+.achievement-theme {
+    background-color: white;
+    border-radius: var(--rounded);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #dcfce7;
+    border-left: 3px solid #16a34a;
+    transition: var(--transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.achievement-theme:hover {
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+    transform: translateY(-3px);
+    background-color: #fafffe;
+}
+
+.achievement-theme h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #15803d;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    position: relative;
+    padding-left: 28px; /* Make space for the icon */
+}
+
+.achievement-theme h6::before {
+    content: '\f5a2'; /* medal icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #16a34a;
+    font-size: 0.9rem;
+}
+
+.theme-description {
+    margin-bottom: 1rem;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Achievement list styling */
+.theme-achievements {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+    flex: 1; /* Allow the list to take up available space */
+}
+
+.theme-achievements li {
+    position: relative;
+    padding: 0.4rem 0;
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+    line-height: 1.4;
+}
+
+.theme-achievements li::before {
+    content: '\f00c'; /* checkmark icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: -1.5rem;
+    top: 0.4rem;
+    color: #16a34a;
+}
+
+/* Theme impact and business outcome styling */
+.theme-impact {
+    background-color: rgba(22, 163, 74, 0.08);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    border: 1px solid rgba(22, 163, 74, 0.15);
+    line-height: 1.5;
+}
+
+.theme-impact strong {
+    color: #15803d;
+    font-weight: 600;
+}
+
+/* Business outcome specific styling */
+.theme-business-outcome {
+    background-color: rgba(8, 145, 178, 0.08);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    border: 1px solid rgba(8, 145, 178, 0.15);
+    line-height: 1.5;
+}
+
+.theme-business-outcome strong {
+    color: #0369a1;
+    font-weight: 600;
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 /* Animation delays for quarterly sections */
@@ -280,15 +731,2403 @@
 .quarterly-section:nth-child(6) { animation-delay: 0.5s; }
 .quarterly-section:nth-child(7) { animation-delay: 0.6s; }
 .quarterly-section:nth-child(8) { animation-delay: 0.7s; }
+.quarterly-section:nth-child(9) { animation-delay: 0.8s; }
+
+/* Tooltip system specific to quarterly */
+.quarterly-section .tooltip-trigger {
+    position: relative;
+    display: inline-flex;
+    margin-left: 4px;
+    color: var(--quarterly-neutral);
+    cursor: help;
+    z-index: 100;
+}
+
+.quarterly-section .tooltip {
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 250px;
+    max-width: 350px;
+    background-color: var(--text-main);
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    font-weight: normal;
+    line-height: 1.5;
+    z-index: 101;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+.quarterly-section .tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: var(--text-main) transparent transparent transparent;
+}
+
+.quarterly-section .tooltip-trigger:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .quarterly-meta {
-        flex-direction: column;
-        gap: 8px;
+        flex-direction: row; /* Changed from column to maintain horizontal layout */
+        flex-wrap: wrap;
+        gap: 6px; /* Reduced gap for mobile */
     }
     
-    .quarterly-section {
-        padding: 15px;
+    .quarterly-metric-badge {
+        width: 130px; /* Smaller on mobile */
+        padding: 8px 12px; /* Smaller padding on mobile */
+    }
+    
+    /* Impact Scope, Organizational Impact, Learning Agility, Autonomy Level, Risk Trend icons */
+.impact-scope::before, .org-impact::before, .learning-agility::before, 
+.autonomy-level::before, .risk-trend::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+/* Organizational impact badges */
+.impact-individual {
+    background-color: rgba(219, 234, 254, 0.5);
+    color: #1e40af;
+}
+.impact-individual::before {
+    content: '\f007'; /* user icon */
+}
+
+.impact-team {
+    background-color: rgba(191, 219, 254, 0.5);
+    color: #1d4ed8;
+}
+.impact-team::before {
+    content: '\f0c0'; /* users icon */
+}
+
+.impact-department {
+    background-color: rgba(147, 197, 253, 0.5);
+    color: #2563eb;
+}
+.impact-department::before {
+    content: '\f1ad'; /* building icon */
+}
+
+.impact-organization {
+    background-color: rgba(96, 165, 250, 0.5);
+    color: #3730a3;
+}
+.impact-organization::before {
+    content: '\f19c'; /* university/organization icon */
+}
+
+/* Learning agility badges */
+.agility-high {
+    background-color: rgba(209, 250, 229, 0.5);
+    color: #047857;
+}
+.agility-high::before {
+    content: '\f135'; /* rocket icon */
+}
+
+.agility-medium {
+    background-color: rgba(254, 240, 138, 0.5);
+    color: #854d0e;
+}
+.agility-medium::before {
+    content: '\f110'; /* spinner icon */
+}
+
+.agility-low {
+    background-color: rgba(254, 226, 226, 0.5);
+    color: #b91c1c;
+}
+.agility-low::before {
+    content: '\f05e'; /* ban icon */
+}
+
+/* Autonomy level badges */
+.autonomy-high {
+    background-color: rgba(209, 250, 229, 0.5);
+    color: #047857;
+}
+.autonomy-high::before {
+    content: '\f183'; /* person icon */
+}
+
+.autonomy-medium {
+    background-color: rgba(254, 240, 138, 0.5);
+    color: #854d0e;
+}
+.autonomy-medium::before {
+    content: '\f4fc'; /* user-check icon */
+}
+
+.autonomy-low {
+    background-color: rgba(254, 226, 226, 0.5);
+    color: #b91c1c;
+}
+.autonomy-low::before {
+    content: '\f4fb'; /* user-clock icon */
+}
+}
+
+/* Card-based component styling */
+.quarterly-card {
+    background-color: white;
+    border-radius: var(--rounded);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    border: 1px solid var(--border);
+    position: relative;
+}
+
+.quarterly-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.quarterly-card h6 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+    font-size: 1rem;
+}
+
+/* Card grid layouts */
+.quarterly-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Strategic alignment initiatives */
+.initiative-card {
+    border-left: 3px solid var(--quarterly-primary);
+}
+
+.initiative-card h6 {
+    color: var(--quarterly-primary);
+}
+
+.initiative-description {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text-main);
+}
+
+.alignment-rating {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background-color: var(--quarterly-primary-light);
+    color: var(--quarterly-primary);
+    margin-top: 1rem;
+}
+
+/* Strategic alignment section - Enhanced styling - DELETE THIS DUPLICATE */
+.strategic-alignment-section {
+    background-color: var(--strategic-light);
+    border-left: 4px solid var(--strategic-dark);
+    box-shadow: 0 2px 10px rgba(99, 102, 241, 0.1);
+}
+
+.strategic-alignment-section h5 {
+    color: var(--strategic-dark);
+    border-bottom-color: var(--strategic-border);
+}
+
+.strategic-alignment-section h5::before {
+    content: '\f0e8'; /* sitemap icon */
+    color: var(--strategic-dark);
+}
+
+/* Key strategic initiatives title - DELETE THIS DUPLICATE */
+.strategic-alignment-section h6 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--strategic-dark);
+    margin: 1.25rem 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.strategic-alignment-section h6::before {
+    content: '\f0eb'; /* lightbulb icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--strategic-dark);
+    font-size: 0.9rem;
+}
+
+/* Initiative cards grid - DELETE THIS DUPLICATE */
+.initiatives-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Initiative card styling - DELETE THIS DUPLICATE */
+.initiative-card {
+    background-color: white;
+    border-radius: var(--rounded);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--strategic-border);
+    border-left: 3px solid var(--strategic-dark);
+    transition: var(--transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.initiative-card:hover {
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+    transform: translateY(-3px);
+    background-color: var(--strategic-hover);
+}
+
+.initiative-card h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--strategic-dark);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    position: relative;
+    padding-left: 28px; /* Make space for the icon */
+}
+
+.initiative-card h6::before {
+    content: '\f0b1'; /* briefcase icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: var(--strategic-dark);
+    font-size: 0.9rem;
+}
+
+/* Initiative outcomes styled like business outcomes in achievement themes - DELETE THIS DUPLICATE */
+.initiative-outcome {
+    font-style: italic;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    background-color: rgba(99, 102, 241, 0.1);
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-top: auto; /* Push to bottom of flex container */
+}
+
+.capability-proficiency, .capability-evidence {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+}
+
+/* Consistency metrics styling */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.metric {
+    background-color: white;
+    border-radius: var(--rounded);
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.metric:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.metric-name {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+    text-align: center;
+}
+
+.metric-value {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* Performance Trajectory Section Enhancement */
+.performance-trajectory-section {
+    background-color: var(--performance-light);
+    border-radius: 0.75rem;
+    border-left: 4px solid var(--performance-dark);
+    box-shadow: 0 2px 10px rgba(79, 70, 229, 0.1);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.performance-trajectory-section h5 {
+    color: var(--performance-dark);
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--performance-border);
+}
+
+.performance-trajectory-section h5::before {
+    content: '\f201'; /* chart icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--performance-dark);
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Performance consistency title */
+.performance-trajectory-section h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--performance-dark);
+    margin: 1.25rem 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.performance-trajectory-section h6::before {
+    content: '\f0ae'; /* tasks icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--performance-dark);
+    font-size: 0.9rem;
+}
+
+/* Performance metrics grid */
+.performance-trajectory-section .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Metric card styling */
+.performance-trajectory-section .metric {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    border-left: 3px solid var(--performance-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    height: 100%;
+    text-align: center;
+}
+
+.performance-trajectory-section .metric:hover {
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+    transform: translateY(-3px);
+    background-color: var(--performance-hover);
+}
+
+.performance-trajectory-section .metric-name {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #4b5563;
+    text-align: center;
+    font-size: 1.05rem;
+    width: 100%;
+}
+
+.performance-trajectory-section .metric-value {
+    padding: 0.35rem 1rem;
+    border-radius: 1.25rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    min-width: 80px;
+    text-align: center;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+/* Performance value colors */
+.performance-trajectory-section .metric-value.high {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #047857;
+}
+
+.performance-trajectory-section .metric-value.medium {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #b45309;
+}
+
+.performance-trajectory-section .metric-value.low {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #b91c1c;
+}
+
+
+/* Performance Trajectory metric name structure to match credibility */
+.performance-trajectory-section .metric {
+    --perf-metric-gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--perf-metric-gap);
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.performance-trajectory-section .metric-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--perf-metric-gap, 1rem);
+    margin: 0;
+    padding: 0;
+    color: #334155;
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1;
+    text-align: center;
+    width: auto;
+}
+
+/* Metric name icons for Performance Trajectory */
+.performance-trajectory-section .metric-name::before {
+    display: block;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1.12rem;
+    color: var(--performance-dark);
+    margin: 0;
+    line-height: 1;
+}
+
+.performance-trajectory-section .metric-name.task-completion::before {
+    content: '\f0ae'; /* tasks icon */
+}
+
+.performance-trajectory-section .metric-name.work-quality::before {
+    content: '\f3a5'; /* gem icon */
+}
+
+.performance-trajectory-section .metric-name.performance-stability::before {
+    content: '\f24e'; /* balance-scale icon */
+}
+
+
+/* Notable shifts section */
+.performance-trajectory-section .notable-shifts h6 {
+    color: var(--performance-dark);
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0 1rem 0;
+}
+
+.performance-trajectory-section .notable-shifts h6::before {
+    content: '\f362'; /* exchange-alt icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--performance-dark);
+    margin-right: 0.5rem;
+}
+
+/* Notable shifts timeline styling */
+.shifts-timeline-container {
+    margin: 1.5rem 0;
+    position: relative;
+    padding: 2rem 0;
+}
+
+/* The actual timeline (the horizontal line) */
+.shifts-timeline {
+    position: relative;
+    height: 4px;
+    background-color: rgba(79, 70, 229, 0.25);
+    margin: 0 1rem;
+    border-radius: 4px;
+}
+
+/* Month markers along the timeline */
+.timeline-month-marker {
+    position: absolute;
+    top: -1.5rem;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+/* Fix for month marker positioning */
+.timeline-month-marker:nth-of-type(1) {
+    left: 0;
+}
+
+.timeline-month-marker:nth-of-type(2) {
+    left: 50%;
+}
+
+.timeline-month-marker:nth-of-type(3) {
+    left: 100%;
+}
+
+/* Remove these conflicting selectors entirely, not just comment their content */
+/* 
+.timeline-month-marker:first-child,
+.timeline-month-marker:last-child {
+    
+}
+*/
+
+/* Container for all shift cards */
+.timeline-shifts-container {
+    position: relative;
+    margin-top: 2.5rem;
+}
+
+/* Individual shift card connected to timeline */
+.timeline-shift-card {
+    position: relative;
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(79, 70, 229, 0.15);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: calc(100% - 2rem);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: var(--transition);
+    
+    /* Default position, will be overridden by inline style */
+    --timeline-position: 50%;
+}
+
+.timeline-shift-card::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: var(--timeline-position);
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    background-color: var(--performance-dark);
+    border-radius: 50%;
+    z-index: 2;
+}
+
+/* Connector between timeline and card */
+.timeline-connector {
+    position: absolute;
+    top: -25px;
+    left: var(--timeline-position);
+    transform: translateX(-50%);
+    width: 2px;
+    height: 25px;
+    background-color: var(--performance-dark);
+    z-index: 1;
+}
+
+/* Month badge styling - preserve existing style */
+.timeline-shift-card .shift-month {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    align-self: flex-start;
+    background-color: rgba(79, 70, 229, 0.1);
+    color: var(--performance-dark);
+    border: 1px solid rgba(79, 70, 229, 0.2);
+}
+
+.timeline-shift-card .shift-month i {
+    margin-right: 0.5rem;
+    color: var(--performance-dark);
+}
+
+/* Hover effect */
+.timeline-shift-card:hover {
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+    transform: translateY(-3px);
+}
+
+
+/* Enhanced shift content container */
+.shift-content-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+/* Shift description section */
+.shift-description-section {
+    display: flex;
+    padding: 0.75rem;
+    background-color: rgba(79, 70, 229, 0.05);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(79, 70, 229, 0.1);
+    gap: 0.75rem;
+}
+
+/* Direction-specific styling */
+.shift-positive {
+    background-color: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+.shift-negative {
+    background-color: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+/* Direction icon styling */
+.shift-direction-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-color: rgba(79, 70, 229, 0.1);
+    color: var(--performance-dark);
+}
+
+.shift-positive .shift-direction-icon {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+.shift-negative .shift-direction-icon {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+/* Shift description content */
+.shift-description-content {
+    flex: 1;
+}
+
+.shift-description-heading {
+    font-weight: 600;
+    color: var(--performance-dark);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.shift-positive .shift-description-heading {
+    color: #059669;
+}
+
+.shift-negative .shift-description-heading {
+    color: #dc2626;
+}
+
+.shift-description-text {
+    font-size: 0.95rem;
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+/* Factors section styling */
+.shift-factors-section {
+    display: flex;
+    padding: 0.75rem;
+    background-color: rgba(124, 58, 237, 0.05);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(124, 58, 237, 0.1);
+    gap: 0.75rem;
+}
+
+.shift-factors-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-color: rgba(124, 58, 237, 0.1);
+    color: #7c3aed;
+}
+
+.shift-factors-content {
+    flex: 1;
+}
+
+.shift-factors-heading {
+    font-weight: 600;
+    color: #7c3aed;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.shift-factors-list {
+    list-style-type: disc;
+    padding-left: 1rem;
+    margin: 0.5rem 0 0;
+}
+
+.shift-factors-list li {
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.shift-factors-text {
+    font-size: 0.95rem;
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+
+/* Handle overlapping cards by staggering them */
+.timeline-shift-card:not(:first-child) {
+    margin-top: -0.5rem; /* Negative top margin to bring cards closer */
+}
+
+/* Apply a staggered effect for cards that have close positioning */
+.timeline-shifts-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Create specific staggered positions for cards when they're close together */
+.timeline-shift-card[style*="--timeline-position: 0%"] + 
+.timeline-shift-card[style*="--timeline-position: 0%"],
+.timeline-shift-card[style*="--timeline-position: 50%"] + 
+.timeline-shift-card[style*="--timeline-position: 50%"],
+.timeline-shift-card[style*="--timeline-position: 100%"] + 
+.timeline-shift-card[style*="--timeline-position: 100%"] {
+    margin-top: 1.5rem; /* Move subsequent cards with the same position down */
+}
+
+/* Add different z-index to ensure hover states work properly with staggered cards */
+.timeline-shift-card:nth-child(odd) {
+    z-index: 2;
+}
+
+.timeline-shift-card:nth-child(even) {
+    z-index: 1;
+}
+
+/* Increase z-index on hover to ensure the hovered card is always on top */
+.timeline-shift-card:hover {
+    z-index: 10;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .timeline-shift-card {
+        width: calc(100% - 1rem);
+    }
+}
+
+/* Challenge Patterns Section - Enhanced styling */
+.challenge-patterns-section {
+    background-color: #fff8f1; /* Light orange/amber background */
+    border-radius: 0.75rem;
+    border-left: 4px solid #ea580c; /* Orange accent border */
+    box-shadow: 0 2px 10px rgba(234, 88, 12, 0.1);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.challenge-patterns-section h5 {
+    color: #ea580c; /* Orange heading color */
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(234, 88, 12, 0.3);
+}
+
+.challenge-patterns-section h5::before {
+    content: '\f0e7'; /* bolt icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #ea580c;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Challenge patterns title */
+.challenge-patterns-section h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #c2410c; /* Darker orange for subheadings */
+    margin: 1.25rem 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.challenge-patterns-section h6::before {
+    content: '\f071'; /* exclamation-triangle icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #c2410c;
+    font-size: 0.9rem;
+}
+
+/* Challenges grid layout */
+.challenges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Challenge card styling */
+.challenge-card {
+    background-color: white;
+    border-radius: var(--rounded);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #fdded8;
+    border-left: 3px solid #ea580c;
+    transition: var(--transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.challenge-card:hover {
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
+    transform: translateY(-3px);
+    background-color: #fffaf5;
+}
+
+.challenge-card h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #c2410c;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    position: relative;
+    padding-left: 28px; /* Make space for the icon */
+}
+
+.challenge-card h6::before {
+    content: '\f06a'; /* exclamation-circle icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #ea580c;
+    font-size: 0.9rem;
+}
+
+/* Challenge details styling */
+.challenge-details {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    flex: 1;
+}
+
+.challenge-details li {
+    padding: 0.375rem 0;
+    border-bottom: 1px solid rgba(234, 88, 12, 0.1);
+    display: flex;
+    justify-content: space-between;
+}
+
+.challenge-details li:last-child {
+    border-bottom: none;
+}
+
+.challenge-details li strong {
+    color: #c2410c;
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+/* Challenge status badges */
+.challenge-status {
+    display: block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin: 0.75rem auto; /* center horizontally */
+    text-align: center; /* center text inside badge */
+    width: fit-content; /* shrink to content while allowing auto margins to center */
+}
+
+/* Fallback for older browsers that don't support fit-content */
+@supports not (width: fit-content) {
+    .challenge-status { display: inline-block; }
+    .challenge-status-wrapper { text-align: center; } /* optional wrapper if available */
+}
+
+.status-resolved {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #047857;
+}
+
+.status-in-progress {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #b45309;
+}
+
+.status-unresolved {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #b91c1c;
+}
+
+/* Adaptation effectiveness styling */
+.adaptation-metric {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    border: 1px solid #fdded8;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+}
+
+.adaptation-metric i {
+    color: #ea580c;
+    margin-right: 0.75rem;
+}
+
+.adaptation-metric strong {
+    margin-right: 0.25rem;
+}
+
+/* Adaptation effectiveness levels */
+.adaptation-high {
+    border-left: 3px solid #15803d;
+}
+
+.adaptation-medium {
+    border-left: 3px solid #b45309;
+}
+
+.adaptation-low {
+    border-left: 3px solid #b91c1c;
+}
+
+/* Cross-Functional Impact Section - Enhanced styling */
+.cross-functional-section {
+    background-color: #f5f3ff; /* Light violet background */
+    border-radius: 0.75rem;
+    border-left: 4px solid #7c3aed; /* Violet accent border */
+    box-shadow: 0 2px 10px rgba(124, 58, 237, 0.1);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.cross-functional-section h5 {
+    color: #7c3aed; /* Violet heading color */
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(124, 58, 237, 0.3);
+}
+
+.cross-functional-section h5::before {
+    content: '\f0c0'; /* users icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #7c3aed;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Cross-functional section titles */
+.cross-functional-section h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6d28d9; /* Darker violet for subheadings */
+    margin: 1.25rem 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cross-functional-section h6::before {
+    content: '\f4fc'; /* user-check icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #6d28d9;
+    font-size: 0.9rem;
+}
+
+/* Stakeholders grid layout */
+.stakeholders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Stakeholder card styling */
+.stakeholder-card {
+    background-color: white;
+    border-radius: var(--rounded);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #e9d5ff;
+    border-left: 3px solid #7c3aed;
+    transition: var(--transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.stakeholder-card:hover {
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+    transform: translateY(-3px);
+    background-color: #faf5ff;
+}
+
+.stakeholder-card h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6d28d9;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    position: relative;
+    padding-left: 28px; /* Make space for the icon */
+}
+
+.stakeholder-card h6::before {
+    content: '\f507'; /* user-friends icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #7c3aed;
+    font-size: 0.9rem;
+}
+
+.stakeholder-role {
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    color: #4c1d95;
+    font-weight: 500;
+}
+
+.stakeholder-card p {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-main);
+    flex: 1;
+}
+
+/* Knowledge sharing styling - Updated to match screenshot */
+.knowledge-sharing-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.knowledge-sharing-list li {
+    position: relative;
+    padding: 0.5rem 0.5rem 0.5rem 2.25rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    background-color: white;
+    border-radius: var(--rounded);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #e9d5ff;
+    transition: var(--transition);
+}
+
+.knowledge-sharing-list li:hover {
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
+    transform: translateY(-2px);
+}
+
+.knowledge-sharing-list li::before {
+    content: '\f19d'; /* graduation-cap icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0.75rem;
+    top: 0.5rem;
+    color: #7c3aed;
+    font-size: 0.9rem;
+}
+
+/* Knowledge sharing title - ensure it matches other h6 headings */
+.cross-functional-section h6.knowledge-title::before {
+    content: '\f19d'; /* graduation-cap icon */
+    margin-right: 0.75rem;
+}
+
+/* Collaboration / adaptation styling - aligned with knowledge sharing visual style */
+.collaboration-metric {
+    position: relative;
+    padding: 1rem 1.25rem 1rem 2.25rem; /* space for icon to left, match knowledge-sharing spacing */
+    background-color: white;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    border: 1px solid #e9d5ff;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+    font-size: 0.95rem; /* consistent with knowledge sharing */
+    line-height: 1.5;
+}
+
+/* Icon for collaboration (handshake) to match knowledge-sharing style */
+.collaboration-metric::before {
+    content: '\f2b5'; /* handshake icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7c3aed; /* consistent accent with cross-functional/knowledge-sharing */
+    font-size: 0.9rem;
+}
+
+.collaboration-metric strong {
+    margin-right: 0.25rem;
+}
+
+.collaboration-high {
+    border-left: 3px solid #15803d;
+}
+
+.collaboration-medium {
+    border-left: 3px solid #b45309;
+}
+
+.collaboration-low {
+    border-left: 3px solid #b91c1c;
+}
+
+/* Risk Assessment Section - Enhanced styling */
+.risk-assessment-section {
+    background-color: #fef2f2; /* Light red background */
+    border-radius: 0.75rem;
+    border-left: 4px solid #dc2626; /* Red accent border */
+    box-shadow: 0 2px 10px rgba(220, 38, 38, 0.1);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.risk-assessment-section h5 {
+    color: #dc2626; /* Red heading color */
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.risk-assessment-section h5::before {
+    content: '\f06a'; /* exclamation-circle icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #dc2626;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Risk metrics styling to match performance consistency */
+.risk-assessment-section .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.risk-assessment-section .metric {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #fee2e2;
+    border-left: 3px solid #dc2626;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    height: 100%;
+    text-align: center;
+}
+
+.risk-assessment-section .metric:hover {
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+    transform: translateY(-3px);
+    background-color: #fff8f8;
+}
+
+.risk-assessment-section .metric-name {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #4b5563;
+    text-align: center;
+    font-size: 1.05rem;
+    width: 100%;
+}
+
+.risk-assessment-section .metric-value {
+    padding: 0.35rem 1rem;
+    border-radius: 1.25rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    min-width: 80px;
+    text-align: center;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+/* Risk level color variations */
+.risk-assessment-section .metric-value.high {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.risk-assessment-section .metric-value.medium {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+}
+
+.risk-assessment-section .metric-value.low {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+/* Risk trend color variations */
+.risk-assessment-section .metric-value.trend-increasing {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.risk-assessment-section .metric-value.trend-stable {
+    background-color: rgba(99, 102, 241, 0.1);
+    color: #4f46e5;
+}
+
+.risk-assessment-section .metric-value.trend-decreasing {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+/* Risk Assessment metric name structure to match credibility */
+.risk-assessment-section .metric {
+    --risk-metric-gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--risk-metric-gap);
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.risk-assessment-section .metric-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--risk-metric-gap, 1rem);
+    margin: 0;
+    padding: 0;
+    color: #334155;
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1;
+    text-align: center;
+    width: auto;
+}
+
+/* Metric name icons for Risk Assessment */
+.risk-assessment-section .metric-name::before {
+    display: block;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1.12rem;
+    color: #dc2626;
+    margin: 0;
+    line-height: 1;
+}
+
+/* Risk assessment section titles */
+.risk-assessment-section h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #b91c1c; /* Darker red for subheadings */
+    margin: 1.25rem 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.risk-assessment-section h6::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #b91c1c;
+    font-size: 0.9rem;
+}
+
+/* Risk indicators title icon */
+.risk-assessment-section h6:nth-of-type(1)::before {
+    content: '\f201'; /* chart icon - matching Performance Consistency */
+}
+
+/* Risk factors title icon */
+.risk-assessment-section h6:nth-of-type(2)::before {
+    content: '\f071'; /* exclamation-triangle icon */
+}
+
+/* Mitigation strategies title icon */
+.risk-assessment-section h6:nth-of-type(3)::before {
+    content: '\f132'; /* shield-alt icon */
+}
+
+/* Risk factors list styling */
+.risk-factors-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.risk-factor-item {
+    position: relative;
+    margin-bottom: 0.75rem;
+    background-color: white;
+    border-radius: var(--rounded);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #fee2e2;
+    border-left: 3px solid #dc2626;
+    transition: var(--transition);
+}
+
+.risk-factor-item:hover {
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+    transform: translateY(-3px);
+    background-color: #fffbfb;
+}
+
+.risk-factor-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+}
+
+.risk-factor-content i {
+    color: #dc2626;
+    font-size: 1rem;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.risk-factor-content span {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-main);
+}
+
+/* Mitigation strategies list styling */
+.mitigation-strategies-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.mitigation-strategy-item {
+    position: relative;
+    margin-bottom: 0.75rem;
+    background-color: white;
+    border-radius: var(--rounded);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #e9d5ff; /* Purple border for contrast with risk factors */
+    border-left: 3px solid #7c3aed; /* Purple accent for mitigation */
+    transition: var(--transition);
+}
+
+.mitigation-strategy-item:hover {
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+    transform: translateY(-3px);
+    background-color: #faf5ff;
+}
+
+.mitigation-strategy-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+}
+
+.mitigation-strategy-content i {
+    color: #7c3aed;
+    font-size: 1rem;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.mitigation-strategy-content p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-main);
+}
+
+/* Responsive adjustments for risk assessment section */
+@media (max-width: 768px) {
+    .risk-overview {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .risk-factors-grid, .mitigation-strategies-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Skill Development Section - Enhanced styling */
+.skill-development-section {
+    background-color: #ecfeff; /* Light cyan/teal background */
+    border-radius: 0.75rem;
+    border-left: 4px solid #0891b2; /* Cyan accent border */
+    box-shadow: 0 2px 10px rgba(8, 145, 178, 0.1);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.skill-development-section h5 {
+    color: #0891b2; /* Cyan heading color */
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(8, 145, 178, 0.3);
+}
+
+.skill-development-section h5::before {
+    content: '\f5fc'; /* brain icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #0891b2;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Skill development section titles */
+.skill-development-section h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0e7490; /* Darker cyan for subheadings */
+    margin: 1.25rem 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.skill-development-section h6::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #0e7490;
+    font-size: 0.9rem;
+}
+
+/* Key capabilities title icon */
+.skill-development-section h6:first-of-type::before {
+    content: '\f19d'; /* graduation-cap icon */
+}
+
+/* Development focus title icon */
+.skill-development-section h6.development-focus-title::before {
+    content: '\f024'; /* flag icon */
+}
+
+/* Key capabilities grid layout */
+.skill-development-section .quarterly-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Key capability card styling */
+.key-capability {
+    background-color: white;
+    border-radius: var(--rounded);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #a5f3fc;
+    border-left: 3px solid #0891b2;
+    transition: var(--transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.key-capability:hover {
+    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.15);
+    transform: translateY(-3px);
+    background-color: #f0fdff;
+}
+
+.key-capability h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0e7490;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    position: relative;
+    padding-left: 28px; /* Make space for the icon */
+}
+
+.key-capability h6::before {
+    content: '\f5da'; /* lightbulb-on icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #0891b2;
+    font-size: 0.9rem;
+}
+
+/* Capability details styling */
+.capability-proficiency, 
+.capability-growth {
+    background-color: rgba(8, 145, 178, 0.08);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    border: 1px solid rgba(8, 145, 178, 0.15);
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Add this to push content apart */
+}
+
+.capability-proficiency strong,
+.capability-growth strong {
+    color: #0e7490;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    display: inline-block;
+    min-width: 80px;
+}
+
+/* Add styling for the value part */
+.capability-proficiency span,
+.capability-growth span {
+    text-align: right;
+    flex: 1; /* Takes remaining space */
+}
+
+/* Responsive adjustments for skill development section */
+@media (max-width: 768px) {
+    .skill-development-section .quarterly-card-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .skill-development-section .skills-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Adjust text alignment for value spans in capability details */
+.capability-proficiency span,
+.capability-growth span {
+    text-align: right;
+    flex: 1; /* Takes remaining space */
+}
+
+/* Skills metrics grid styling */
+.skill-development-section .skills-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin: 1rem 0 1.5rem;
+}
+
+.skill-development-section .skill-metric {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #a5f3fc;
+    border-left: 3px solid #0891b2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    height: 100%;
+    text-align: center;
+}
+
+.skill-development-section .skill-metric:hover {
+    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.15);
+    transform: translateY(-3px);
+    background-color: #f0fdff;
+}
+
+.skill-development-section .skill-metric-name {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #4b5563;
+    text-align: center;
+    font-size: 1.05rem;
+    width: 100%;
+    position: relative;
+    padding-top: 28px; /* Make room for icon */
+}
+
+.skill-development-section .skill-metric-name::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    font-size: 1.1rem;
+    color: #0891b2;
+}
+
+.skill-development-section .skill-metric-name.agility::before {
+    content: '\f21c'; /* street-view icon - represents adaptability */
+}
+
+.skill-development-section .skill-metric-name.autonomy::before {
+    content: '\f508'; /* user-edit icon - represents independence */
+}
+
+.skill-development-section .skill-metric-value {
+    padding: 0.35rem 1rem;
+    border-radius: 1.25rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    min-width: 80px;
+    text-align: center;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+/* Value colors */
+.skill-development-section .skill-metric-value.high {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #047857;
+}
+
+.skill-development-section .skill-metric-value.medium {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #b45309;
+}
+
+.skill-development-section .skill-metric-value.low {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #b91c1c;
+}
+
+/* Development focus styling */
+.development-focus {
+    background-color: white;
+    border-radius: var(--rounded);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #a5f3fc;
+    border-left: 3px solid #0891b2;
+    margin-top: 1.5rem;
+    transition: var(--transition);
+}
+
+.development-focus:hover {
+    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.15);
+    transform: translateY(-3px);
+}
+
+.development-focus h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0e7490;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    padding-left: 28px; /* Space for icon */
+    position: relative;
+}
+
+.development-focus h6::before {
+    content: '\f024'; /* flag icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 1px;
+    color: #0891b2;
+}
+
+.development-focus p {
+    background-color: rgba(8, 145, 178, 0.05);
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 0;
+    border: 1px solid rgba(8, 145, 178, 0.1);
+    line-height: 1.5;
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+/* Behavioral Assessment Section - Enhanced styling */
+.behavioral-assessment-section {
+    background-color: #eef2ff; /* Light indigo background */
+    border-radius: 0.75rem;
+    border-left: 4px solid #4f46e5; /* Indigo accent border */
+    box-shadow: 0 2px 10px rgba(79, 70, 229, 0.1);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.behavioral-assessment-section h5 {
+       color: #4f46e5; /* Indigo heading color */
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(79, 70, 229, 0.3);
+}
+
+.behavioral-assessment-section h5::before {
+    content: '\f4fd'; /* user-chart icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #4f46e5;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Behaviors grid layout */
+.behaviors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Behavior card styling */
+.quarterly-card.behavior-card {
+    background-color: white;
+    border-radius: var(--rounded);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #c7d2fe;
+    border-left: 3px solid #4f46e5;
+    transition: var(--transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.quarterly-card.behavior-card:hover {
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+    transform: translateY(-3px);
+    background-color: #f8fafc;
+}
+
+.behavior-card h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #4338ca;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    position: relative;
+    padding-left: 28px; /* Make space for the icon */
+}
+
+/* Specific icons for different behavior types */
+.behavior-card.ownership h6::before {
+    content: '\f2b5'; /* handshake icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #4f46e5;
+    font-size: 0.9rem;
+}
+
+.behavior-card.collaboration h6::before {
+    content: '\f0c0'; /* users icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #4f46e5;
+    font-size: 0.9rem;
+}
+
+.behavior-card.communication h6::before {
+    content: '\f4ad'; /* comment-dots icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #4f46e5;
+    font-size: 0.9rem;
+}
+
+.behavior-card.problem-solving h6::before {
+    content: '\f0eb'; /* lightbulb icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #4f46e5;
+    font-size: 0.9rem;
+}
+
+.behavior-card.quality-standards h6::before {
+    content: '\f496'; /* weight scale icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #4f46e5;
+    font-size: 0.9rem;
+}
+
+/* Behavior rating badge */
+.behavior-rating {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    align-self: flex-start;
+    margin-top: 0.95rem;
+}
+
+.behavior-rating.below {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.behavior-rating.meets {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.behavior-rating.exceeds {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* Behavior evidence styling */
+.behavior-evidence {
+    background-color: rgba(79, 70, 229, 0.05);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    border: 1px solid rgba(79, 70, 229, 0.15);
+    line-height: 1.5;
+    color: #334155;
+    flex: 1;
+}
+
+.behavior-evidence strong {
+    color: #4338ca;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* Credibility Assessment Section - Enhanced styling */
+.credibility-assessment-section {
+    background-color: #f0fdf9; /* Light teal background */
+    border-radius: 0.75rem;
+    border-left: 4px solid #14b8a6; /* Teal accent border */
+    box-shadow: 0 2px 10px rgba(20, 184, 166, 0.1);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.credibility-assessment-section h5 {
+    color: #14b8a6; /* Teal heading color */
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(20, 184, 166, 0.3);
+}
+
+.credibility-assessment-section h5::before {
+    content: '\f058'; /* check-circle icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #14b8a6;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Credibility explanation styling */
+.credibility-explanation {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #99f6e4;
+    border-left: 3px solid #14b8a6;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #334155;
+}
+
+/* Metrics grid styling specifically for credibility section */
+.credibility-assessment-section .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.credibility-assessment-section .metric {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #99f6e4;
+    border-left: 3px solid #14b8a6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    height: 100%;
+    text-align: center;
+}
+
+.credibility-assessment-section .metric:hover {
+    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.15);
+    transform: translateY(-3px);
+    background-color: #f8fdfc;
+}
+
+/* Credibility metrics — consistent spacing and centered alignment */
+.credibility-assessment-section {
+    --cred-metric-gap: 1rem; /* increased gap between icon / label / value */
+}
+
+/* Ensure each metric is a vertically centered column and use a single gap for spacing */
+.credibility-assessment-section .metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--cred-metric-gap);
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Metric name flows with the icon and the value; no absolute positioning */
+.credibility-assessment-section .metric-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--cred-metric-gap, 1rem); /* slightly more gap between icon, label, value */
+    margin: 0;                 /* remove extra margins */
+    padding: 0;
+    color: #334155;
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1;
+    text-align: center;
+    width: auto;               /* do not force full width — center naturally */
+}
+
+/* Icon placed in normal flow above the label */
+.credibility-assessment-section .metric-name::before {
+    display: block;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1.12rem;
+    color: #14b8a6;
+    margin: 0;
+    line-height: 1;
+}
+
+/* Specific icons (flowing with label) */
+.credibility-assessment-section .metric-name.credibility-rating::before {
+    content: '\f4fc'; /* user-check icon */
+}
+.credibility-assessment-section .metric-name.vision-alignment::before {
+    content: '\f06e'; /* eye icon */
+}
+
+/* Value relies on the parent's gap for spacing so spacing is identical to icon->label */
+.credibility-assessment-section .metric-value {
+    padding: 0.35rem 1rem;
+    border-radius: 1.25rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    min-width: 80px;
+    text-align: center;
+    display: inline-block;
+    margin: 0; /* remove manual margins so gap is consistent */
+}
+
+/* Value color variants */
+.credibility-assessment-section .metric-value.high {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #047857;
+}
+.credibility-assessment-section .metric-value.medium {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #b45309;
+}
+.credibility-assessment-section .metric-value.low {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #b91c1c;
+}
+
+/* Small responsive tweak to keep centering on narrow screens */
+@media (max-width: 480px) {
+    .credibility-assessment-section .metric {
+        gap: calc(var(--cred-metric-gap, 1rem) * 0.85);
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    .credibility-assessment-section .metric-name {
+        font-size: 1rem;
+        gap: calc(var(--cred-metric-gap, 1rem) * 0.6);
+    }
+}
+.credibility-assessment-section .metric-name::before {
+    font-size: 1rem;
+}
+
+/* Impact on evaluation styling */
+.impact-evaluation {
+    background-color: white;
+    border-radius: var(--rounded);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #99f6e4;
+    border-left: 3px solid #14b8a6;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+}
+
+.impact-evaluation::before {
+    content: '\f05a'; /* info-circle icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #14b8a6;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.impact-evaluation strong {
+    color: #0f766e;
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+/* Forward Planning Section - Enhanced styling */
+.forward-planning-section {
+    background-color: #f0f7ff; /* Light blue background */
+    border-radius: 0.75rem;
+    border-left: 4px solid #3b82f6; /* Blue accent border */
+    box-shadow: 0 2px 10px rgba(59, 130, 246, 0.1);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.forward-planning-section h5 {
+    color: #3b82f6; /* Blue heading color */
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.forward-planning-section h5::before {
+    content: '\f073'; /* calendar-alt icon for planning */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #3b82f6;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Forward planning section titles */
+.forward-planning-section h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1.25rem 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    padding-left: 28px;
+}
+
+.forward-planning-section h6::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    font-size: 0.9rem;
+}
+
+/* Icons for each category */
+.forward-planning-section h6:nth-of-type(1)::before {
+    content: '\f061'; /* arrow-right icon for continue */
+    color: #2563eb;
+}
+
+.forward-planning-section h6:nth-of-type(2)::before {
+    content: '\f044'; /* edit-alt icon for improve */
+    color: #7c3aed;
+}
+
+.forward-planning-section h6:nth-of-type(3)::before {
+    content: '\f04b'; /* play icon for start */
+    color: #16a34a;
+}
+
+.forward-planning-section h6:nth-of-type(4)::before {
+    content: '\f04d'; /* stop icon */
+    color: #dc2626;
+}
+
+.forward-planning-section h6:nth-of-type(5)::before {
+    content: '\f0ad'; /* wrench icon for support */
+    color: #ea580c;
+}
+
+/* Forward planning lists */
+.forward-planning-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.forward-planning-section ul li {
+    position: relative;
+    margin-bottom: 0.75rem;
+    background-color: white;
+    border-radius: var(--rounded);
+    box-shadow: var(--shadow-sm);
+    padding: 0.75rem 1rem 0.75rem 2.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    transition: var(--transition);
+}
+
+.forward-planning-section ul li::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0.75rem;
+    top: 0.75rem;
+    font-size: 0.9rem;
+}
+
+/* Different styling for each list type */
+.continue-list li {
+    border-left: 3px solid #2563eb;
+}
+
+.continue-list li::before {
+    content: '\f058'; /* check-circle icon */
+    color: #2563eb;
+}
+
+.continue-list li:hover {
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    transform: translateY(-3px);
+    background-color: #f8faff;
+}
+
+.improve-list li {
+    border-left: 3px solid #7c3aed;
+}
+
+.improve-list li::before {
+    content: '\f12a'; /* exclamation icon */
+    color: #7c3aed;
+}
+
+.improve-list li:hover {
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+    transform: translateY(-3px);
+    background-color: #faf5ff;
+}
+
+.start-list li {
+    border-left: 3px solid #16a34a;
+}
+
+.start-list li::before {
+    content: '\f067'; /* plus icon */
+    color: #16a34a;
+}
+
+.start-list li:hover {
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+    transform: translateY(-3px);
+    background-color: #f0fdf4;
+}
+
+.stop-list li {
+    border-left: 3px solid #dc2626;
+}
+
+.stop-list li::before {
+    content: '\f00d'; /* times icon */
+    color: #dc2626;
+}
+
+.stop-list li:hover {
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+    transform: translateY(-3px);
+    background-color: #fef2f2;
+}
+
+.support-list li {
+    border-left: 3px solid #ea580c;
+}
+
+.support-list li::before {
+    content: '\f5b7'; /* hands-helping icon */
+    color: #ea580c;
+}
+
+.support-list li:hover {
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
+    transform: translateY(-3px);
+    background-color: #fff7ed;
+}
+
+/* Empty list item styling */
+.forward-planning-section .empty-list {
+    color: #6b7280;
+    font-style: italic;
+    background-color: rgba(243, 244, 246, 0.7);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .forward-planning-section {
+        padding: 1rem;
+    }
+    
+    .forward-planning-section ul li {
+        padding-left: 2rem;
+    }
+    
+    .forward-planning-section ul li::before {
+        left: 0.6rem;
     }
 }
