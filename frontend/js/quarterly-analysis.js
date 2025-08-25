@@ -134,6 +134,38 @@
         return jsonField; // Already an object
     }
     
+    // Add a helper function to ensure tooltips are properly positioned for heading tooltips
+    function ensureTooltipVisibility() {
+        // Select all tooltip triggers
+        const tooltipTriggers = document.querySelectorAll('.tooltip-trigger');
+        
+        // Add a small delay to ensure DOM is fully rendered
+        setTimeout(() => {
+            tooltipTriggers.forEach(trigger => {
+                const tooltip = trigger.querySelector('.tooltip');
+                if (tooltip) {
+                    // Skip tooltip repositioning for quarterly summary section
+                    if (trigger.closest('.quarterly-summary-section')) {
+                        return;
+                    }
+                    
+                    // Ensure tooltip is not clipped by viewport top
+                    const triggerRect = trigger.getBoundingClientRect();
+                    const tooltipHeight = tooltip.offsetHeight;
+                    
+                    // If trigger is too close to the top of viewport, position tooltip below instead
+                    if (triggerRect.top < tooltipHeight + 20) {
+                        tooltip.style.bottom = 'auto';
+                        tooltip.style.top = '125%';
+                        
+                        // Move the arrow to the top
+                        tooltip.classList.add('tooltip-bottom');
+                    }
+                }
+            });
+        }, 500);
+    }
+
     // Helper function to create a card-based component
     function createCard(className, title, content) {
         const card = document.createElement('div');
@@ -1568,12 +1600,15 @@
         
         // Scroll to the results
             analysisResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        
+        // Ensure tooltips are properly positioned
+        ensureTooltipVisibility();
+    }
     
-        // Export functions to global scope
-        window.quarterlyAnalysis = {
-            displayQuarterlyAnalysisResults: displayQuarterlyAnalysisResults
-        };
+    // Export functions to global scope
+    window.quarterlyAnalysis = {
+        displayQuarterlyAnalysisResults: displayQuarterlyAnalysisResults
+    };
 
     })();
 

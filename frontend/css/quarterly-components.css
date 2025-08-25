@@ -255,7 +255,7 @@
     animation: slideIn 0.4s ease-out;
     animation-fill-mode: both;
     position: relative;
-    overflow: hidden;
+    overflow: visible; /* Changed from 'hidden' to 'visible' to prevent tooltip clipping */
 }
 
 .quarterly-section:hover {
@@ -461,6 +461,15 @@
     border-bottom: 1px solid var(--summary-border);
 }
 
+.quarterly-summary-section h5::before {
+    content: '\f15c'; /* chart icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--summary-dark);
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
 .quarterly-summary-section h5 i.fa-clipboard-list {
     color: var(--summary-dark);
     font-size: 0.9rem;
@@ -582,8 +591,18 @@
     margin-top: 0;
     margin-bottom: 1.25rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1.5px solid #47b26ca1; /* Increased thickness for divider */
+    border-bottom: 1.5px solid #47b26ca1; 
 }
+
+.achievement-themes-section h5::before {
+    content: '\f091'; /* bolt icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #16a34a;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
 
 /* Achievement themes title */
 .achievement-themes-section h6 {
@@ -740,7 +759,7 @@
     margin-left: 4px;
     color: var(--quarterly-neutral);
     cursor: help;
-    z-index: 100;
+    z-index: 5; /* Lower z-index for the trigger */
 }
 
 .quarterly-section .tooltip {
@@ -758,7 +777,7 @@
     font-size: 0.8rem;
     font-weight: normal;
     line-height: 1.5;
-    z-index: 101;
+    z-index: 9999; /* Increased z-index to ensure tooltips appear above all content */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s;
@@ -777,9 +796,28 @@
     border-color: var(--text-main) transparent transparent transparent;
 }
 
+/* Add styling for tooltips positioned below triggers */
+.quarterly-section .tooltip-bottom::after {
+    top: auto;
+    bottom: 100%;
+    border-color: transparent transparent var(--text-main) transparent;
+}
+
 .quarterly-section .tooltip-trigger:hover .tooltip {
     visibility: visible;
     opacity: 1;
+}
+
+/* Ensure quarterly summary section tooltips always appear upward */
+.quarterly-summary-section .tooltip-trigger .tooltip {
+    bottom: 125%;
+    top: auto !important; /* Override any inline styles set by JavaScript */
+}
+
+.quarterly-summary-section .tooltip-trigger .tooltip::after {
+    top: 100%;
+    bottom: auto;
+    border-color: var(--text-main) transparent transparent transparent;
 }
 
 /* Responsive adjustments */
@@ -1032,7 +1070,7 @@
     font-size: 0.9rem;
 }
 
-/* Initiative outcomes styled like business outcomes in achievement themes - DELETE THIS DUPLICATE */
+/* Outcomes box styling - making it similar to screenshot */
 .initiative-outcome {
     font-style: italic;
     color: var(--text-main);
