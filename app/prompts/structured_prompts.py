@@ -841,67 +841,80 @@ Strategic Recommendations:
 {recommendations_text or "None provided"}
 """
 
-        # Find weekly analyses for this month
-        month_weekly_analyses = []
-        for weekly_analysis in weekly_analyses:
-            week_date = weekly_analysis.get("date")
-            if week_date and hasattr(week_date, "month") and week_date.month == month_num:
-                month_weekly_analyses.append(weekly_analysis)
-        
-        # Format and add weekly analyses for this month if available
-        if month_weekly_analyses:
-            weekly_analyses_section = f"\nWEEKLY ANALYSES FOR {month_name.upper()}:\n"
-            
-            for w, weekly_analysis in enumerate(month_weekly_analyses):
-                # Extract weekly data
-                week_start = weekly_analysis.get("period_start", "Unknown")
-                week_end = weekly_analysis.get("period_end", "Unknown")
-                week_sentiment = weekly_analysis.get("sentiment", "neutral")
-                week_risk = weekly_analysis.get("risk_level", "medium")
-                week_risk_explanation = weekly_analysis.get("risk_explanation", "No explanation provided")
+            # Find weekly analyses for this month
+            month_weekly_analyses = []
+            for weekly_analysis in weekly_analyses:
+                week_date = weekly_analysis.get("date")
+                if week_date and hasattr(week_date, "month") and week_date.month == month_num:
+                    month_weekly_analyses.append(weekly_analysis)
+
+            # Format and add weekly analyses for this month if available
+            if month_weekly_analyses:
+                weekly_analyses_section = f"\nWEEKLY ANALYSES FOR {month_name.upper()}:\n"
                 
-                # Extract achievements and challenges
-                week_achievements = weekly_analysis.get("achievements", [])
-                week_challenges = weekly_analysis.get("challenges", [])
-                week_topics = weekly_analysis.get("topics", [])
-                week_action_items = weekly_analysis.get("action_items", [])
-                
-                # Extract credibility assessment
-                credibility = weekly_analysis.get("credibility_assessment", {})
-                credibility_rating = credibility.get("rating", "medium")
-                credibility_explanation = credibility.get("explanation", "No explanation provided")
-                consistency_score = credibility.get("consistency_score", "medium")
-                exaggeration_flags = credibility.get("exaggeration_flags", [])
-                
-                # Extract performance assessment
-                performance = weekly_analysis.get("performance_assessment", {})
-                performance_rating = performance.get("rating", "medium")
-                performance_summary = performance.get("summary", "No summary provided")
-                strengths = performance.get("key_strengths", [])
-                improvement_areas = performance.get("improvement_areas", [])
-                
-                # Format achievements and challenges
-                week_achievements_text = ""
-                for achievement in week_achievements or []: 
-                    desc = achievement.get("description", "No description")
-                    impact = achievement.get("impact", "No impact")
-                    week_achievements_text += f"- {desc} (Impact: {impact})\n"
-                
-                week_challenges_text = ""
-                for challenge in week_challenges or []: 
-                    desc = challenge.get("description", "No description")
-                    severity = challenge.get("severity", "medium")
-                    week_challenges_text += f"- {desc} (Severity: {severity})\n"
-                
-                # Format other elements
-                week_topics_text = ", ".join(week_topics or []) or "None identified"
-                week_action_items_text = "\n".join([f"- {item}" for item in week_action_items or []]) or "None provided"
-                exaggeration_flags_text = "\n".join([f"- {flag}" for flag in exaggeration_flags or []]) or "None identified"
-                strengths_text = "\n".join([f"- {strength}" for strength in strengths or []]) or "None identified"
-                improvement_areas_text = "\n".join([f"- {area}" for area in improvement_areas or []]) or "None identified"
-                
-                # Add formatted weekly analysis
-                weekly_analyses_section += f"""
+                for w, weekly_analysis in enumerate(month_weekly_analyses):
+                    # Extract weekly data
+                    week_start = weekly_analysis.get("period_start", "Unknown")
+                    week_end = weekly_analysis.get("date", "Unknown")
+                    
+                    # Calculate start date (7 days before end date)
+                    week_start = "Unknown"
+                    if isinstance(week_end, date):
+                        from datetime import timedelta
+                        week_start = (week_end - timedelta(days=7)).isoformat()
+                    elif hasattr(week_end, 'isoformat'):
+                        from datetime import timedelta
+                        try:
+                            week_start = (week_end - timedelta(days=7)).isoformat()
+                        except:
+                            week_start = "Unknown"
+                    
+                    week_sentiment = weekly_analysis.get("sentiment", "neutral")
+                    week_risk = weekly_analysis.get("risk_level", "medium")
+                    week_risk_explanation = weekly_analysis.get("risk_explanation", "No explanation provided")
+                    
+                    # Extract achievements and challenges
+                    week_achievements = weekly_analysis.get("achievements", [])
+                    week_challenges = weekly_analysis.get("challenges", [])
+                    week_topics = weekly_analysis.get("topics", [])
+                    week_action_items = weekly_analysis.get("action_items", [])
+                    
+                    # Extract credibility assessment
+                    credibility = weekly_analysis.get("credibility_assessment", {})
+                    credibility_rating = credibility.get("rating", "medium")
+                    credibility_explanation = credibility.get("explanation", "No explanation provided")
+                    consistency_score = credibility.get("consistency_score", "medium")
+                    exaggeration_flags = credibility.get("exaggeration_flags", [])
+                    
+                    # Extract performance assessment
+                    performance = weekly_analysis.get("performance_assessment", {})
+                    performance_rating = performance.get("rating", "medium")
+                    performance_summary = performance.get("summary", "No summary provided")
+                    strengths = performance.get("key_strengths", [])
+                    improvement_areas = performance.get("improvement_areas", [])
+                    
+                    # Format achievements and challenges
+                    week_achievements_text = ""
+                    for achievement in week_achievements or []: 
+                        desc = achievement.get("description", "No description")
+                        impact = achievement.get("impact", "No impact")
+                        week_achievements_text += f"- {desc} (Impact: {impact})\n"
+                    
+                    week_challenges_text = ""
+                    for challenge in week_challenges or []: 
+                        desc = challenge.get("description", "No description")
+                        severity = challenge.get("severity", "medium")
+                        week_challenges_text += f"- {desc} (Severity: {severity})\n"
+                    
+                    # Format other elements
+                    week_topics_text = ", ".join(week_topics or []) or "None identified"
+                    week_action_items_text = "\n".join([f"- {item}" for item in week_action_items or []]) or "None provided"
+                    exaggeration_flags_text = "\n".join([f"- {flag}" for flag in exaggeration_flags or []]) or "None identified"
+                    strengths_text = "\n".join([f"- {strength}" for strength in strengths or []]) or "None identified"
+                    improvement_areas_text = "\n".join([f"- {area}" for area in improvement_areas or []]) or "None identified"
+                    
+                    # Add formatted weekly analysis
+                    weekly_analyses_section += f"""
 WEEK {w+1} ({week_start} to {week_end}):
 Sentiment: {week_sentiment}
 Risk Level: {week_risk}
@@ -933,9 +946,9 @@ Performance Assessment:
 - Improvement Areas:
 {improvement_areas_text}
 """
-            
-            # Add all weekly analyses for this month to the monthly section
-            monthly_analyses_section += weekly_analyses_section
+                
+                # Add all weekly analyses for this month to the monthly section
+                monthly_analyses_section += weekly_analyses_section
     
         # Format quarterly metrics
         avg_sentiment = metrics.get("avg_sentiment", 0.5)

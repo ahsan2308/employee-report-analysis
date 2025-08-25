@@ -713,6 +713,7 @@ def get_monthly_analyses_for_quarter(employee_id: int, year: int, quarter: int) 
                         "period_start": analysis.period_start,
                         "period_end": analysis.period_end,
                         "weekly_report_ids": analysis.weekly_report_ids,
+                        "avg_sentiment_score": analysis.avg_sentiment_score,
                         "progress_trends": {
                             "performance_trend": analysis.performance_trend,
                             "sentiment_trend": analysis.sentiment_trend,

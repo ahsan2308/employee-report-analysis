@@ -1347,21 +1347,25 @@
     left: 100%;
 }
 
-/* Remove these conflicting selectors entirely, not just comment their content */
-/* 
-.timeline-month-marker:first-child,
-.timeline-month-marker:last-child {
-    
+/* Add new style for timeline event markers */
+.timeline-event-marker {
+    position: absolute;
+    bottom: -8px; /* Position slightly below the timeline */
+    width: 16px;
+    height: 16px;
+    background-color: var(--performance-dark);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
 }
-*/
 
 /* Container for all shift cards */
 .timeline-shifts-container {
     position: relative;
-    margin-top: 2.5rem;
+    margin-top: 2rem; /* Increase space between timeline and cards */
 }
 
-/* Individual shift card connected to timeline */
+/* Individual shift card - remove the connector and marker */
 .timeline-shift-card {
     position: relative;
     background-color: white;
@@ -1376,24 +1380,16 @@
     margin-right: auto;
     transition: var(--transition);
     
-    /* Default position, will be overridden by inline style */
+    /* Keep position variable for placement but not for visual elements */
     --timeline-position: 50%;
 }
 
+/* Remove the marker dot from cards */
 .timeline-shift-card::before {
-    content: "";
-    position: absolute;
-    top: -10px;
-    left: var(--timeline-position);
-    transform: translateX(-50%);
-    width: 20px;
-    height: 20px;
-    background-color: var(--performance-dark);
-    border-radius: 50%;
-    z-index: 2;
+    display: none; /* Remove the dot that was on top of the card */
 }
 
-/* Connector between timeline and card */
+/* Remove the connector between timeline and card */
 .timeline-connector {
     position: absolute;
     top: -25px;
@@ -1546,7 +1542,7 @@
 
 .shift-factors-list {
     list-style-type: disc;
-    padding-left: 1rem;
+    padding-left: 0rem;
     margin: 0.5rem 0 0;
 }
 
@@ -1677,6 +1673,9 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+
+    /* Ensure cards share a consistent minimum height so list placement looks uniform */
+    min-height: 220px;
 }
 
 .challenge-card:hover {
@@ -1707,14 +1706,27 @@
     font-size: 0.9rem;
 }
 
-/* Challenge details styling */
+/* Optional wrapper for the variable-length content above the list */
+/* If your markup uses a description or content block, give it this class so the list can sit below it */
+.challenge-card .challenge-content {
+    /* Allow the content area to grow with text but not push the list until needed */
+    flex: 0 1 auto;
+    margin-bottom: 0.75rem;
+}
+
+/* Challenge details styling - pinned to the bottom of the card */
 .challenge-details {
     list-style: none;
     padding: 0;
-    margin: 0 0 1rem 0;
+    margin: 0 0 0 0;
     font-size: 0.95rem;
     color: var(--text-main);
-    flex: 1;
+
+    /* Push the list to the bottom of the card regardless of preceding content length */
+    margin-top: auto;
+
+    /* Prevent the list from stretching vertically */
+    flex: 0 0 auto;
 }
 
 .challenge-details li {
@@ -2959,12 +2971,6 @@
     flex-shrink: 0;
 }
 
-.impact-evaluation strong {
-    color: #0f766e;
-    font-weight: 600;
-    margin-right: 0.5rem;
-}
-
 /* Forward Planning Section - Enhanced styling */
 .forward-planning-section {
     background-color: #f0f7ff; /* Light blue background */
@@ -2998,6 +3004,228 @@
 
 /* Forward planning section titles */
 .forward-planning-section h6 {
+
+.forward-planning-section h6::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    font-size: 0.9rem;
+}
+
+/* Icons for each category */
+.forward-planning-section h6:nth-of-type(1)::before {
+    content: '\f061'; /* arrow-right icon for continue */
+    color: #2563eb;
+}
+
+.forward-planning-section h6:nth-of-type(2)::before {
+    content: '\f044'; /* edit-alt icon for improve */
+    color: #7c3aed;
+}
+
+.forward-planning-section h6:nth-of-type(3)::before {
+    content: '\f04b'; /* play icon for start */
+    color: #16a34a;
+}
+
+.forward-planning-section h6:nth-of-type(4)::before {
+    content: '\f04d'; /* stop icon */
+    color: #dc2626;
+}
+
+.forward-planning-section h6:nth-of-type(5)::before {
+    content: '\f0ad'; /* wrench icon for support */
+    color: #ea580c;
+}
+
+/* Forward planning lists */
+.forward-planning-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.forward-planning-section ul li {
+    position: relative;
+    margin-bottom: 0.75rem;
+    background-color: white;
+    border-radius: var(--rounded);
+    box-shadow: var(--shadow-sm);
+    padding: 0.75rem 1rem 0.75rem 2.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    transition: var(--transition);
+}
+
+.forward-planning-section ul li::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0.75rem;
+    top: 0.75rem;
+    font-size: 0.9rem;
+}
+
+/* Different styling for each list type */
+.continue-list li {
+    border-left: 3px solid #2563eb;
+}
+
+.continue-list li::before {
+    content: '\f058'; /* check-circle icon */
+    color: #2563eb;
+}
+
+.continue-list li:hover {
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    transform: translateY(-3px);
+    background-color: #f8faff;
+}
+
+.improve-list li {
+    border-left: 3px solid #7c3aed;
+}
+
+.improve-list li::before {
+    content: '\f12a'; /* exclamation icon */
+    color: #7c3aed;
+}
+
+.improve-list li:hover {
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+    transform: translateY(-3px);
+    background-color: #faf5ff;
+}
+
+.start-list li {
+    border-left: 3px solid #16a34a;
+}
+
+.start-list li::before {
+    content: '\f067'; /* plus icon */
+    color: #16a34a;
+}
+
+.start-list li:hover {
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+    transform: translateY(-3px);
+    background-color: #f0fdf4;
+}
+
+.stop-list li {
+    border-left: 3px solid #dc2626;
+}
+
+.stop-list li::before {
+    content: '\f00d'; /* times icon */
+    color: #dc2626;
+}
+
+.stop-list li:hover {
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+    transform: translateY(-3px);
+    background-color: #fef2f2;
+}
+
+.support-list li {
+    border-left: 3px solid #ea580c;
+}
+
+.support-list li::before {
+    content: '\f5b7'; /* hands-helping icon */
+    color: #ea580c;
+}
+
+.support-list li:hover {
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
+    transform: translateY(-3px);
+    background-color: #fff7ed;
+}
+
+/* Empty list item styling */
+.forward-planning-section .empty-list {
+    color: #6b7280;
+    font-style: italic;
+    background-color: rgba(243, 244, 246, 0.7);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .forward-planning-section {
+        padding: 1rem;
+    }
+    
+    .forward-planning-section ul li {
+        padding-left: 2rem;
+    }
+    
+    .forward-planning-section ul li::before {
+        left: 0.6rem;
+    }
+}
+
+/* Achievement theme title with verification badge styling */
+.achievement-theme h6 {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: nowrap; /* Prevent badge from wrapping */
+    gap: 0.4rem;
+    position: relative;
+}
+
+/* Add a text wrapper inside the heading to allow text wrapping */
+.achievement-theme h6 .theme-title-text {
+    flex: 1;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+/* Vision verification badge styling - updated to prevent wrapping */
+.vision-verified-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #059669;
+    padding: 0.2rem 0.4rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    flex-shrink: 0; /* Prevent the badge from shrinking */
+    white-space: nowrap; /* Keep badge text on one line */
+}
+
+.vision-verified-badge i {
+    margin-right: 0.2rem;
+    font-size: 0.7rem;
+}
+
+.performance-trajectory-section .metric-value.mixed {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #b45309;
+}
+
+.performance-trajectory-section .metric-value.improving {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #047857;
+}
+
+.performance-trajectory-section .metric-value.stable {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+}
+
+.performance-trajectory-section .metric-value.declining {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
     font-size: 1rem;
     font-weight: 600;
     margin: 1.25rem 0 1rem 0;

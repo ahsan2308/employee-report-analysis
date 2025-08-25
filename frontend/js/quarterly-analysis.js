@@ -634,13 +634,53 @@
                     timeline.appendChild(monthMarker);
                 });
                 
+                // First collect the month data from all shifts to place markers
+                const timelineEvents = [];
+                
+                trajectoryData.notable_shifts.forEach(shift => {
+                    let monthText = "";
+                    let monthIndex = 0;
+                    
+                    if (typeof shift === 'string') {
+                        // Try to extract month from shift string
+                        const monthMatch = shift.match(/^(January|February|March|April|May|June|July|August|September|October|November|December):/i);
+                        if (monthMatch) {
+                            monthText = monthMatch[1];
+                            monthIndex = monthsInQuarter.findIndex(m => m.toLowerCase() === monthText.toLowerCase());
+                            if (monthIndex < 0) monthIndex = 0; // Fallback if month is outside quarter
+                        } else {
+                            monthText = "Unspecified";
+                            monthIndex = 1; // Default to middle of quarter
+                        }
+                    } else {
+                        // Handle structured shift data
+                        monthText = shift.month || "Unspecified";
+                        monthIndex = monthsInQuarter.findIndex(m => m.toLowerCase() === monthText.toLowerCase());
+                        if (monthIndex < 0) monthIndex = 1; // Default to middle if not found
+                    }
+                    
+                    // Add to timeline events array
+                    timelineEvents.push({
+                        monthIndex: monthIndex,
+                        position: `${monthIndex / (monthsInQuarter.length - 1) * 100}%`
+                    });
+                });
+                
+                // Add event markers to the timeline
+                timelineEvents.forEach(event => {
+                    const marker = document.createElement('div');
+                    marker.className = 'timeline-event-marker';
+                    marker.style.left = event.position;
+                    timeline.appendChild(marker);
+                });
+                
                 timelineContainer.appendChild(timeline);
                 
-                // Create and add shift cards connected to the timeline
+                // Create and add shift cards 
                 const shiftsCardsContainer = document.createElement('div');
                 shiftsCardsContainer.className = 'timeline-shifts-container';
                 
-                trajectoryData.notable_shifts.forEach(shift => {
+                trajectoryData.notable_shifts.forEach((shift, index) => {
                     // Create shift card
                     const shiftCard = document.createElement('div');
                     shiftCard.className = 'timeline-shift-card';
@@ -676,8 +716,8 @@
                     monthHeader.innerHTML += monthText;
                     shiftCard.appendChild(monthHeader);
                     
-                    // Position card relative to timeline - simplified calculation
-                    shiftCard.style.setProperty('--timeline-position', `${monthIndex * 70}%`);
+                    // Store timeline position (used for card grouping) but we don't need visual elements
+                    shiftCard.style.setProperty('--timeline-position', `${monthIndex / (monthsInQuarter.length - 1) * 100}%`);
                     
                     // Create enhanced shift content container with better visual hierarchy
                     const shiftContentContainer = document.createElement('div');
@@ -776,12 +816,37 @@
                             const factorsList = document.createElement('ul');
                             factorsList.className = 'shift-factors-list';
                             
-                            // Split by newlines, bullets, or dashes
-                            const factorsItems = factorsText.split(/[\n•-]/).filter(item => item.trim().length > 0);
+                            // Improved regex to avoid splitting words containing hyphens
+                            // Only split on newlines, bullet points, or lines starting with hyphen+space
+                            let factorsItems = [];
+                            
+                            // First split by newlines
+                            const lines = factorsText.split('\n');
+                            
+                            lines.forEach(line => {
+                                line = line.trim();
+                                if (!line) return; // Skip empty lines
+                                
+                                // Check if line starts with bullet or hyphen+space
+                                if (line.startsWith('• ') || line.startsWith('- ')) {
+                                    factorsItems.push(line.substring(2).trim());
+                                } else if (line.startsWith('•') || line.startsWith('-')) {
+                                    factorsItems.push(line.substring(1).trim());
+                                } else {
+                                    // If no bullet/hyphen, treat as a single item
+                                    factorsItems.push(line);
+                                }
+                            });
+                            
+                            // If we didn't successfully split into multiple items and the text contains
+                            // hyphens or bullets in the middle, handle as a single item
+                            if (factorsItems.length <= 1 && factorsText.trim().length > 0) {
+                                factorsItems = [factorsText.trim()];
+                            }
                             
                             factorsItems.forEach(item => {
                                 const listItem = document.createElement('li');
-                                listItem.textContent = item.trim();
+                                listItem.textContent = item;
                                 factorsList.appendChild(listItem);
                             });
                             
@@ -800,10 +865,10 @@
                     
                     shiftCard.appendChild(shiftContentContainer);
                     
-                    // Create connector between timeline and card
-                    const connector = document.createElement('div');
-                    connector.className = 'timeline-connector';
-                    shiftCard.appendChild(connector);
+                    // No longer need to create connector
+                    // const connector = document.createElement('div');
+                    // connector.className = 'timeline-connector';
+                    // shiftCard.appendChild(connector);
                     
                     shiftsCardsContainer.appendChild(shiftCard);
                 });

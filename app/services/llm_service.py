@@ -446,7 +446,37 @@ class LLMService:
         # Generate the prompt using the quarterly analysis prompt template
         prompt = StructuredPrompts.quarterly_analysis_prompt(quarterly_data)
         logger.info(f"Generating quarterly analysis for employee {quarterly_data.get('employee_info', {}).get('name')}")
-        logger.info(f"Generated prompt: {prompt}")  
+        
+                # Save the generated prompt to a text file for auditing/debugging
+        # try:
+        #     prompts_dir = os.path.join(os.getcwd(), "generated_prompts")
+        #     os.makedirs(prompts_dir, exist_ok=True)
+
+        #     emp = quarterly_data.get('employee_info', {}).get('name') or quarterly_data.get('employee_info', {}).get('employee_id') or "unknown"
+        #     quarter = quarterly_data.get('quarter', "Q")
+        #     year = quarterly_data.get('year', "")
+        #     timestamp = int(time.time())
+
+        #     # sanitize filename components
+        #     safe_emp = re.sub(r'[^A-Za-z0-9_.-]', '_', str(emp))
+        #     safe_year = re.sub(r'[^A-Za-z0-9_.-]', '_', str(year))
+        #     safe_quarter = re.sub(r'[^A-Za-z0-9_.-]', '_', str(quarter))
+
+        #     filename = f"quarterly_prompt_{safe_emp}_Q{safe_quarter}_{safe_year}_{timestamp}.txt"
+        #     filepath = os.path.join(prompts_dir, filename)
+
+        #     with open(filepath, "w", encoding="utf-8") as f:
+        #         f.write(prompt)
+
+        #     logger.info(f"Saved quarterly prompt to {filepath}")
+        # except Exception as e:
+        #     logger.warning(f"Could not save quarterly prompt to file: {e}")
+        
+    
+        # Estimate tokens from prompt length (heuristic: ~4 characters per token)
+        est_tokens = max(1, (len(prompt) + 3) // 4)
+        pct_of_context = (est_tokens / num_ctx) * 100 if num_ctx else 0
+        logger.info(f"Estimated prompt tokens: {est_tokens} (~{pct_of_context:.2f}% of {num_ctx} context)")
         
         try:
             # Decide whether to use the custom format or the Pydantic model
