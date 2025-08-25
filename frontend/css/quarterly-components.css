@@ -3169,3 +3169,64 @@
         left: 0.6rem;
     }
 }
+
+/* Achievement theme title with verification badge styling */
+.achievement-theme h6 {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: nowrap; /* Prevent badge from wrapping */
+    gap: 0.4rem;
+    position: relative;
+}
+
+/* Add a text wrapper inside the heading to allow text wrapping */
+.achievement-theme h6 .theme-title-text {
+    flex: 1;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+/* Vision verification badge styling - updated to prevent wrapping */
+.vision-verified-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #059669;
+    padding: 0.2rem 0.4rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    flex-shrink: 0; /* Prevent the badge from shrinking */
+    white-space: nowrap; /* Keep badge text on one line */
+}
+
+.vision-verified-badge i {
+    margin-right: 0.2rem;
+    font-size: 0.7rem;
+}
+
+.performance-trajectory-section .metric-value.mixed {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #b45309;
+}
+
+.performance-trajectory-section .metric-value.improving {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #047857;
+}
+
+.performance-trajectory-section .metric-value.stable {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+}
+
+.performance-trajectory-section .metric-value.declining {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+

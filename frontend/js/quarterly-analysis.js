@@ -400,7 +400,26 @@
                 
                 // Create theme header
                 const themeHeader = document.createElement('h6');
-                themeHeader.textContent = theme.theme || theme.name || 'Achievement Theme';
+                
+                // Add the 'has-verification' class if the theme is verified
+                if (theme.vision_verified) {
+                    themeHeader.className = 'has-verification';
+                }
+                
+                // Create a span for the title text to allow wrapping
+                const titleTextSpan = document.createElement('span');
+                titleTextSpan.className = 'theme-title-text';
+                titleTextSpan.textContent = theme.theme || theme.name || 'Achievement Theme';
+                themeHeader.appendChild(titleTextSpan);
+                
+                // If the theme is verified, add the badge to the header
+                if (theme.vision_verified) {
+                    const verifiedBadge = document.createElement('span');
+                    verifiedBadge.className = 'vision-verified-badge';
+                    verifiedBadge.innerHTML = '<i class="fas fa-check-circle"></i>Verified';
+                    themeHeader.appendChild(verifiedBadge);
+                }
+                
                 themeItem.appendChild(themeHeader);
                 
                 // Add theme description if available
@@ -436,10 +455,10 @@
                     themeItem.appendChild(impactText);
                 }
                 
-                // Add business outcome if available - with improved class for distinct styling
+                // Add business outcome if available
                 if (theme.business_outcome) {
                     const outcomeText = document.createElement('div');
-                    outcomeText.className = 'theme-business-outcome'; // Changed class for distinct styling
+                    outcomeText.className = 'theme-business-outcome';
                     outcomeText.innerHTML = `<strong>Outcome:</strong> ${theme.business_outcome}`;
                     themeItem.appendChild(outcomeText);
                 }
@@ -479,9 +498,47 @@
                 consistencyTitle.textContent = 'Performance Consistency';
                 trajectorySection.appendChild(consistencyTitle);
                 
+                // Add overall trend metric if available in a separate, centered container
+                if (trajectoryData && trajectoryData.trend) {
+                    const trendContainer = document.createElement('div');
+                    trendContainer.className = 'overall-trend-container';
+                    
+                    const trendMetric = document.createElement('div');
+                    trendMetric.className = 'metric';
+                    
+                    const metricName = document.createElement('div');
+                    metricName.className = 'metric-name performance-trend';
+                    metricName.textContent = 'Overall Trend';
+                    
+                    const metricValue = document.createElement('div');
+                    metricValue.className = `metric-value ${trajectoryData.trend.toLowerCase()}`;
+                    
+                    // Add appropriate icon based on trend
+                    let trendIcon = '';
+                    if (trajectoryData.trend.toLowerCase() === 'improving') {
+                        trendIcon = '<i class="fas fa-arrow-up"></i> ';
+                    } else if (trajectoryData.trend.toLowerCase() === 'declining') {
+                        trendIcon = '<i class="fas fa-arrow-down"></i> ';
+                    } else if (trajectoryData.trend.toLowerCase() === 'stable') {
+                        trendIcon = '<i class="fas fa-equals"></i> ';
+                    } else {
+                        trendIcon = '<i class="fas fa-random"></i> '; // For 'mixed'
+                    }
+                    
+                    metricValue.innerHTML = trendIcon + capitalizeFirstLetter(trajectoryData.trend);
+                    
+                    trendMetric.appendChild(metricName);
+                    trendMetric.appendChild(metricValue);
+                    trendContainer.appendChild(trendMetric);
+                    
+                    trajectorySection.appendChild(trendContainer);
+                }
+                
                 // Create metrics grid for consistency indicators
                 const metricsGrid = document.createElement('div');
                 metricsGrid.className = 'metrics-grid';
+                
+                // No longer add the trend metric to the grid - it's now in its own container above
                 
                 // Add each available metric
                 if (consistencyData.task_completion_reliability) {

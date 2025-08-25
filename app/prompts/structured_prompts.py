@@ -1103,7 +1103,7 @@ The following vision system data provides objective evidence to validate claims 
 {formatted_vision_data}
 
 ### USING THIS OBJECTIVE DATA IN YOUR ANALYSIS:
-- Use this data as primary evidence to validate achievement claims and business impact
+- Use this data as primary evidence to validate achievement claims and impact
 - Identify patterns in activity types, focus areas, and intensity over the quarter
 - Note any discrepancies between reported work and objectively tracked activities
 - Consider shifts in work patterns as indicators of changing priorities or responsibilities

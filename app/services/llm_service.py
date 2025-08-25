@@ -446,7 +446,7 @@ class LLMService:
         # Generate the prompt using the quarterly analysis prompt template
         prompt = StructuredPrompts.quarterly_analysis_prompt(quarterly_data)
         logger.info(f"Generating quarterly analysis for employee {quarterly_data.get('employee_info', {}).get('name')}")
-        logger.debug(f"Generated prompt: {prompt}")  
+        logger.info(f"Generated prompt: {prompt}")  
         
         try:
             # Decide whether to use the custom format or the Pydantic model
