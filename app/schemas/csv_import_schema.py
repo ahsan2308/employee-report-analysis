@@ -11,13 +11,13 @@ class CSVImportOptions(BaseModel):
     stop_on_error: bool = Field(default=False, description="Stop on first error")
     error_threshold_percent: float = Field(default=10.0, description="Max percentage of errors before aborting")
     
-    # New option for selecting processing mode
+    # Option for selecting processing mode
     processing_mode: Literal["row_by_row", "bulk"] = Field(
         default="row_by_row", 
         description="Processing mode: row_by_row (memory efficient) or bulk (faster)"
     )
     
-    # New option for file size threshold to auto-select mode
+    # Option for file size threshold to auto-select mode
     auto_mode_selection: bool = Field(
         default=True,
         description="Automatically select processing mode based on file size"
@@ -57,13 +57,13 @@ class CombinedCSVRow(BaseModel):
         description="Departmental structure (e.g., Technical>Tech-I>SOC)"
     )
     
-    # Add the department field here - this is needed by extract_department_from_hierarchy validator
+    # This is needed by extract_department_from_hierarchy validator
     department: Optional[str] = Field(
         default="Unspecified",
         description="Department extracted from Office_Hierarchy"
     )
     
-    # Date range fields - Changed from date to str type
+    # Date range fields 
     From: str = Field(
         description="Start date of the reporting period (YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY)"
     )
@@ -117,7 +117,7 @@ class CombinedCSVRow(BaseModel):
         "validate_default": False,  # Performance optimization
     }
     
-    # Use new Pydantic v2 validators for better performance
+    # Pydantic v2 validators for better performance
     @field_validator('Name')
     @classmethod
     def validate_name(cls, v):
@@ -197,7 +197,6 @@ class CombinedCSVRow(BaseModel):
                     return v
                 
             except ValueError as e:
-                # Provide more specific error message
                 raise ValueError(f"Invalid date format: {v}. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.")
         
         return v
@@ -433,7 +432,6 @@ class ImportErrorResponse(BaseModel):
         description="Original data from the row that failed"
     )
     
-    # Replace old Config class
     model_config = {
         "from_attributes": True
     }
@@ -449,7 +447,7 @@ class ImportErrorsResponse(BaseModel):
     page_size: int = Field(description="Number of errors per page")
     errors: List[ImportErrorResponse] = Field(description="List of errors on this page")
     
-    # Replace old Config class
+
     model_config = {
         "from_attributes": True
     }
@@ -533,7 +531,7 @@ class VisionDataCSVRow(BaseModel):
         description="Employee ID (must match an existing employee)"
     )
     
-    # Date range fields - Note the capitalization
+    # Date range fields
     From_Date: str = Field(
         description="Start date of the reporting period (YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY)"
     )
@@ -636,7 +634,6 @@ class VisionDataCSVRow(BaseModel):
                     return v
                 
             except ValueError as e:
-                # Provide more specific error message
                 raise ValueError(f"Invalid date format: {v}. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.")
         
         return v

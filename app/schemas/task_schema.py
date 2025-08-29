@@ -24,7 +24,7 @@ class TaskStatusResponse(BaseModel):
     created_at: datetime
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
-    duration: Optional[float] = None  # in seconds
+    duration: Optional[float] = None  
     is_complete: bool
     
     class Config:
