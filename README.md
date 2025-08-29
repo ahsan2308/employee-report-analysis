@@ -16,7 +16,7 @@ A robust AI-powered system for analyzing employee reports to extract valuable in
 - Performance assessments
 - Recommended action items
 
-The system also performs **monthly analysis** across all reports from an employee to identify trends, recurring challenges, and growth indicators.
+The system also performs **monthly analysis** across all reports from an employee to identify trends, recurring challenges, and growth indicators, as well as **quarterly analysis** for strategic alignment, achievement themes, and long-term performance evaluation.
 
 ---
 
@@ -24,6 +24,7 @@ The system also performs **monthly analysis** across all reports from an employe
 
 - **Weekly Report Analysis**: Extract structured insights from unstructured employee reports
 - **Monthly Performance Analysis**: Analyze trends and patterns across all reports from a month
+- **Quarterly Performance Analysis**: Evaluate strategic alignment, achievement themes, and behavioral assessments over a quarter
 - **Semantic Search**: Find relevant reports based on context, not just keywords
 - **Risk Assessment**: Automatically identify potential issues requiring attention
 - **Sentiment Analysis**: Track employee sentiment over time
@@ -196,7 +197,7 @@ The system also performs **monthly analysis** across all reports from an employe
   - Support required
   - Tasks planned for next week
   - Confidence level
-- **Analysis Page**: Two analysis modes:
+- **Analysis Page**: Three analysis modes:
   - **Weekly Analysis**: Analyze individual reports with detailed insights
   - **Monthly Analysis**: Analyze patterns across an entire month with:
     - Progress trends
@@ -207,6 +208,15 @@ The system also performs **monthly analysis** across all reports from an employe
     - Focus areas
     - Risk assessment
     - Strategic recommendations
+  - **Quarterly Analysis**: Comprehensive evaluation across three months with:
+    - Strategic alignment with organizational goals
+    - Achievement themes and business outcomes
+    - Performance trajectory and consistency
+    - Challenge patterns and adaptation effectiveness
+    - Cross-functional impact assessment
+    - Skill development evaluation
+    - Behavioral assessment of key workplace behaviors
+    - Forward planning recommendations
 - **Visualizations Page**: Interactive charts showing performance trends
 
 ### Analysis Features
@@ -229,6 +239,18 @@ The system also performs **monthly analysis** across all reports from an employe
   - Key focus areas for the employee
   - Overall risk assessment with mitigation recommendations
   - Strategic recommendations for management
+
+- **Quarterly Analysis Provides**:
+  - Strategic alignment with organizational priorities
+  - Achievement themes with business outcome measurements
+  - Performance trajectory and notable shifts
+  - Challenge patterns and adaptation effectiveness
+  - Cross-functional impact on stakeholders
+  - Skill development and proficiency assessment
+  - Behavioral assessments (ownership, collaboration, communication, etc.)
+  - Credibility assessment with vision data alignment
+  - Comprehensive forward planning (keep/improve/start/stop)
+  - Executive summary of quarterly performance
 
 ### Using the API
 
