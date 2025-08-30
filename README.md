@@ -33,21 +33,38 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Historical Context**: Analyze reports with previous submissions for reference
 - **Asynchronous Processing**: Background task processing for analysis requests
 - **Direct URL Sharing**: Share analysis results via URL parameters
-- **Interactive Visualizations**: Visual representation of sentiment, risk levels, and key metrics
+- **CSV Data Import**: Bulk import of employee data, historical reports, and related information
+- **Task Management System**: Track and monitor long-running analysis processes
+- **Interactive Visualizations**: Visual representation of key metrics including:
+  - Sentiment trends over time
+  - Impact score trends
+  - Risk level trends
+  - Credibility trends
+  - Consistency trends
+  - Performance trends
+  - Multi-criteria comparative analysis
+  - Department and employee heatmaps
 
 ---
 
 ## 🏗️ System Architecture
 
-- **API Layer**: RESTful endpoints for employees, reports, analyses, and tasks
+- **API Layer**: RESTful endpoints for employees, reports, analyses, tasks, visualizations, and imports
 - **Services Layer**: Business logic for report processing and analysis
-- **Task Processing**: Celery for asynchronous task management
+- **Task Processing**: 
+  - Celery for asynchronous task management
+  - Task status tracking and result retrieval
+  - Configurable processing options for long-running tasks
 - **Storage**:
   - PostgreSQL for structured data
-  - Qdrant for vector embeddings
-  - Redis for task queue management
+  - Qdrant for vector embeddings and semantic search
+  - Redis for task queue management and caching
 - **LLM Integration**: Ollama for natural language understanding and structured output generation
 - **Frontend Layer**: HTML, CSS, and JavaScript for user interaction
+- **Vector Store**:
+  - Automatic vectorization of reports upon submission
+  - Semantic similarity search
+  - Context-based retrieval of relevant historical data
 
 ---
 
@@ -217,7 +234,19 @@ The system also performs **monthly analysis** across all reports from an employe
     - Skill development evaluation
     - Behavioral assessment of key workplace behaviors
     - Forward planning recommendations
-- **Visualizations Page**: Interactive charts showing performance trends
+- **Visualizations Page**: Interactive charts showing:
+  - Sentiment trends over time (by employee or department)
+  - Impact score trends
+  - Risk level trends
+  - Credibility rating trends
+  - Consistency score trends
+  - Performance rating trends
+  - Multi-criteria comparisons (combining any metrics)
+  - Heatmaps for sentiment and impact (by department or employee)
+- **Imports Page**: CSV data import functionality for:
+  - Bulk employee data
+  - Historical reports
+  - Reference data
 
 ### Analysis Features
 
@@ -252,14 +281,104 @@ The system also performs **monthly analysis** across all reports from an employe
   - Comprehensive forward planning (keep/improve/start/stop)
   - Executive summary of quarterly performance
 
+### Data Import System
+
+- **CSV Import Capabilities**:
+  - Import employee data (new employees, department updates)
+  - Import historical reports (backfill data)
+  - Import reference data (organizational goals, KPIs)
+  - Import vision data (for credibility assessment)
+
+- **Import Features**:
+  - Dry run validation (validate without committing to database)
+  - Error threshold settings (set maximum acceptable error percentage)
+  - Configurable processing modes (bulk or row-by-row)
+  - Chunk processing for large files
+  - Detailed error reporting and logs
+
+- **Import Monitoring**:
+  - Real-time status tracking
+  - Error analysis and reporting
+  - Import metrics (success rate, processing time)
+
+### Vector Search System
+
+- **Report Vectorization**: When reports are submitted, they are:
+  - Automatically converted to vector embeddings
+  - Stored in the Qdrant vector database
+  - Indexed for semantic search
+
+- **Search Capabilities**:
+  - Semantic search across all reports
+  - Context-based retrieval (not just keyword matching)
+  - Relevance-ranked results
+  - Topic-based clustering
+
+- **Use Cases**:
+  - Find similar past challenges
+  - Identify recurring patterns
+  - Search for specific types of achievements
+  - Find reports discussing particular topics
+
+### Task Management System
+
+- **Background Processing**:
+  - All analysis jobs run asynchronously
+  - Monthly and quarterly analyses processed in the background
+  - Import jobs run as background tasks
+
+- **Task Tracking**:
+  - Real-time status updates
+  - Progress monitoring
+  - Completion notifications
+
+- **Result Retrieval**:
+  - Access completed task results
+  - Error handling for failed tasks
+  - Task history and audit trail
+
 ### Using the API
 
 The system provides a comprehensive REST API:
 
-- **Employee Management**: Create and retrieve employee information
-- **Report Management**: Submit and retrieve weekly reports
-- **Analysis**: Request weekly and monthly analyses
-- **Task Management**: Track the status of asynchronous analysis tasks
+#### Employee Management
+- `POST /employees/` - Create a new employee
+- `GET /employees/` - Get all employees
+
+#### Report Management
+- `POST /reports/create` - Submit a new report
+- `POST /reports/form` - Submit a structured report form
+- `GET /reports/{employee_id}` - Get all reports for an employee
+
+#### Analysis Endpoints
+- `POST /analyses/analyze/{report_id}` - Request analysis of a specific report
+- `GET /analyses/results/{report_id}` - Get analysis results for a report
+- `GET /analyses/employee/{employee_id}` - Get all analyses for an employee
+- `POST /analyses/monthly/analyze` - Request monthly analysis
+- `GET /analyses/monthly/{analysis_id}` - Get monthly analysis by ID
+- `POST /analyses/quarterly/analyze` - Request quarterly analysis
+- `GET /analyses/quarterly/{analysis_id}` - Get quarterly analysis by ID
+
+#### Visualization Endpoints
+- `GET /visualizations/sentiment-trends` - Get sentiment trend data
+- `GET /visualizations/impact-trends` - Get impact score trend data
+- `GET /visualizations/risk-trends` - Get risk level trend data
+- `GET /visualizations/credibility-trends` - Get credibility trend data
+- `GET /visualizations/consistency-trends` - Get consistency trend data
+- `GET /visualizations/performance-trends` - Get performance trend data
+- `GET /visualizations/sentiment-heatmap` - Get sentiment heatmap data
+- `GET /visualizations/impact-heatmap` - Get impact heatmap data
+- `GET /visualizations/multi-criteria-trends` - Compare multiple metrics
+
+#### Task Management Endpoints
+- `GET /tasks/{task_id}` - Check status of a task
+- `GET /tasks/{task_id}/result` - Get results of a completed task
+
+#### Import Endpoints
+- `POST /imports/upload` - Upload CSV file for import
+- `GET /imports/{job_id}` - Get import job status
+- `GET /imports/{job_id}/errors` - Get detailed import errors
+- `GET /imports/` - List all import jobs
 
 API documentation is available at `/docs` when running the application.
 
@@ -285,6 +404,8 @@ API documentation is available at `/docs` when running the application.
 - **Redis/Celery Issues**: Ensure Redis container is running (`docker ps`)
 - **Qdrant Issues**: Verify Qdrant is accessible at http://localhost:6333/
 - **Installation Errors**: Ensure Visual Studio Build Tools are properly installed on Windows
+- **CSV Import Errors**: Check file format, encoding (UTF-8 recommended), and column headers
+- **Task Processing Issues**: Verify Celery worker is running and properly connected to Redis
 
 ---
 
