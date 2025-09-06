@@ -11,7 +11,7 @@ class OllamaEmbeddingProvider(EmbeddingProvider):
     Embedding provider implementation using Ollama API.
     """
     
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "bge-m3", use_prefix: bool = True):
+    def __init__(self, base_url: str = "http://localhost:11434", model: str = "bge-m3", use_prefix: bool = True, api_key: Optional[str] = None, **kwargs):
         """
         Initialize the Ollama embedding provider.
         
@@ -19,10 +19,15 @@ class OllamaEmbeddingProvider(EmbeddingProvider):
             base_url: Base URL for the Ollama API
             model: Model name to use for embeddings (default: bge-m3)
             use_prefix: Whether to add "query:" or "passage:" prefixes to inputs
+            api_key: Not used by Ollama, included for API compatibility with other providers
+            **kwargs: Additional arguments (ignored)
         """
         self.base_url = base_url
         self.model = model
         self.use_prefix = use_prefix
+        # api_key is ignored since Ollama doesn't use API keys
+        if api_key:
+            logger.debug("API key provided but not used by Ollama embedding provider")
         
         # Create a client with the specified host
         self.client = ollama.Client(host=self.base_url)

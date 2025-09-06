@@ -16,27 +16,43 @@ class OllamaProvider(LLMProvider):
     LLM provider implementation using Ollama API.
     """
     
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "llama3.1:8b"):
+    def __init__(self, base_url: str = "http://localhost:11434", model: str = "llama3.1:8b", api_key: Optional[str] = None, **kwargs):
         """
         Initialize the Ollama provider.
         
         Args:
             base_url: Base URL for the Ollama API
             model: Model name to use
+            api_key: Not used by Ollama, included for API compatibility with other providers
+            **kwargs: Additional arguments (ignored)
         """
         self.base_url = base_url
         self.model = model
+        # api_key is ignored since Ollama doesn't use API keys
+        if api_key:
+            logger.debug("API key provided but not used by Ollama provider")
         
         # Create a client with the specified host
         self.client = ollama.Client(host=self.base_url)
         
         logger.info(f"Initialized OllamaProvider with model {model} at {base_url}")
     
-    def generate_text(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7, num_ctx: int = 8192) -> str:
+    def generate_text(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7, stream: bool = False, num_ctx: int = 8192) -> str:
         """
         Generate text using Ollama API.
+        
+        Args:
+            prompt: The prompt to send to the LLM
+            max_tokens: Maximum number of tokens to generate
+            temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
+            stream: Whether to stream the response (not currently implemented in Ollama provider)
+            num_ctx: Context window size (Ollama-specific parameter)
         """
         try:
+            # If streaming is requested, log that it's not implemented
+            if stream:
+                logger.warning("Streaming not implemented in Ollama provider, returning full response")
+                
             response = self.client.generate(
                 model=self.model,
                 prompt=prompt,

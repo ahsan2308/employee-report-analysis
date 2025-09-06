@@ -14,8 +14,12 @@ from app.models.structured_models_llm import EmployeeAnalysis, MonthlyAnalysis, 
 from app.prompts.structured_prompts import StructuredPrompts
 
 config = get_config_provider()
-# Prioritize environment variable over config
-DEFAULT_MODEL = os.getenv("MODEL_LLM") or config.get("model", "llama3.1:8b", section="llm")
+# Prioritize environment variables based on selected provider
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()
+if LLM_PROVIDER == "vllm":
+    DEFAULT_MODEL = os.getenv("VLLM_MODEL") or config.get("model", "meta-llama/Meta-Llama-3.1-8B-Instruct", section="llm")
+else:
+    DEFAULT_MODEL = os.getenv("OLLAMA_MODEL") or config.get("model", "llama3.1:8b", section="llm")
 
 class LLMService:
     """Service for interacting with LLM models for text generation and inference."""

@@ -6,28 +6,44 @@ from app.base.base_llm import LLMProvider
 from app.base.base_embedding import EmbeddingProvider
 from app.model_host.ollama import OllamaProvider
 from app.model_host.ollama_embedding import OllamaEmbeddingProvider
+from app.model_host.vllm import VLLMProvider
+from app.model_host.vllm_embedding import VLLMEmbeddingProvider
 from app.core.logger import logger
 
 # Load environment variables
 load_env_from_file()
 
-# Get LLM settings from environment
+# Provider selection (provider-agnostic)
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()
-LLM_BASE_URL = os.getenv("LLM_BASE_URL", "http://localhost:11434")
-LLM_MODEL = os.getenv("MODEL_LLM", "llama3.1:8b")
-
-# Get Embedding settings from environment - separate from LLM settings
 EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "ollama").lower()
-EMBEDDING_BASE_URL = os.getenv("EMBEDDING_BASE_URL", "http://localhost:11434")
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "bge-m3")
-EMBEDDING_USE_PREFIX = os.getenv("EMBEDDING_USE_PREFIX", "true").lower() == "true"
+EMBEDDING_USE_PREFIX = os.getenv("EMBEDDING_USE_PREFIX", "false").lower() == "true"
+
+# Ollama-specific settings
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
+OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", None)
+
+# Ollama embedding-specific settings
+OLLAMA_EMBEDDING_BASE_URL = os.getenv("OLLAMA_EMBEDDING_BASE_URL", OLLAMA_BASE_URL)
+OLLAMA_EMBEDDING_MODEL = os.getenv("OLLAMA_EMBEDDING_MODEL", "bge-m3")
+OLLAMA_EMBEDDING_API_KEY = os.getenv("OLLAMA_EMBEDDING_API_KEY", OLLAMA_API_KEY)
+
+# vLLM-specific settings
+VLLM_BASE_URL = os.getenv("VLLM_BASE_URL", "http://localhost:8000")
+VLLM_MODEL = os.getenv("VLLM_MODEL", "meta-llama/Meta-Llama-3.1-8B-Instruct")
+VLLM_API_KEY = os.getenv("VLLM_API_KEY", None)
+
+# vLLM embedding-specific settings
+VLLM_EMBEDDING_BASE_URL = os.getenv("VLLM_EMBEDDING_BASE_URL", "http://localhost:8001")
+VLLM_EMBEDDING_MODEL = os.getenv("VLLM_EMBEDDING_MODEL", "BAAI/bge-m3")
+VLLM_EMBEDDING_API_KEY = os.getenv("VLLM_EMBEDDING_API_KEY", VLLM_API_KEY)
 
 def get_llm_provider(provider_type: Optional[str] = None, **kwargs) -> LLMProvider:
     """
     Factory function to get an LLM provider instance.
     
     Args:
-        provider_type: Type of provider ("ollama", "openai", etc.)
+        provider_type: Type of provider ("ollama", "vllm", etc.)
         **kwargs: Additional arguments to pass to the provider constructor
     
     Returns:
@@ -39,19 +55,32 @@ def get_llm_provider(provider_type: Optional[str] = None, **kwargs) -> LLMProvid
     
     # Set default values from environment if not in kwargs
     if "base_url" not in kwargs:
-        kwargs["base_url"] = LLM_BASE_URL
+        if provider_type.lower() == "vllm":
+            kwargs["base_url"] = VLLM_BASE_URL
+        else:
+            kwargs["base_url"] = OLLAMA_BASE_URL
+    
     if "model" not in kwargs:
-        # Log the model being used to trace where gemini is coming from
-        logger.debug(f"Using model from environment: {LLM_MODEL}")
-        kwargs["model"] = LLM_MODEL
+        if provider_type.lower() == "vllm":
+            logger.debug(f"Using vLLM model from environment: {VLLM_MODEL}")
+            kwargs["model"] = VLLM_MODEL
+        else:
+            logger.debug(f"Using Ollama model from environment: {OLLAMA_MODEL}")
+            kwargs["model"] = OLLAMA_MODEL
     else:
         logger.debug(f"Using explicitly provided model: {kwargs['model']}")
     
+    # Add API key if available
+    if "api_key" not in kwargs:
+        if provider_type.lower() == "vllm":
+            kwargs["api_key"] = VLLM_API_KEY
+        else:
+            kwargs["api_key"] = OLLAMA_API_KEY
+    
     if provider_type.lower() == "ollama":
         return OllamaProvider(**kwargs)
-    # Add more providers here as needed, e.g.:
-    # elif provider_type.lower() == "openai":
-    #     return OpenAIProvider(**kwargs)
+    elif provider_type.lower() == "vllm":
+        return VLLMProvider(**kwargs)
     else:
         raise ValueError(f"Unsupported LLM provider: {provider_type}")
 
@@ -60,7 +89,7 @@ def get_embedding_provider(provider_type: Optional[str] = None, **kwargs) -> Emb
     Factory function to get an embedding provider instance.
     
     Args:
-        provider_type: Type of provider ("ollama", "openai", etc.)
+        provider_type: Type of provider ("ollama", "vllm", etc.)
         **kwargs: Additional arguments to pass to the provider constructor
     
     Returns:
@@ -72,17 +101,32 @@ def get_embedding_provider(provider_type: Optional[str] = None, **kwargs) -> Emb
     
     # Set default values from environment if not in kwargs
     if "base_url" not in kwargs:
-        kwargs["base_url"] = EMBEDDING_BASE_URL
+        if provider_type.lower() == "vllm":
+            kwargs["base_url"] = VLLM_EMBEDDING_BASE_URL
+        else:
+            kwargs["base_url"] = OLLAMA_EMBEDDING_BASE_URL
+    
     if "model" not in kwargs:
-        logger.debug(f"Using embedding model from environment: {EMBEDDING_MODEL}")
-        kwargs["model"] = EMBEDDING_MODEL
+        if provider_type.lower() == "vllm":
+            logger.debug(f"Using vLLM embedding model from environment: {VLLM_EMBEDDING_MODEL}")
+            kwargs["model"] = VLLM_EMBEDDING_MODEL
+        else:
+            logger.debug(f"Using Ollama embedding model from environment: {OLLAMA_EMBEDDING_MODEL}")
+            kwargs["model"] = OLLAMA_EMBEDDING_MODEL
+    
     if "use_prefix" not in kwargs:
         kwargs["use_prefix"] = EMBEDDING_USE_PREFIX
     
+    # Add API key if available
+    if "api_key" not in kwargs:
+        if provider_type.lower() == "vllm":
+            kwargs["api_key"] = VLLM_EMBEDDING_API_KEY
+        else:
+            kwargs["api_key"] = OLLAMA_EMBEDDING_API_KEY
+    
     if provider_type.lower() == "ollama":
         return OllamaEmbeddingProvider(**kwargs)
-    # Add more embedding providers as needed, e.g.:
-    # elif provider_type.lower() == "openai":
-    #     return OpenAIEmbeddingProvider(**kwargs)
+    elif provider_type.lower() == "vllm":
+        return VLLMEmbeddingProvider(**kwargs)
     else:
         raise ValueError(f"Unsupported embedding provider: {provider_type}")
