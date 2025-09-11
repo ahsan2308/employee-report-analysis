@@ -90,7 +90,7 @@ The system also performs **monthly analysis** across all reports from an employe
 - Python 3.10+
 - PostgreSQL database
 - Docker Desktop (for Redis and Qdrant containers)
-- Ollama with the LLaMA 3.1 model
+- Ollama
 - Visual C++ build tools *(Windows only)*
 
 ### Installation Steps
@@ -400,8 +400,7 @@ The system also performs **monthly analysis** across all reports from an employe
 - **CSV Import Capabilities**:
   - Import employee data (new employees, department updates)
   - Import historical reports (backfill data)
-  - Import reference data (organizational goals, KPIs)
-  - Import vision data (for credibility assessment)
+  - Import vision data
 
 - **Import Features**:
   - Dry run validation (validate without committing to database)
