@@ -5,7 +5,7 @@ services:
     container_name: postgres_container
     restart: always
     env_file:
-      - .env  # Load from .env file
+      - .env  
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
     env_file:
-      - .env  # Load from .env file
+      - .env
     environment:
       RUNNING_IN_DOCKER: "true"  # Important for auto-detection
       DB_USER: myuser

@@ -1,3 +1,9 @@
+
+# This script has been deprecated.
+# It is kept here for reference but should not be used in production.
+# Use the script in app/services instead.
+
+
 import os
 import sys
 import logging

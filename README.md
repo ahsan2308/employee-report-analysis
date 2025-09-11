@@ -1,6 +1,6 @@
 # 🧠 Employee Report Analysis System
 
-A robust AI-powered system for analyzing employee reports to extract valuable insights, identify trends, and facilitate data-driven management decisions through natural language processing.
+A AI-powered system for analyzing employee reports to extract valuable insights, identify trends, and facilitate data-driven management decisions through natural language processing.
 
 ---
 
@@ -59,7 +59,7 @@ The system also performs **monthly analysis** across all reports from an employe
   - PostgreSQL for structured data
   - Qdrant for vector embeddings and semantic search
   - Redis for task queue management and caching
-- **LLM Integration**: Ollama for natural language understanding and structured output generation
+- **LLM Integration**: Ollama & vLLM for natural language understanding and structured output generation
 - **Frontend Layer**: HTML, CSS, and JavaScript for user interaction
 - **Vector Store**:
   - Automatic vectorization of reports upon submission
@@ -74,11 +74,11 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Database**: PostgreSQL
 - **Vector Store**: Qdrant
 - **Task Queue**: Celery with Redis
-- **LLM Provider**: Ollama
-- **Embeddings**: Sentence Transformers
+- **LLM Provider**: Ollama, vLLM
+- **Embeddings**: Ollama, vLLM
 - **Documentation**: Swagger / OpenAPI
 - **Frontend**: HTML5, CSS3, JavaScript (vanilla)
-- **Containerization**: Docker for services (Redis, Qdrant)
+- **Containerization**: Docker for services (Redis, Qdrant, vLLM)
 - **UI Framework**: Custom responsive design
 
 ---
@@ -151,6 +151,120 @@ The system also performs **monthly analysis** across all reports from an employe
      (Invoke-WebRequest 'http://localhost:6333/collections' -UseBasicParsing).StatusCode  # Should return 200
      ```
 
+   - **Set Up vLLM Containers**:
+   
+     - **Prerequisites for GPU + Docker**:
+       - Install NVIDIA drivers and NVIDIA Container Toolkit to enable Docker to access GPUs
+       - Verify GPU access in containers:
+         ```powershell
+         docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi
+         ```
+       - You should see your GPU(s) listed in the output
+
+     - **Pull the vLLM OpenAI-compatible image**:
+       ```powershell
+       docker pull vllm/vllm-openai:latest
+       ```
+
+     - **Start the LLM Server**:
+       ```powershell
+       # Optional: Set Hugging Face token for gated models
+       $env:HF_TOKEN="your_hf_token_here"
+
+       # Start vLLM container for LLM functionality
+       docker run --rm `
+         --name vllm-llm `
+         --gpus all `
+         --ipc=host `
+         -p 8001:8000 `
+         -e HUGGING_FACE_HUB_TOKEN=$env:HF_TOKEN `
+         -v "${PWD}\hf-cache:/root/.cache/huggingface" `
+         vllm/vllm-openai:latest `
+         --model meta-llama/Meta-Llama-3.1-8B-Instruct `
+         --dtype auto `
+         --gpu-memory-utilization 0.9 `
+         --tensor-parallel-size 2 `  # Adjust based on number of GPUs
+         --api-key token-llm123
+       ```
+
+     - **Test the LLM Server**:
+       ```powershell
+       # List available models
+       curl -H "Authorization: Bearer token-llm123" http://localhost:8001/v1/models
+
+       # Create a request file (req.json)
+       @'
+       {
+         "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+         "messages": [
+           { "role": "user", "content": "Give me 2 facts about Karachi." }
+         ],
+         "max_tokens": 128
+       }
+       '@ > req.json
+
+       # Test chat completion
+       curl -s -X POST http://localhost:8001/v1/chat/completions `
+         -H "Authorization: Bearer token-llm123" `
+         -H "Content-Type: application/json" `
+         -d "@req.json"
+       ```
+
+     - **Start the Embeddings Server**:
+       ```powershell
+       # Start vLLM container for embeddings functionality
+       docker run -d `
+         --name vllm-embed `
+         --gpus all `
+         --ipc=host `
+         -p 8010:8000 `
+         -e HUGGING_FACE_HUB_TOKEN=$env:HF_TOKEN `
+         -v "${PWD}\hf-cache:/root/.cache/huggingface" `
+         vllm/vllm-openai:latest `
+         --model BAAI/bge-m3 `  # Recommended embedding model
+         --task embed `
+         --dtype auto `
+         --gpu-memory-utilization 0.9 `
+         --tensor-parallel-size 2 `  # Adjust based on number of GPUs
+         --api-key token-emb123
+       ```
+
+       - **For Single-GPU Setups**:
+         ```powershell
+         # Use a specific GPU (e.g., GPU 0)
+         $env:CUDA_VISIBLE_DEVICES=0
+         docker run -d `
+           --name vllm-embed `
+           --gpus all `
+           --ipc=host `
+           -p 8010:8000 `
+           -e HUGGING_FACE_HUB_TOKEN=$env:HF_TOKEN `
+           -v "${PWD}\hf-cache:/root/.cache/huggingface" `
+           vllm/vllm-openai:latest `
+           --model BAAI/bge-m3 `
+           --task embed `
+           --dtype auto `
+           --gpu-memory-utilization 0.9 `
+           --api-key token-emb123
+         ```
+
+     - **Test the Embeddings Server**:
+       ```powershell
+       # Create a request file (embed.json)
+       @'
+       {
+         "model": "BAAI/bge-m3",
+         "input": ["Karachi is a coastal city in Pakistan.", "Lahore is known for its culture."]
+       }
+       '@ > embed.json
+
+       # Test embeddings
+       curl -s -X POST http://localhost:8010/v1/embeddings `
+         -H "Authorization: Bearer token-emb123" `
+         -H "Content-Type: application/json" `
+         -d "@embed.json"
+       ```
+
 3. **Set Up the Application**
 
    - **Get the code**: 
@@ -170,12 +284,12 @@ The system also performs **monthly analysis** across all reports from an employe
      ```
 
    - **Configure environment variables**:
-     - Create a `.env` file in the application root with:
+     - Modify the existing `.env` file in the application root with the relevant parameters e.g.:
      ```
      DATABASE_URL=postgresql://username:password@localhost:5432/employee_report_db
-     VECTOR_STORE_URL=http://localhost:6333
+     VECTOR_STORE_PORT=6333
      OLLAMA_BASE_URL=http://localhost:11434
-     LLM_MODEL_NAME=llama3.1
+     OLLAMA_MODEL=llama3.1
      ```
 
 4. **Start the Application**
@@ -381,19 +495,6 @@ The system provides a comprehensive REST API:
 - `GET /imports/` - List all import jobs
 
 API documentation is available at `/docs` when running the application.
-
----
-
-## 🔮 Future Enhancements
-
-- **Export Functionality**: Generate PDF and Excel reports for stakeholders
-- **Mobile Application**: Native mobile app for on-the-go report submission and analysis
-- **Team Analytics**: Aggregate insights across teams and departments
-- **Integration with HR Systems**: Connect with existing HR software for seamless workflow
-- **Advanced Visualizations**: More sophisticated charts and dashboards
-- **Customizable Analysis Criteria**: Allow managers to configure analysis parameters
-- **Notification System**: Alert managers to high-risk or critical issues
-- **Multi-language Support**: Analyze reports in multiple languages
 
 ---
 

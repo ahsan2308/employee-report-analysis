@@ -669,8 +669,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
             if not employee:
                 raise ValueError(f"Employee {employee_id} not found")
         
-        # Check if analysis already exists using a service function (to be implemented)
-        # get_quarterly_analysis_by_params will need to be implemented in db_service.py
+
         existing_analysis = get_quarterly_analysis_by_params(employee_id, year, quarter)
         if existing_analysis:
             logger.info(f"Quarterly analysis for employee {employee_id}, {year}-Q{quarter} already exists")
@@ -702,16 +701,14 @@ def analyze_quarterly_reports_task(self, task_id: str):
             }
         
         # Gather quarterly data using the quarterly analysis service
-        # get_quarterly_data_for_analysis will need to be implemented
         logger.info(f"Gathering data for employee {employee_id}, {year}-Q{quarter}")
         quarterly_data = get_quarterly_data_for_analysis(employee_id, year, quarter)
 
         # Add vision data for the quarter
-        # get_employee_vision_data_for_quarter will need to be implemented
         raw_quarterly_vision_data = get_employee_vision_data_for_quarter(employee_id, year, quarter)
         filtered_quarterly_vision_data = filter_vision_data(raw_quarterly_vision_data)
         
-        # format_vision_data_for_quarterly_analysis_prompt will need to be implemented
+       
         formatted_quarterly_vision_data = format_vision_data_for_quarterly_analysis_prompt(
             filtered_quarterly_vision_data, 
             max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_QUARTERLY_ANALYSIS  
