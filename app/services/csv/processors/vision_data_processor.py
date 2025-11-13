@@ -3,7 +3,7 @@ Vision Data Processor
 
 Handles the transformation and processing of Vision system data CSV rows into database operations.
 """
-from typing import Dict, Any, Tuple, List, Optional, Set
+from typing import Dict, Any, Tuple, List, Optional, Set, Union
 import pandas as pd
 import json
 from sqlalchemy.orm import Session
@@ -63,6 +63,7 @@ class VisionDataProcessor(BaseCSVProcessor):
         """
         try:
             # Validate row data using Pydantic model
+            # This already validates Sub_Entities_Content format via @field_validator
             validated_data = VisionDataCSVRow(**row_data)
             row_dict = validated_data.model_dump()
             
@@ -77,7 +78,7 @@ class VisionDataProcessor(BaseCSVProcessor):
                 )
                 return False
             
-            # Parse sub-entities JSON
+            # Parse sub-entities JSON (already validated by Pydantic)
             sub_entities_json = row_dict.get('Sub_Entities')
             try:
                 if isinstance(sub_entities_json, str):
@@ -85,6 +86,7 @@ class VisionDataProcessor(BaseCSVProcessor):
                 else:
                     sub_entities = sub_entities_json
             except json.JSONDecodeError:
+                # Should not happen after Pydantic validation, but safeguard
                 self.error_handler.add_validation_error(
                     row_number=row_number,
                     error_message="Invalid JSON format in Sub_Entities field",
@@ -93,21 +95,11 @@ class VisionDataProcessor(BaseCSVProcessor):
                 )
                 return False
 
-            # Parse sub-entities content JSON
+            # Parse sub-entities content (already validated by Pydantic)
+            # Pydantic validator confirmed it's in format "Key1:[...], Key2:[...]"
+            # Now we just need to PARSE it into a dictionary
             sub_entities_content_json = row_dict.get('Sub_Entities_Content')
-            try:
-                if isinstance(sub_entities_content_json, str):
-                    sub_entities_content = json.loads(sub_entities_content_json)
-                else:
-                    sub_entities_content = sub_entities_content_json
-            except json.JSONDecodeError:
-                self.error_handler.add_validation_error(
-                    row_number=row_number,
-                    error_message="Invalid JSON format in Sub_Entities_Content field",
-                    field_name="Sub_Entities_Content",
-                    row_data=row_data
-                )
-                return False
+            sub_entities_content = self._parse_sub_entities_content(sub_entities_content_json)
 
             # Check for existing record
             existing_record = self.db.query(EmployeeVisionData).filter(
@@ -140,7 +132,7 @@ class VisionDataProcessor(BaseCSVProcessor):
             return True
             
         except ValidationError as e:
-            # Handle validation errors
+            # Handle validation errors from Pydantic
             self.error_handler.normalize_pydantic_errors(e, row_number, row_data)
             return False
         except Exception as e:
@@ -153,6 +145,45 @@ class VisionDataProcessor(BaseCSVProcessor):
             )
             return False
     
+    def _parse_sub_entities_content(self, content_data: Union[str, Dict]) -> Dict[str, List]:
+        """
+        Parse Sub_Entities_Content into dictionary.
+        
+        Now accepts both string (legacy) and dict (from validator).
+        
+        Args:
+            content_data: Either validated dict or string to parse
+            
+        Returns:
+            Dictionary with keys mapped to parsed lists
+        """
+        # If already a dict (from validator), return it
+        if isinstance(content_data, dict):
+            return content_data
+        
+        # If empty or None, return empty dict
+        if not content_data or (isinstance(content_data, str) and not content_data.strip()):
+            return {}
+        
+        # Legacy: Parse string format (for backward compatibility)
+        from app.schemas.csv_import_schema import _top_level_split, _json_list_with_fixes
+        
+        parts = _top_level_split(content_data, delimiter=',')
+        content_dict = {}
+        
+        for part in parts:
+            if ':' in part:
+                key, value = part.split(':', 1)
+                key = key.strip()
+                value = value.strip()
+                
+                # Parse the JSON array
+                parsed_value = _json_list_with_fixes(value)
+                if parsed_value is not None:
+                    content_dict[key] = parsed_value
+        
+        return content_dict
+
     def process_dataframe(self, df: pd.DataFrame, start_row_number: int = 1, pre_cleaned: bool = True) -> Tuple[int, int]:
         """
         Process a DataFrame of Vision data rows in bulk.
@@ -197,25 +228,31 @@ class VisionDataProcessor(BaseCSVProcessor):
         if not validated_rows:
             return 0, total_rows
         
-        # Process validated rows in bulk
+        # FIXED: Check employee existence BEFORE bulk processing
         try:
-            # Collect employee IDs for existence check
-            employee_ids = set(row[1]['Employee_ID'] for row in validated_rows)
+            # Get set of existing employee IDs
             existing_employees = self._get_existing_employee_ids()
             
-            # Filter out rows with non-existent employees
+            # Filter out rows with non-existent employees BEFORE bulk processing
             valid_rows = []
             for row_number, row_dict in validated_rows:
-                if row_dict['Employee_ID'] in existing_employees:
-                    valid_rows.append((row_number, row_dict))
-                else:
+                employee_id = row_dict.get('Employee_ID')
+                if employee_id not in existing_employees:
                     # Add error for non-existent employee
                     self.error_handler.add_validation_error(
                         row_number=row_number,
-                        error_message=f"Employee ID {row_dict['Employee_ID']} does not exist in the database",
+                        error_message=f"Employee ID {employee_id} does not exist in the database. Please ensure the employee is created before importing Vision data.",
                         field_name="Employee_ID",
                         row_data=row_dict
                     )
+                    logger.warning(f"Row {row_number}: Employee ID {employee_id} not found in database")
+                else:
+                    valid_rows.append((row_number, row_dict))
+            
+            # If no valid rows after filtering, return early
+            if not valid_rows:
+                logger.warning(f"No valid rows to process after employee existence check. All {len(validated_rows)} rows had non-existent employee IDs.")
+                return 0, total_rows
             
             # Process all valid rows in bulk
             bulk_success = self._bulk_process_vision_data([row for _, row in valid_rows])
@@ -223,7 +260,7 @@ class VisionDataProcessor(BaseCSVProcessor):
             if bulk_success:
                 successful_rows = len(valid_rows)
                 self.successful_rows += successful_rows
-                
+            
             return successful_rows, total_rows
             
         except Exception as e:
@@ -232,15 +269,7 @@ class VisionDataProcessor(BaseCSVProcessor):
             return 0, total_rows
 
     def _bulk_process_vision_data(self, validated_rows: List[Dict[str, Any]]) -> bool:
-        """
-        Process vision data records in bulk using SQLAlchemy core operations.
-        
-        Args:
-            validated_rows: List of validated row dictionaries
-            
-        Returns:
-            True if successful, False otherwise
-        """
+        """Process vision data records in bulk using SQLAlchemy core operations."""
         try:
             from sqlalchemy.dialects.postgresql import insert as pg_insert
             
@@ -248,7 +277,7 @@ class VisionDataProcessor(BaseCSVProcessor):
             vision_data = []
             
             for row in validated_rows:
-                # Parse sub-entities JSON if needed
+                # Parse sub-entities JSON (already validated by Pydantic)
                 sub_entities_json = row.get('Sub_Entities')
                 try:
                     if isinstance(sub_entities_json, str):
@@ -259,16 +288,9 @@ class VisionDataProcessor(BaseCSVProcessor):
                     logger.warning(f"Invalid JSON in Sub_Entities for employee {row['Employee_ID']}: {sub_entities_json}")
                     continue
 
-                # Parse sub-entities content JSON if needed
+                # Parse sub-entities content (already validated by Pydantic)
                 sub_entities_content_json = row.get('Sub_Entities_Content')
-                try:
-                    if isinstance(sub_entities_content_json, str):
-                        sub_entities_content = json.loads(sub_entities_content_json)
-                    else:
-                        sub_entities_content = sub_entities_content_json
-                except json.JSONDecodeError:
-                    logger.warning(f"Invalid JSON in Sub_Entities_Content for employee {row['Employee_ID']}: {sub_entities_content_json}")
-                    continue
+                sub_entities_content = self._parse_sub_entities_content(sub_entities_content_json)
 
                 # Add to bulk data
                 vision_data.append({
@@ -282,8 +304,11 @@ class VisionDataProcessor(BaseCSVProcessor):
             
             # Skip if no data to process
             if not vision_data:
+                logger.warning("No vision data to process after JSON parsing")
                 return True
-                
+            
+            logger.info(f"Bulk processing {len(vision_data)} vision data records")
+            
             # Perform bulk upsert
             stmt = pg_insert(EmployeeVisionData.__table__).values(vision_data)
             stmt = stmt.on_conflict_do_update(
@@ -300,10 +325,6 @@ class VisionDataProcessor(BaseCSVProcessor):
             # Update metrics
             created_count = result.rowcount
             self.vision_records_created += created_count
-            
-            # Note: PostgreSQL's on_conflict_do_update doesn't distinguish between
-            # inserts and updates in the rowcount, so we can't accurately track updates
-            # To track updates separately, we'd need to do a pre-query to check existence
             
             self.db.commit()
             logger.info(f"Bulk processed {len(vision_data)} vision records with {created_count} created/updated")

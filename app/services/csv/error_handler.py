@@ -200,21 +200,29 @@ class ImportErrorHandler:
     def should_abort(self, 
                    total_rows: int, 
                    error_threshold_percent: float = 10.0,
-                   stop_on_error: bool = False) -> Tuple[bool, str]:
+                   stop_on_error: bool = False,
+                   minimum_rows_before_threshold: int = 200) -> Tuple[bool, str]:
         """
         Determine if processing should be aborted based on error thresholds.
         
         Args:
-            total_rows: Total number of rows processed
+            total_rows: Total number of rows processed SO FAR (not total in file)
             error_threshold_percent: Maximum allowed percentage of errors
             stop_on_error: Whether to stop on any error
+            minimum_rows_before_threshold: Minimum rows to process before applying threshold (default: 200)
             
         Returns:
             Tuple of (should_abort, reason)
         """
         if stop_on_error and self.get_error_count() > 0:
             return True, "Stopping due to stop_on_error=True and errors were found"
+        
+        # Don't apply error threshold until we've processed at least 200 rows
+        # This prevents premature abort due to early errors
+        if total_rows < minimum_rows_before_threshold:
+            return False, ""
             
+        # After minimum threshold (200 rows), apply normal error percentage check
         if total_rows > 0:
             error_percentage = self.get_error_percentage(total_rows)
             if error_percentage > error_threshold_percent:

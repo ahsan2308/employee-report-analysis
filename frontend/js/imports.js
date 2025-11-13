@@ -77,6 +77,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const errorModalContent = document.getElementById('errorModalContent');
     const closeModalBtns = document.querySelectorAll('.close-modal');
     
+    // NEW: DOM Elements for format options
+    const fileFormatSelect = document.getElementById('fileFormat');
+    const delimiterSelect = document.getElementById('delimiter');
+    const encodingSelect = document.getElementById('encoding');
+    
     // State Variables
     let currentJobId = null;
     let pollingInterval = null;
@@ -227,14 +232,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateForm() {
         // Check if a file is selected
         if (!csvFileInput.files || csvFileInput.files.length === 0) {
-            showMessage('Please select a CSV file to import.', 'error');
+            showMessage('Please select a file to import.', 'error');
             return false;
         }
         
-        // Check if file is a CSV file
+        // NEW: Check if file extension is valid (CSV, TXT, or TSV)
         const file = csvFileInput.files[0];
-        if (!file.name.toLowerCase().endsWith('.csv')) {
-            showMessage('Selected file must be a CSV file.', 'error');
+        const validExtensions = ['.csv', '.txt', '.tsv'];
+        const fileExtension = file.name.toLowerCase().match(/\.\w+$/)?.[0];
+        
+        if (!validExtensions.includes(fileExtension)) {
+            showMessage('Selected file must be a CSV, TXT, or TSV file.', 'error');
             return false;
         }
         
@@ -263,6 +271,19 @@ document.addEventListener('DOMContentLoaded', function() {
             // If CSV type is empty (auto-detect), remove it from the form data
             if (!csvTypeSelect.value) {
                 formData.delete('csv_type');
+            }
+            
+            // NEW: Log delimiter and encoding for debugging
+            console.log('File format:', formData.get('file_format'));
+            console.log('Delimiter:', formData.get('delimiter'));
+            console.log('Encoding:', formData.get('encoding'));
+            
+            // NEW: Handle empty string values (convert to null for backend compatibility)
+            if (formData.get('delimiter') === '') {
+                formData.delete('delimiter');
+            }
+            if (formData.get('encoding') === '') {
+                formData.delete('encoding');
             }
             
             // Send the form data
@@ -333,6 +354,27 @@ document.addEventListener('DOMContentLoaded', function() {
             updateMetricsDisplay(jobDetails);
         } else {
             jobType.textContent = 'Auto-Detect';
+        }
+        
+        // Display delimiter and encoding if detected
+        const metrics = jobDetails.metrics || {};
+        if (metrics.detected_delimiter) {
+            const delimiterDisplay = metrics.detected_delimiter === '\t' ? 'Tab' :
+                                   metrics.detected_delimiter === ',' ? 'Comma' :
+                                   metrics.detected_delimiter === '|' ? 'Pipe' :
+                                   metrics.detected_delimiter === ';' ? 'Semicolon' :
+                                   metrics.detected_delimiter;
+            
+            // Add a small badge showing detected delimiter
+            jobType.innerHTML += ` <span class="info-badge" title="Detected delimiter">
+                <i class="fas fa-divide"></i> ${delimiterDisplay}
+            </span>`;
+        }
+        
+        if (metrics.detected_encoding) {
+            jobType.innerHTML += ` <span class="info-badge" title="Detected encoding">
+                <i class="fas fa-globe"></i> ${metrics.detected_encoding}
+            </span>`;
         }
         
         // Update progress bar and text
@@ -644,18 +686,36 @@ document.addEventListener('DOMContentLoaded', function() {
             downloadCSV(csvContent, 'employee_reports_template.csv');
         }
         else if (templateType === 'vision_data') {
-            // Define template headers and a sample row for vision data
             const headers = [
-                'Employee_ID', 'From_Date', 'To_Date', 'Main_Entity', 'Sub_Entities'
+                'Employee_ID', 'From_Date', 'To_Date', 'Main_Entity', 
+                'Sub_Entities', 'Sub_Entities_Content'
             ];
             
             const sampleRow = [
-                '101', '2023-10-01', '2023-10-31', 'Tasks', 'Analysis:5, Reporting:3, Planning:2'
+                '101', 
+                '2023-10-01', 
+                '2023-10-31', 
+                'Tasks', 
+                'Analysis:5, Reporting:3, Planning:2',
+                'Cases:[],Tasks:[{"id":1,"name":"Task 1"}]'
             ];
             
-            // Create CSV content
-            let csvContent = headers.join(',') + '\n' + sampleRow.join(',');
-            downloadCSV(csvContent, 'vision_data_template.csv');
+            // NEW: Detect if user wants tab-delimited based on file_format selection
+            const selectedFormat = fileFormatSelect ? fileFormatSelect.value : 'csv';
+            
+            let csvContent, filename;
+            
+            if (selectedFormat === 'txt' || selectedFormat === 'tsv') {
+                // Generate tab-delimited format
+                csvContent = headers.join('\t') + '\n' + sampleRow.join('\t');
+                filename = 'vision_data_template.txt';
+            } else {
+                // Generate comma-delimited format
+                csvContent = headers.join(',') + '\n' + sampleRow.join(',');
+                filename = 'vision_data_template.csv';
+            }
+            
+            downloadCSV(csvContent, filename);
         }
     }
     

@@ -29,7 +29,7 @@ class CSVImportService:
     def __init__(self):
         """Initialize the service."""
         self.db_instance = get_database()
-        self.csv_reader = PandasCSVReader(chunk_size=1000)
+        # self.csv_reader = PandasCSVReader(chunk_size=1000)
     
     @contextmanager
     def _transaction_context(self, session=None):
@@ -248,18 +248,36 @@ class CSVImportService:
             
             try:
                 # Initialize the CSV reader with our file
-                self.csv_reader._file_obj = self.csv_reader._get_file_obj(file_path, file_obj)
+                # self.csv_reader._file_obj = self.csv_reader._get_file_obj(file_path, file_obj)
+                
+                # Create CSV reader with job-specific options
+                # Extract delimiter and encoding from options
+                delimiter = getattr(job_options, 'delimiter', None)
+                encoding = getattr(job_options, 'encoding', None)
+                chunk_size = getattr(job_options, 'chunk_size', 1000)
+                
+                # Create reader with these options
+                csv_reader = PandasCSVReader(
+                    chunk_size=chunk_size,
+                    encoding=encoding,
+                    delimiter=delimiter
+                )
+                
+                logger.info(f"Created CSV reader for job {job_id} with delimiter={repr(delimiter)}, encoding={encoding}")
+                
+                # Initialize the CSV reader with our file
+                csv_reader._file_obj = csv_reader._get_file_obj(file_path, file_obj)
                 
                 # Try to detect file encoding upfront for better error messages
                 try:
-                    encoding = self.csv_reader._detect_encoding(file_path, file_obj)
-                    logger.info(f"Detected encoding for {job.filename}: {encoding}")
+                    detected_encoding = csv_reader._detect_encoding(file_path, file_obj)
+                    logger.info(f"Detected encoding for {job.filename}: {detected_encoding}")
                 except Exception as e:
                     logger.warning(f"Error detecting encoding: {str(e)}")
                 
                 try:
-                    # Use existing CSV reader methods to count rows and get headers
-                    total_rows = self.csv_reader.get_total_rows()
+                    # Use CSV reader methods to count rows and get headers
+                    total_rows = csv_reader.get_total_rows()
                     
                     job.total_rows = total_rows
                     session.commit()
@@ -269,10 +287,15 @@ class CSVImportService:
                 
                 # Process based on selected mode
                 if processing_mode == "row_by_row":
-                    # Use the CSV reader's generator approach
                     logger.info(f"Using row-by-row processing mode for job {job.job_id}")
                     try:
-                        csv_generator = self.csv_reader.read_csv(file_path=file_path, file_obj=file_obj)
+                        # Pass delimiter and encoding to read_csv
+                        csv_generator = csv_reader.read_csv(
+                            file_path=file_path,
+                            file_obj=file_obj,
+                            encoding=encoding,
+                            delimiter=delimiter
+                        )
                         job_result = self._process_rows(
                             session=session,
                             job=job,
@@ -284,13 +307,15 @@ class CSVImportService:
                         logger.error(f"Encoding error in row-by-row processing: {str(ude)}")
                         raise ValueError(f"Cannot process file {job.filename}: {str(ude)}")
                 else:
-                    # Use the bulk DataFrame approach with the CSV reader
                     logger.info(f"Using bulk processing mode for job {job.job_id}")
                     try:
-                        reader = self.csv_reader.read_dataframes(
+                        # Pass delimiter and encoding to read_dataframes
+                        reader = csv_reader.read_dataframes(
                             file_path=file_path, 
                             file_obj=file_obj,
-                            chunk_size=job_options.chunk_size
+                            chunk_size=job_options.chunk_size,
+                            encoding=encoding,
+                            delimiter=delimiter
                         )
                         job_result = self._process_with_pandas(
                             session=session,
@@ -302,7 +327,7 @@ class CSVImportService:
                     except UnicodeDecodeError as ude:
                         logger.error(f"Encoding error in bulk processing: {str(ude)}")
                         raise ValueError(f"Cannot process file {job.filename}: {str(ude)}")
-                
+                                
                 # Convert job to dictionary before returning
                 return {
                     "job_id": str(job_result.job_id),
@@ -517,7 +542,13 @@ class CSVImportService:
             for chunk_df in reader:
                 current_chunk += 1
                 chunk_start_row = processed_rows + 1
+                
+                # Log chunk info for debugging
                 logger.info(f"Processing chunk {current_chunk} ({len(chunk_df)} rows)")
+                if current_chunk == 1:
+                    logger.info(f"Chunk columns: {list(chunk_df.columns)}")
+                    logger.debug(f"First row of first chunk: {chunk_df.iloc[0].to_dict() if len(chunk_df) > 0 else 'empty'}")
+                
                 if not dry_run:
                     # Use bulk processing with pre-cleaned DataFrames
                     chunk_successful, chunk_total = row_processor.process_dataframe(
@@ -543,21 +574,15 @@ class CSVImportService:
                     # Add detailed error reporting before aborting
                     logger.warning(f"Aborting import: {reason}")
                     
-                    # Collect and log a summary of errors to help debugging
-                    logger.warning(f"Error summary: {error_handler.get_error_count()} errors in {processed_rows} rows")
+                    # Better error diagnostics for early failures
+                    if processed_rows <= 10:
+                        logger.error(f"Import failed on or before row {processed_rows}. This suggests a fundamental format issue.")
+                        errors = error_handler.get_errors()[:3]
+                        for i, err in enumerate(errors):
+                            logger.error(f"Error {i+1} (row {err.row_number}): {err.error_message}")
+                            if hasattr(err, 'row_data') and err.row_data:
+                                logger.error(f"  Row data fields: {list(err.row_data.keys())}")
                     
-                    # Log the first few errors to help identify patterns
-                    errors = error_handler.get_errors()[:5]  # Get up to 5 errors
-                    for i, err in enumerate(errors):
-                        logger.warning(f"Sample error {i+1}: {err.error_message}")
-                        if hasattr(err, 'row_data') and err.row_data:
-                            # Log some common fields that might be present regardless of CSV type
-                            common_fields = ['Employee_ID', 'From', 'To', 'From_Date', 'To_Date', 'Name']
-                            for field in common_fields:
-                                if field in err.row_data:
-                                    logger.warning(f"  Field '{field}': '{err.row_data.get(field)}'")
-                    
-                    # Now raise the exception
                     raise ValueError(f"Import aborted: {reason}")
                 
                 # Update job metrics

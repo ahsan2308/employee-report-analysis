@@ -189,7 +189,19 @@ class EmployeeReportProcessor(BaseCSVProcessor):
         """
         if df.empty:
             return 0, 0
+        
+        # NEW: De-duplicate based on (Employee_ID, To) before processing
+        original_count = len(df)
+        
+        # Check if 'To' column exists (it should for employee reports)
+        if 'Employee_ID' in df.columns and 'To' in df.columns:
+            # Keep the last occurrence of each (Employee_ID, To) combination
+            df = df.drop_duplicates(subset=['Employee_ID', 'To'], keep='last')
             
+            deduplicated_count = len(df)
+            if original_count > deduplicated_count:
+                logger.warning(f"Removed {original_count - deduplicated_count} duplicate rows from chunk based on (Employee_ID, To). Kept last occurrence.")
+        
         # Track metrics
         successful_rows = 0
         total_rows = len(df)
@@ -279,6 +291,8 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             from sqlalchemy.dialects.postgresql import insert as pg_insert
             
             report_data = []
+            # Track seen (employee_id, report_date) combinations to avoid duplicates
+            seen_combinations = set()
             
             for row in validated_rows:
                 # Check if "nothing to report" is set
@@ -288,6 +302,23 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                 # Ensure proper date field handling - check both capitalization versions
                 start_date = row.get('From') or row.get('from')
                 report_date = row.get('To') or row.get('to')
+                
+                # Get employee ID from the right field
+                emp_id = row.get('Employee_ID') or row.get('employee_id')
+                if not emp_id:
+                    # This should have been handled in validation, but as a safeguard
+                    logger.warning(f"Missing employee ID in row: {row}")
+                    continue
+                
+                # Check for duplicate (employee_id, report_date) in this batch
+                combination_key = (emp_id, report_date)
+                if combination_key in seen_combinations:
+                    logger.warning(f"Duplicate report found in batch for employee {emp_id} on {report_date}. Using the last occurrence.")
+                    # Remove the previous entry for this combination
+                    report_data = [r for r in report_data if not (r['employee_id'] == emp_id and r['report_date'] == report_date)]
+                
+                # Mark this combination as seen
+                seen_combinations.add(combination_key)
                 
                 # Construct report text from fields - check both naming conventions
                 report_text = "\n\n".join([             
@@ -300,13 +331,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                     f"Report Period: {start_date} to {report_date}"
                 ])
                 
-                # Map to database properly, get employee ID from the right field
-                emp_id = row.get('Employee_ID') or row.get('employee_id')
-                if not emp_id:
-                    # This should have been handled in validation, but as a safeguard
-                    logger.warning(f"Missing employee ID in row: {row}")
-                    continue
-                    
+                # Add report data directly using emp_id we already extracted
                 report_data.append({
                     'employee_id': emp_id,
                     'report_date': report_date,
@@ -316,6 +341,12 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             # Skip if no reports to process
             if not report_data:
                 return True
+            
+            # Log statistics about duplicates
+            original_count = len(validated_rows) - len([r for r in validated_rows if r.get('NTR') and r['NTR'].strip() and r['NTR'].strip().upper() != 'NULL'])
+            deduplicated_count = len(report_data)
+            if original_count > deduplicated_count:
+                logger.info(f"Removed {original_count - deduplicated_count} duplicate reports from batch (kept latest occurrence)")
                 
             stmt = pg_insert(Report.__table__).values(report_data)
             stmt = stmt.on_conflict_do_update(

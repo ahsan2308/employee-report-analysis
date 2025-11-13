@@ -26,6 +26,22 @@ class CSVImportOptions(BaseModel):
         default=10.0, 
         description="File size in MB above which row_by_row mode is used"
     )
+    
+    file_format: Literal["csv", "txt", "tsv", "auto"] = Field(
+        default="auto",
+        description="File format: csv (comma), txt (tab), tsv (tab), or auto (detect)"
+    )
+    
+    delimiter: Optional[str] = Field(
+        default=None,
+        description="Field delimiter character (comma, tab, pipe, etc.). None means auto-detect."
+    )
+    
+    encoding: Optional[str] = Field(
+        default=None,
+        description="File encoding (utf-8, utf-16, etc.). None means auto-detect."
+    )
+
 
 class CombinedCSVRow(BaseModel):
     """
@@ -696,17 +712,21 @@ class VisionDataCSVRow(BaseModel):
     @classmethod
     def validate_sub_entities_content(cls, v):
         """
-        Validate that Sub_Entities_Content is a string in the format:
-        'Cases:[], Activities:[{...}], ...'
-        Each value must be a list (possibly empty) of dicts, but the whole string is not a JSON object.
+        Validate and CONVERT Sub_Entities_Content from string format to dictionary.
+        
+        Input format: 'Cases:[], Activities:[{...}], ...'
+        Output format: {"Cases": [], "Activities": [{...}], ...}
         """
         if not v or not v.strip():
-            return ""
+            return {}  # Return empty dict instead of empty string
 
         parts = _top_level_split(v, delimiter=',')
+        content_dict = {}
+        
         for part in parts:
             if ':' not in part:
                 raise ValueError(f"Invalid Sub_Entities_Content part: '{part}'. Expected format 'Key:[...]'")
+            
             key, value = part.split(':', 1)
             key = key.strip()
             value = value.strip()
@@ -723,8 +743,12 @@ class VisionDataCSVRow(BaseModel):
             for item in items:
                 if not isinstance(item, dict):
                     raise ValueError(f"Each item in list for '{key}' must be a JSON object/dict")
+            
+            # Add the parsed list to the dictionary
+            content_dict[key] = items
 
-        return v    
+        # Return the dictionary instead of the string
+        return content_dict
     @model_validator(mode='after')
     def convert_date_strings(self):
         """Convert date strings to actual date objects after all validation."""

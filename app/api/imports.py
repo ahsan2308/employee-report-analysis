@@ -37,34 +37,72 @@ async def upload_csv_file(
     error_threshold_percent: float = Form(10.0),
     chunk_size: int = Form(1000),
     processing_mode: str = Form("bulk"),
+    file_format: str = Form("auto", description="File format: csv, txt, tsv, or auto (detect)"),
+    delimiter: Optional[str] = Form(None, description="Field delimiter. None means auto-detect."),
+    encoding: Optional[str] = Form(None, description="File encoding. None means auto-detect."),
     csv_type: Optional[str] = Form(None, description="Optional CSV type override (e.g., 'employee_report', 'vision_data')"),
     db: Session = Depends(get_db)
 ):
     """
-    Upload a CSV file for import.
+    Upload a delimited text file (CSV, TXT, or TSV) for import.
     
     The file will be processed asynchronously, and a job ID is returned for tracking progress.
+    **The delimiter will be automatically detected** from the file content, or you can specify it explicitly.
+    
+    Supported file types:
+    - CSV: Comma-delimited (typically)
+    - TXT: Tab-delimited (typically, e.g., Vision Data exports)
+    - TSV: Tab-separated values
+    
+    Supported delimiters (auto-detected or explicit):
+    - Comma (,)
+    - Tab (\\t)
+    - Pipe (|)
+    - Semicolon (;)
+    - Colon (:)
+    - Space ( )
     
     Args:
-        file: The CSV file to upload
-        dry_run: If True, validate the CSV without writing to the database
+        file: The CSV, TXT, or TSV file to upload
+        dry_run: If True, validate the file without writing to the database
         stop_on_error: If True, stop processing on the first error
         error_threshold_percent: Maximum percentage of errors before aborting
         chunk_size: Number of rows to process in each chunk
         processing_mode: Either "row_by_row" or "bulk"
+        file_format: File format hint (csv, txt, tsv, or auto). Auto-detect if not specified.
+        delimiter: Explicit delimiter character. Auto-detect if not specified.
+        encoding: File encoding (e.g., utf-8, windows-1252). Auto-detect if not specified.
         csv_type: Optional CSV type override to force a specific processor
     """
-    logger.info(f"Received CSV upload: {file.filename}, type: {csv_type or 'auto-detect'}")
-    
-    # Validate file
-    if not file.filename.lower().endswith('.csv'):
-        raise HTTPException(status_code=400, detail="File must have a .csv extension")
+    logger.info(f"Received file upload: {file.filename}, type: {csv_type or 'auto-detect'}")
+       
+    # Validate file extension - accept CSV, TXT, and TSV
+    if not (file.filename.lower().endswith('.csv') or 
+            file.filename.lower().endswith('.txt') or 
+            file.filename.lower().endswith('.tsv')):
+        raise HTTPException(
+            status_code=400, 
+            detail="File must have a .csv, .txt, or .tsv extension. Delimiter will be auto-detected."
+        )
     
     # Validate CSV type if provided
     if csv_type and csv_type not in [t.value for t in CSVImportType]:
         valid_types = ", ".join([t.value for t in CSVImportType])
         raise HTTPException(status_code=400, detail=f"Invalid CSV type. Must be one of: {valid_types}")
     
+    # Auto-detect file format from extension if set to "auto"
+    if file_format == "auto":
+        if file.filename.lower().endswith('.txt'):
+            logger.info(f"File {file.filename} detected as TXT format (tab-delimited)")
+            file_format = "txt"
+        elif file.filename.lower().endswith('.tsv'):
+            logger.info(f"File {file.filename} detected as TSV format (tab-delimited)")
+            file_format = "tsv"
+        elif file.filename.lower().endswith('.csv'):
+            logger.info(f"File {file.filename} detected as CSV format")
+            file_format = "csv"
+
+
     try:
         # Create import options from form data
         options = CSVImportOptions(
@@ -72,7 +110,10 @@ async def upload_csv_file(
             stop_on_error=stop_on_error,
             error_threshold_percent=error_threshold_percent,
             chunk_size=chunk_size,
-            processing_mode=processing_mode
+            processing_mode=processing_mode,
+            file_format=file_format,
+            delimiter=delimiter,
+            encoding=encoding
         )
         
         # Create import job with optional CSV type
