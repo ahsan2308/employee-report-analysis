@@ -6,6 +6,7 @@ import socket
 
 from app.core.config_provider import get_config_provider
 from app.core.logger import logger  # Use the application's logger
+from celery.schedules import crontab
 
 # Get configuration
 config = get_config_provider()
@@ -157,3 +158,46 @@ celery_app.autodiscover_tasks(
     packages=task_packages,
     related_name=None,
 )
+
+# Explicitly import sync tasks to ensure they're registered
+try:
+    from app.tasks import sync_tasks
+    logger.info("Explicitly imported sync_tasks module")
+except ImportError as e:
+    logger.error(f"Failed to import sync_tasks: {e}")
+
+# Check if sync is enabled from environment variable
+SYNC_ENABLED = os.getenv('SYNC_ENABLED', 'true').lower() == 'true'
+
+# Configure beat schedule
+beat_schedule = {
+    # ...existing schedules (analysis tasks, etc.)...
+}
+
+# Add sync schedules only if sync is enabled
+if SYNC_ENABLED:
+    logger.info("SYNC_ENABLED=true: Adding scheduled sync tasks to beat schedule")
+    
+    # PRODUCTION: Weekly schedule (Monday 2:00 AM)
+    beat_schedule['sync-incremental-weekly'] = {
+        'task': 'sync.incremental',
+        'schedule': crontab(day_of_week=1, hour=2, minute=0),  # Monday 2:00 AM
+        'options': {'queue': 'sync'}
+    }
+    
+    # TEST: Uncomment to run every minute for testing
+    # beat_schedule['sync-incremental-weekly'] = {
+    #     'task': 'sync.incremental',
+    #     'schedule': crontab(minute='*'),  # Every minute
+    #     'options': {'queue': 'sync'}
+    # }
+
+# Apply the beat schedule
+celery_app.conf.beat_schedule = beat_schedule
+
+# Optional: Define task routing to use dedicated sync queue
+celery_app.conf.task_routes = {
+    'sync.*': {'queue': 'sync'},
+    'app.tasks.analysis_tasks.*': {'queue': 'analysis'},
+    'app.tasks.import_tasks.*': {'queue': 'imports'},
+}

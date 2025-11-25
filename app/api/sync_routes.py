@@ -1,0 +1,695 @@
+"""
+Sync API Routes
+
+Endpoints for triggering and monitoring SQL Server to PostgreSQL synchronization.
+"""
+from fastapi import APIRouter, Depends, HTTPException, Query, Path
+from sqlalchemy.orm import Session
+from typing import Optional, List
+from datetime import datetime, timedelta
+from uuid import UUID
+import time
+import os
+
+from app.database import get_database
+from app.models.sync_models import SyncHistory, SyncStatus, SyncType
+from app.schemas.sync_schema import (
+    SyncTriggerResponse,
+    FullSyncTriggerResponse,
+    SyncStatusResponse,
+    LastSyncResponse,
+    SyncHistoryListResponse,
+    SyncHistoryItem,
+    SyncErrorsResponse,
+    SyncErrorItem,
+    SyncConfigResponse,
+    ConnectionTestResponse,
+    SyncProgressMetrics
+)
+from app.tasks.sync_tasks import (
+    sync_employee_reports_task,
+    sync_vision_data_task,
+    full_sync_task
+)
+from app.database.sqlserver_connector import create_sqlserver_connector
+from app.core.logger import logger
+from app.worker.celery_app import celery_app 
+
+# Initialize Router
+router = APIRouter(prefix="/sync", tags=["SQL Server Sync"])
+
+
+# Dependency to get database session
+def get_db():
+    db_instance = get_database()
+    session = db_instance.create_session()
+    try:
+        yield session
+    finally:
+        session.close()
+
+
+def _check_and_clear_stale_syncs(db: Session, sync_type: str, timeout_minutes: int = 60):
+    """
+    Check for stale syncs and mark them as failed if they've been running too long.
+    
+    Args:
+        db: Database session
+        sync_type: Type of sync to check
+        timeout_minutes: Maximum time a sync can run before being marked stale
+    """
+    cutoff_time = datetime.now() - timedelta(minutes=timeout_minutes)
+    
+    stale_syncs = db.query(SyncHistory).filter(
+        SyncHistory.sync_type == sync_type,
+        SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value]),
+        SyncHistory.started_at < cutoff_time
+    ).all()
+    
+    for sync in stale_syncs:
+        logger.warning(f"Clearing stale sync {sync.sync_id} (started at {sync.started_at})")
+        sync.status = SyncStatus.FAILED.value
+        sync.error_message = f"Sync timed out after {timeout_minutes} minutes"
+        sync.completed_at = datetime.now()
+    
+    if stale_syncs:
+        db.commit()
+        logger.info(f"Cleared {len(stale_syncs)} stale {sync_type} syncs")
+
+
+# ============================================================================
+# GROUP 1: TRIGGER ENDPOINTS (Manual Sync Initiation)
+# ============================================================================
+
+@router.post("/trigger/employee_reports", response_model=SyncTriggerResponse, status_code=202)
+def trigger_employee_reports_sync(
+    is_full_sync: bool = Query(False, description="If true, perform full sync. If false, incremental sync."),
+    db: Session = Depends(get_db)
+):
+    """
+    Trigger employee reports synchronization from SQL Server to PostgreSQL.
+    
+    """
+    logger.info(f"Received request to trigger employee reports sync (is_full_sync={is_full_sync})")
+    
+    try:
+        # Clear stale syncs before checking for running syncs
+        _check_and_clear_stale_syncs(db, SyncType.EMPLOYEE_REPORTS.value, timeout_minutes=60)
+        
+        # Check if there's already a running sync of this type
+        running_sync = db.query(SyncHistory).filter(
+            SyncHistory.sync_type == SyncType.EMPLOYEE_REPORTS.value,
+            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
+        ).first()
+        
+        if running_sync:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Employee reports sync already in progress (sync_id: {running_sync.sync_id})"
+            )
+        
+        # Create SyncHistory record HERE in the API endpoint
+        from app.services.sync.sync_tracker import SyncTracker
+        from app.database import get_database
+        
+        db_instance = get_database()
+        sync_tracker = SyncTracker(db_instance)
+        
+        # Create sync job record BEFORE queuing task
+        sync_job = sync_tracker.create_sync_job(
+            sync_type=SyncType.EMPLOYEE_REPORTS,
+            session=db,
+            is_full_sync=is_full_sync
+        )
+        
+        # Get the real sync_id
+        real_sync_id = sync_job.sync_id
+        
+        # Trigger Celery task using registered task name
+        task = celery_app.send_task(
+            'sync.employee_reports',  # ← Use registered task name as string
+            kwargs={
+                'is_full_sync': is_full_sync,
+                'sync_id': str(real_sync_id)
+            }
+        )
+        
+        # Return REAL sync_id (no placeholder!)
+        return SyncTriggerResponse(
+            sync_id=real_sync_id,
+            task_id=str(task.id),
+            sync_type="employee_reports",
+            status="pending",
+            is_full_sync=is_full_sync,
+            triggered_at=datetime.now(),
+            message=f"Employee reports sync {'(full)' if is_full_sync else '(incremental)'} started successfully"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error triggering employee reports sync: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
+
+
+@router.post("/trigger/vision_data", response_model=SyncTriggerResponse, status_code=202)
+def trigger_vision_data_sync(
+    is_full_sync: bool = Query(False, description="If true, perform full sync. If false, incremental sync."),
+    db: Session = Depends(get_db)
+):
+    """
+    Trigger vision data synchronization from SQL Server to PostgreSQL.
+    
+    This endpoint queues an asynchronous Celery task and returns immediately.
+    Use the returned sync_id to poll for status updates.
+    
+    - **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)
+    """
+    logger.info(f"Received request to trigger vision data sync (is_full_sync={is_full_sync})")
+    
+    try:
+        # Clear stale syncs before checking
+        _check_and_clear_stale_syncs(db, SyncType.VISION_DATA.value, timeout_minutes=60)
+        
+        # Check if a sync is already running
+        running_sync = db.query(SyncHistory).filter(
+            SyncHistory.sync_type == SyncType.VISION_DATA.value,
+            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
+        ).first()
+        
+        if running_sync:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Vision data sync already in progress (sync_id: {running_sync.sync_id})"
+            )
+        
+        # Create SyncHistory record HERE in the API endpoint
+        from app.services.sync.sync_tracker import SyncTracker
+        from app.database import get_database
+        
+        db_instance = get_database()
+        sync_tracker = SyncTracker(db_instance)
+        
+        # Create sync job record BEFORE queuing task
+        sync_job = sync_tracker.create_sync_job(
+            sync_type=SyncType.VISION_DATA,
+            session=db,
+            is_full_sync=is_full_sync
+        )
+        
+        # Get the real sync_id
+        real_sync_id = sync_job.sync_id
+        
+        # Trigger Celery task using registered task name
+        task = celery_app.send_task(
+            'sync.vision_data',  # ← Use registered task name as string
+            kwargs={
+                'is_full_sync': is_full_sync,
+                'sync_id': str(real_sync_id)
+            }
+        )
+        
+        # Return REAL sync_id (no placeholder!)
+        return SyncTriggerResponse(
+            sync_id=real_sync_id,
+            task_id=str(task.id),
+            sync_type="vision_data",
+            status="pending",
+            is_full_sync=is_full_sync,
+            triggered_at=datetime.now(),
+            message=f"Vision data sync {'(full)' if is_full_sync else '(incremental)'} started successfully"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error triggering vision data sync: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
+
+
+@router.post("/trigger/full", response_model=FullSyncTriggerResponse, status_code=202)
+def trigger_full_sync(db: Session = Depends(get_db)):
+    """
+    Trigger full synchronization of both employee reports and vision data.
+    
+    This runs both sync types sequentially in a single Celery task.
+    Both syncs will be in FULL mode (all records, not incremental).
+    """
+    logger.info("Received request to trigger full sync (both types)")
+    
+    try:
+        # Clear stale syncs for both types
+        _check_and_clear_stale_syncs(db, SyncType.EMPLOYEE_REPORTS.value, timeout_minutes=60)
+        _check_and_clear_stale_syncs(db, SyncType.VISION_DATA.value, timeout_minutes=60)
+        
+        # Check if either sync is already running
+        running_syncs = db.query(SyncHistory).filter(
+            SyncHistory.sync_type.in_([SyncType.EMPLOYEE_REPORTS.value, SyncType.VISION_DATA.value]),
+            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
+        ).all()
+        
+        if running_syncs:
+            running_types = [s.sync_type for s in running_syncs]
+            raise HTTPException(
+                status_code=409,
+                detail=f"Sync already in progress for: {', '.join(running_types)}"
+            )
+        
+        # Create SyncHistory records for BOTH sync types
+        from app.services.sync.sync_tracker import SyncTracker
+        from app.database import get_database
+        
+        db_instance = get_database()
+        sync_tracker = SyncTracker(db_instance)
+        
+        # Create sync job for employee reports (full mode)
+        employee_sync_job = sync_tracker.create_sync_job(
+            sync_type=SyncType.EMPLOYEE_REPORTS,
+            session=db,
+            is_full_sync=True  # Full sync always uses True
+        )
+        
+        # Create sync job for vision data (full mode)
+        vision_sync_job = sync_tracker.create_sync_job(
+            sync_type=SyncType.VISION_DATA,
+            session=db,
+            is_full_sync=True  # Full sync always uses True
+        )
+        
+        # Get the real sync_ids
+        employee_sync_id = employee_sync_job.sync_id
+        vision_sync_id = vision_sync_job.sync_id
+        
+        # Trigger full sync task using registered task name
+        task = celery_app.send_task(
+            'sync.full',  # ← Use registered task name as string
+            kwargs={
+                'employee_sync_id': str(employee_sync_id),
+                'vision_sync_id': str(vision_sync_id)
+            }
+        )
+        
+        # Return REAL sync_ids (no placeholders!)
+        return FullSyncTriggerResponse(
+            sync_type="full",
+            employee_reports_sync_id=employee_sync_id,
+            vision_data_sync_id=vision_sync_id,
+            task_id=str(task.id),
+            status="pending",
+            triggered_at=datetime.now(),
+            message="Full sync (both employee reports and vision data) started successfully"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error triggering full sync: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to trigger full sync: {str(e)}")
+
+
+# ============================================================================
+# GROUP 2: STATUS & MONITORING ENDPOINTS
+# ============================================================================
+
+@router.get("/status/{sync_id}", response_model=SyncStatusResponse)
+def get_sync_status(
+    sync_id: UUID = Path(..., description="Sync job identifier"),
+    db: Session = Depends(get_db)
+):
+    """
+    Get the current status and metrics of a specific sync job.
+    
+    Use this endpoint to poll for progress while a sync is running,
+    or to retrieve final results after completion.
+    """
+    try:
+        sync_job = db.query(SyncHistory).filter(SyncHistory.sync_id == sync_id).first()
+        
+        if not sync_job:
+            raise HTTPException(status_code=404, detail=f"Sync job {sync_id} not found")
+        
+        # Calculate duration
+        duration = None
+        if sync_job.started_at and sync_job.completed_at:
+            duration = (sync_job.completed_at - sync_job.started_at).total_seconds()
+        
+        # Calculate percent complete
+        percent_complete = 0.0
+        if sync_job.records_queried and sync_job.records_queried > 0:
+            percent_complete = round((sync_job.records_synced / sync_job.records_queried) * 100, 1)
+        
+        # Build progress metrics
+        progress = SyncProgressMetrics(
+            records_queried=sync_job.records_queried or 0,
+            records_synced=sync_job.records_synced or 0,
+            records_created=sync_job.records_created or 0,
+            records_updated=sync_job.records_updated or 0,
+            records_skipped=sync_job.records_skipped or 0,
+            error_count=sync_job.error_count or 0,
+            percent_complete=percent_complete
+        )
+        
+        # Extract is_full_sync from sync_options
+        is_full_sync = False
+        if sync_job.sync_options and isinstance(sync_job.sync_options, dict):
+            is_full_sync = sync_job.sync_options.get('is_full_sync', False)
+        
+        return SyncStatusResponse(
+            sync_id=sync_job.sync_id,
+            sync_type=sync_job.sync_type,
+            status=sync_job.status,
+            is_full_sync=is_full_sync,
+            started_at=sync_job.started_at,
+            completed_at=sync_job.completed_at,
+            duration_seconds=duration,
+            progress=progress,
+            metrics=sync_job.sync_metadata or {},
+            last_sync_timestamp=sync_job.last_sync_timestamp,
+            error_message=sync_job.error_message
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error retrieving sync status: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving sync status: {str(e)}")
+
+
+@router.get("/last-successful/{sync_type}", response_model=LastSyncResponse)
+def get_last_successful_sync(
+    sync_type: str = Path(..., description="Sync type: 'employee_reports' or 'vision_data'"),
+    db: Session = Depends(get_db)
+):
+    """
+    Get information about the last successful sync for a specific type.
+    
+    Returns the timestamp of the last successful sync, which is used
+    by incremental syncs to determine where to start.
+    """
+    try:
+        # Validate sync type
+        if sync_type not in [SyncType.EMPLOYEE_REPORTS.value, SyncType.VISION_DATA.value]:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid sync_type. Must be 'employee_reports' or 'vision_data'"
+            )
+        
+        # Query for last successful sync
+        last_sync = db.query(SyncHistory).filter(
+            SyncHistory.sync_type == sync_type,
+            SyncHistory.status == SyncStatus.COMPLETED.value,
+            SyncHistory.last_sync_timestamp.isnot(None)
+        ).order_by(
+            SyncHistory.last_sync_timestamp.desc()
+        ).first()
+        
+        if not last_sync:
+            return LastSyncResponse(
+                sync_type=sync_type,
+                last_successful_sync_id=None,
+                last_sync_timestamp=None,
+                records_synced=None,
+                completed_at=None
+            )
+        
+        return LastSyncResponse(
+            sync_type=sync_type,
+            last_successful_sync_id=last_sync.sync_id,
+            last_sync_timestamp=last_sync.last_sync_timestamp,
+            records_synced=last_sync.records_synced,
+            completed_at=last_sync.completed_at
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error retrieving last successful sync: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving last sync: {str(e)}")
+
+
+# ============================================================================
+# GROUP 3: HISTORY & REPORTING ENDPOINTS
+# ============================================================================
+
+@router.get("/history", response_model=SyncHistoryListResponse)
+def list_sync_history(
+    sync_type: Optional[str] = Query(None, description="Filter by sync type"),
+    status: Optional[str] = Query(None, description="Filter by status"),
+    start_date: Optional[datetime] = Query(None, description="Filter syncs after this date"),
+    end_date: Optional[datetime] = Query(None, description="Filter syncs before this date"),
+    is_full_sync: Optional[bool] = Query(None, description="Filter by sync mode"),
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Items per page"),
+    sort_by: str = Query("started_at", description="Sort field"),
+    sort_order: str = Query("desc", description="Sort order: 'asc' or 'desc'"),
+    db: Session = Depends(get_db)
+):
+    """
+    List sync history with optional filtering, sorting, and pagination.
+    
+    Use this endpoint to view past sync operations and their results.
+    """
+    try:
+        # Build query
+        query = db.query(SyncHistory)
+        
+        # Apply filters
+        if sync_type:
+            if sync_type not in [SyncType.EMPLOYEE_REPORTS.value, SyncType.VISION_DATA.value]:
+                raise HTTPException(status_code=400, detail=f"Invalid sync_type")
+            query = query.filter(SyncHistory.sync_type == sync_type)
+        
+        if status:
+            valid_statuses = [s.value for s in SyncStatus]
+            if status not in valid_statuses:
+                raise HTTPException(status_code=400, detail=f"Invalid status")
+            query = query.filter(SyncHistory.status == status)
+        
+        if start_date:
+            query = query.filter(SyncHistory.started_at >= start_date)
+        
+        if end_date:
+            query = query.filter(SyncHistory.started_at <= end_date)
+        
+        if is_full_sync is not None:
+            # Filter by sync_options JSONB field
+            query = query.filter(
+                SyncHistory.sync_options['is_full_sync'].astext.cast(db.bind.dialect.BOOLEAN) == is_full_sync
+            )
+        
+        # Count total before pagination
+        total = query.count()
+        
+        # Apply sorting
+        if sort_order.lower() == 'desc':
+            query = query.order_by(getattr(SyncHistory, sort_by).desc())
+        else:
+            query = query.order_by(getattr(SyncHistory, sort_by).asc())
+        
+        # Apply pagination
+        offset = (page - 1) * page_size
+        items = query.offset(offset).limit(page_size).all()
+        
+        # Calculate total pages
+        pages = (total + page_size - 1) // page_size
+        
+        # Build response items
+        history_items = []
+        for sync_job in items:
+            # Calculate duration
+            duration = None
+            if sync_job.started_at and sync_job.completed_at:
+                duration = (sync_job.completed_at - sync_job.started_at).total_seconds()
+            
+            # Extract is_full_sync
+            is_full = False
+            if sync_job.sync_options and isinstance(sync_job.sync_options, dict):
+                is_full = sync_job.sync_options.get('is_full_sync', False)
+            
+            history_items.append(SyncHistoryItem(
+                sync_id=sync_job.sync_id,
+                sync_type=sync_job.sync_type,
+                status=sync_job.status,
+                is_full_sync=is_full,
+                started_at=sync_job.started_at,
+                completed_at=sync_job.completed_at,
+                duration_seconds=duration,
+                records_synced=sync_job.records_synced or 0,
+                error_count=sync_job.error_count or 0,
+                last_sync_timestamp=sync_job.last_sync_timestamp
+            ))
+        
+        return SyncHistoryListResponse(
+            total=total,
+            page=page,
+            page_size=page_size,
+            pages=pages,
+            items=history_items
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error listing sync history: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error listing history: {str(e)}")
+
+
+@router.get("/{sync_id}/errors", response_model=SyncErrorsResponse)
+def get_sync_errors(
+    sync_id: UUID = Path(..., description="Sync job identifier"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(100, ge=1, le=1000),
+    db: Session = Depends(get_db)
+):
+    """
+    Get detailed errors for a specific sync job.
+    
+    Only returns data if the sync job encountered errors.
+    Useful for debugging failed or partial syncs.
+    """
+    try:
+        sync_job = db.query(SyncHistory).filter(SyncHistory.sync_id == sync_id).first()
+        
+        if not sync_job:
+            raise HTTPException(status_code=404, detail=f"Sync job {sync_id} not found")
+        
+        # Extract errors from error_details JSONB field
+        all_errors = []
+        if sync_job.error_details and isinstance(sync_job.error_details, dict):
+            all_errors = sync_job.error_details.get('errors', [])
+        
+        # Paginate errors
+        total_errors = len(all_errors)
+        start_idx = (page - 1) * page_size
+        end_idx = start_idx + page_size
+        paginated_errors = all_errors[start_idx:end_idx]
+        
+        # Convert to response format
+        error_items = [
+            SyncErrorItem(
+                row_number=err.get('row_number', 0),
+                field_name=err.get('field_name'),
+                error_message=err.get('error_message', 'Unknown error'),
+                error_category=err.get('error_category'),
+                row_data=err.get('row_data')
+            )
+            for err in paginated_errors
+        ]
+        
+        return SyncErrorsResponse(
+            sync_id=sync_id,
+            total_errors=total_errors,
+            page=page,
+            page_size=page_size,
+            errors=error_items
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error retrieving sync errors: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving errors: {str(e)}")
+
+
+# ============================================================================
+# GROUP 4: CONFIGURATION ENDPOINTS (Read-Only)
+# ============================================================================
+
+@router.get("/config", response_model=SyncConfigResponse)
+def get_sync_configuration():
+    """
+    Get current sync service configuration.
+    
+    Returns read-only configuration information including:
+    - SQL Server connection details
+    - Allowed tables and columns
+    - Sync settings
+    - Scheduled sync information
+    """
+    try:
+        connector = create_sqlserver_connector()
+        
+        # Test connection status
+        connection_status = "connected" if connector.test_connection() else "disconnected"
+        
+        # Get configuration
+        sync_enabled = os.getenv('SYNC_ENABLED', 'true').lower() == 'true'
+        
+        return SyncConfigResponse(
+            sql_server={
+                "host": connector.server,
+                "database": connector.database,
+                "connection_status": connection_status
+            },
+            allowed_tables=list(connector.get_allowed_tables()),
+            allowed_timestamp_columns=list(connector.get_allowed_timestamp_columns()),
+            sync_settings={
+                "max_batch_size": connector.max_batch_size,
+                "error_threshold_percent": float(os.getenv('SYNC_ERROR_THRESHOLD_PERCENT', '10.0')),
+                "default_chunk_size": 1000
+            },
+            sync_schedule={
+                "incremental_sync": {
+                    "enabled": sync_enabled,
+                    "schedule": "Monday 2:00 AM",
+                    "next_run": None  # Would need to query Celery beat for actual next run
+                },
+                "full_sync": {
+                    "enabled": False,
+                    "schedule": "Manual trigger only"
+                }
+            },
+            sync_enabled=sync_enabled
+        )
+        
+    except Exception as e:
+        logger.error(f"Error retrieving sync configuration: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving configuration: {str(e)}")
+
+
+@router.get("/test-connection", response_model=ConnectionTestResponse)
+def test_sql_server_connection():
+    """
+    Test SQL Server connectivity without triggering a sync.
+    
+    Useful for diagnosing connection issues before attempting a sync.
+    """
+    try:
+        connector = create_sqlserver_connector()
+        
+        start_time = time.time()
+        connection_successful = connector.test_connection()
+        connection_time = int((time.time() - start_time) * 1000)  # Convert to milliseconds
+        
+        if not connection_successful:
+            return ConnectionTestResponse(
+                status="disconnected",
+                server=connector.server,
+                database=connector.database,
+                available_tables=[],
+                connection_time_ms=connection_time,
+                message="Failed to connect to SQL Server"
+            )
+        
+        # Get available tables
+        available_tables = list(connector.get_allowed_tables())
+        
+        return ConnectionTestResponse(
+            status="connected",
+            server=connector.server,
+            database=connector.database,
+            available_tables=available_tables,
+            connection_time_ms=connection_time,
+            message="Successfully connected to SQL Server"
+        )
+        
+    except Exception as e:
+        logger.error(f"Error testing SQL Server connection: {str(e)}")
+        return ConnectionTestResponse(
+            status="error",
+            server="unknown",
+            database="unknown",
+            available_tables=[],
+            connection_time_ms=0,
+            message=f"Error: {str(e)}"
+        )

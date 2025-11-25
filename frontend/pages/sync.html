@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Sync - Employee Evaluation System</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/sync.css">
+    <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-sync-alt"></i> Employee Evaluation System</h1>
+            <nav>
+                <ul>
+                    <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="employees.html"><i class="fas fa-users"></i> Employees</a></li>
+                    <li><a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a></li>
+                    <li><a href="imports.html"><i class="fas fa-file-import"></i> Imports</a></li>
+                    <li><a href="analysis.html"><i class="fas fa-brain"></i> Analysis</a></li>
+                    <li><a href="visualizations.html"><i class="fas fa-chart-bar"></i> Visualizations</a></li>
+                    <li><a href="sync.html" class="active"><i class="fas fa-sync-alt"></i> Sync</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main>
+            <!-- Sync Control Section -->
+            <section class="card sync-control-panel">
+                <h2><i class="fas fa-sync-alt"></i> Data Synchronization</h2>
+                <p class="section-description">
+                    Synchronize data from SQL Server to the local database. Choose incremental sync for recent changes or full sync to refresh all data.
+                </p>
+                
+                <!-- Schedule Status Banner -->
+                <div id="scheduleStatusBanner" class="schedule-status-banner">
+                    <div class="schedule-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="schedule-info">
+                        <div class="schedule-title">Automatic Sync Schedule</div>
+                        <div class="schedule-details">
+                            <span id="scheduleStatus" class="schedule-status">Loading...</span>
+                            <span class="schedule-separator">•</span>
+                            <span id="nextSyncTime" class="next-sync-time">Checking schedule...</span>
+                        </div>
+                    </div>
+                    <button id="refreshScheduleBtn" class="refresh-schedule-btn" title="Refresh schedule status">
+                        <i class="fas fa-redo-alt"></i>
+                    </button>
+                </div>
+                
+                <!-- Sync Type Selector -->
+                <div class="sync-type-selector">
+                    <div class="sync-type-card" data-sync-type="employee_reports">
+                        <div class="sync-type-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Employee Reports</h3>
+                        <p>Sync employee report data from SQL Server</p>
+                        <div class="sync-type-actions">
+                            <button class="button primary-button trigger-sync-btn" data-sync-type="employee_reports" data-full-sync="false">
+                                <i class="fas fa-sync"></i> Incremental Sync
+                            </button>
+                            <button class="button secondary-button trigger-sync-btn" data-sync-type="employee_reports" data-full-sync="true">
+                                <i class="fas fa-database"></i> Full Sync
+                            </button>
+                        </div>
+                        <div class="last-sync-info">
+                            <i class="fas fa-clock"></i>
+                            <span id="lastSyncEmployeeReports">Never synced</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sync-type-card" data-sync-type="vision_data">
+                        <div class="sync-type-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3>Vision Data</h3>
+                        <p>Sync vision employee data from SQL Server</p>
+                        <div class="sync-type-actions">
+                            <button class="button primary-button trigger-sync-btn" data-sync-type="vision_data" data-full-sync="false">
+                                <i class="fas fa-sync"></i> Incremental Sync
+                            </button>
+                            <button class="button secondary-button trigger-sync-btn" data-sync-type="vision_data" data-full-sync="true">
+                                <i class="fas fa-database"></i> Full Sync
+                            </button>
+                        </div>
+                        <div class="last-sync-info">
+                            <i class="fas fa-clock"></i>
+                            <span id="lastSyncVisionData">Never synced</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sync-type-card sync-type-full" data-sync-type="full">
+                        <div class="sync-type-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3>Complete Sync</h3>
+                        <p>Sync both employee reports and vision data</p>
+                        <div class="sync-type-actions">
+                            <button class="button full-sync-button trigger-sync-btn" data-sync-type="full" data-full-sync="true">
+                                <i class="fas fa-sync-alt"></i> Full System Sync
+                            </button>
+                        </div>
+                        <div class="last-sync-info">
+                            <small>Syncs all data types at once</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="statusMessage"></div>
+            </section>
+            
+            <!-- Active Sync Monitor -->
+            <section id="activeSyncSection" class="card active-sync-monitor" style="display: none;">
+                <div class="section-header">
+                    <h3><i class="fas fa-spinner fa-spin"></i> Active Sync Operation</h3>
+                    <button id="stopMonitoringBtn" class="button small-button secondary-button">
+                        <i class="fas fa-times"></i> Stop Monitoring
+                    </button>
+                </div>
+                
+                <div class="sync-details-grid">
+                    <div class="sync-detail-item">
+                        <span class="detail-label"><i class="fas fa-fingerprint"></i> Sync ID:</span>
+                        <span id="activeSyncId" class="detail-value mono-text">-</span>
+                    </div>
+                    <div class="sync-detail-item">
+                        <span class="detail-label"><i class="fas fa-tag"></i> Type:</span>
+                        <span id="activeSyncType" class="detail-value">-</span>
+                    </div>
+                    <div class="sync-detail-item">
+                        <span class="detail-label"><i class="fas fa-info-circle"></i> Status:</span>
+                        <span id="activeSyncStatus" class="detail-value status-badge">-</span>
+                    </div>
+                    <div class="sync-detail-item">
+                        <span class="detail-label"><i class="fas fa-clock"></i> Started:</span>
+                        <span id="activeSyncStarted" class="detail-value">-</span>
+                    </div>
+                    <div class="sync-detail-item">
+                        <span class="detail-label"><i class="fas fa-database"></i> Mode:</span>
+                        <span id="activeSyncMode" class="detail-value">-</span>
+                    </div>
+                    <div class="sync-detail-item">
+                        <span class="detail-label"><i class="fas fa-stopwatch"></i> Duration:</span>
+                        <span id="activeSyncDuration" class="detail-value">-</span>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="sync-progress-container">
+                    <div class="progress-header">
+                        <span id="progressText">Syncing records...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressBar" class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                
+                <!-- Metrics Grid -->
+                <div class="sync-metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon records-queried">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="metricsRecordsQueried">0</div>
+                            <div class="metric-label">Records Queried</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon records-synced">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="metricsRecordsSynced">0</div>
+                            <div class="metric-label">Records Synced</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon records-created">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="metricsRecordsCreated">0</div>
+                            <div class="metric-label">Created</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon records-updated">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="metricsRecordsUpdated">0</div>
+                            <div class="metric-label">Updated</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon records-skipped">
+                            <i class="fas fa-forward"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="metricsRecordsSkipped">0</div>
+                            <div class="metric-label">Skipped</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon error-count">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="metricsErrorCount">0</div>
+                            <div class="metric-label">Errors</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detailed Metrics (Type-specific) -->
+                <div id="detailedMetricsContainer" class="detailed-metrics-container" style="display: none;">
+                    <h4><i class="fas fa-chart-bar"></i> Detailed Metrics</h4>
+                    <div id="detailedMetricsContent" class="detailed-metrics-grid">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+                
+                <!-- Error Button -->
+                <div class="sync-actions">
+                    <button id="viewActiveSyncErrorsBtn" class="button secondary-button" style="display: none;">
+                        <i class="fas fa-bug"></i> View Errors
+                    </button>
+                </div>
+            </section>
+            
+            <!-- Sync History Section -->
+            <section class="card sync-history-section">
+                <h3><i class="fas fa-history"></i> Sync History</h3>
+                
+                <!-- Filters -->
+                <div class="filters-panel compact-filters">
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label for="historyTypeFilter"><i class="fas fa-filter"></i> Type:</label>
+                            <select id="historyTypeFilter" class="form-control">
+                                <option value="">All Types</option>
+                                <option value="employee_reports">Employee Reports</option>
+                                <option value="vision_data">Vision Data</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item">
+                            <label for="historyStatusFilter"><i class="fas fa-check-circle"></i> Status:</label>
+                            <select id="historyStatusFilter" class="form-control">
+                                <option value="">All Status</option>
+                                <option value="completed">Completed</option>
+                                <option value="running">Running</option>
+                                <option value="failed">Failed</option>
+                                <option value="partial">Partial</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-item">
+                            <label for="historySortOrder"><i class="fas fa-sort"></i> Sort:</label>
+                            <select id="historySortOrder" class="form-control">
+                                <option value="desc">Newest First</option>
+                                <option value="asc">Oldest First</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-actions-row">
+                        <button id="applyHistoryFiltersBtn" class="button primary-button">
+                            <i class="fas fa-check"></i> Apply
+                        </button>
+                        <button id="resetHistoryFiltersBtn" class="button secondary-button">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Loading Indicator -->
+                <div id="historyLoadingIndicator" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Loading sync history...</p>
+                </div>
+                
+                <!-- History Table -->
+                <div id="historyTableContainer">
+                    <table id="historyTable" class="sync-history-table">
+                        <thead>
+                            <tr>
+                                <th>Sync ID</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Started</th>
+                                <th>Duration</th>
+                                <th>Records</th>
+                                <th>Errors</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination sync-pagination">
+                    <button id="prevPageBtn" class="button secondary-button" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <span id="paginationInfo" class="pagination-info">Page 1 of 1</span>
+                    <button id="nextPageBtn" class="button secondary-button" disabled>
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <!-- No Data Message -->
+                <div id="noHistoryMessage" class="info-message" style="display: none;">
+                    <p><i class="fas fa-info-circle"></i> No sync history found. Start a sync operation to see results here.</p>
+                </div>
+            </section>
+            
+            <!-- Sync Configuration Section -->
+            <section class="card sync-config-section">
+                <h3><i class="fas fa-cog"></i> Sync Configuration</h3>
+                <p class="section-description">View current synchronization settings and SQL Server connection status.</p>
+                
+                <div id="configLoadingIndicator" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading configuration...</p>
+                </div>
+                
+                <div id="configContent" style="display: none;">
+                    <!-- SQL Server Connection -->
+                    <div class="config-group">
+                        <h4><i class="fas fa-server"></i> SQL Server Connection</h4>
+                        <div class="config-details-grid">
+                            <div class="config-item">
+                                <span class="config-label">Host:</span>
+                                <span id="configHost" class="config-value">-</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Database:</span>
+                                <span id="configDatabase" class="config-value">-</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Status:</span>
+                                <span id="configConnectionStatus" class="config-value status-badge">-</span>
+                            </div>
+                        </div>
+                        <button id="testConnectionBtn" class="button secondary-button">
+                            <i class="fas fa-plug"></i> Test Connection
+                        </button>
+                    </div>
+                    
+                    <!-- Allowed Tables -->
+                    <div class="config-group">
+                        <h4><i class="fas fa-table"></i> Allowed Tables</h4>
+                        <div id="allowedTablesContainer" class="config-tags-container">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                    
+                    <!-- Sync Settings -->
+                    <div class="config-group">
+                        <h4><i class="fas fa-sliders-h"></i> Sync Settings</h4>
+                        <div class="config-details-grid">
+                            <div class="config-item">
+                                <span class="config-label">Max Batch Size:</span>
+                                <span id="configMaxBatchSize" class="config-value">-</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Error Threshold:</span>
+                                <span id="configErrorThreshold" class="config-value">-</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Sync Enabled:</span>
+                                <span id="configSyncEnabled" class="config-value">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sync Schedule -->
+                    <div class="config-group">
+                        <h4><i class="fas fa-calendar-alt"></i> Sync Schedule</h4>
+                        <div class="schedule-grid">
+                            <div class="schedule-item">
+                                <div class="schedule-type-label">
+                                    <i class="fas fa-sync"></i> Incremental Sync
+                                </div>
+                                <div id="configIncrementalSchedule" class="schedule-details">-</div>
+                            </div>
+                            <div class="schedule-item">
+                                <div class="schedule-type-label">
+                                    <i class="fas fa-database"></i> Full Sync
+                                </div>
+                                <div id="configFullSchedule" class="schedule-details">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Employee Evaluation System</p>
+        </footer>
+    </div>
+    
+    <!-- Error Details Modal -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-bug"></i> Sync Errors</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="error-info-header">
+                    <div class="error-stat">
+                        <span class="error-stat-label">Sync ID:</span>
+                        <span id="modalSyncId" class="error-stat-value mono-text">-</span>
+                    </div>
+                    <div class="error-stat">
+                        <span class="error-stat-label">Total Errors:</span>
+                        <span id="modalTotalErrors" class="error-stat-value">0</span>
+                    </div>
+                </div>
+                
+                <div id="modalErrorList" class="modal-error-list">
+                    <!-- Dynamic content -->
+                </div>
+                
+                <div class="pagination modal-pagination">
+                    <button id="modalPrevBtn" class="button small-button secondary-button" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span id="modalPaginationInfo">Page 1 of 1</span>
+                    <button id="modalNextBtn" class="button small-button secondary-button" disabled>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="button secondary-button close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/api.js"></script>
+    <script src="../js/sync.js"></script>
+</body>
+</html>

@@ -3,6 +3,7 @@ from app.models.db_models import Employee, Report, QdrantMapping, EmployeeAnalys
 from app.models.import_models import CSVImportJob, ImportError, ImportStatus
 from app.models.vision_data_models import EmployeeVisionData
 from app.models.task_models import BackgroundTask
+from app.models.sync_models import SyncHistory
 
 __all__ = [
     'Employee', 
@@ -16,4 +17,5 @@ __all__ = [
     'BackgroundTask'
     'QuarterlyAnalysis',
     'MonthlyAnalysis',
+    'SyncHistory'
 ]

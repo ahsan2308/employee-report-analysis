@@ -1,0 +1,26 @@
+Table,SQL Server Column,SQL Server Type,PostgreSQL Table,PostgreSQL Column,PostgreSQL Type,Transformation,Notes
+EmployeeReports,RecordID,int,N/A,N/A,N/A,Skip,Auto-generated primary key not used in PostgreSQL
+EmployeeReports,Employee_ID,int,employees,id,integer,Direct copy,Used to create/update employee
+EmployeeReports,Name,nvarchar(100),employees,name,varchar(100),Direct copy,Employee full name
+EmployeeReports,Designation,nvarchar(100),employees,position,varchar(100),Direct copy,Job title
+EmployeeReports,BPS,nvarchar(20),N/A,N/A,N/A,Skip,Grade info not stored in PostgreSQL
+EmployeeReports,Office_Hierarchy,nvarchar(200),employees,wing,varchar(100),Extract first segment,Extract department before '>' character
+EmployeeReports,From,date,reports,N/A,N/A,Include in report_text,Part of report period string
+EmployeeReports,To,date,reports,report_date,date,Direct copy,End date of report period
+EmployeeReports,Draft,nvarchar(500),N/A,N/A,N/A,Skip,Not used in PostgreSQL
+EmployeeReports,Tasks_Completed,nvarchar(MAX),reports,report_text,text,Concatenate,Part of formatted report text
+EmployeeReports,Impact,nvarchar(MAX),reports,report_text,text,Concatenate,Part of formatted report text
+EmployeeReports,Challenges,nvarchar(MAX),reports,report_text,text,Concatenate,Part of formatted report text
+EmployeeReports,Support_Required,nvarchar(MAX),reports,report_text,text,Concatenate,Part of formatted report text
+EmployeeReports,Tasks_Planned,nvarchar(MAX),reports,report_text,text,Concatenate,Part of formatted report text
+EmployeeReports,Confidence_Level,nvarchar(50),reports,report_text,text,Concatenate,Part of formatted report text
+EmployeeReports,NTR,nvarchar(500),N/A,N/A,N/A,Skip report if set,If not NULL/empty don't create report
+EmployeeReports,LastModifiedDate,datetime,N/A,N/A,N/A,Used for sync tracking,Track which records have been synced
+VisionEmployeeData,RecordID,int,N/A,N/A,N/A,Skip,Auto-generated primary key not used in PostgreSQL
+VisionEmployeeData,Employee_ID,int,employee_vision_data,employee_id,integer,Direct copy,Must exist in employees table
+VisionEmployeeData,From_Date,date,employee_vision_data,from_date,date,Direct copy,Start of period
+VisionEmployeeData,To_Date,date,employee_vision_data,to_date,date,Direct copy,End of period
+VisionEmployeeData,Main_Entity,nvarchar(100),employee_vision_data,main_entity,varchar(100),Direct copy,Entity type (e.g. Tasks)
+VisionEmployeeData,Sub_Entities,nvarchar(MAX),employee_vision_data,sub_entities,jsonb,Parse JSON,"Convert to JSON: {""Analysis"":5 ""Reporting"":3}"
+VisionEmployeeData,Sub_Entities_Content,nvarchar(MAX),employee_vision_data,sub_entities_content,jsonb,Parse complex format,"Convert to JSON: {""Cases"":[] ""Tasks"":[{...}]}"
+VisionEmployeeData,LastModifiedDate,datetime,N/A,N/A,N/A,Used for sync tracking,Track which records have been synced

@@ -459,3 +459,116 @@ const TaskManager = {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 };
+
+// ============================================================================
+// SYNC API ENDPOINTS
+// ============================================================================
+
+const syncApi = {
+    /**
+     * Trigger a sync operation
+     */
+    triggerSync: async (syncType, isFullSync = false) => {
+        const response = await fetch(`${API_BASE_URL}/sync/trigger/${syncType}?is_full_sync=${isFullSync}`, {
+            method: 'POST'
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to trigger sync');
+        }
+        return response.json();
+    },
+    
+    /**
+     * Trigger full sync (both types)
+     */
+    triggerFullSync: async () => {
+        const response = await fetch(`${API_BASE_URL}/sync/trigger/full`, {
+            method: 'POST'
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to trigger full sync');
+        }
+        return response.json();
+    },
+    
+    /**
+     * Get sync status
+     */
+    getSyncStatus: async (syncId) => {
+        const response = await fetch(`${API_BASE_URL}/sync/status/${syncId}`);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to get sync status');
+        }
+        return response.json();
+    },
+    
+    /**
+     * Get last successful sync
+     */
+    getLastSuccessfulSync: async (syncType) => {
+        const response = await fetch(`${API_BASE_URL}/sync/last-successful/${syncType}`);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to get last sync');
+        }
+        return response.json();
+    },
+    
+    /**
+     * List sync history with filters
+     */
+    listSyncHistory: async (filters = {}) => {
+        const params = new URLSearchParams();
+        if (filters.sync_type) params.append('sync_type', filters.sync_type);
+        if (filters.status) params.append('status', filters.status);
+        if (filters.sort_order) params.append('sort_order', filters.sort_order);
+        if (filters.page) params.append('page', filters.page);
+        if (filters.page_size) params.append('page_size', filters.page_size);
+        
+        const response = await fetch(`${API_BASE_URL}/sync/history?${params}`);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to load sync history');
+        }
+        return response.json();
+    },
+    
+    /**
+     * Get sync errors
+     */
+    getSyncErrors: async (syncId, page = 1, pageSize = 10) => {
+        const response = await fetch(`${API_BASE_URL}/sync/${syncId}/errors?page=${page}&page_size=${pageSize}`);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to load sync errors');
+        }
+        return response.json();
+    },
+    
+    /**
+     * Get sync configuration
+     */
+    getSyncConfiguration: async () => {
+        const response = await fetch(`${API_BASE_URL}/sync/config`);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to load sync configuration');
+        }
+        return response.json();
+    },
+    
+    /**
+     * Test SQL Server connection
+     */
+    testConnection: async () => {
+        const response = await fetch(`${API_BASE_URL}/sync/test-connection`);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to test connection');
+        }
+        return response.json();
+    }
+};

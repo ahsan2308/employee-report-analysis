@@ -12,12 +12,13 @@ from app.api.analyses import router as analyses_router
 from app.api.visualizations import router as visualizations_router
 from app.api.tasks import router as tasks_router
 from app.api.imports import router as imports_router  # Add this import
+from app.api.sync_routes import router as sync_router  # Add this import
 
 # Create all tables (if they don't exist)
 db_instance = get_database()  
 db_instance.create_tables()
 
-print("✅ Database tables created successfully!")
+print("Database tables created successfully!")
 # Initialize FastAPI app
 app = FastAPI(title="Employee Report Analysis API")
 
@@ -36,7 +37,8 @@ app.include_router(report_router)
 app.include_router(analyses_router)
 app.include_router(visualizations_router)
 app.include_router(tasks_router)
-app.include_router(imports_router)  # Add this line
+app.include_router(imports_router)
+app.include_router(sync_router)  
 
 # Root endpoint
 @app.get("/")
