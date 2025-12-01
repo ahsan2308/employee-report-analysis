@@ -685,7 +685,7 @@ class SyncService:
                 raise ValueError(f"Sync aborted: {reason}")
         
         # Store max_modified_date as instance attribute
-        # FIXED: Add 1 MILLISECOND for SQL Server datetime precision
+        # Add 1 MILLISECOND for SQL Server datetime precision
         if max_modified_date:
             self._max_modified_date_vision = max_modified_date + timedelta(milliseconds=1)
         else:

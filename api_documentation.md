@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides comprehensive documentation for the Employee Report Analysis API. The API allows for managing employees, submitting reports, analyzing performance, visualizing data trends, and importing data through CSV files.
+This document provides comprehensive documentation for the Employee Report Analysis API. The API allows for managing employees, submitting reports, analyzing performance, visualizing data trends, importing data through CSV files, and synchronizing data from SQL Server.
 
 
 ## Authentication
@@ -24,6 +24,11 @@ Authentication details to be determined. All endpoints currently accessible with
   - [Multi-criteria Trends](#multi-criteria-trends)
 - [Background Tasks](#background-tasks)
 - [CSV Imports](#csv-imports)
+- [SQL Server Sync](#sql-server-sync)
+  - [Trigger Endpoints](#trigger-endpoints)
+  - [Status & Monitoring](#status--monitoring)
+  - [History & Reporting](#history--reporting)
+  - [Configuration](#configuration)
 - [Schema Definitions](#schema-definitions)
 
 
@@ -1133,6 +1138,456 @@ Lists all import jobs with optional filtering.
 
 <div style="page-break-after: always;"></div>
 
+## SQL Server Sync
+
+Endpoints for synchronizing data from SQL Server to PostgreSQL. The sync system supports both incremental syncs (only new/modified records) and full syncs (all records).
+
+### Trigger Endpoints
+
+#### Trigger Employee Reports Sync
+
+Triggers employee reports synchronization from SQL Server to PostgreSQL.
+
+**Endpoint:** `POST /sync/trigger/employee_reports`
+
+**Query Parameters:**
+- `is_full_sync` (boolean, default: false): If true, perform full sync. If false, incremental sync.
+
+**Response (202 Accepted):**
+```json
+{
+  "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
+  "task_id": "0030c389-1350-485c-b150-6e6a6e5cd210",
+  "sync_type": "employee_reports",
+  "status": "pending",
+  "is_full_sync": false,
+  "triggered_at": "2025-11-24T13:13:19Z",
+  "message": "Employee reports sync (incremental) started successfully"
+}
+```
+
+**Error Responses:**
+- `409 Conflict`: Sync already in progress
+```json
+{
+  "detail": "Employee reports sync already in progress (sync_id: c155260e-9177-4b53-bc14-e9f4d0e14cd2)"
+}
+```
+
+**Notes:**
+- This endpoint queues an asynchronous Celery task and returns immediately
+- Use the returned `sync_id` to poll for status updates via `/sync/status/{sync_id}`
+- Stale syncs (running > 60 minutes) are automatically cleared before checking for conflicts
+
+<div style="page-break-after: always;"></div>
+
+#### Trigger Vision Data Sync
+
+Triggers vision data synchronization from SQL Server to PostgreSQL.
+
+**Endpoint:** `POST /sync/trigger/vision_data`
+
+**Query Parameters:**
+- `is_full_sync` (boolean, default: false): If true, perform full sync. If false, incremental sync.
+
+**Response (202 Accepted):**
+```json
+{
+  "sync_id": "0c563781-7366-465d-931d-874b98af6277",
+  "task_id": "1140d489-2461-596d-c261-7f7b7f6de321",
+  "sync_type": "vision_data",
+  "status": "pending",
+  "is_full_sync": false,
+  "triggered_at": "2025-11-24T13:15:00Z",
+  "message": "Vision data sync (incremental) started successfully"
+}
+```
+
+**Error Responses:**
+- `409 Conflict`: Sync already in progress
+```json
+{
+  "detail": "Vision data sync already in progress (sync_id: 0c563781-7366-465d-931d-874b98af6277)"
+}
+```
+
+**Notes:**
+- This endpoint queues an asynchronous Celery task and returns immediately
+- Use the returned `sync_id` to poll for status updates via `/sync/status/{sync_id}`
+
+<div style="page-break-after: always;"></div>
+
+#### Trigger Full Sync
+
+Triggers full synchronization of both employee reports and vision data.
+
+**Endpoint:** `POST /sync/trigger/full`
+
+**Response (202 Accepted):**
+```json
+{
+  "sync_type": "full",
+  "employee_reports_sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
+  "vision_data_sync_id": "0c563781-7366-465d-931d-874b98af6277",
+  "task_id": "full-sync-task-id",
+  "status": "pending",
+  "triggered_at": "2025-11-24T13:13:19Z",
+  "message": "Full sync (both employee reports and vision data) started successfully"
+}
+```
+
+**Error Responses:**
+- `409 Conflict`: One or more sync types already in progress
+```json
+{
+  "detail": "Sync already in progress for: employee_reports, vision_data"
+}
+```
+
+**Notes:**
+- This runs both sync types sequentially in a single Celery task
+- Both syncs will be in FULL mode (all records, not incremental)
+- Two separate `sync_id` values are returned - one for each sync type
+- Use either `sync_id` to monitor progress via `/sync/status/{sync_id}`
+
+<div style="page-break-after: always;"></div>
+
+### Status & Monitoring
+
+#### Get Sync Status
+
+Retrieves the current status and metrics of a specific sync job.
+
+**Endpoint:** `GET /sync/status/{sync_id}`
+
+**Path Parameters:**
+- `sync_id` (UUID): Sync job identifier
+
+**Response:**
+```json
+{
+  "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
+  "sync_type": "employee_reports",
+  "status": "completed",
+  "is_full_sync": false,
+  "started_at": "2025-11-24T13:13:19Z",
+  "completed_at": "2025-11-24T13:13:24Z",
+  "duration_seconds": 5.7,
+  "progress": {
+    "records_queried": 4,
+    "records_synced": 4,
+    "records_created": 3,
+    "records_updated": 1,
+    "records_skipped": 0,
+    "error_count": 0,
+    "percent_complete": 100.0
+  },
+  "metrics": {
+    "employees_created": 0,
+    "employees_updated": 4,
+    "reports_created": 3,
+    "reports_updated": 1
+  },
+  "last_sync_timestamp": "2025-11-17T10:53:11Z",
+  "error_message": null
+}
+```
+
+**Error Responses:**
+- `404 Not Found`: Sync job not found
+```json
+{
+  "detail": "Sync job c155260e-9177-4b53-bc14-e9f4d0e14cd2 not found"
+}
+```
+
+**Notes:**
+- Use this endpoint to poll for progress while a sync is running
+- The `progress.percent_complete` field indicates sync progress (0-100)
+- The `metrics` field contains type-specific metrics:
+  - For `employee_reports`: `employees_created`, `employees_updated`, `reports_created`, `reports_updated`
+  - For `vision_data`: `vision_records_created`, `vision_records_updated`
+- Possible status values: `pending`, `running`, `completed`, `failed`, `partial`
+
+<div style="page-break-after: always;"></div>
+
+#### Get Last Successful Sync
+
+Retrieves information about the last successful sync for a specific type.
+
+**Endpoint:** `GET /sync/last-successful/{sync_type}`
+
+**Path Parameters:**
+- `sync_type` (string): Sync type - must be `employee_reports` or `vision_data`
+
+**Response (with previous sync):**
+```json
+{
+  "sync_type": "employee_reports",
+  "last_successful_sync_id": "9a41f725-d963-4ea0-8d3c-9d0189d50a4d",
+  "last_sync_timestamp": "2025-11-17T10:53:11Z",
+  "records_synced": 234,
+  "completed_at": "2025-11-24T12:23:59Z"
+}
+```
+
+**Response (no previous sync):**
+```json
+{
+  "sync_type": "employee_reports",
+  "last_successful_sync_id": null,
+  "last_sync_timestamp": null,
+  "records_synced": null,
+  "completed_at": null
+}
+```
+
+**Error Responses:**
+- `400 Bad Request`: Invalid sync type
+```json
+{
+  "detail": "Invalid sync_type. Must be 'employee_reports' or 'vision_data'"
+}
+```
+
+**Notes:**
+- The `last_sync_timestamp` is used by incremental syncs to determine which records to fetch
+- Returns null values if no successful sync has been performed for the given type
+
+<div style="page-break-after: always;"></div>
+
+### History & Reporting
+
+#### List Sync History
+
+Lists sync history with optional filtering, sorting, and pagination.
+
+**Endpoint:** `GET /sync/history`
+
+**Query Parameters:**
+- `sync_type` (string, optional): Filter by sync type (`employee_reports` or `vision_data`)
+- `status` (string, optional): Filter by status (`pending`, `running`, `completed`, `failed`, `partial`)
+- `start_date` (datetime, optional): Filter syncs after this date
+- `end_date` (datetime, optional): Filter syncs before this date
+- `is_full_sync` (boolean, optional): Filter by sync mode
+- `page` (integer, default: 1): Page number (minimum: 1)
+- `page_size` (integer, default: 20): Items per page (1-100)
+- `sort_by` (string, default: "started_at"): Sort field
+- `sort_order` (string, default: "desc"): Sort order (`asc` or `desc`)
+
+**Response:**
+```json
+{
+  "total": 150,
+  "page": 1,
+  "page_size": 20,
+  "pages": 8,
+  "items": [
+    {
+      "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
+      "sync_type": "employee_reports",
+      "status": "completed",
+      "is_full_sync": false,
+      "started_at": "2025-11-24T13:13:19Z",
+      "completed_at": "2025-11-24T13:13:24Z",
+      "duration_seconds": 5.7,
+      "records_synced": 4,
+      "error_count": 0,
+      "last_sync_timestamp": "2025-11-17T10:53:11Z"
+    },
+    {
+      "sync_id": "0c563781-7366-465d-931d-874b98af6277",
+      "sync_type": "vision_data",
+      "status": "partial",
+      "is_full_sync": true,
+      "started_at": "2025-11-23T10:00:00Z",
+      "completed_at": "2025-11-23T10:05:30Z",
+      "duration_seconds": 330.5,
+      "records_synced": 95,
+      "error_count": 5,
+      "last_sync_timestamp": "2025-11-23T10:05:00Z"
+    }
+  ]
+}
+```
+
+**Error Responses:**
+- `400 Bad Request`: Invalid sync_type or status value
+
+**Notes:**
+- Use this endpoint to view past sync operations and their results
+- Results are paginated - use `page` and `page_size` to navigate
+
+<div style="page-break-after: always;"></div>
+
+#### Get Sync Errors
+
+Retrieves detailed errors for a specific sync job.
+
+**Endpoint:** `GET /sync/{sync_id}/errors`
+
+**Path Parameters:**
+- `sync_id` (UUID): Sync job identifier
+
+**Query Parameters:**
+- `page` (integer, default: 1): Page number (minimum: 1)
+- `page_size` (integer, default: 100): Errors per page (1-1000)
+
+**Response:**
+```json
+{
+  "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
+  "total_errors": 45,
+  "page": 1,
+  "page_size": 100,
+  "errors": [
+    {
+      "row_number": 523,
+      "field_name": "Employee_ID",
+      "error_message": "Employee ID 9999 does not exist in database",
+      "error_category": "validation",
+      "row_data": {
+        "Employee_ID": 9999,
+        "Name": "John Doe",
+        "From": "2025-01-01"
+      }
+    },
+    {
+      "row_number": 847,
+      "field_name": "From_Date",
+      "error_message": "Invalid date format: 15-April-2025",
+      "error_category": "validation",
+      "row_data": {
+        "Employee_ID": 42,
+        "From_Date": "15-April-2025"
+      }
+    }
+  ]
+}
+```
+
+**Error Responses:**
+- `404 Not Found`: Sync job not found
+```json
+{
+  "detail": "Sync job c155260e-9177-4b53-bc14-e9f4d0e14cd2 not found"
+}
+```
+
+**Notes:**
+- Only returns data if the sync job encountered errors
+- Useful for debugging failed or partial syncs
+- The `row_data` field contains the original SQL Server row that caused the error
+- The `error_category` field indicates the type of error (e.g., "validation", "transformation")
+
+<div style="page-break-after: always;"></div>
+
+### Configuration
+
+#### Get Sync Configuration
+
+Retrieves the current sync service configuration.
+
+**Endpoint:** `GET /sync/config`
+
+**Response:**
+```json
+{
+  "sql_server": {
+    "host": "localhost\\SQLEXPRESS",
+    "database": "EmployeeTestDB",
+    "connection_status": "connected"
+  },
+  "allowed_tables": [
+    "EmployeeReports",
+    "VisionEmployeeData"
+  ],
+  "allowed_timestamp_columns": [
+    "LastModifiedDate",
+    "ModifiedDate",
+    "UpdatedAt"
+  ],
+  "sync_settings": {
+    "max_batch_size": 10000,
+    "error_threshold_percent": 10.0,
+    "default_chunk_size": 1000
+  },
+  "sync_schedule": {
+    "incremental_sync": {
+      "enabled": true,
+      "schedule": "Monday 2:00 AM",
+      "next_run": null
+    },
+    "full_sync": {
+      "enabled": false,
+      "schedule": "Manual trigger only"
+    }
+  },
+  "sync_enabled": true
+}
+```
+
+**Notes:**
+- Returns read-only configuration information
+- The `connection_status` field shows current SQL Server connectivity
+- `allowed_tables` shows which SQL Server tables can be synced
+- `allowed_timestamp_columns` shows which columns can be used for incremental sync detection
+- `error_threshold_percent` indicates the maximum error percentage before sync aborts
+
+<div style="page-break-after: always;"></div>
+
+#### Test SQL Server Connection
+
+Tests SQL Server connectivity without triggering a sync.
+
+**Endpoint:** `GET /sync/test-connection`
+
+**Response (successful connection):**
+```json
+{
+  "status": "connected",
+  "server": "localhost\\SQLEXPRESS",
+  "database": "EmployeeTestDB",
+  "available_tables": [
+    "EmployeeReports",
+    "VisionEmployeeData"
+  ],
+  "connection_time_ms": 45,
+  "message": "Successfully connected to SQL Server"
+}
+```
+
+**Response (failed connection):**
+```json
+{
+  "status": "disconnected",
+  "server": "localhost\\SQLEXPRESS",
+  "database": "EmployeeTestDB",
+  "available_tables": [],
+  "connection_time_ms": 5000,
+  "message": "Failed to connect to SQL Server"
+}
+```
+
+**Response (error):**
+```json
+{
+  "status": "error",
+  "server": "unknown",
+  "database": "unknown",
+  "available_tables": [],
+  "connection_time_ms": 0,
+  "message": "Error: No suitable ODBC driver found for SQL Server"
+}
+```
+
+**Notes:**
+- Useful for diagnosing connection issues before attempting a sync
+- The `connection_time_ms` field shows how long the connection attempt took
+- Does not modify any data - purely a diagnostic endpoint
+
+<div style="page-break-after: always;"></div>
+
 ## Schema Definitions
 
 For detailed schema definitions, please refer to the following schema files:
@@ -1143,6 +1598,7 @@ For detailed schema definitions, please refer to the following schema files:
 - `visualization_schema.py` - Visualization-related schemas (trend and heatmap data)
 - `task_schema.py` - Background task-related schemas
 - `csv_import_schema.py` - CSV import-related schemas
+- `sync_schema.py` - SQL Server sync-related schemas
 
 ## Error Handling
 
@@ -1150,8 +1606,10 @@ All endpoints return appropriate HTTP status codes:
 
 - `200 OK` - Request successful
 - `201 Created` - Resource created successfully
+- `202 Accepted` - Request accepted for asynchronous processing
 - `400 Bad Request` - Invalid request parameters
 - `404 Not Found` - Resource not found
+- `409 Conflict` - Resource conflict (e.g., sync already in progress)
 - `422 Unprocessable Entity` - Request validation error
 - `500 Internal Server Error` - Server-side error
 
@@ -1165,7 +1623,7 @@ Error responses follow this format:
 
 ## Pagination
 
-Endpoints that return collections of items support pagination using `limit` and `offset` query parameters, where applicable.
+Endpoints that return collections of items support pagination using `limit` and `offset` or `page` and `page_size` query parameters, where applicable.
 
 ---
 

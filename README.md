@@ -34,6 +34,12 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Asynchronous Processing**: Background task processing for analysis requests
 - **Direct URL Sharing**: Share analysis results via URL parameters
 - **CSV Data Import**: Bulk import of employee data, historical reports, and related information
+- **SQL Server Data Sync**: Automated synchronization from SQL Server to PostgreSQL with:
+  - Incremental sync (only new/modified records)
+  - Full sync (complete data refresh)
+  - Real-time progress monitoring
+  - Scheduled automatic sync
+  - Comprehensive error tracking
 - **Task Management System**: Track and monitor long-running analysis processes
 - **Interactive Visualizations**: Visual representation of key metrics including:
   - Sentiment trends over time
@@ -49,7 +55,7 @@ The system also performs **monthly analysis** across all reports from an employe
 
 ## 🏗️ System Architecture
 
-- **API Layer**: RESTful endpoints for employees, reports, analyses, tasks, visualizations, and imports
+- **API Layer**: RESTful endpoints for employees, reports, analyses, tasks, visualizations, imports, and sync operations
 - **Services Layer**: Business logic for report processing and analysis
 - **Task Processing**: 
   - Celery for asynchronous task management
@@ -59,19 +65,25 @@ The system also performs **monthly analysis** across all reports from an employe
   - PostgreSQL for structured data
   - Qdrant for vector embeddings and semantic search
   - Redis for task queue management and caching
+  - SQL Server as external data source (for sync operations)
 - **LLM Integration**: Ollama & vLLM for natural language understanding and structured output generation
 - **Frontend Layer**: HTML, CSS, and JavaScript for user interaction
 - **Vector Store**:
   - Automatic vectorization of reports upon submission
   - Semantic similarity search
   - Context-based retrieval of relevant historical data
+- **Sync Engine**:
+  - SQL Server to PostgreSQL data migration
+  - Incremental and full sync support
+  - Batch processing with configurable chunk sizes
+  - Error threshold management
 
 ---
 
 ## 🛠️ Technologies Used
 
 - **Backend**: FastAPI (Python)
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL (primary), SQL Server (external source)
 - **Vector Store**: Qdrant
 - **Task Queue**: Celery with Redis
 - **LLM Provider**: Ollama, vLLM
@@ -79,6 +91,7 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Documentation**: Swagger / OpenAPI
 - **Frontend**: HTML5, CSS3, JavaScript (vanilla)
 - **Containerization**: Docker for services (Redis, Qdrant, vLLM)
+- **Database Connectivity**: pyodbc for SQL Server connections
 - **UI Framework**: Custom responsive design
 
 ---
@@ -91,6 +104,7 @@ The system also performs **monthly analysis** across all reports from an employe
 - PostgreSQL database
 - Docker Desktop (for Redis and Qdrant containers)
 - Ollama
+- ODBC Driver 17+ for SQL Server
 - Visual C++ build tools *(Windows only)*
 
 ### Installation Steps
@@ -112,6 +126,12 @@ The system also performs **monthly analysis** across all reports from an employe
      - Remember your password during installation
      - Create a new database named `employee_report_db`
      - Create a schema named `employee_reports`
+
+   - **SQL Server** (for sync functionality):
+     - Ensure access to a SQL Server instance (Express, Standard, or existing organizational server)
+     - Install ODBC Driver 17 (or newer) for SQL Server from [Microsoft ODBC Driver](https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server)
+       - Available for Windows, Linux (Ubuntu, RHEL, SUSE), and macOS
+     - Ensure the database contains the required tables: `EmployeeReports` and `VisionEmployeeData`
 
    - **Docker Desktop**:
      - Download from [Docker Website](https://www.docker.com/products/docker-desktop/)
@@ -286,10 +306,32 @@ The system also performs **monthly analysis** across all reports from an employe
    - **Configure environment variables**:
      - Modify the existing `.env` file in the application root with the relevant parameters e.g.:
      ```
+     # PostgreSQL Configuration
      DATABASE_URL=postgresql://username:password@localhost:5432/employee_report_db
+     
+     # Vector Store Configuration
      VECTOR_STORE_PORT=6333
+     
+     # LLM Configuration
      OLLAMA_BASE_URL=http://localhost:11434
      OLLAMA_MODEL=llama3.1
+     
+     # SQL Server Sync Configuration
+     SQLSERVER_HOST=localhost\SQLEXPRESS
+     SQLSERVER_DATABASE=EmployeeTestDB
+     SQLSERVER_USERNAME=your_username
+     SQLSERVER_PASSWORD=your_password
+     SQLSERVER_DRIVER=auto
+     SQLSERVER_USE_ENCRYPTION=true
+     
+     # Sync Security Configuration
+     SQLSERVER_ALLOWED_TABLES=EmployeeReports,VisionEmployeeData
+     SQLSERVER_ALLOWED_TIMESTAMP_COLUMNS=LastModifiedDate,ModifiedDate,UpdatedAt
+     SQLSERVER_MAX_BATCH_SIZE=10000
+     
+     # Sync Settings
+     SYNC_ENABLED=true
+     SYNC_ERROR_THRESHOLD_PERCENT=10.0
      ```
 
 4. **Start the Application**
@@ -300,9 +342,23 @@ The system also performs **monthly analysis** across all reports from an employe
      ```
    
    - **Start the Celery worker** (in a separate terminal):
+     
+     For **manual syncs only** (no scheduled automation):
      ```bash
-     celery -A app.worker.worker worker --loglevel=info
+     celery -A app.worker.celery_app worker --pool=solo --loglevel=info --queues=default,sync,analysis,imports
      ```
+     
+     For **scheduled automatic syncs** (requires Celery Beat):
+     ```bash
+     # Terminal 1: Start the Celery worker
+     celery -A app.worker.celery_app worker --pool=solo --loglevel=info --queues=default,sync,analysis,imports
+     
+     # Terminal 2: Start Celery Beat (scheduler)
+     celery -A app.worker.celery_app beat --loglevel=info
+     ```
+     
+     > **Note:** The `--pool=solo` flag is required on Windows. On Linux/Mac, you can omit it.
+     > The `--queues` flag ensures the worker processes all task types (sync, analysis, imports).
 
    - **Access the frontend**:
      - Open `frontend/index.html` in your web browser, or
@@ -357,10 +413,15 @@ The system also performs **monthly analysis** across all reports from an employe
   - Performance rating trends
   - Multi-criteria comparisons (combining any metrics)
   - Heatmaps for sentiment and impact (by department or employee)
-- **Imports Page**: CSV data import functionality for:
+- **Imports Page**: CSV, TSV, TXT data import functionality for:
   - Bulk employee data
   - Historical reports
   - Reference data
+- **Sync Page**: SQL Server to PostgreSQL data synchronization with:
+  - Manual sync triggers (incremental or full)
+  - Real-time sync progress monitoring
+  - Sync history and error tracking
+  - Configuration overview
 
 ### Analysis Features
 
@@ -397,7 +458,7 @@ The system also performs **monthly analysis** across all reports from an employe
 
 ### Data Import System
 
-- **CSV Import Capabilities**:
+- **CSV, TSV, TXT Import Capabilities**:
   - Import employee data (new employees, department updates)
   - Import historical reports (backfill data)
   - Import vision data
@@ -438,7 +499,7 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Background Processing**:
   - All analysis jobs run asynchronously
   - Monthly and quarterly analyses processed in the background
-  - Import jobs run as background tasks
+  - Import and sync jobs run as background tasks
 
 - **Task Tracking**:
   - Real-time status updates
@@ -449,6 +510,48 @@ The system also performs **monthly analysis** across all reports from an employe
   - Access completed task results
   - Error handling for failed tasks
   - Task history and audit trail
+
+
+### SQL Server Data Sync
+
+The sync functionality allows you to migrate data from SQL Server to PostgreSQL, either through scheduled automation or manual triggers.
+
+#### Sync Types
+
+- **Employee Reports Sync**: Synchronizes employee report data from the `EmployeeReports` table
+- **Vision Data Sync**: Synchronizes vision/goal data from the `VisionEmployeeData` table
+- **Full System Sync**: Runs both syncs sequentially
+
+#### Sync Modes
+
+- **Incremental Sync**: Only syncs records modified since the last successful sync
+  - Uses timestamp columns (`LastModifiedDate`, `ModifiedDate`) to detect changes
+  - Faster and more efficient for regular updates
+  - Recommended for scheduled automation
+
+- **Full Sync**: Syncs all records regardless of modification date
+  - Useful for initial data migration or data refresh
+  - Handles creates, updates, and ensures data consistency
+  - Recommended for first-time sync or after schema changes
+
+#### Sync Security Features
+
+The sync system includes multiple security measures:
+
+- **Table Whitelisting**: Only configured tables can be queried
+- **Column Whitelisting**: Timestamp columns are validated against a whitelist
+- **SQL Injection Prevention**: Parameterized queries and input validation
+- **Connection Encryption**: SSL/TLS encryption enabled by default
+- **Batch Size Limits**: Prevents memory exhaustion attacks
+- **Error Threshold**: Aborts sync if error rate exceeds threshold
+
+#### Sync Error Handling
+
+- **Validation Errors**: Records failing validation are logged but don't stop the sync
+- **Partial Completion**: If some records fail, sync completes with "partial" status
+- **Error Details**: Each error includes row number, field name, and error message
+- **Error Threshold**: Sync aborts if errors exceed configured percentage
+- **Retry Support**: Failed syncs can be manually retried
 
 ### Using the API
 
@@ -492,6 +595,18 @@ The system provides a comprehensive REST API:
 - `GET /imports/{job_id}` - Get import job status
 - `GET /imports/{job_id}/errors` - Get detailed import errors
 - `GET /imports/` - List all import jobs
+
+#### Sync Endpoints
+- `POST /sync/trigger/employee_reports` - Trigger employee reports sync
+- `POST /sync/trigger/vision_data` - Trigger vision data sync
+- `POST /sync/trigger/full` - Trigger full system sync
+- `GET /sync/status/{sync_id}` - Get sync job status
+- `GET /sync/last-successful/{sync_type}` - Get last successful sync info
+- `GET /sync/history` - List sync history
+- `GET /sync/{sync_id}/errors` - Get sync errors
+- `GET /sync/config` - Get sync configuration
+- `GET /sync/test-connection` - Test SQL Server connection
+
 
 API documentation is available at `/docs` when running the application.
 

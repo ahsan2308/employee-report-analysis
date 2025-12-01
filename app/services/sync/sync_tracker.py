@@ -81,7 +81,7 @@ class SyncTracker:
         # Partial syncs still successfully sync SOME records, so we use their timestamp
         last_sync = session.query(SyncHistory).filter(
             SyncHistory.sync_type == sync_type.value,
-            SyncHistory.status.in_([SyncStatus.COMPLETED.value, SyncStatus.PARTIAL.value]),  # ← FIXED!
+            SyncHistory.status.in_([SyncStatus.COMPLETED.value, SyncStatus.PARTIAL.value]),  
             SyncHistory.last_sync_timestamp.isnot(None)
         ).order_by(
             SyncHistory.last_sync_timestamp.desc()

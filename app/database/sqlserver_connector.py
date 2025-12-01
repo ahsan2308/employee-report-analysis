@@ -538,7 +538,7 @@ class SQLServerConnector:
         if order_by:
             self._validate_column_name(order_by)
         
-        # FIXED: Use >= instead of > to handle precision mismatches
+        # Use >= instead of > to handle precision mismatches
         # Build query with parameterized WHERE clause
         query = f"SELECT * FROM {table_name} WHERE {timestamp_column} >= ?"
         

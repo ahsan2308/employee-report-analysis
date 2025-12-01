@@ -66,7 +66,7 @@ class ImportTask(Task):
                     job.error_count = job.error_count + 1 if job.error_count else 1
                     logger.info(f"Job {job_id} failed at task level, setting error_count to {job.error_count}")
                 
-                # Fix: Use datetime object instead of timestamp
+                # Use datetime object instead of timestamp
                 job.completed_at = datetime.now()
                 self.db.commit()
                 logger.info(f"Updated job {job_id} status to FAILED due to task error")

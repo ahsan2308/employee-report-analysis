@@ -228,7 +228,7 @@ class VisionDataProcessor(BaseCSVProcessor):
         if not validated_rows:
             return 0, total_rows
         
-        # FIXED: Check employee existence BEFORE bulk processing
+        # Check employee existence BEFORE bulk processing
         try:
             # Get set of existing employee IDs
             existing_employees = self._get_existing_employee_ids()
