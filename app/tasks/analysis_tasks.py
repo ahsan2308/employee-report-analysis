@@ -25,9 +25,9 @@ from app.services.db_service import get_employee_vision_data_for_month, get_empl
 # Get configuration
 config = get_config_provider()
 VECTOR_SEARCH_HNSW_EF = config.get("hnsw_ef", 128, section="vector_db.search")
-MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS = config.get("max_content_items_per_entity", 10, section="vector_db.search")
-MAX_CONTENT_ITEMS_PER_ENTITY_FOR_MONTHLY_ANALYSIS = config.get("max_content_items_per_entity", 10, section="vector_db.search")
-MAX_CONTENT_ITEMS_PER_ENTITY_FOR_QUARTERLY_ANALYSIS = config.get("max_content_items_per_entity", 10, section="vector_db.search")
+MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS = config.get("max_content_items_per_entity_for_weekly_analysis", 10, section="vector_db.search")
+MAX_CONTENT_ITEMS_PER_ENTITY_FOR_MONTHLY_ANALYSIS = config.get("max_content_items_per_entity_for_monthly_analysis", 10, section="vector_db.search")
+MAX_CONTENT_ITEMS_PER_ENTITY_FOR_QUARTERLY_ANALYSIS = config.get("max_content_items_per_entity_for_quarterly_analysis", 10, section="vector_db.search")
 
 @celery_app.task(bind=True)
 def analyze_report_task(self, task_id: str):
