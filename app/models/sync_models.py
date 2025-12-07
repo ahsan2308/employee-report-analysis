@@ -18,6 +18,7 @@ class SyncType(str, enum.Enum):
     """Types of data that can be synced."""
     EMPLOYEE_REPORTS = "employee_reports"
     VISION_DATA = "vision_data"
+    JOB_DESCRIPTIONS = "job_descriptions"
 
 
 class SyncStatus(str, enum.Enum):

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Index, Float, DateTime, Text, ARRAY, UniqueConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Index, Float, DateTime, Text, ARRAY, UniqueConstraint, Boolean
 from sqlalchemy.orm import relationship
 from app.models.base import Base
 from app.models.base import schema_name
@@ -18,6 +18,7 @@ class Employee(Base):
     vision_data = relationship("EmployeeVisionData", back_populates="employee")
     monthly_analyses = relationship("MonthlyAnalysis", back_populates="employee", cascade="all, delete-orphan")
     quarterly_analyses = relationship("QuarterlyAnalysis", back_populates="employee", cascade="all, delete-orphan")
+    job_descriptions = relationship("EmployeeJobDescription", back_populates="employee", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Employee(id={self.id}, name='{self.name}', wing='{self.wing}', position='{self.position}')>"
@@ -263,3 +264,62 @@ class QuarterlyAnalysis(Base):
     def __repr__(self):
         """String representation for debugging and logging."""
         return f"<QuarterlyAnalysis id={self.analysis_id} employee={self.employee_id} period=Q{self.quarter}/{self.year}>"
+
+class EmployeeJobDescription(Base):
+    """
+    Model for tracking employee job description assignments.
+    
+    Supports multiple JDs per employee and tracks role changes over time.
+    Designed for incremental sync from SQL Server.
+    """
+    __tablename__ = "employee_job_descriptions"
+    
+    # Primary key
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    
+    # Foreign key to employee
+    employee_id = Column(
+        Integer, 
+        ForeignKey(f"{schema_name}.employees.id", ondelete="CASCADE"), 
+        nullable=False
+    )
+    
+    # Original JD_ID from SQL Server (for traceability)
+    jd_id = Column(String, nullable=False)
+    
+    # Full job description text
+    job_description = Column(Text, nullable=False)
+    
+    # Role assignment tracking
+    assigned_date = Column(Date, nullable=False) 
+    end_date = Column(Date, nullable=True)  # NULL if current role
+    is_current = Column(Boolean, default=True, nullable=False)
+    
+    # Audit timestamps (internal PostgreSQL tracking only)
+    created_at = Column(DateTime, default=func.now(), nullable=False)
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    
+    # Relationship back to Employee
+    employee = relationship("Employee", back_populates="job_descriptions")
+    
+    # Table constraints and indexes
+    __table_args__ = (
+        # Prevent duplicate (employee_id, jd_id) assignments
+        UniqueConstraint('employee_id', 'jd_id', name='uq_employee_jd_assignment'),
+        
+        # Index for fast "current JD" lookups (partial index for performance)
+        Index(
+            'ix_employee_jd_current', 
+            'employee_id',
+            postgresql_where=(is_current == True)
+        ),
+        
+        # Index for querying by source JD_ID (if needed to trace back to SQL Server)
+        Index('ix_employee_jd_jd_id', 'jd_id'),
+        
+        # Schema
+        {'schema': schema_name}
+    )
+    
+    def __repr__(self):
+        return f"<EmployeeJobDescription(id={self.id}, employee_id={self.employee_id}, jd_id={self.jd_id}, is_current={self.is_current})>"

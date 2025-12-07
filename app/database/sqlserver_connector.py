@@ -40,7 +40,7 @@ class SQLServerConnector:
     """
     
     # Default whitelists (used as fallback if env vars not set)
-    DEFAULT_ALLOWED_TABLES = {'EmployeeReports', 'VisionEmployeeData'}
+    DEFAULT_ALLOWED_TABLES = {'EmployeeReports', 'VisionEmployeeData', 'EmployeeJobDescriptions'}
     DEFAULT_ALLOWED_TIMESTAMP_COLUMNS = {'LastModifiedDate', 'ModifiedDate', 'UpdatedAt'}
     DEFAULT_MAX_BATCH_SIZE = 10000
     

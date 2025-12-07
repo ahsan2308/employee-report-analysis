@@ -14,6 +14,7 @@ from app.core.logger import logger
 # Import all processor implementations
 from app.services.csv.processors.employee_report_processor import EmployeeReportProcessor
 from app.services.csv.processors.vision_data_processor import VisionDataProcessor
+from app.services.csv.processors.job_description_processor import JobDescriptionProcessor
 
 
 class ProcessorFactory:
@@ -27,7 +28,8 @@ class ProcessorFactory:
     # Registry of all available processors
     _processors = [
         EmployeeReportProcessor,
-        VisionDataProcessor
+        VisionDataProcessor,
+        JobDescriptionProcessor
     ]
     
     @classmethod
@@ -81,7 +83,8 @@ class ProcessorFactory:
         
         mapping = {
             "EmployeeReportProcessor": CSVImportType.EMPLOYEE_REPORT.value,
-            "VisionDataProcessor": CSVImportType.VISION_DATA.value
+            "VisionDataProcessor": CSVImportType.VISION_DATA.value,
+            "JobDescriptionProcessor": CSVImportType.JOB_DESCRIPTIONS.value
         }
         
         return mapping.get(processor_name, "unknown")

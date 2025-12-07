@@ -137,3 +137,72 @@ class VisionDataTransformer:
             "Sub_Entities": sql_row.get("Sub_Entities"),  # String: "Name:Count, ..."
             "Sub_Entities_Content": sql_row.get("Sub_Entities_Content")  # String: "Key:[...], ..."
         }
+
+
+class JobDescriptionTransformer:
+    """
+    Transforms SQL Server JobDescriptions rows to JobDescriptionCSVRow-compatible format.
+    
+    All validation is delegated to JobDescriptionCSVRow Pydantic schema.
+    
+    Design Philosophy:
+    - Minimal transformation layer
+    - No validation or type conversion logic (handled by Pydantic)
+    - No date conversion (Pydantic accepts Union[str, date])
+    
+    SQL Server Column → Pydantic Field Mapping:
+    - Employee_ID: pass through (already int)
+    - JD_ID: pass through (Pydantic validator converts int → str)
+    - Job_Description: pass through (already string)
+    - Assigned_Date: pass through as date object (Pydantic accepts date)
+    - Is_Current: pass through as boolean (SQL Server BIT → Python bool)
+    - End_Date: pass through as date object or None (Pydantic accepts date/None)
+    
+    Note: LastModifiedDate from SQL Server is NOT included in the output dictionary.
+    It's tracked separately by sync service in _max_modified_date_jd instance variable
+    for incremental sync logic.
+    """
+    
+    @staticmethod
+    def transform(sql_row: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Convert SQL Server row to JobDescriptionCSVRow-compatible dict.
+        
+        Only includes fields that are part of the CSV import schema.
+        The LastModifiedDate column from SQL Server is intentionally excluded
+        because it's tracked separately by the sync service for incremental sync logic.
+        
+        Args:
+            sql_row: Row from SQL Server as dictionary with column names as keys
+                Expected format from SQL Server:
+                {
+                    "Employee_ID": 101,                    # int
+                    "JD_ID": 1001,                         # int
+                    "Job_Description": "Full JD text...",  # str
+                    "Assigned_Date": date(2024, 1, 15),    # date object
+                    "Is_Current": True,                    # bool (from BIT)
+                    "End_Date": None,                      # date object or None
+                    "LastModifiedDate": datetime(...)      # NOT INCLUDED IN OUTPUT
+                }
+            
+        Returns:
+            Dictionary compatible with JobDescriptionCSVRow Pydantic schema
+            {
+                "Employee_ID": 101,
+                "JD_ID": 1001,
+                "Job_Description": "Full JD text...",
+                "Assigned_Date": date(2024, 1, 15),
+                "Is_Current": True,
+                "End_Date": None
+            }
+        """
+        return {
+            "Employee_ID": sql_row.get("Employee_ID"),
+            "JD_ID": sql_row.get("JD_ID"),
+            "Job_Description": sql_row.get("Job_Description"),
+            "Assigned_Date": sql_row.get("Assigned_Date"),
+            "Is_Current": sql_row.get("Is_Current"),  
+            "End_Date": sql_row.get("End_Date")       
+            # NOTE: LastModifiedDate is intentionally excluded
+            # It's tracked separately in _process_job_description_batches_bulk()
+        }

@@ -236,11 +236,86 @@ def sync_vision_data_task(self, is_full_sync: bool = False, sync_id: Optional[st
         logger.error(f"Error in vision data sync task: {str(e)}", exc_info=True)
         raise
 
+@shared_task(bind=True, base=SyncTask, name="sync.job_descriptions")
+def sync_job_descriptions_task(self, is_full_sync: bool = False, sync_id: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Sync job descriptions from SQL Server to PostgreSQL.
+    
+    Args:
+        is_full_sync: If True, sync all records. If False, incremental sync.
+        sync_id: Optional sync_id if already created by API endpoint.
+        
+    Returns:
+        Dictionary containing sync results
+    """
+    logger.info(f"Starting job descriptions sync task, mode: {'full' if is_full_sync else 'incremental'}")
+    
+    try:
+        # If sync_id was provided, use existing sync job
+        # Otherwise, create a new one (backward compatibility)
+        if sync_id:
+            logger.info(f"Using existing sync job: {sync_id}")
+            sync_job = self.sync_service.sync_job_descriptions(
+                is_full_sync=is_full_sync,
+                existing_sync_id=sync_id
+            )
+        else:
+            # Old behavior: create sync job inside task
+            sync_job = self.sync_service.sync_job_descriptions(is_full_sync=is_full_sync)
+        
+        # Extract attributes IMMEDIATELY after sync returns
+        sync_id = str(sync_job.sync_id)
+        status = sync_job.status
+        sync_type = sync_job.sync_type
+        error_count = sync_job.error_count or 0
+        
+        # Access JSONB field immediately - THIS is where all metrics are stored
+        sync_metadata = sync_job.sync_metadata or {}
+        
+        # Extract top-level metrics from sync_metadata
+        records_queried = sync_metadata.get('records_queried', 0)
+        records_synced = sync_metadata.get('records_synced', 0)
+        
+        # Extract the nested "metrics" key which contains processor-specific metrics
+        processor_metrics = sync_metadata.get('metrics', {})
+        
+        # Extract type-specific metrics
+        jd_records_created = processor_metrics.get('jd_records_created', 0)
+        jd_records_updated = processor_metrics.get('jd_records_updated', 0)
+        
+        # Build log message
+        metrics_log = f"Completed job descriptions sync {sync_id}: " \
+                      f"{records_synced}/{records_queried} rows synced, " \
+                      f"{error_count} errors"
+        
+        if jd_records_created or jd_records_updated:
+            metrics_log += f", {jd_records_created} JD records created, " \
+                          f"{jd_records_updated} JD records updated"
+        
+        logger.info(metrics_log)
+        
+        # Return dictionary for Celery (NO TIMESTAMPS)
+        return {
+            "sync_id": sync_id,
+            "status": status,
+            "sync_type": sync_type,
+            "records_queried": records_queried,
+            "records_synced": records_synced,
+            "error_count": error_count,
+            "metrics": {
+                "jd_records_created": jd_records_created,
+                "jd_records_updated": jd_records_updated
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in job descriptions sync task: {str(e)}", exc_info=True)
+        raise
 
 @shared_task(bind=True, base=SyncTask, name="sync.full")
-def full_sync_task(self, employee_sync_id: Optional[str] = None, vision_sync_id: Optional[str] = None) -> Dict[str, Any]:
+def full_sync_task(self, employee_sync_id: Optional[str] = None, vision_sync_id: Optional[str] = None, jd_sync_id: Optional[str] = None) -> Dict[str, Any]:
     """
-    Run both employee reports and vision data syncs in sequence (full mode).
+    Run employee reports, vision data, and job descriptions syncs in sequence (full mode).
     
     REFACTORED: Calls sync service methods DIRECTLY (no subtask orchestration).
     This eliminates the .apply().get() anti-pattern and ensures sequential execution.
@@ -248,11 +323,12 @@ def full_sync_task(self, employee_sync_id: Optional[str] = None, vision_sync_id:
     Args:
         employee_sync_id: Optional sync_id for employee reports (if created by API)
         vision_sync_id: Optional sync_id for vision data (if created by API)
+        jd_sync_id: Optional sync_id for job descriptions (if created by API)
     
     Returns:
-        Dictionary containing aggregated results from both syncs
+        Dictionary containing aggregated results from all three syncs
     """
-    logger.info("Starting full sync task (both employee reports and vision data)")
+    logger.info("Starting full sync task (employee reports, vision data, and job descriptions)")
     
     try:
         # Step 1: Call employee reports sync service DIRECTLY
@@ -293,18 +369,47 @@ def full_sync_task(self, employee_sync_id: Optional[str] = None, vision_sync_id:
             "metrics": vision_sync_job.sync_metadata or {}
         }
         
+                
+        # Step 3: Call job descriptions sync service DIRECTLY (sequential)
+        logger.info("Step 3: Syncing job descriptions...")
+        jd_sync_job = self.sync_service.sync_job_descriptions(
+            is_full_sync=True,
+            existing_sync_id=jd_sync_id
+        )
+        
+        # Extract JD results immediately
+        jd_result = {
+            "sync_id": str(jd_sync_job.sync_id),
+            "status": jd_sync_job.status,
+            "sync_type": jd_sync_job.sync_type,
+            "records_queried": jd_sync_job.records_queried or 0,
+            "records_synced": jd_sync_job.records_synced or 0,
+            "error_count": jd_sync_job.error_count or 0,
+            "metrics": jd_sync_job.sync_metadata or {}
+        }
+        
+        logger.info(f"Job descriptions sync completed: {jd_result['records_synced']} records")
+
         logger.info(f"Vision data sync completed: {vision_result['records_synced']} records")
         
-        # Step 3: Aggregate results
-        total_records = (employee_result['records_synced'] + vision_result['records_synced'])
-        total_errors = (employee_result['error_count'] + vision_result['error_count'])
-        
+        # Step 4: Aggregate results
+        total_records = (
+            employee_result['records_synced'] + 
+            vision_result['records_synced'] + 
+            jd_result['records_synced']
+        )
+        total_errors = (
+            employee_result['error_count'] + 
+            vision_result['error_count'] + 
+            jd_result['error_count']
+        )
         logger.info(f"Full sync completed: {total_records} total records synced, {total_errors} total errors")
         
         return {
             "sync_type": "full",
             "employee_reports": employee_result,
             "vision_data": vision_result,
+            "job_descriptions": jd_result,
             "total_records_synced": total_records,
             "total_errors": total_errors
         }
@@ -317,17 +422,17 @@ def full_sync_task(self, employee_sync_id: Optional[str] = None, vision_sync_id:
 @shared_task(bind=True, base=SyncTask, name="sync.incremental")
 def incremental_sync_task(self) -> Dict[str, Any]:
     """
-    Run both employee reports and vision data syncs in sequence (incremental mode).
+    Run employee reports, vision data, and job descriptions syncs in sequence (incremental mode).
     
     REFACTORED: Calls sync service methods DIRECTLY (no subtask orchestration).
     This eliminates the .apply().get() anti-pattern and ensures sequential execution.
     
-    Vision data sync runs AFTER employee reports sync completes, ensuring dependency order.
+    Sync order: Employee Reports → Vision Data → Job Descriptions.
     
     Returns:
-        Dictionary containing aggregated results from both syncs
+        Dictionary containing aggregated results from all three syncs
     """
-    logger.info("Starting incremental sync task (both employee reports and vision data)")
+    logger.info("Starting incremental sync task (employee reports, vision data, and job descriptions)")
     
     try:
         # Step 1: Call employee reports sync service DIRECTLY
@@ -362,24 +467,54 @@ def incremental_sync_task(self) -> Dict[str, Any]:
             "sync_id": str(vision_sync_job.sync_id),
             "status": vision_sync_job.status,
             "sync_type": vision_sync_job.sync_type,
-            "records_queried": vision_sync_job.records_queried or 0,  # ← Read from column
-            "records_synced": vision_sync_job.records_synced or 0,    # ← Read from column
+            "records_queried": vision_sync_job.records_queried or 0,  
+            "records_synced": vision_sync_job.records_synced or 0,    
             "error_count": vision_sync_job.error_count or 0,
             "metrics": vision_sync_job.sync_metadata or {}
         }
         
         logger.info(f"Vision data sync completed: {vision_result['records_synced']} records")
         
-        # Step 3: Aggregate results
-        total_records = (employee_result['records_synced'] + vision_result['records_synced'])
-        total_errors = (employee_result['error_count'] + vision_result['error_count'])
+                
+        # Step 3: Call job descriptions sync service DIRECTLY (sequential)
+        logger.info("Step 3: Syncing job descriptions (incremental)...")
+        jd_sync_job = self.sync_service.sync_job_descriptions(
+            is_full_sync=False,
+            existing_sync_id=None  # Let service create sync_id
+        )
         
+        # Extract JD results immediately
+        jd_result = {
+            "sync_id": str(jd_sync_job.sync_id),
+            "status": jd_sync_job.status,
+            "sync_type": jd_sync_job.sync_type,
+            "records_queried": jd_sync_job.records_queried or 0,
+            "records_synced": jd_sync_job.records_synced or 0,
+            "error_count": jd_sync_job.error_count or 0,
+            "metrics": jd_sync_job.sync_metadata or {}
+        }
+        
+        logger.info(f"Job descriptions sync completed: {jd_result['records_synced']} records")
+
+
+        # Step 4: Aggregate results
+        total_records = (
+            employee_result['records_synced'] + 
+            vision_result['records_synced'] + 
+            jd_result['records_synced']
+        )
+        total_errors = (
+            employee_result['error_count'] + 
+            vision_result['error_count'] + 
+            jd_result['error_count']
+        )
         logger.info(f"Incremental sync completed: {total_records} total records synced, {total_errors} total errors")
         
         return {
             "sync_type": "incremental",
             "employee_reports": employee_result,
             "vision_data": vision_result,
+            "job_descriptions": jd_result,
             "total_records_synced": total_records,
             "total_errors": total_errors
         }

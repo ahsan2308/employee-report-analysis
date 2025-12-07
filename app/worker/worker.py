@@ -9,6 +9,7 @@ from app.worker.celery_app import celery_app
 # Explicitly import all task modules
 import app.tasks.import_tasks
 import app.tasks.analysis_tasks
+import app.tasks.sync_tasks
 
 # This ensures both csv_import.process and any other tasks are properly registered
 
