@@ -175,6 +175,7 @@ class SyncHistoryItem(BaseModel):
     completed_at: Optional[datetime] = None
     duration_seconds: Optional[float] = None
     records_synced: int = 0
+    records_queried: int = 0
     error_count: int = 0
     last_sync_timestamp: Optional[datetime] = None
     

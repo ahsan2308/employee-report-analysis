@@ -93,12 +93,32 @@
                         </div>
                     </div>
                     
+                    <div class="sync-type-card" data-sync-type="job_descriptions">
+                        <div class="sync-type-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3>Job Descriptions</h3>
+                        <p>Sync job description assignments from SQL Server</p>
+                        <div class="sync-type-actions">
+                            <button class="button primary-button trigger-sync-btn" data-sync-type="job_descriptions" data-full-sync="false">
+                                <i class="fas fa-sync"></i> Incremental Sync
+                            </button>
+                            <button class="button secondary-button trigger-sync-btn" data-sync-type="job_descriptions" data-full-sync="true">
+                                <i class="fas fa-database"></i> Full Sync
+                            </button>
+                        </div>
+                        <div class="last-sync-info">
+                            <i class="fas fa-clock"></i>
+                            <span id="lastSyncJobDescriptions">Never synced</span>
+                        </div>
+                    </div>
+                    
                     <div class="sync-type-card sync-type-full" data-sync-type="full">
                         <div class="sync-type-icon">
                             <i class="fas fa-globe"></i>
                         </div>
                         <h3>Complete Sync</h3>
-                        <p>Sync both employee reports and vision data</p>
+                        <p>Sync employee reports, vision data, and job descriptions</p>
                         <div class="sync-type-actions">
                             <button class="button full-sync-button trigger-sync-btn" data-sync-type="full" data-full-sync="true">
                                 <i class="fas fa-sync-alt"></i> Full System Sync
@@ -252,6 +272,7 @@
                                 <option value="">All Types</option>
                                 <option value="employee_reports">Employee Reports</option>
                                 <option value="vision_data">Vision Data</option>
+                                <option value="job_descriptions">Job Descriptions</option>
                             </select>
                         </div>
                         

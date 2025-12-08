@@ -289,6 +289,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
         """Process reports in bulk using SQLAlchemy core operations."""
         try:
             from sqlalchemy.dialects.postgresql import insert as pg_insert
+            from sqlalchemy import tuple_
             
             report_data = []
             # Track seen (employee_id, report_date) combinations to avoid duplicates
@@ -342,6 +343,22 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             if not report_data:
                 return True
             
+            # Query for existing reports BEFORE upsert
+            report_keys = [(r['employee_id'], r['report_date']) for r in report_data]
+            existing_reports = self.db.query(
+                Report.employee_id,
+                Report.report_date
+            ).filter(
+                tuple_(Report.employee_id, Report.report_date).in_(report_keys)
+            ).all()
+            
+            # Convert to set for fast lookup
+            existing_set = {(emp_id, rep_date) for emp_id, rep_date in existing_reports}
+            existing_count = len(existing_set)
+            new_count = len(report_data) - existing_count
+            
+            logger.info(f"Pre-upsert check: {existing_count} existing reports, {new_count} new reports")
+            
             # Log statistics about duplicates
             original_count = len(validated_rows) - len([r for r in validated_rows if r.get('NTR') and r['NTR'].strip() and r['NTR'].strip().upper() != 'NULL'])
             deduplicated_count = len(report_data)
@@ -360,7 +377,9 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             # Flush to get IDs for newly created reports
             self.db.flush()
             
-            self.reports_created += result.rowcount
+            # Accurately track created vs updated
+            self.reports_created += new_count
+            self.reports_updated += existing_count
             
             # Collect all reports for vector store processing in one batch
             reports_for_vector_store = []
@@ -394,6 +413,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             
             # Now commit the entire transaction after all vector store operations
             self.db.commit()
+            logger.info(f"Bulk processed {len(report_data)} reports ({new_count} created, {existing_count} updated)")
             return True
             
         except Exception as e:

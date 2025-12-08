@@ -496,6 +496,11 @@
     color: #8b5cf6;
 }
 
+.sync-type-badge.job-descriptions {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
 .status-badge {
     display: inline-block;
     padding: 4px 10px;

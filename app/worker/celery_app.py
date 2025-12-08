@@ -200,4 +200,5 @@ celery_app.conf.task_routes = {
     'sync.*': {'queue': 'sync'},
     'app.tasks.analysis_tasks.*': {'queue': 'analysis'},
     'app.tasks.import_tasks.*': {'queue': 'imports'},
+    'csv_import.process': {'queue': 'imports'},  
 }

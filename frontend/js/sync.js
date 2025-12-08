@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Last Sync Info Elements
     const lastSyncEmployeeReports = document.getElementById('lastSyncEmployeeReports');
     const lastSyncVisionData = document.getElementById('lastSyncVisionData');
+    const lastSyncJobDescriptions = document.getElementById('lastSyncJobDescriptions');
     
     // Active Sync Monitor Elements
     const activeSyncSection = document.getElementById('activeSyncSection');
@@ -291,6 +292,14 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 lastSyncVisionData.textContent = 'Never synced';
             }
+            
+            // Load last successful sync for job descriptions
+            const jdSync = await syncApi.getLastSuccessfulSync('job_descriptions');
+            if (jdSync && jdSync.last_sync_timestamp) {
+                lastSyncJobDescriptions.textContent = `Last synced: ${formatDateTime(jdSync.last_sync_timestamp)}`;
+            } else {
+                lastSyncJobDescriptions.textContent = 'Never synced';
+            }
         } catch (error) {
             console.error('Error loading last sync times:', error);
         }
@@ -454,6 +463,9 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (syncType === 'vision_data') {
             addDetailedMetric('Vision Records Created', metrics.vision_records_created || 0);
             addDetailedMetric('Vision Records Updated', metrics.vision_records_updated || 0);
+        } else if (syncType === 'job_descriptions') {
+            addDetailedMetric('JD Records Created', metrics.jd_records_created || 0);
+            addDetailedMetric('JD Records Updated', metrics.jd_records_updated || 0);
         }
     }
     
@@ -528,8 +540,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Type
             const typeCell = document.createElement('td');
+            const iconClass = getSyncTypeIcon(item.sync_type);
             typeCell.innerHTML = `<span class="sync-type-badge ${item.sync_type.replace('_', '-')}">
-                <i class="fas ${item.sync_type === 'employee_reports' ? 'fa-file-alt' : 'fa-eye'}"></i>
+                <i class="fas ${iconClass}"></i>
                 ${formatSyncType(item.sync_type)}
             </span>`;
             row.appendChild(typeCell);
@@ -775,9 +788,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const typeMap = {
             'employee_reports': 'Employee Reports',
             'vision_data': 'Vision Data',
+            'job_descriptions': 'Job Descriptions',
             'full': 'Full Sync'
         };
         return typeMap[syncType] || syncType;
+    }
+    
+    function getSyncTypeIcon(syncType) {
+        const iconMap = {
+            'employee_reports': 'fa-file-alt',
+            'vision_data': 'fa-eye',
+            'job_descriptions': 'fa-briefcase',
+            'full': 'fa-globe'
+        };
+        return iconMap[syncType] || 'fa-sync';
     }
     
     // ============================================================================

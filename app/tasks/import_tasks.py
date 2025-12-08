@@ -13,7 +13,7 @@ from datetime import datetime
 from app.core.logger import logger
 from app.worker.celery_app import celery_app
 from app.database import get_database
-from app.models.import_models import CSVImportJob, ImportStatus
+from app.models.import_models import CSVImportJob, ImportStatus, ImportError
 from app.services.csv_import_service import get_csv_import_service, CSVImportService
 from app.schemas.csv_import_schema import CSVImportOptions
 
@@ -157,6 +157,13 @@ def process_csv_import(self, job_id: str, file_path: Optional[str] = None,
             
             metrics_log += f", {vision_records_created} vision records created, " \
                           f"{vision_records_updated} vision records updated"
+        
+        elif csv_type == "job_descriptions":
+            jd_records_created = metrics.get('jd_records_created', 0)
+            jd_records_updated = metrics.get('jd_records_updated', 0)
+            
+            metrics_log += f", {jd_records_created} JD records created, " \
+                          f"{jd_records_updated} JD records updated"
         
         logger.info(metrics_log)
         

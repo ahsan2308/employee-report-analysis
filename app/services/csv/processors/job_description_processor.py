@@ -239,6 +239,7 @@ class JobDescriptionProcessor(BaseCSVProcessor):
         """
         try:
             from sqlalchemy.dialects.postgresql import insert as pg_insert
+            from sqlalchemy import tuple_
             
             # Prepare data for bulk insert
             jd_data = []
@@ -246,45 +247,55 @@ class JobDescriptionProcessor(BaseCSVProcessor):
             for row in validated_rows:
                 jd_data.append({
                     'employee_id': row['Employee_ID'],
-                    'jd_id': str(row['JD_ID']),  # Ensure string format
+                    'jd_id': str(row['JD_ID']),
                     'job_description': row['Job_Description'],
                     'assigned_date': row['Assigned_Date'],
-                    'is_current': row['Is_Current'],  
-                    'end_date': row.get('End_Date')  
+                    'is_current': row['Is_Current'],
+                    'end_date': row.get('End_Date')
                 })
             
-            # Skip if no data to process
             if not jd_data:
                 logger.warning("No JD data to process after preparation")
                 return True
             
-            logger.info(f"Bulk processing {len(jd_data)} JD records")
+            # Query for existing JD assignments BEFORE upsert
+            jd_keys = [(jd['employee_id'], jd['jd_id']) for jd in jd_data]
+            existing_jds = self.db.query(
+                EmployeeJobDescription.employee_id,
+                EmployeeJobDescription.jd_id
+            ).filter(
+                tuple_(EmployeeJobDescription.employee_id, EmployeeJobDescription.jd_id).in_(jd_keys)
+            ).all()
+            
+            # Convert to set for fast lookup
+            existing_set = {(emp_id, jd_id) for emp_id, jd_id in existing_jds}
+            existing_count = len(existing_set)
+            new_count = len(jd_data) - existing_count
+            
+            logger.info(f"Pre-upsert check: {existing_count} existing JD assignments, {new_count} new JD assignments")
             
             # Perform bulk upsert using PostgreSQL-specific INSERT ... ON CONFLICT
             stmt = pg_insert(EmployeeJobDescription.__table__).values(jd_data)
             stmt = stmt.on_conflict_do_update(
-                index_elements=['employee_id', 'jd_id'],  # Matches UNIQUE constraint
+                index_elements=['employee_id', 'jd_id'],
                 set_={
                     'job_description': stmt.excluded.job_description,
                     'assigned_date': stmt.excluded.assigned_date,
-                    'is_current': stmt.excluded.is_current,  
-                    'end_date': stmt.excluded.end_date,      
-                    'updated_at': stmt.excluded.updated_at   
+                    'is_current': stmt.excluded.is_current,
+                    'end_date': stmt.excluded.end_date,
+                    'updated_at': stmt.excluded.updated_at
                 }
             )
             
             result = self.db.execute(stmt)
             self.db.flush()
             
-            # Update metrics
-            # Note: rowcount includes both inserts and updates
-            # For now, we'll count all as "created" since we can't distinguish
-            # In production, you could track this more precisely if needed
-            created_count = result.rowcount
-            self.jd_records_created += created_count
+            # Accurately track created vs updated
+            self.jd_records_created += new_count
+            self.jd_records_updated += existing_count
             
             self.db.commit()
-            logger.info(f"Bulk processed {len(jd_data)} JD records with {created_count} created/updated")
+            logger.info(f"Bulk processed {len(jd_data)} JD records ({new_count} created, {existing_count} updated)")
             return True
             
         except Exception as e:

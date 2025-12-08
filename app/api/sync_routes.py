@@ -227,24 +227,104 @@ def trigger_vision_data_sync(
         raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
 
 
+@router.post("/trigger/job_descriptions", response_model=SyncTriggerResponse, status_code=202)
+def trigger_job_descriptions_sync(
+    is_full_sync: bool = Query(False, description="If true, perform full sync. If false, incremental sync."),
+    db: Session = Depends(get_db)
+):
+    """
+    Trigger job descriptions synchronization from SQL Server to PostgreSQL.
+    
+    This endpoint queues an asynchronous Celery task and returns immediately.
+    Use the returned sync_id to poll for status updates.
+    
+    - **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)
+    """
+    logger.info(f"Received request to trigger job descriptions sync (is_full_sync={is_full_sync})")
+    
+    try:
+        # Clear stale syncs before checking
+        _check_and_clear_stale_syncs(db, SyncType.JOB_DESCRIPTIONS.value, timeout_minutes=60)
+        
+        # Check if a sync is already running
+        running_sync = db.query(SyncHistory).filter(
+            SyncHistory.sync_type == SyncType.JOB_DESCRIPTIONS.value,
+            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
+        ).first()
+        
+        if running_sync:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Job descriptions sync already in progress (sync_id: {running_sync.sync_id})"
+            )
+        
+        # Create SyncHistory record HERE in the API endpoint
+        from app.services.sync.sync_tracker import SyncTracker
+        from app.database import get_database
+        
+        db_instance = get_database()
+        sync_tracker = SyncTracker(db_instance)
+        
+        # Create sync job record BEFORE queuing task
+        sync_job = sync_tracker.create_sync_job(
+            sync_type=SyncType.JOB_DESCRIPTIONS,
+            session=db,
+            is_full_sync=is_full_sync
+        )
+        
+        # Get the real sync_id
+        real_sync_id = sync_job.sync_id
+        
+        # Trigger Celery task using registered task name
+        task = celery_app.send_task(
+            'sync.job_descriptions',  # ← Use registered task name as string
+            kwargs={
+                'is_full_sync': is_full_sync,
+                'sync_id': str(real_sync_id)
+            }
+        )
+        
+        # Return REAL sync_id (no placeholder!)
+        return SyncTriggerResponse(
+            sync_id=real_sync_id,
+            task_id=str(task.id),
+            sync_type="job_descriptions",
+            status="pending",
+            is_full_sync=is_full_sync,
+            triggered_at=datetime.now(),
+            message=f"Job descriptions sync {'(full)' if is_full_sync else '(incremental)'} started successfully"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error triggering job descriptions sync: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
+
+
 @router.post("/trigger/full", response_model=FullSyncTriggerResponse, status_code=202)
 def trigger_full_sync(db: Session = Depends(get_db)):
     """
-    Trigger full synchronization of both employee reports and vision data.
+    Trigger full synchronization of employee reports, vision data, and job descriptions.
     
-    This runs both sync types sequentially in a single Celery task.
-    Both syncs will be in FULL mode (all records, not incremental).
+    This runs all three sync types sequentially in a single Celery task.
+    All syncs will be in FULL mode (all records, not incremental).
     """
-    logger.info("Received request to trigger full sync (both types)")
+    logger.info("Received request to trigger full sync (all three types)")
     
     try:
-        # Clear stale syncs for both types
+        # Clear stale syncs for all three types
         _check_and_clear_stale_syncs(db, SyncType.EMPLOYEE_REPORTS.value, timeout_minutes=60)
         _check_and_clear_stale_syncs(db, SyncType.VISION_DATA.value, timeout_minutes=60)
+        _check_and_clear_stale_syncs(db, SyncType.JOB_DESCRIPTIONS.value, timeout_minutes=60)
         
-        # Check if either sync is already running
+        # Check if any sync is already running
         running_syncs = db.query(SyncHistory).filter(
-            SyncHistory.sync_type.in_([SyncType.EMPLOYEE_REPORTS.value, SyncType.VISION_DATA.value]),
+            SyncHistory.sync_type.in_([
+                SyncType.EMPLOYEE_REPORTS.value, 
+                SyncType.VISION_DATA.value,
+                SyncType.JOB_DESCRIPTIONS.value
+            ]),
             SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
         ).all()
         
@@ -255,7 +335,7 @@ def trigger_full_sync(db: Session = Depends(get_db)):
                 detail=f"Sync already in progress for: {', '.join(running_types)}"
             )
         
-        # Create SyncHistory records for BOTH sync types
+        # Create SyncHistory records for ALL THREE sync types
         from app.services.sync.sync_tracker import SyncTracker
         from app.database import get_database
         
@@ -266,38 +346,48 @@ def trigger_full_sync(db: Session = Depends(get_db)):
         employee_sync_job = sync_tracker.create_sync_job(
             sync_type=SyncType.EMPLOYEE_REPORTS,
             session=db,
-            is_full_sync=True  # Full sync always uses True
+            is_full_sync=True
         )
         
         # Create sync job for vision data (full mode)
         vision_sync_job = sync_tracker.create_sync_job(
             sync_type=SyncType.VISION_DATA,
             session=db,
-            is_full_sync=True  # Full sync always uses True
+            is_full_sync=True
+        )
+        
+        # Create sync job for job descriptions (full mode)
+        jd_sync_job = sync_tracker.create_sync_job(
+            sync_type=SyncType.JOB_DESCRIPTIONS,
+            session=db,
+            is_full_sync=True
         )
         
         # Get the real sync_ids
         employee_sync_id = employee_sync_job.sync_id
         vision_sync_id = vision_sync_job.sync_id
+        jd_sync_id = jd_sync_job.sync_id
         
-        # Trigger full sync task using registered task name
+        # Trigger full sync task with ALL THREE sync_ids
         task = celery_app.send_task(
-            'sync.full',  # ← Use registered task name as string
+            'sync.full',
             kwargs={
                 'employee_sync_id': str(employee_sync_id),
-                'vision_sync_id': str(vision_sync_id)
+                'vision_sync_id': str(vision_sync_id),
+                'jd_sync_id': str(jd_sync_id)
             }
         )
         
-        # Return REAL sync_ids (no placeholders!)
+        # Return ALL THREE sync_ids
         return FullSyncTriggerResponse(
             sync_type="full",
             employee_reports_sync_id=employee_sync_id,
             vision_data_sync_id=vision_sync_id,
+            job_descriptions_sync_id=jd_sync_id,
             task_id=str(task.id),
             status="pending",
             triggered_at=datetime.now(),
-            message="Full sync (both employee reports and vision data) started successfully"
+            message="Full sync (employee reports, vision data, and job descriptions) started successfully"
         )
         
     except HTTPException:
@@ -377,7 +467,7 @@ def get_sync_status(
 
 @router.get("/last-successful/{sync_type}", response_model=LastSyncResponse)
 def get_last_successful_sync(
-    sync_type: str = Path(..., description="Sync type: 'employee_reports' or 'vision_data'"),
+    sync_type: str = Path(..., description="Sync type: 'employee_reports', 'vision_data', or 'job_descriptions'"),
     db: Session = Depends(get_db)
 ):
     """
@@ -388,10 +478,14 @@ def get_last_successful_sync(
     """
     try:
         # Validate sync type
-        if sync_type not in [SyncType.EMPLOYEE_REPORTS.value, SyncType.VISION_DATA.value]:
+        if sync_type not in [
+            SyncType.EMPLOYEE_REPORTS.value, 
+            SyncType.VISION_DATA.value,
+            SyncType.JOB_DESCRIPTIONS.value 
+        ]:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid sync_type. Must be 'employee_reports' or 'vision_data'"
+                detail=f"Invalid sync_type. Must be 'employee_reports', 'vision_data', or 'job_descriptions'"
             )
         
         # Query for last successful sync
@@ -455,7 +549,12 @@ def list_sync_history(
         
         # Apply filters
         if sync_type:
-            if sync_type not in [SyncType.EMPLOYEE_REPORTS.value, SyncType.VISION_DATA.value]:
+            # Added job_descriptions to validation
+            if sync_type not in [
+                SyncType.EMPLOYEE_REPORTS.value, 
+                SyncType.VISION_DATA.value,
+                SyncType.JOB_DESCRIPTIONS.value  
+            ]:
                 raise HTTPException(status_code=400, detail=f"Invalid sync_type")
             query = query.filter(SyncHistory.sync_type == sync_type)
         
@@ -515,6 +614,7 @@ def list_sync_history(
                 completed_at=sync_job.completed_at,
                 duration_seconds=duration,
                 records_synced=sync_job.records_synced or 0,
+                records_queried=sync_job.records_queried or 0,
                 error_count=sync_job.error_count or 0,
                 last_sync_timestamp=sync_job.last_sync_timestamp
             ))

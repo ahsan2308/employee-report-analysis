@@ -272,6 +272,7 @@ class VisionDataProcessor(BaseCSVProcessor):
         """Process vision data records in bulk using SQLAlchemy core operations."""
         try:
             from sqlalchemy.dialects.postgresql import insert as pg_insert
+            from sqlalchemy import tuple_
             
             # Prepare data for bulk insert
             vision_data = []
@@ -302,12 +303,38 @@ class VisionDataProcessor(BaseCSVProcessor):
                     'sub_entities_content': sub_entities_content
                 })
             
-            # Skip if no data to process
             if not vision_data:
                 logger.warning("No vision data to process after JSON parsing")
                 return True
             
-            logger.info(f"Bulk processing {len(vision_data)} vision data records")
+            # Query for existing vision data records BEFORE upsert
+            vision_keys = [
+                (v['employee_id'], v['from_date'], v['to_date'], v['main_entity']) 
+                for v in vision_data
+            ]
+            existing_vision = self.db.query(
+                EmployeeVisionData.employee_id,
+                EmployeeVisionData.from_date,
+                EmployeeVisionData.to_date,
+                EmployeeVisionData.main_entity
+            ).filter(
+                tuple_(
+                    EmployeeVisionData.employee_id,
+                    EmployeeVisionData.from_date,
+                    EmployeeVisionData.to_date,
+                    EmployeeVisionData.main_entity
+                ).in_(vision_keys)
+            ).all()
+            
+            # Convert to set for fast lookup
+            existing_set = {
+                (emp_id, from_date, to_date, main_entity) 
+                for emp_id, from_date, to_date, main_entity in existing_vision
+            }
+            existing_count = len(existing_set)
+            new_count = len(vision_data) - existing_count
+            
+            logger.info(f"Pre-upsert check: {existing_count} existing vision records, {new_count} new vision records")
             
             # Perform bulk upsert
             stmt = pg_insert(EmployeeVisionData.__table__).values(vision_data)
@@ -322,12 +349,12 @@ class VisionDataProcessor(BaseCSVProcessor):
             result = self.db.execute(stmt)
             self.db.flush()
             
-            # Update metrics
-            created_count = result.rowcount
-            self.vision_records_created += created_count
+            # Accurately track created vs updated
+            self.vision_records_created += new_count
+            self.vision_records_updated += existing_count
             
             self.db.commit()
-            logger.info(f"Bulk processed {len(vision_data)} vision records with {created_count} created/updated")
+            logger.info(f"Bulk processed {len(vision_data)} vision records ({new_count} created, {existing_count} updated)")
             return True
             
         except Exception as e:

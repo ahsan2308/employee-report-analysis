@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // ============================================================================
+    // DOM ELEMENT REFERENCES
+    // ============================================================================
+    
     // DOM Elements - Import Form
     const importForm = document.getElementById('importForm');
     const csvFileInput = document.getElementById('csvFile');
@@ -43,13 +47,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const visionRecordsCreated = document.getElementById('visionRecordsCreated');
     const visionRecordsUpdated = document.getElementById('visionRecordsUpdated');
     
-    // DOM Elements - Template Buttons
+    // DOM Elements - Job Descriptions Metrics (NEW)
+    const metricContainerJobDescriptions = document.getElementById('metricContainerJobDescriptions');
+    const jdRecordsCreated = document.getElementById('jdRecordsCreated');
+    const jdRecordsUpdated = document.getElementById('jdRecordsUpdated');
+    
+    // DOM Elements - Template Buttons (UPDATED)
     const employeeReportTemplateBtn = document.getElementById('employeeReportTemplateBtn');
     const visionDataTemplateBtn = document.getElementById('visionDataTemplateBtn');
+    const jobDescriptionsTemplateBtn = document.getElementById('jobDescriptionsTemplateBtn');
     const employeeReportTemplate = document.getElementById('employeeReportTemplate');
     const visionDataTemplate = document.getElementById('visionDataTemplate');
+    const jobDescriptionsTemplate = document.getElementById('jobDescriptionsTemplate');
     const downloadEmployeeReportTemplate = document.getElementById('downloadEmployeeReportTemplate');
     const downloadVisionDataTemplate = document.getElementById('downloadVisionDataTemplate');
+    const downloadJobDescriptionsTemplate = document.getElementById('downloadJobDescriptionsTemplate');
     
     // DOM Elements - Buttons
     const viewErrorsBtn = document.getElementById('viewErrorsBtn');
@@ -110,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTemplateLink();
     });
     
-    // Template button clicks
+    // Template button clicks (UPDATED)
     employeeReportTemplateBtn.addEventListener('click', function() {
         toggleTemplateSection('employee_report');
     });
@@ -119,7 +131,11 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleTemplateSection('vision_data');
     });
     
-    // Download template links
+    jobDescriptionsTemplateBtn.addEventListener('click', function() {
+        toggleTemplateSection('job_descriptions');
+    });
+    
+    // Download template links (UPDATED)
     downloadEmployeeReportTemplate.addEventListener('click', function(event) {
         event.preventDefault();
         generateAndDownloadTemplate('employee_report');
@@ -128,6 +144,11 @@ document.addEventListener('DOMContentLoaded', function() {
     downloadVisionDataTemplate.addEventListener('click', function(event) {
         event.preventDefault();
         generateAndDownloadTemplate('vision_data');
+    });
+    
+    downloadJobDescriptionsTemplate.addEventListener('click', function(event) {
+        event.preventDefault();
+        generateAndDownloadTemplate('job_descriptions');
     });
     
     // Form submission
@@ -195,32 +216,50 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ------------- FUNCTIONS -------------
     
-    // Toggle template section
+    // Toggle template section (UPDATED to handle 3 types)
     function toggleTemplateSection(type) {
         if (type === 'employee_report') {
             employeeReportTemplateBtn.classList.add('primary-button');
             employeeReportTemplateBtn.classList.remove('secondary-button');
             visionDataTemplateBtn.classList.add('secondary-button');
             visionDataTemplateBtn.classList.remove('primary-button');
+            jobDescriptionsTemplateBtn.classList.add('secondary-button');
+            jobDescriptionsTemplateBtn.classList.remove('primary-button');
             employeeReportTemplate.style.display = 'block';
             visionDataTemplate.style.display = 'none';
-        } else {
+            jobDescriptionsTemplate.style.display = 'none';
+        } else if (type === 'vision_data') {
             employeeReportTemplateBtn.classList.add('secondary-button');
             employeeReportTemplateBtn.classList.remove('primary-button');
             visionDataTemplateBtn.classList.add('primary-button');
             visionDataTemplateBtn.classList.remove('secondary-button');
+            jobDescriptionsTemplateBtn.classList.add('secondary-button');
+            jobDescriptionsTemplateBtn.classList.remove('primary-button');
             employeeReportTemplate.style.display = 'none';
             visionDataTemplate.style.display = 'block';
+            jobDescriptionsTemplate.style.display = 'none';
+        } else if (type === 'job_descriptions') {
+            employeeReportTemplateBtn.classList.add('secondary-button');
+            employeeReportTemplateBtn.classList.remove('primary-button');
+            visionDataTemplateBtn.classList.add('secondary-button');
+            visionDataTemplateBtn.classList.remove('primary-button');
+            jobDescriptionsTemplateBtn.classList.add('primary-button');
+            jobDescriptionsTemplateBtn.classList.remove('secondary-button');
+            employeeReportTemplate.style.display = 'none';
+            visionDataTemplate.style.display = 'none';
+            jobDescriptionsTemplate.style.display = 'block';
         }
     }
     
-    // Update template link based on selected CSV type
+    // Update template link based on selected CSV type (UPDATED)
     function updateTemplateLink() {
         const selectedType = csvTypeSelect.value;
         if (selectedType === 'vision_data') {
             downloadTemplateLink.setAttribute('data-type', 'vision_data');
-            // Also update the template section
             toggleTemplateSection('vision_data');
+        } else if (selectedType === 'job_descriptions') {
+            downloadTemplateLink.setAttribute('data-type', 'job_descriptions');
+            toggleTemplateSection('job_descriptions');
         } else {
             // Default to employee_report for empty or employee_report
             downloadTemplateLink.setAttribute('data-type', 'employee_report');
@@ -407,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Format CSV type for display
+    // Format CSV type for display (UPDATED)
     function formatCsvType(type) {
         if (!type) return 'Unknown';
         
@@ -416,12 +455,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 return 'Employee Reports';
             case 'vision_data':
                 return 'Vision Data';
+            case 'job_descriptions':
+                return 'Job Descriptions';
             default:
                 return capitalizeFirst(type.replace('_', ' '));
         }
     }
     
-    // Update metrics display based on CSV type
+    // Update metrics display based on CSV type (UPDATED)
     function updateMetricsDisplay(jobDetails) {
         const metrics = jobDetails.metrics || {};
         
@@ -429,6 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show Employee Report metrics
             metricContainerEmployeeReport.style.display = 'flex';
             metricContainerVisionData.style.display = 'none';
+            metricContainerJobDescriptions.style.display = 'none';
             
             // Update metrics values
             employeesCreated.textContent = metrics.employees_created || 0;
@@ -440,15 +482,27 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show Vision Data metrics
             metricContainerEmployeeReport.style.display = 'none';
             metricContainerVisionData.style.display = 'flex';
+            metricContainerJobDescriptions.style.display = 'none';
             
             // Update metrics values
             visionRecordsCreated.textContent = metrics.vision_records_created || 0;
             visionRecordsUpdated.textContent = metrics.vision_records_updated || 0;
         }
+        else if (jobDetails.csv_type === 'job_descriptions') {
+            // Show Job Descriptions metrics
+            metricContainerEmployeeReport.style.display = 'none';
+            metricContainerVisionData.style.display = 'none';
+            metricContainerJobDescriptions.style.display = 'flex';
+            
+            // Update metrics values
+            jdRecordsCreated.textContent = metrics.jd_records_created || 0;
+            jdRecordsUpdated.textContent = metrics.jd_records_updated || 0;
+        }
         else {
             // Hide specific metrics if type is unknown
             metricContainerEmployeeReport.style.display = 'none';
             metricContainerVisionData.style.display = 'none';
+            metricContainerJobDescriptions.style.display = 'none';
         }
     }
     
@@ -665,7 +719,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Generate and download CSV template
+    // Generate and download CSV template (UPDATED to handle 3 types)
     function generateAndDownloadTemplate(templateType = 'employee_report') {
         if (templateType === 'employee_report') {
             // Define template headers and a sample row for employee reports
@@ -717,6 +771,29 @@ document.addEventListener('DOMContentLoaded', function() {
             
             downloadCSV(csvContent, filename);
         }
+        else if (templateType === 'job_descriptions') {
+            const headers = [
+                'Employee_ID',
+                'JD_ID',
+                'Job_Description',
+                'Assigned_Date',
+                'Is_Current',
+                'End_Date'
+            ];
+            
+            const sampleRow = [
+                '101',
+                '1001',
+                '"Responsible for analyzing employee performance data, generating insights, and presenting findings to management. Requires proficiency in data analysis tools and strong communication skills."',
+                '2024-01-15',
+                'True',
+                ''
+            ];
+            
+            // Generate comma-delimited CSV
+            let csvContent = headers.join(',') + '\n' + sampleRow.join(',');
+            downloadCSV(csvContent, 'job_descriptions_template.csv');
+        }
     }
     
     // Download CSV helper
@@ -742,7 +819,9 @@ document.addEventListener('DOMContentLoaded', function() {
         generateAndDownloadTemplate(templateType);
     });
     
-    // ------------- UTILITY FUNCTIONS -------------
+    // ============================================================================
+    // UTILITY FUNCTIONS
+    // ============================================================================
     
     // Show message with appropriate styling
     function showMessage(message, type = 'info') {

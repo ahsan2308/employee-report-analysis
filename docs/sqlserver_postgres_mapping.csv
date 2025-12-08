@@ -24,3 +24,11 @@ VisionEmployeeData,Main_Entity,nvarchar(100),employee_vision_data,main_entity,va
 VisionEmployeeData,Sub_Entities,nvarchar(MAX),employee_vision_data,sub_entities,jsonb,Parse JSON,"Convert to JSON: {""Analysis"":5 ""Reporting"":3}"
 VisionEmployeeData,Sub_Entities_Content,nvarchar(MAX),employee_vision_data,sub_entities_content,jsonb,Parse complex format,"Convert to JSON: {""Cases"":[] ""Tasks"":[{...}]}"
 VisionEmployeeData,LastModifiedDate,datetime,N/A,N/A,N/A,Used for sync tracking,Track which records have been synced
+EmployeeJobDescriptions,RecordID,int,N/A,N/A,N/A,Skip,Auto-generated primary key not used in PostgreSQL
+EmployeeJobDescriptions,Employee_ID,int,employee_job_descriptions,employee_id,integer,Direct copy,Must exist in employees table
+EmployeeJobDescriptions,JD_ID,int,employee_job_descriptions,jd_id,varchar(50),Convert to string,"Stored as string in PostgreSQL (e.g. ""1001"")"
+EmployeeJobDescriptions,Job_Description,nvarchar(MAX),employee_job_descriptions,job_description,text,Direct copy,Full text of job description (min 50 chars)
+EmployeeJobDescriptions,Assigned_Date,date,employee_job_descriptions,assigned_date,date,Direct copy,Date when JD was assigned to employee
+EmployeeJobDescriptions,Is_Current,bit,employee_job_descriptions,is_current,boolean,Convert to boolean,True if current role False if ended
+EmployeeJobDescriptions,End_Date,date,employee_job_descriptions,end_date,date,Direct copy (nullable),NULL if Is_Current=True date if role ended
+EmployeeJobDescriptions,LastModifiedDate,datetime,N/A,N/A,N/A,Used for sync tracking,Track which records have been synced

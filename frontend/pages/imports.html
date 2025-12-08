@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSV Imports - Employee Evaluation System</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/sync.css"> 
     <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
 </head>
 <body>
@@ -47,6 +48,7 @@
                             <option value="">Auto-Detect (Recommended)</option>
                             <option value="employee_report">Employee Reports</option>
                             <option value="vision_data">Vision Data</option>
+                            <option value="job_descriptions">Job Descriptions</option>
                         </select>
                         <small class="form-text">Leave as Auto-Detect to let the system determine the format from headers.</small>
                     </div>
@@ -178,7 +180,7 @@
                 <div id="statusMessage"></div>
             </section>
             
-            <section id="activeJobSection" class="card" style="display: none;">
+            <section id="activeJobSection" class="card active-sync-monitor" style="display: none;">
                 <h3><i class="fas fa-tasks"></i> Active Import Job</h3>
                 <div id="jobDetails" class="job-details">
                     <div class="detail-row">
@@ -256,6 +258,17 @@
                     </div>
                 </div>
                 
+                <!-- Job Descriptions Metrics (NEW) -->
+                <div class="metrics-container" id="metricContainerJobDescriptions" style="display: none;">
+                    <div class="metric-item">
+                        <div class="metric-value" id="jdRecordsCreated">0</div>
+                        <div class="metric-label">JD Records Created</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="jdRecordsUpdated">0</div>
+                    </div>
+                </div>
+                
                 <div id="jobControls" class="action-buttons">
                     <button id="viewErrorsBtn" class="button secondary-button" style="display: none;"><i class="fas fa-exclamation-triangle"></i> View Errors</button>
                     <button id="backToImportBtn" class="button"><i class="fas fa-arrow-left"></i> Back to Import</button>
@@ -330,13 +343,16 @@
                     <p><i class="fas fa-info-circle"></i> <strong>New:</strong> The system now supports tab-delimited TXT files (e.g., Vision Data exports). Delimiters are automatically detected from file content.</p>
                 </div>
                 
-                <!-- Template selector for two formats -->
+                <!-- Template selector for three formats (UPDATED) -->
                 <div class="template-selector">
                     <button id="employeeReportTemplateBtn" class="button primary-button">
                         <i class="fas fa-file-alt"></i> Employee Reports Format
                     </button>
                     <button id="visionDataTemplateBtn" class="button secondary-button">
                         <i class="fas fa-database"></i> Vision Data Format
+                    </button>
+                    <button id="jobDescriptionsTemplateBtn" class="button secondary-button">
+                        <i class="fas fa-briefcase"></i> Job Descriptions Format
                     </button>
                 </div>
                 
@@ -512,6 +528,72 @@
                     
                     <div class="action-buttons">
                         <a href="#" id="downloadVisionDataTemplate" class="button small-button"><i class="fas fa-download"></i> Download Template</a>
+                    </div>
+                </div>
+                
+                <!-- Job Descriptions template information (NEW) -->
+                <div id="jobDescriptionsTemplate" style="display: none;">
+                    <p>Your CSV file for Job Descriptions should include the following columns:</p>
+                    
+                    <table class="template-table">
+                        <thead>
+                            <tr>
+                                <th>Column Name</th>
+                                <th>Description</th>
+                                <th>Required</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Employee_ID</td>
+                                <td>Employee identifier (must exist in system)</td>
+                                <td>Required</td>
+                                <td>101</td>
+                            </tr>
+                            <tr>
+                                <td>JD_ID</td>
+                                <td>Job Description identifier (numeric string)</td>
+                                <td>Required</td>
+                                <td>1001</td>
+                            </tr>
+                            <tr>
+                                <td>Job_Description</td>
+                                <td>Full text of the job description (min 50 characters)</td>
+                                <td>Required</td>
+                                <td>Responsible for analyzing employee performance data...</td>
+                            </tr>
+                            <tr>
+                                <td>Assigned_Date</td>
+                                <td>Date when this JD was assigned (YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY)</td>
+                                <td>Required</td>
+                                <td>2024-01-15</td>
+                            </tr>
+                            <tr>
+                                <td>Is_Current</td>
+                                <td>Whether this is the employee's current JD (True/False, 1/0, Yes/No)</td>
+                                <td>Required</td>
+                                <td>True</td>
+                            </tr>
+                            <tr>
+                                <td>End_Date</td>
+                                <td>Date when this JD assignment ended (leave empty if current)</td>
+                                <td>Optional</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <p class="notes">
+                        <small>* Employee_ID must match an existing employee in the system.</small><br>
+                        <small>* JD_ID is always numeric (e.g., 1001, 1002) but stored as string.</small><br>
+                        <small>* Job_Description must be at least 50 characters long.</small><br>
+                        <small>* If Is_Current is True, End_Date should be empty or NULL.</small><br>
+                        <small>* Each employee can have multiple JD records tracking role changes over time.</small>
+                    </p>
+                    
+                    <div class="action-buttons">
+                        <a href="#" id="downloadJobDescriptionsTemplate" class="button small-button"><i class="fas fa-download"></i> Download Template</a>
                     </div>
                 </div>
             </section>
