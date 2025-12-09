@@ -15,6 +15,7 @@ A AI-powered system for analyzing employee reports to extract valuable insights,
 - Credibility evaluation
 - Performance assessments
 - Recommended action items
+- Job description tracking and role history
 
 The system also performs **monthly analysis** across all reports from an employee to identify trends, recurring challenges, and growth indicators, as well as **quarterly analysis** for strategic alignment, achievement themes, and long-term performance evaluation.
 
@@ -25,6 +26,7 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Weekly Report Analysis**: Extract structured insights from unstructured employee reports
 - **Monthly Performance Analysis**: Analyze trends and patterns across all reports from a month
 - **Quarterly Performance Analysis**: Evaluate strategic alignment, achievement themes, and behavioral assessments over a quarter
+- **Job Description Management**: Track current and historical job descriptions with role change history
 - **Semantic Search**: Find relevant reports based on context, not just keywords
 - **Risk Assessment**: Automatically identify potential issues requiring attention
 - **Sentiment Analysis**: Track employee sentiment over time
@@ -33,13 +35,14 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Historical Context**: Analyze reports with previous submissions for reference
 - **Asynchronous Processing**: Background task processing for analysis requests
 - **Direct URL Sharing**: Share analysis results via URL parameters
-- **CSV Data Import**: Bulk import of employee data, historical reports, and related information
+- **CSV Data Import**: Bulk import of employee data, historical reports, job descriptions, and other information
 - **SQL Server Data Sync**: Automated synchronization from SQL Server to PostgreSQL with:
   - Incremental sync (only new/modified records)
   - Full sync (complete data refresh)
   - Real-time progress monitoring
   - Scheduled automatic sync
   - Comprehensive error tracking
+  - Support for three data types: Employee Reports, Vision Data, and Job Descriptions
 - **Task Management System**: Track and monitor long-running analysis processes
 - **Interactive Visualizations**: Visual representation of key metrics including:
   - Sentiment trends over time
@@ -131,7 +134,7 @@ The system also performs **monthly analysis** across all reports from an employe
      - Ensure access to a SQL Server instance (Express, Standard, or existing organizational server)
      - Install ODBC Driver 17 (or newer) for SQL Server from [Microsoft ODBC Driver](https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server)
        - Available for Windows, Linux (Ubuntu, RHEL, SUSE), and macOS
-     - Ensure the database contains the required tables: `EmployeeReports` and `VisionEmployeeData`
+     - Ensure the database contains the required tables: `EmployeeReports`, `VisionEmployeeData`, and `EmployeeJobDescriptions`
 
    - **Docker Desktop**:
      - Download from [Docker Website](https://www.docker.com/products/docker-desktop/)
@@ -325,7 +328,7 @@ The system also performs **monthly analysis** across all reports from an employe
      SQLSERVER_USE_ENCRYPTION=true
      
      # Sync Security Configuration
-     SQLSERVER_ALLOWED_TABLES=EmployeeReports,VisionEmployeeData
+     SQLSERVER_ALLOWED_TABLES=EmployeeReports,VisionEmployeeData,EmployeeJobDescriptions
      SQLSERVER_ALLOWED_TIMESTAMP_COLUMNS=LastModifiedDate,ModifiedDate,UpdatedAt
      SQLSERVER_MAX_BATCH_SIZE=10000
      
@@ -334,7 +337,75 @@ The system also performs **monthly analysis** across all reports from an employe
      SYNC_ERROR_THRESHOLD_PERCENT=10.0
      ```
 
-4. **Start the Application**
+4. **Set Up SQL Server Tables** (for sync functionality)
+
+   Create the required tables in your SQL Server database:
+
+   ```sql
+   -- Employee Reports Table
+   CREATE TABLE EmployeeReports (
+       RecordID INT IDENTITY(1,1) PRIMARY KEY,
+       Employee_ID INT NOT NULL,
+       Name NVARCHAR(100),
+       Designation NVARCHAR(100),
+       BPS NVARCHAR(20),
+       Office_Hierarchy NVARCHAR(200),
+       [From] DATE NOT NULL,
+       [To] DATE NOT NULL,
+       Draft NVARCHAR(500),
+       Tasks_Completed NVARCHAR(MAX),
+       Impact NVARCHAR(MAX),
+       Challenges NVARCHAR(MAX),
+       Support_Required NVARCHAR(MAX),
+       Tasks_Planned NVARCHAR(MAX),
+       Confidence_Level NVARCHAR(50),
+       NTR NVARCHAR(500),
+       LastModifiedDate DATETIME DEFAULT GETDATE()
+   );
+
+   -- Vision Employee Data Table
+   CREATE TABLE VisionEmployeeData (
+       RecordID INT IDENTITY(1,1) PRIMARY KEY,
+       Employee_ID INT NOT NULL,
+       From_Date DATE NOT NULL,
+       To_Date DATE NOT NULL,
+       Main_Entity NVARCHAR(100),
+       Sub_Entities NVARCHAR(MAX),
+       Sub_Entities_Content NVARCHAR(MAX),
+       LastModifiedDate DATETIME DEFAULT GETDATE()
+   );
+
+   -- Job Descriptions Table
+   CREATE TABLE JobDescriptions (
+       RecordID INT IDENTITY(1,1) PRIMARY KEY,
+       Employee_ID INT NOT NULL,
+       JD_ID INT NOT NULL,
+       Job_Description NVARCHAR(MAX) NOT NULL,
+       Assigned_Date DATE NOT NULL,
+       Is_Current BIT NOT NULL DEFAULT 1,
+       End_Date DATE NULL,
+       LastModifiedDate DATETIME DEFAULT GETDATE()
+   );
+
+   -- Create indexes for timestamp columns (important for incremental sync)
+   CREATE INDEX IX_EmployeeReports_LastModifiedDate ON EmployeeReports(LastModifiedDate);
+   CREATE INDEX IX_VisionEmployeeData_LastModifiedDate ON VisionEmployeeData(LastModifiedDate);
+   CREATE INDEX IX_JobDescriptions_LastModifiedDate ON JobDescriptions(LastModifiedDate);
+   
+   -- Create unique constraint for JobDescriptions to prevent duplicates
+   CREATE UNIQUE INDEX UQ_JobDescriptions_Employee_JD ON JobDescriptions(Employee_ID, JD_ID);
+   ```
+
+5. **Verify Required Tables Exist**
+
+   Your SQL Server database should have:
+   - `EmployeeReports` table with a `LastModifiedDate` column (can be changed using .env file)
+   - `VisionEmployeeData` table with a `LastModifiedDate` column (can be changed using .env file)
+   - `JobDescriptions` table with a `LastModifiedDate` column (can be changed using .env file)
+
+   These timestamp columns are essential for incremental sync to detect changes.
+
+6. **Start the Application**
 
    - **Start the backend server**:
      ```bash
@@ -416,7 +487,8 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Imports Page**: CSV, TSV, TXT data import functionality for:
   - Bulk employee data
   - Historical reports
-  - Reference data
+  - Reference (Vision) data
+  - Job descriptions
 - **Sync Page**: SQL Server to PostgreSQL data synchronization with:
   - Manual sync triggers (incremental or full)
   - Real-time sync progress monitoring
@@ -462,6 +534,7 @@ The system also performs **monthly analysis** across all reports from an employe
   - Import employee data (new employees, department updates)
   - Import historical reports (backfill data)
   - Import vision data
+  - Import job descriptions
 
 - **Import Features**:
   - Dry run validation (validate without committing to database)
@@ -520,7 +593,8 @@ The sync functionality allows you to migrate data from SQL Server to PostgreSQL,
 
 - **Employee Reports Sync**: Synchronizes employee report data from the `EmployeeReports` table
 - **Vision Data Sync**: Synchronizes vision/goal data from the `VisionEmployeeData` table
-- **Full System Sync**: Runs both syncs sequentially
+- **Job Descriptions Sync**: Synchronizes job description data from the `EmployeeJobDescriptions` table
+- **Full System Sync**: Runs all three syncs sequentially
 
 #### Sync Modes
 
@@ -599,7 +673,8 @@ The system provides a comprehensive REST API:
 #### Sync Endpoints
 - `POST /sync/trigger/employee_reports` - Trigger employee reports sync
 - `POST /sync/trigger/vision_data` - Trigger vision data sync
-- `POST /sync/trigger/full` - Trigger full system sync
+- `POST /sync/trigger/job_descriptions` - Trigger job descriptions sync
+- `POST /sync/trigger/full` - Trigger full system sync (all three types)
 - `GET /sync/status/{sync_id}` - Get sync job status
 - `GET /sync/last-successful/{sync_type}` - Get last successful sync info
 - `GET /sync/history` - List sync history
@@ -623,7 +698,3 @@ API documentation is available at `/docs` when running the application.
 - **Task Processing Issues**: Verify Celery worker is running and properly connected to Redis
 
 ---
-
-## 📝 License
-
-MIT License

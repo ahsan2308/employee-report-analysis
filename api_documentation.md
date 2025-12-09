@@ -980,15 +980,15 @@ Uploads a CSV file for import and processing.
 - `error_threshold_percent` (float, optional, default: 10.0): Maximum percentage of errors before aborting
 - `chunk_size` (integer, optional, default: 1000): Number of rows to process in each chunk
 - `processing_mode` (string, optional, default: "bulk"): Processing mode ("row_by_row" or "bulk")
-- `csv_type` (string, optional): CSV type override (e.g., 'employee_report', 'vision_data')
+- `csv_type` (string, optional): CSV type override (e.g., 'employee_report', 'vision_data', 'job_descriptions')
 
 **Response:**
 ```json
 {
   "job_id": "550e8400-e29b-41d4-a716-446655440000",
-  "filename": "employee_reports.csv",
+  "filename": "job_descriptions.csv",
   "status": "pending",
-  "csv_type": "employee_report",
+  "csv_type": "job_descriptions",
   "submitted_at": "2023-04-15T14:30:00Z",
   "started_at": null,
   "completed_at": null,
@@ -1016,9 +1016,9 @@ Retrieves status and details for a specific import job.
 ```json
 {
   "job_id": "550e8400-e29b-41d4-a716-446655440000",
-  "filename": "employee_reports.csv",
+  "filename": "job_descriptions.csv",
   "status": "completed",
-  "csv_type": "employee_report",
+  "csv_type": "job_descriptions",
   "submitted_at": "2023-04-15T14:30:00Z",
   "started_at": "2023-04-15T14:30:05Z",
   "completed_at": "2023-04-15T14:35:00Z",
@@ -1027,8 +1027,8 @@ Retrieves status and details for a specific import job.
   "successful_rows": 98,
   "error_count": 2,
   "metrics": {
-    "employees_created": 10,
-    "reports_created": 98
+    "jd_records_created": 50,
+    "jd_records_updated": 48
   },
   "percent_complete": 100.0,
   "estimated_time_remaining": null
@@ -1217,9 +1217,55 @@ Triggers vision data synchronization from SQL Server to PostgreSQL.
 
 <div style="page-break-after: always;"></div>
 
+#### Trigger Job Descriptions Sync
+
+Triggers job descriptions synchronization from SQL Server to PostgreSQL.
+
+**Endpoint:** `POST /sync/trigger/job_descriptions`
+
+**Query Parameters:**
+- `is_full_sync` (boolean, default: false): If true, perform full sync. If false, incremental sync.
+
+**Response (202 Accepted):**
+```json
+{
+  "sync_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "task_id": "task-uuid-here",
+  "sync_type": "job_descriptions",
+  "status": "pending",
+  "is_full_sync": false,
+  "triggered_at": "2025-02-01T10:00:00Z",
+  "message": "Job descriptions sync (incremental) started successfully"
+}
+```
+
+**Error Responses:**
+- `409 Conflict`: Sync already in progress
+```json
+{
+  "detail": "Job descriptions sync already in progress (sync_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890)"
+}
+```
+
+**Notes:**
+- This endpoint queues an asynchronous Celery task and returns immediately
+- Use the returned `sync_id` to poll for status updates via `/sync/status/{sync_id}`
+- Recommended for regular job description updates (weekly/monthly)
+
+**Example Usage:**
+```bash
+# Incremental sync (only new/modified JDs)
+curl -X POST "http://localhost:8000/sync/trigger/job_descriptions?is_full_sync=false"
+
+# Full sync (all JD records)
+curl -X POST "http://localhost:8000/sync/trigger/job_descriptions?is_full_sync=true"
+```
+
+<div style="page-break-after: always;"></div>
+
 #### Trigger Full Sync
 
-Triggers full synchronization of both employee reports and vision data.
+Triggers full synchronization of employee reports, vision data, and job descriptions.
 
 **Endpoint:** `POST /sync/trigger/full`
 
@@ -1229,10 +1275,11 @@ Triggers full synchronization of both employee reports and vision data.
   "sync_type": "full",
   "employee_reports_sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
   "vision_data_sync_id": "0c563781-7366-465d-931d-874b98af6277",
+  "job_descriptions_sync_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "task_id": "full-sync-task-id",
   "status": "pending",
   "triggered_at": "2025-11-24T13:13:19Z",
-  "message": "Full sync (both employee reports and vision data) started successfully"
+  "message": "Full sync (employee reports, vision data, and job descriptions) started successfully"
 }
 ```
 
@@ -1240,15 +1287,16 @@ Triggers full synchronization of both employee reports and vision data.
 - `409 Conflict`: One or more sync types already in progress
 ```json
 {
-  "detail": "Sync already in progress for: employee_reports, vision_data"
+  "detail": "Sync already in progress for: employee_reports, vision_data, job_descriptions"
 }
 ```
 
 **Notes:**
-- This runs both sync types sequentially in a single Celery task
-- Both syncs will be in FULL mode (all records, not incremental)
-- Two separate `sync_id` values are returned - one for each sync type
-- Use either `sync_id` to monitor progress via `/sync/status/{sync_id}`
+- This runs all three sync types sequentially in a single Celery task
+- All syncs will be in FULL mode (all records, not incremental)
+- Three separate `sync_id` values are returned - one for each sync type
+- Use any `sync_id` to monitor progress via `/sync/status/{sync_id}`
+- Recommended for initial setup or complete data refresh
 
 <div style="page-break-after: always;"></div>
 
@@ -1266,29 +1314,27 @@ Retrieves the current status and metrics of a specific sync job.
 **Response:**
 ```json
 {
-  "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
-  "sync_type": "employee_reports",
+  "sync_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "sync_type": "job_descriptions",
   "status": "completed",
   "is_full_sync": false,
-  "started_at": "2025-11-24T13:13:19Z",
-  "completed_at": "2025-11-24T13:13:24Z",
-  "duration_seconds": 5.7,
+  "started_at": "2025-02-01T10:00:00Z",
+  "completed_at": "2025-02-01T10:00:15Z",
+  "duration_seconds": 15.3,
   "progress": {
-    "records_queried": 4,
-    "records_synced": 4,
-    "records_created": 3,
-    "records_updated": 1,
-    "records_skipped": 0,
-    "error_count": 0,
+    "records_queried": 100,
+    "records_synced": 98,
+    "records_created": 50,
+    "records_updated": 48,
+    "records_skipped": 2,
+    "error_count": 2,
     "percent_complete": 100.0
   },
   "metrics": {
-    "employees_created": 0,
-    "employees_updated": 4,
-    "reports_created": 3,
-    "reports_updated": 1
+    "jd_records_created": 50,
+    "jd_records_updated": 48
   },
-  "last_sync_timestamp": "2025-11-17T10:53:11Z",
+  "last_sync_timestamp": "2025-02-01T09:55:00Z",
   "error_message": null
 }
 ```
@@ -1297,7 +1343,7 @@ Retrieves the current status and metrics of a specific sync job.
 - `404 Not Found`: Sync job not found
 ```json
 {
-  "detail": "Sync job c155260e-9177-4b53-bc14-e9f4d0e14cd2 not found"
+  "detail": "Sync job a1b2c3d4-e5f6-7890-abcd-ef1234567890 not found"
 }
 ```
 
@@ -1307,6 +1353,7 @@ Retrieves the current status and metrics of a specific sync job.
 - The `metrics` field contains type-specific metrics:
   - For `employee_reports`: `employees_created`, `employees_updated`, `reports_created`, `reports_updated`
   - For `vision_data`: `vision_records_created`, `vision_records_updated`
+  - For `job_descriptions`: `jd_records_created`, `jd_records_updated`
 - Possible status values: `pending`, `running`, `completed`, `failed`, `partial`
 
 <div style="page-break-after: always;"></div>
@@ -1318,23 +1365,23 @@ Retrieves information about the last successful sync for a specific type.
 **Endpoint:** `GET /sync/last-successful/{sync_type}`
 
 **Path Parameters:**
-- `sync_type` (string): Sync type - must be `employee_reports` or `vision_data`
+- `sync_type` (string): Sync type - must be `employee_reports`, `vision_data`, or `job_descriptions`
 
 **Response (with previous sync):**
 ```json
 {
-  "sync_type": "employee_reports",
+  "sync_type": "job_descriptions",
   "last_successful_sync_id": "9a41f725-d963-4ea0-8d3c-9d0189d50a4d",
-  "last_sync_timestamp": "2025-11-17T10:53:11Z",
-  "records_synced": 234,
-  "completed_at": "2025-11-24T12:23:59Z"
+  "last_sync_timestamp": "2025-02-01T09:55:00Z",
+  "records_synced": 98,
+  "completed_at": "2025-02-01T10:00:15Z"
 }
 ```
 
 **Response (no previous sync):**
 ```json
 {
-  "sync_type": "employee_reports",
+  "sync_type": "job_descriptions",
   "last_successful_sync_id": null,
   "last_sync_timestamp": null,
   "records_synced": null,
@@ -1346,7 +1393,7 @@ Retrieves information about the last successful sync for a specific type.
 - `400 Bad Request`: Invalid sync type
 ```json
 {
-  "detail": "Invalid sync_type. Must be 'employee_reports' or 'vision_data'"
+  "detail": "Invalid sync_type. Must be 'employee_reports', 'vision_data', or 'job_descriptions'"
 }
 ```
 
@@ -1365,7 +1412,7 @@ Lists sync history with optional filtering, sorting, and pagination.
 **Endpoint:** `GET /sync/history`
 
 **Query Parameters:**
-- `sync_type` (string, optional): Filter by sync type (`employee_reports` or `vision_data`)
+- `sync_type` (string, optional): Filter by sync type (`employee_reports`, `vision_data`, or `job_descriptions`)
 - `status` (string, optional): Filter by status (`pending`, `running`, `completed`, `failed`, `partial`)
 - `start_date` (datetime, optional): Filter syncs after this date
 - `end_date` (datetime, optional): Filter syncs before this date
@@ -1383,6 +1430,18 @@ Lists sync history with optional filtering, sorting, and pagination.
   "page_size": 20,
   "pages": 8,
   "items": [
+    {
+      "sync_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "sync_type": "job_descriptions",
+      "status": "completed",
+      "is_full_sync": false,
+      "started_at": "2025-02-01T10:00:00Z",
+      "completed_at": "2025-02-01T10:00:15Z",
+      "duration_seconds": 15.3,
+      "records_synced": 98,
+      "error_count": 2,
+      "last_sync_timestamp": "2025-02-01T09:55:00Z"
+    },
     {
       "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
       "sync_type": "employee_reports",
@@ -1436,30 +1495,33 @@ Retrieves detailed errors for a specific sync job.
 **Response:**
 ```json
 {
-  "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
-  "total_errors": 45,
+  "sync_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "total_errors": 2,
   "page": 1,
   "page_size": 100,
   "errors": [
     {
-      "row_number": 523,
-      "field_name": "Employee_ID",
-      "error_message": "Employee ID 9999 does not exist in database",
+      "row_number": 15,
+      "field_name": "Job_Description",
+      "error_message": "Job description must be at least 50 characters long. Received only 25 characters.",
       "error_category": "validation",
       "row_data": {
-        "Employee_ID": 9999,
-        "Name": "John Doe",
-        "From": "2025-01-01"
+        "Employee_ID": 101,
+        "JD_ID": "1001",
+        "Job_Description": "Software Engineer role",
+        "Assigned_Date": "2024-01-15"
       }
     },
     {
-      "row_number": 847,
-      "field_name": "From_Date",
-      "error_message": "Invalid date format: 15-April-2025",
+      "row_number": 42,
+      "field_name": "Employee_ID",
+      "error_message": "Employee ID 9999 does not exist in the database. Please ensure the employee is created before importing their job description.",
       "error_category": "validation",
       "row_data": {
-        "Employee_ID": 42,
-        "From_Date": "15-April-2025"
+        "Employee_ID": 9999,
+        "JD_ID": "1002",
+        "Job_Description": "Valid long job description text here...",
+        "Assigned_Date": "2024-01-20"
       }
     }
   ]
@@ -1470,7 +1532,7 @@ Retrieves detailed errors for a specific sync job.
 - `404 Not Found`: Sync job not found
 ```json
 {
-  "detail": "Sync job c155260e-9177-4b53-bc14-e9f4d0e14cd2 not found"
+  "detail": "Sync job a1b2c3d4-e5f6-7890-abcd-ef1234567890 not found"
 }
 ```
 
@@ -1500,7 +1562,8 @@ Retrieves the current sync service configuration.
   },
   "allowed_tables": [
     "EmployeeReports",
-    "VisionEmployeeData"
+    "VisionEmployeeData",
+    "JobDescriptions"
   ],
   "allowed_timestamp_columns": [
     "LastModifiedDate",
@@ -1550,7 +1613,8 @@ Tests SQL Server connectivity without triggering a sync.
   "database": "EmployeeTestDB",
   "available_tables": [
     "EmployeeReports",
-    "VisionEmployeeData"
+    "VisionEmployeeData",
+    "JobDescriptions"
   ],
   "connection_time_ms": 45,
   "message": "Successfully connected to SQL Server"
