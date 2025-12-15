@@ -17,6 +17,9 @@ from app.services.db_service import (
     get_employee_info
 )
 
+from app.services.db_service import get_employee_job_descriptions_for_period
+from app.services.additional_services import map_reports_to_jds
+
 def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -> Dict[str, Any]:
     """
     Aggregate all data needed for quarterly analysis, including monthly analyses,
@@ -493,6 +496,40 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
                 result["metrics"]["detailed_topics"] = [{"topic": topic, "frequency": count} 
                                                       for topic, count in topic_counter.most_common(10)]
         
+
+
+        # Retrieve job descriptions that overlap with the quarterly period
+        employee_jds = get_employee_job_descriptions_for_period(
+            employee_id=employee_id,
+            period_start=start_date,
+            period_end=end_date
+        )
+
+        # For quarterly analysis, we map WEEKLY ANALYSES (not raw reports) to JDs
+        # This provides career progression context across the quarter
+        # Transform weekly_analyses to look like reports for mapping
+        weekly_analyses_as_reports = []
+        for analysis in weekly_analyses:
+            weekly_analyses_as_reports.append({
+                "report_id": analysis.get("report_id"),
+                "report_date": analysis.get("date"), 
+                "date": analysis.get("date")
+            })
+
+        # Map weekly analyses to JDs
+        jd_analysis_mapping = map_reports_to_jds(weekly_analyses_as_reports, employee_jds)
+
+        # Store in result dictionary
+        result["jd_analysis_mapping"] = jd_analysis_mapping
+        result["employee_jds"] = employee_jds
+
+        logger.info(
+            f"Quarterly analysis: Retrieved {len(employee_jds)} JD(s), "
+            f"created {len(jd_analysis_mapping.get('jd_groups', []))} JD phases"
+        )
+
+
+
         logger.info(f"Successfully gathered quarterly data for employee {employee_id}, {year}-Q{quarter}")
         return result
         

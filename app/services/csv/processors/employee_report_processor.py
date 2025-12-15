@@ -80,7 +80,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                 # Update existing employee by ID
                 existing_emp = self.db.query(Employee).filter(Employee.id == emp_id).first()
                 if existing_emp:
-                    existing_emp.position = row_dict['Designation']
+                    existing_emp.position = row_dict['Designation'] + f" ({row_dict['BPS']})"
                     existing_emp.wing = row_dict.get('department', 'Unspecified')
                     self.employees_updated += 1
                 else:
@@ -88,7 +88,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                     new_employee = Employee(
                         id=emp_id,
                         name=row_dict['Name'],
-                        position=row_dict['Designation'],
+                        position=row_dict['Designation'] + f" ({row_dict['BPS']})", 
                         wing=row_dict.get('department', 'Unspecified')
                     )
                     self.db.add(new_employee)
@@ -263,7 +263,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                 # Update existing employee by ID
                 existing_emp = self.db.query(Employee).filter(Employee.id == emp_id).first()
                 if existing_emp:
-                    existing_emp.position = row['Designation']
+                    existing_emp.position = row['Designation'] + f" ({row['BPS']})"
                     existing_emp.wing = row.get('department', 'Unspecified')
                     self.employees_updated += 1
                 else:
@@ -271,7 +271,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                     new_employee = Employee(
                         id=emp_id,
                         name=row['Name'],
-                        position=row['Designation'],
+                        position=row['Designation'] + f" ({row['BPS']})",
                         wing=row.get('department', 'Unspecified')
                     )
                     self.db.add(new_employee)

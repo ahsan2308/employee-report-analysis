@@ -254,6 +254,7 @@ class LLMService:
         formatted_vision_data: str = None, 
         recent_reports: List[Dict[str, Any]] = None,
         similar_reports: List[str] = None,
+        formatted_jd_data: str = None,
         use_custom_format: bool = False,
         custom_format: Optional[Dict[str, Any]] = None,
         num_ctx: int = 8192
@@ -277,7 +278,8 @@ class LLMService:
             report_text, 
             formatted_vision_data, 
             recent_reports,
-            similar_reports
+            similar_reports,
+            formatted_jd_data
         )
         logger.debug(report_text)
 

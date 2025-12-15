@@ -13,6 +13,8 @@ from app.services.vector_store_service import search_reports
 from app.services.db_service import get_reports_for_vector_results, get_employee_vision_data, get_recent_employee_reports
 from app.services.db_service import get_monthly_analysis_by_params, store_monthly_analysis
 from app.services.db_service import get_quarterly_analysis_by_params, store_quarterly_analysis
+from app.services.db_service import get_employee_job_descriptions_for_period
+from app.services.additional_services import format_job_descriptions_for_weekly_prompt, format_job_descriptions_for_monthly_prompt, format_job_descriptions_for_quarterly_prompt
 from app.services.monthly_analysis_db_service import get_monthly_data_for_analysis
 from app.services.quarterly_analysis_db_service import get_quarterly_data_for_analysis
 from app.services.llm_service import get_llm_service
@@ -128,6 +130,18 @@ def analyze_report_task(self, task_id: str):
         raw_vision_data = get_employee_vision_data(report.employee_id, report.report_date, num_previous_weeks=4)
         filtered_vision_data = filter_vision_data(raw_vision_data)
         formatted_vision_data = format_vision_data_for_weekly_analysis_prompt(filtered_vision_data, max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS)
+        
+        report_week_start = report.report_date - timedelta(days=6)
+        report_week_end = report.report_date
+
+        employee_jds = get_employee_job_descriptions_for_period(
+            employee_id=report.employee_id,
+            period_start=report_week_start,
+            period_end=report_week_end
+        )
+
+        formatted_jd_data = format_job_descriptions_for_weekly_prompt(employee_jds)
+
 
         # Get LLM service and generate analysis
         logger.info(f"Calling LLM service for analysis (task: {task_id})")
@@ -135,8 +149,9 @@ def analyze_report_task(self, task_id: str):
         analysis_result = llm_service.analyze_report(
             report.report_text, 
             formatted_vision_data,
-            recent_report_data,     # Pass recent reports with date info
-            similar_report_data,    # Pass similar reports with date info
+            recent_report_data,     
+            similar_report_data,
+            formatted_jd_data,    
             num_ctx=40000
         )
         
@@ -357,9 +372,20 @@ def analyze_monthly_reports_task(self, task_id: str):
         raw_monthly_vision_data = get_employee_vision_data_for_month(employee_id, year, month)
         filtered_monthly_vision_data = filter_vision_data(raw_monthly_vision_data)
         formatted_monthly_vision_data = format_vision_data_for_monthly_analysis_prompt(filtered_monthly_vision_data, max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_MONTHLY_ANALYSIS)
+        
         monthly_data["formatted_vision_data"] = formatted_monthly_vision_data
-
+        
         logger.info(f"Formatted vision data for employee {employee_id}, {year}-{month}: {formatted_monthly_vision_data}")
+
+        # Format JD data for monthly prompt
+        # Use the jd_report_mapping which contains temporal groupings
+        jd_report_mapping = monthly_data.get("jd_report_mapping", {})
+        formatted_jd_data = format_job_descriptions_for_monthly_prompt(jd_report_mapping)
+
+        # Add to monthly_data for prompt access
+        monthly_data["formatted_jd_data"] = formatted_jd_data
+
+        logger.info(f"Formatted JD data for monthly analysis: {len(formatted_jd_data)} characters")
 
         # Check if we have any reports for this month
         if not monthly_data["reports"] or len(monthly_data["reports"]) == 0:
@@ -716,6 +742,16 @@ def analyze_quarterly_reports_task(self, task_id: str):
         quarterly_data["formatted_vision_data"] = formatted_quarterly_vision_data
 
         logger.info(f"Formatted vision data for employee {employee_id}, {year}-Q{quarter}")
+
+        # Format JD data for quarterly prompt
+        # Use the jd_analysis_mapping which contains career progression phases
+        jd_analysis_mapping = quarterly_data.get("jd_analysis_mapping", {})
+        formatted_jd_data = format_job_descriptions_for_quarterly_prompt(jd_analysis_mapping)
+
+        # Add to quarterly_data for prompt access
+        quarterly_data["formatted_jd_data"] = formatted_jd_data
+
+        logger.info(f"Formatted JD data for quarterly analysis: {len(formatted_jd_data)} characters")
 
         # Check if we have any monthly analyses for this quarter
         if not quarterly_data["monthly_analyses"] or len(quarterly_data["monthly_analyses"]) == 0:

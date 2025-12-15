@@ -43,7 +43,8 @@ class StructuredPrompts:
     @staticmethod
     def employee_analysis_prompt(report_text: str, formatted_vision_data: str = None, 
                            recent_reports: List[Dict[str, Any]] = None, 
-                           similar_reports: List[Dict[str, Any]] = None) -> str:
+                           similar_reports: List[Dict[str, Any]] = None,
+                           formatted_jd_data: str = None) -> str:
         """
         Generate a prompt for analyzing an employee report.
         
@@ -192,6 +193,27 @@ The report follows a standard Weekly Performance Reporting format with these spe
 ---
 """
 
+
+        # STRATEGIC PLACEMENT 1: Add JD context AFTER report, BEFORE vision data
+        if formatted_jd_data:
+            prompt += f"""
+## EMPLOYEE ROLE CONTEXT
+
+{formatted_jd_data}
+
+**Role-Based Reading Guidance**:
+When analyzing the report above, consider:
+- Which activities align with core JD responsibilities vs. work beyond role scope
+- Whether challenges are appropriate to role complexity level
+- If workload reflects reasonable expectations for this position
+- How achievements compare to defined role expectations
+
+⚠️ IMPORTANT: The job description establishes the baseline for "meets expectations".
+Exceeding expectations means going meaningfully beyond these defined requirements.
+"""
+
+
+
         # Add vision data immediately after the report to facilitate direct validation
         if formatted_vision_data:
             prompt += f"""
@@ -317,10 +339,31 @@ Analyze the report and provide the following:
    - Assess challenge management effectiveness
    - Review quality of forward planning
    - Measure initiative and proactivity
-   - Rate as "high" (strong achievements, effective management, solid planning),
-     "medium" (adequate completion, moderate impact, reasonable planning), or
-     "low" (limited achievements, minimal impact, poor planning)
-   - Ensure this rating is influenced by your credibility assessment
+   
+   **Performance Rating Calibration**:
+   Rate as "high" (strong achievements, effective management, solid planning),
+   "medium" (adequate completion, moderate impact, reasonable planning), or
+   "low" (limited achievements, minimal impact, poor planning).
+   
+   **JD-Based Performance Calibration**:
+   When job description is available, rate performance relative to the JD baseline:
+   - "high": Consistently exceeds core JD responsibilities with clear business impact
+     (Example: JD requires "prepare reports" → Employee "designed new reporting system")
+   - "medium": Reliably meets JD requirements with occasional extra contributions
+     (Example: JD requires "prepare reports" → Employee "delivered all reports on time with quality")
+   - "low": Falls short of core JD expectations or requires support for basic duties
+     (Example: JD requires "prepare reports" → Employee "struggled with timely delivery")
+   
+   **For Multiple Concurrent Roles**:
+   - Assess workload feasibility across all role responsibilities
+   - Evaluate prioritization effectiveness between roles
+   - Identify potential conflicts or synergies
+   
+   **For Role Transitions** (if week spans multiple JDs):
+   - Note adaptation effectiveness to new role expectations
+   - Consider transition impact on performance ratings
+   
+   Ensure this rating is influenced by your credibility assessment.
 """
         
         return prompt
@@ -576,6 +619,54 @@ VISION SYSTEM ACTIVITY DATA (Week-wise objective tracking for monthly analysis):
 {formatted_vision_data}
 
 """
+            
+
+        # STRATEGIC PLACEMENT: Insert JD data AFTER vision data, BEFORE weekly analyses
+        formatted_jd_data = monthly_data.get("formatted_jd_data", "")
+        if formatted_jd_data:
+            prompt += f"""
+## ROLE CONTEXT FOR MONTHLY PERIOD
+
+{formatted_jd_data}
+
+### ROLE-BASED MONTHLY ANALYSIS GUIDANCE:
+
+**Performance Evaluation Framework**:
+- Assess monthly performance trajectory relative to role requirements
+- Consider whether achievements represent expected role contributions vs. exceptional work
+- Evaluate if role scope changed during the month and how employee adapted
+
+**Transition Assessment** (if JD changed during month):
+- Evaluate effectiveness of transition between roles
+- Assess learning curve in new role vs. performance in previous role
+- Identify knowledge/skill gaps requiring development support
+- Determine if transition timing affected monthly performance metrics
+
+**Skill Development Tracking**:
+- Map observed skill development to role competency requirements
+- Identify areas where employee exceeds role expectations (promotion indicators)
+- Note persistent gaps between role requirements and demonstrated capabilities
+- Assess whether recurring challenges indicate role-skill mismatch
+
+**Consistency Evaluation**:
+- Judge task completion reliability against role-level expectations
+- Assess work quality consistency relative to role standards
+- Evaluate performance stability considering role complexity
+
+**Risk Contextualization**:
+- Assess whether risks stem from role scope issues vs. individual performance
+- Identify systemic risks (under-resourced role) vs. development risks
+- Evaluate impact of role changes on risk profile
+
+**Critical Considerations**:
+- For concurrent roles: Assess workload manageability and prioritization
+- For new roles: Apply learning curve expectations to performance assessment
+- For senior roles: Focus on strategic thinking, leadership, and business outcomes
+- For junior roles: Focus on execution quality, learning agility, and growth
+
+"""
+
+
 
         # Continue with weekly analysis summaries and the rest of the prompt
         prompt += f"""
@@ -635,7 +726,16 @@ Specifically, you should:
    - What adjustments to workload or responsibilities might improve performance?
    - What development opportunities would benefit the employee based on the monthly patterns?
 
-9. MONTHLY SUMMARY: Provide a comprehensive overview of the employee's performance for the entire month.
+9. ROLE ALIGNMENT AND TRANSITION ASSESSMENT:
+   - Evaluate how well monthly work aligns with job description responsibilities
+   - If role changed: Assess transition effectiveness and adaptation quality
+   - Identify areas where employee exceeded role scope (stretch contributions)
+   - Note systematic gaps between role requirements and actual work patterns
+   - Assess whether focus areas aligned with role priorities
+   - For concurrent roles: Evaluate balance and prioritization across responsibilities
+   - Format as role alignment rating with specific examples and transition analysis if applicable   
+
+10. MONTHLY SUMMARY: Provide a comprehensive overview of the employee's performance for the entire month.
    - Synthesize the key findings from all sections into a cohesive narrative
    - Highlight the most significant achievements and challenges
    - Evaluate overall performance trajectory and risk profile
@@ -1124,20 +1224,88 @@ The following vision system data provides objective evidence to validate claims 
 - Compare objective data across months to identify trends and trajectory
 """
 
+
+        # STRATEGIC PLACEMENT: Insert JD data AFTER vision data, BEFORE requirements
+        formatted_jd_data = quarterly_data.get("formatted_jd_data", "")
+        if formatted_jd_data:
+            prompt += f"""
+{formatted_jd_data}
+
+### STRATEGIC ROLE-BASED QUARTERLY ANALYSIS GUIDANCE:
+
+**Career Progression Evaluation**:
+- Analyze performance trajectory across all roles held during the quarter
+- Assess how well the employee mastered each role's core competencies
+- Evaluate whether role transitions represented career advancement or lateral moves
+- Track development of capabilities across multiple role contexts
+
+**Readiness Assessment**:
+- Evaluate readiness for role expansion or advancement based on JD requirements
+- Identify systematic gaps between current role requirements and demonstrated capabilities
+- Assess whether achievement themes demonstrate mastery beyond current role scope
+- Determine if behavioral assessment patterns indicate promotion readiness
+
+**Strategic Alignment**:
+- Assess how employee's contributions align with their formal role responsibilities
+- Identify work performed beyond role scope (innovation, leadership, cross-functional impact)
+- Evaluate whether organizational impact matches role level expectations
+- Note misalignment between assigned role and actual work patterns (positive or negative)
+
+**Role Transition Impact** (if roles changed):
+- Evaluate adaptation effectiveness for each role transition
+- Assess whether transitions disrupted performance trajectory or accelerated growth
+- Identify transferable skills leveraged across different roles
+- Determine optimal role type based on performance patterns across roles
+
+**Skill Development Context**:
+- Map demonstrated capabilities to role requirement progression
+- Assess learning agility in context of role complexity changes
+- Evaluate whether autonomy level matches role expectations
+- Identify next development focus relative to career path trajectory
+
+**Risk and Challenge Contextualization**:
+- Distinguish between role-scope risks (systemic) vs. individual performance risks
+- Assess whether recurring challenges indicate role-fit issues
+- Evaluate adaptation effectiveness in context of role demands
+- Determine if risks stem from role transitions, workload, or capability gaps
+
+**Behavioral Assessment Calibration**:
+- Evaluate behaviors relative to role-level expectations (junior vs. senior standards)
+- Assess ownership and accountability appropriate to role authority
+- Consider collaboration expectations based on role scope (individual contributor vs. team lead)
+- Judge problem-solving sophistication against role complexity requirements
+
+**Forward Planning Alignment**:
+- Recommend activities aligned with current role mastery and next-role preparation
+- Identify support needs specific to role expectations and growth trajectory
+- Suggest role expansion opportunities based on demonstrated stretch capabilities
+- Propose development areas that bridge current role and career advancement path
+
+"""
+
+
         # Continue with comprehensive analysis requirements
         prompt += """
 ## COMPREHENSIVE ANALYSIS REQUIREMENTS
 Analyze the quarterly data and provide the following comprehensive assessment:
 
 1. STRATEGIC ALIGNMENT ASSESSMENT:
-   - Identify how the employee's work connects to department/organizational goals
-   - Evaluate the scope of impact (individual/team/department/organization)
-   - Assess alignment between reported work and strategic priorities
+   - Evaluate how employee's work connects to both role expectations AND organizational goals
+   - Assess scope of impact (individual/team/department/organization) relative to role level
+   - Identify work performed beyond role scope (innovation, leadership, cross-functional impact)
+   - Determine role mastery level: developing/proficient/exceeding expectations
+   - For role transitions: Assess readiness for new role based on previous role performance
+   - Evaluate whether achievement themes align with strategic role responsibilities
    - Identify key initiatives and their business outcomes
    - Consider vision data as validation of strategic contributions
-   - Provide 2-3 concrete examples of strategic alignment
-   - Format as assessment of overall alignment with specific initiatives
-
+   - Provide 2-3 concrete examples of strategic alignment with specific initiatives
+   - Format as comprehensive alignment assessment with:
+     * Role expectations baseline (what the JD requires)
+     * Performance relative to baseline (meets/exceeds/below with evidence)
+     * Stretch contributions beyond role scope
+     * Readiness indicators for advancement
+     * Overall alignment with organizational strategic priorities
+    
 2. ACHIEVEMENT THEME IDENTIFICATION:
    - Cluster related achievements from across the quarter into 3-7 themes
    - Name each theme based on business function or outcome area
@@ -1158,6 +1326,11 @@ Analyze the quarterly data and provide the following comprehensive assessment:
    - Incorporate week-to-week patterns to identify micro-trends within monthly data
    - Detect early warning signals in weekly data that developed into monthly challenges
    - Analyze weekly volatility within seemingly stable months
+   - Incorporate weekly performance patterns to identify micro-trends within monthly data
+   - Consider role transitions when evaluating performance trajectory
+   - Assess whether performance changes correlate with role changes or other factors
+   
+
 
 4. CHALLENGE PATTERN ANALYSIS:
    - Identify challenges that appeared multiple times across the quarter
@@ -1188,7 +1361,12 @@ Analyze the quarterly data and provide the following comprehensive assessment:
    - Recommend next development focus area
    - Format as capability assessment with growth indicators
    - Use weekly performance data to identify gradual skill improvements not apparent at monthly level
-
+   - Map demonstrated capabilities to role competency requirements
+   - Identify skills that exceed current role expectations (readiness indicators)
+   - Assess skill development relative to role complexity and requirements
+   - Evaluate whether skills align with career progression path
+   - Format as capability assessment with growth indicators and role-fit analysis
+   
 7. BEHAVIORAL ASSESSMENT:
    - Evaluate five key behaviors with specific evidence:
      a) Ownership and accountability

@@ -15,6 +15,9 @@ from app.services.db_service import (
     get_employee_info
 )
 
+from app.services.db_service import get_employee_job_descriptions_for_period
+from app.services.additional_services import map_reports_to_jds
+
 def get_monthly_data_for_analysis(employee_id: int, year: int, month: int) -> Dict[str, Any]:
     """
     Aggregate all data needed for monthly analysis, including reports, analyses,
@@ -154,6 +157,27 @@ def get_monthly_data_for_analysis(employee_id: int, year: int, month: int) -> Di
             if impact_count > 0:
                 result["metrics"]["achievement_impact_avg"] = round(achievement_impact_avg / impact_count, 2)
                 logger.info(f"Calculated average achievement impact: {result['metrics']['achievement_impact_avg']} from {impact_count} achievements")
+        
+        # Retrieve job descriptions that overlap with the monthly period
+        employee_jds = get_employee_job_descriptions_for_period(
+            employee_id=employee_id,
+            period_start=start_date,
+            period_end=end_date
+        )
+
+        # Map reports to JDs based on temporal overlap
+        # This creates groups showing which reports fall under which JD configuration
+        jd_report_mapping = map_reports_to_jds(reports, employee_jds)
+
+        # Store in result dictionary for downstream use
+        result["jd_report_mapping"] = jd_report_mapping
+        result["employee_jds"] = employee_jds
+
+        logger.info(
+            f"Monthly analysis: Retrieved {len(employee_jds)} JD(s), "
+            f"created {len(jd_report_mapping.get('jd_groups', []))} JD groups, "
+            f"{len(jd_report_mapping.get('unmapped_reports', []))} unmapped reports"
+        )
         
         logger.info(f"Successfully gathered monthly data for employee {employee_id}, {year}-{month}")
         return result
