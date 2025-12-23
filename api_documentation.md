@@ -570,8 +570,7 @@ Retrieves a specific quarterly analysis by ID.
         "impact": "Positive",
         "evidence": "Streamlined authentication workflows"
       }
-    ],
-    "knowledge_sharing": ["Conducted training sessions on new security protocols"]
+    ]
   },
   "adaptation_effectiveness": "high",
   

@@ -11,13 +11,13 @@ A AI-powered system for analyzing employee reports to extract valuable insights,
 - Achievements and their impact
 - Challenges and their severity
 - Sentiment analysis
-- Risk assessments
-- Credibility evaluation
-- Performance assessments
-- Recommended action items
-- Job description tracking and role history
+- Risk assessments with credibility-adjusted ratings
+- **Point-based credibility evaluation** with fairness safeguards
+- **Job description-aligned performance assessments**
+- Career progression and promotion readiness indicators
+- Recommended action items with ownership assignment
 
-The system also performs **monthly analysis** across all reports from an employee to identify trends, recurring challenges, and growth indicators, as well as **quarterly analysis** for strategic alignment, achievement themes, and long-term performance evaluation.
+The system also performs **monthly analysis** across all reports from an employee to identify trends, recurring challenges, and growth indicators, as well as **quarterly analysis** for strategic alignment, achievement themes, role fit assessment, and long-term performance evaluation.
 
 ---
 
@@ -25,13 +25,17 @@ The system also performs **monthly analysis** across all reports from an employe
 
 - **Weekly Report Analysis**: Extract structured insights from unstructured employee reports
 - **Monthly Performance Analysis**: Analyze trends and patterns across all reports from a month
-- **Quarterly Performance Analysis**: Evaluate strategic alignment, achievement themes, and behavioral assessments over a quarter
-- **Job Description Management**: Track current and historical job descriptions with role change history
+- **Quarterly Performance Analysis**: Evaluate strategic alignment, achievement themes, role fit, and behavioral assessments over a quarter
+- **Job Description Integration**: Role-based analysis with JD alignment assessment, promotion readiness evaluation, and authority-appropriate expectations
+- **Enhanced Credibility Framework**: Point-based assessment system with fairness safeguards, explicit scoring rules, and credibility-adjusted impact ratings
+- **Achievement Tracking**: Structured impact data with separate score (1-10), reasoning, and data verification status
+- **Evidence Standards**: Explicit confidence indicators based on analysis detail, consistency, and objective validation 
+- **Security Boundaries**: Built-in OPSEC guidelines preventing disclosure of sensitive operational details in analysis outputs
+- **Career Progression Evaluation**: Promotion readiness assessment, role mastery tracking, and strategic alignment evaluation
 - **Semantic Search**: Find relevant reports based on context, not just keywords
-- **Risk Assessment**: Automatically identify potential issues requiring attention
+- **Risk Assessment**: Automatically identify potential issues with credibility-adjusted risk levels
 - **Sentiment Analysis**: Track employee sentiment over time
-- **Credibility Evaluation**: Assess report credibility with specific exaggeration flags
-- **Performance Rating**: Provide balanced performance assessments with strengths and improvement areas
+- **Performance Rating**: Balanced assessments with role-appropriate expectations, strengths, and improvement areas
 - **Historical Context**: Analyze reports with previous submissions for reference
 - **Asynchronous Processing**: Background task processing for analysis requests
 - **Direct URL Sharing**: Share analysis results via URL parameters
@@ -498,35 +502,54 @@ The system also performs **monthly analysis** across all reports from an employe
 ### Analysis Features
 
 - **Weekly Analysis Provides**:
-  - Key achievements with impact ratings
+  - Key achievements with:
+    - **Impact Score** (1-10 scale mapped to organizational levels)
+    - **Impact Reason** (separate field explaining the rating)
+    - **Data Verification** (supported/contradicted/none)
   - Challenges with severity assessment
   - Overall sentiment
-  - Risk level and explanation
-  - Credibility assessment with potential exaggeration flags
-  - Performance assessment with strengths and improvement areas
-  - Recommended action items
+  - Risk level and explanation (credibility-adjusted)
+  - **Point-based credibility assessment** with:
+    - Rating (high/medium/low)
+    - Specific exaggeration flags
+    - Consistency score
+    - Impact score discounts applied (0%, 15%, 40%)
+  - **Role-based performance assessment** with:
+    - JD alignment evaluation
+    - Designation appropriate expectations
+    - Key strengths and improvement areas
+  - Recommended action items with ownership assignment
 
 - **Monthly Analysis Provides**:
-  - Performance and sentiment trends
-  - Most significant achievements across the month
+  - Performance and sentiment trends with credibility trajectory
+  - Most significant achievements across the month (with impact score, impact reason, data verification)
   - Recurring challenges and their resolution status
-  - Performance consistency metrics
-  - Professional growth indicators
-  - Key focus areas for the employee
-  - Overall risk assessment with mitigation recommendations
-  - Strategic recommendations for management
+  - Performance consistency metrics (task completion, work quality, performance stability)
+  - Professional growth indicators (skill development, confidence changes, challenge approach)
+  - Key focus areas with time investment and priority assessment
+  - Overall risk assessment with credibility adjustments and mitigation recommendations
+  - Strategic recommendations with priority and ownership levels
 
 - **Quarterly Analysis Provides**:
-  - Strategic alignment with organizational priorities
-  - Achievement themes with business outcome measurements
-  - Performance trajectory and notable shifts
+  - Strategic alignment with organizational mission priorities and **role fit assessment**:
+    - Role alignment rating (strong/partial/weak)
+    - Detailed JD fit evaluation
+    - Stretch contributions beyond role scope
+    - Gaps between role requirements and actual work
+  - Achievement themes with mission outcome measurements (using impact_score/impact_reason structure)
+  - Performance trajectory and notable shifts with consistency metrics
   - Challenge patterns and adaptation effectiveness
-  - Cross-functional impact on stakeholders
-  - Skill development and proficiency assessment
-  - Behavioral assessments (ownership, collaboration, communication, etc.)
-  - Credibility assessment with vision data alignment
-  - Comprehensive forward planning (keep/improve/start/stop)
-  - Executive summary of quarterly performance
+  - Cross-functional impact with **collaboration type classification**:
+    - Leading Initiative
+    - Contributing Expertise
+    - Mentoring
+    - Process Improvement
+  - Skill development and proficiency assessment with learning agility and autonomy ratings
+  - Behavioral assessments (ownership, collaboration, communication, problem-solving, quality standards)
+  - **Quarterly credibility assessment** with monthly aggregation and vision data alignment
+  - **Career progression evaluation** with promotion readiness indicators
+  - Comprehensive forward planning with **ownership assignment** (employee/manager/hr/cross-team)
+  - Executive summary of quarterly performance with confidence indicators
 
 ### Data Import System
 

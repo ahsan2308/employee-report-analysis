@@ -117,7 +117,7 @@ class LLMService:
         prompt: str, 
         response_format: Optional[Dict[str, Any]] = None,
         temperature: float = 0.2, 
-        max_tokens: int = 5000,
+        max_tokens: int = 10000,
         pydantic_model: Optional[Type] = None,
         num_ctx: int = 8192
     ) -> Dict[str, Any]:
@@ -536,8 +536,7 @@ class LLMService:
                             "collaboration_effectiveness": "high/medium/low",
                             "stakeholder_impacts": [
                                 {"stakeholder": "Team/department", "impact": "Impact description", "evidence": "Concrete example"}
-                            ],
-                            "knowledge_sharing": ["Specific knowledge sharing example"]
+                            ]
                         },
                         "risk_assessment": {
                             "overall_risk_level": "low/medium/high",

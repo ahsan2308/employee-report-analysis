@@ -418,9 +418,9 @@ def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
                         }
                     }
     elif task.task_type == TaskType.MONTHLY_ANALYSIS.value:
-        # Monthly analysis task
-        if result_data and "analysis_id" in result_data and len(result_data) <= 4:
-            # This is a reference to a monthly analysis - fetch complete data
+        # Monthly analysis task - always fetch from database for complete data
+        if result_data and "analysis_id" in result_data:
+            # Always fetch complete data from database, don't use cached result_data
             employee_id = task.employee_id
             year = task.year
             month = task.month
@@ -452,8 +452,8 @@ def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
                         "challenge_resolution_progress": monthly_analysis["challenge_resolution_progress"]
                     },
                     
-                    # Monthly achievements (now correctly named)
-                    "monthly_achievements": monthly_analysis["key_achievements"],
+                    # Monthly achievements
+                    "monthly_achievements": monthly_analysis["monthly_achievements"],
                     
                     # Recurring challenges with status field
                     "recurring_challenges": monthly_analysis["recurring_challenges"],
@@ -497,9 +497,9 @@ def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
                     "full_analysis_json": monthly_analysis["full_analysis_json"]
                 }
     elif task.task_type == TaskType.QUARTERLY_ANALYSIS.value:
-        # Quarterly analysis task
-        if result_data and "analysis_id" in result_data and len(result_data) <= 4:
-            # This is a reference to a quarterly analysis - fetch complete data
+        # Quarterly analysis task - always fetch from database for complete data
+        if result_data and "analysis_id" in result_data:
+            # Always fetch complete data from database, don't use cached result_data
             employee_id = task.employee_id
             year = task.year
             quarter = task.quarter

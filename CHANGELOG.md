@@ -4,6 +4,668 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ---
 
+## [3.0.0] - 2025-12-23 - Prompt System Overhaul & Intelligence Agency Alignment
+
+This is a **major update** introducing federal intelligence agency context alignment, job description-based performance evaluation, restructured achievement data format, and enhanced credibility assessment framework. 
+
+#### Achievement Data Structure Restructuring
+
+**CRITICAL**: The achievement data format has changed from a single combined field to three separate fields.
+
+**OLD Format:**
+```json
+{
+  "description": "Completed quarterly analysis",
+  "impact": "8 (Wing level impact, briefed to senior management)"
+}
+```
+
+**NEW Format:**
+```json
+{
+  "description": "Completed quarterly analysis",
+  "impact_score": 8,
+  "impact_reason": "Wing level impact, briefed to senior management",
+  "vision_verification": "supported"
+}
+```
+
+**Changed Fields:**
+- **Removed**: `impact` (string combining score and reason)
+- **Added**: `impact_score` (integer 1-10)
+- **Added**: `impact_reason` (string, max 180 characters)
+- **Added**: `vision_verification` (enum: "supported"/"contradicted"/"none")
+
+**Affected Models:**
+- `Achievement` (weekly analysis)
+- `MonthlyAchievement` (monthly analysis)
+- `AchievementTheme` (quarterly analysis)
+
+
+#### Organizational Hierarchy Terminology Change
+
+**CRITICAL**: Corporate terminology replaced with federal intelligence agency hierarchy.
+
+**OLD Values:**
+```
+"individual" | "team" | "department" | "organization"
+```
+
+**NEW Values:**
+```
+"individual" | "cell" | "unit" | "section" | "wing" | "hq"
+```
+
+**Affected Fields:**
+- `StrategicAlignment.organizational_impact` (quarterly analysis)
+- Impact rating scale descriptions across all prompts
+
+**Rationale**: Aligns with actual organizational structure:
+- **Individual**: Single employee level
+- **Cell**: Small team 
+- **Unit**: Department subdivision 
+- **Section**: Full department 
+- **Wing**: Directorate/Division 
+- **HQ**: Headquarters/Agency-wide level
+
+#### Forward Planning Recommendations Schema Addition
+
+**NEW Required Field**: `ownership`
+
+All recommendation objects in quarterly analysis now require ownership assignment:
+- `"employee"`: Actions employee can take independently
+- `"manager"`: Manager intervention or approval required
+- `"hr"`: HR resources, training programs, or policy support needed
+- `"cross-team"`: Requires coordination with other Wings/Sections
+
+**Affected Models:**
+- `Recommendation` (used in `ForwardPlanning` for quarterly analysis)
+
+**All recommendation arrays now include ownership:**
+- `keep_doing[]`
+- `improve[]`
+- `start[]`
+- `stop[]`
+- `support_needed[]`
+
+---
+
+### 🚀 **New Features**
+
+#### Job Description (JD) Integration & Role-Based Analysis
+
+The analysis system now integrates employee job descriptions to provide role-aware performance evaluation, career progression tracking, and JD alignment assessment.
+
+**Key Capabilities:**
+
+**1. Performance Expectations Framework**
+
+Evaluates performance relative to formal job responsibilities:
+- **Exceeds Expectations**: Scope expansion beyond JD, innovation, leadership, measurable mission impact
+- **Meets Expectations**: Completes all JD responsibilities reliably, handles appropriate challenges
+- **Below Expectations**: Consistently misses deliverables, requires excessive support
+
+**2. Role-Appropriate Assessment by Seniority**
+
+Different expectations and challenge patterns for each BPS grade:
+
+**Junior Roles (BPS-17 to 18):**
+- Focus: Execution quality, learning agility, growth trajectory
+- Expected challenges: Learning systems, needing guidance, time management
+- Red flags: Basic skill gaps, inability to complete routine tasks independently
+
+**Mid-Level Roles (BPS-19 to 20):**
+- Focus: Section/wing coordination, process mastery, reliability
+- Expected challenges: Cross-team coordination, resource constraints, competing priorities
+- Red flags: Excessive need for guidance, inability to work independently
+
+**Senior Roles (BPS-21 to 22):**
+- Focus: Strategic thinking, leadership impact, organizational outcomes
+- Expected challenges: Strategic ambiguity, organizational politics, change management
+- Red flags: Struggling with tactical execution, requiring excessive guidance
+
+**3. Role Transition Support**
+
+Handles multiple concurrent roles and mid-period transitions:
+- **Multiple Concurrent Roles**: Assesses achievements against combined responsibilities, evaluates workload distribution
+- **Mid-Week/Mid-Month Transitions**: Split assessment with learning curve accommodation
+- **Career Progression Tracking**: Tracks role evolution across time periods
+
+**4. Authority & Autonomy Assessment**
+
+Evaluates whether employees exercise appropriate decision-making authority:
+- BPS-17 to 18: Work with guidance, escalate major decisions
+- BPS-19 to 20: Make section/wing decisions independently
+- BPS-21 to 22: Make strategic HQ-level decisions, represent organization externally
+
+**NEW Schema Fields:**
+```python
+# StrategicAlignment (Quarterly Analysis)
+role_alignment: Literal["strong", "partial", "weak"]
+role_fit_assessment: str  # Detailed text assessment
+```
+
+**Integration Points:**
+- Weekly analysis: JD context for achievement validation and performance rating
+- Monthly analysis: Role alignment over time, skill gap identification
+- Quarterly analysis: Strategic alignment, promotion readiness, career trajectory
+
+**Usage:**
+```python
+# Pass formatted JD data to analysis prompts
+formatted_jd_data = format_job_description_for_prompt(employee_jd)
+prompt = employee_analysis_prompt(
+    report_text=report_text,
+    formatted_jd_data=formatted_jd_data  # NEW parameter
+)
+```
+
+#### Enhanced Credibility Framework
+
+A comprehensive, fair, and systematic approach to assessing report credibility with explicit scoring rules and fairness safeguards.
+
+**Key Features:**
+
+**1. Point-Based Scoring System**
+
+Replace subjective assessment with objective criteria:
+- **Critical Red Flags** (3 points each):
+  - Contradiction between report sections
+  - Vision data mismatch (when applicable)
+  - Impossible timelines
+- **Moderate Red Flags** (1 point each):
+  - Excessive superlatives (5+ instances OR >20% of sentences)
+  - Improbable absolutes (3+ instances OR >20% of sentences)
+  - Disproportionate impact claims
+  - Zero challenges with major achievements
+
+**2. Clear Rating Thresholds**
+
+- **0-1 points** = HIGH credibility (default for most reports)
+- **2-4 points** = MEDIUM credibility (some concerns, needs verification)
+- **5+ points** = LOW credibility (significant concerns)
+- **Override Rule**: 2+ critical red flags = automatic LOW credibility
+
+**3. Fairness Principles**
+
+- **Default Position**: Assume reports are honest and accurate
+- **Communication Style Neutrality**: Poor writing ≠ Low credibility; accommodates non-native speakers and cultural differences
+- **Context Matters**: Not all superlatives or absolutes are red flags
+- **Evidence Focus**: Logical contradictions and factual impossibilities, not writing style
+
+**4. Impact on Analysis**
+
+**Achievement Impact Score Discounts:**
+- HIGH credibility: 0% discount (use calculated score)
+- MEDIUM credibility: 15% discount (multiply by 0.85, round to nearest integer)
+- LOW credibility: 40% discount (multiply by 0.6, round to nearest integer)
+- Minimum score after discount: 1
+
+**Risk Level Adjustments:**
+- HIGH credibility: No adjustment
+- MEDIUM credibility: Increase risk by one tier
+- LOW credibility: Increase risk by two tiers
+
+**Performance Rating Caps:**
+- HIGH credibility: No cap
+- MEDIUM credibility: HIGH rating requires strong evidence
+- LOW credibility: Maximum rating is MEDIUM
+
+**Qualifying Language:**
+- HIGH: "The employee completed..."
+- MEDIUM: "The employee reports..."
+- LOW: "The employee claims..."
+
+**5. Temporal Aggregation**
+
+**Monthly Credibility:**
+- Aggregates weekly ratings
+- Tracks improvement/decline trajectory
+- Applies timeframe-based evaluation
+
+**Quarterly Credibility:**
+- Synthesizes monthly patterns
+- Identifies reporting quality trends
+- Documents recurring exaggeration types
+
+**Example Implementation:**
+```python
+# Step 1: Identify red flags
+critical_flags = 1  # Vision data mismatch
+moderate_flags = 2  # Excessive superlatives, zero challenges
+
+# Step 2: Calculate points
+total_points = (critical_flags * 3) + (moderate_flags * 1)  # = 5 points
+
+# Step 3: Determine rating
+credibility_rating = "low"  # 5 points ≥ 5 threshold
+
+# Step 4: Apply discount
+raw_impact_score = 8
+adjusted_score = round(8 * 0.6)  # = 5 (40% discount for LOW)
+```
+
+#### Organizational Context Alignment
+
+All analysis prompts now include federal intelligence agency context to ensure domain-appropriate language and evaluation criteria.
+
+**Key Elements:**
+
+**1. Mission-Focused Terminology**
+
+Replace corporate/business terms with mission-appropriate language:
+- ❌ "business impact" → ✅ "mission impact" or "operational impact"
+- ❌ "business outcomes" → ✅ "mission achievements" or "operational outcomes"
+- ❌ "customers" → ✅ "stakeholders" (State & citizens, federal leadership, LEAs)
+- ❌ "quarterly targets" → ✅ "mission objectives" or "operational priorities"
+
+**2. Organizational Structure**
+
+Recognizes dual hierarchy system:
+- **Rank-Based**: BPS grades 17-22 (Basic Pay Scale)
+- **Functional**: Wings → Sections → Units → Cells → Individual
+
+**3. Primary Stakeholders**
+
+- State & citizens (ultimate beneficiaries)
+- Federal government leadership (Prime Minister's Office, Cabinet Secretariat)
+- Provincial authorities
+- Partner law enforcement agencies (LEAs)
+
+**4. Impact Classification**
+
+Highest-tier achievements contribute to:
+- National security objectives
+- Federal security directives
+- Multi-agency strategic partnerships
+- Mission-critical operational successes
+
+#### Security & OPSEC Boundaries
+
+**NEW**: Mandatory operational security guidelines embedded in all prompts to prevent disclosure of sensitive information in analysis outputs.
+
+**Prohibited Content (Never Include):**
+- Specific collection methods, technical tools, or covert operational procedures
+- Identifiers or sensitive selectors (phone numbers, IMEI/IMSI, network identifiers)
+- Speculation about personal motives, beliefs, family circumstances, or political/sectarian affiliations
+- Details that could compromise ongoing investigations or intelligence operations
+
+**Required Approach:**
+✓ Use neutral, professional language focused on work outputs and documented facts
+✓ When referencing sensitive work, use approved substitutes:
+  - "multi source corroboration"
+  - "analytical product"
+  - "validated intelligence requirement"
+✓ If evidence is insufficient, state "insufficient evidence" rather than speculating
+
+**Rationale**: Analysis outputs may be viewed by HR, senior management, and employees themselves. Violations could compromise operations or personnel safety.
+
+#### Evidence Standards & Confidence Indicators
+
+Explicit guidance on evidence quality and confidence levels for analysis conclusions.
+
+**Evidence Hierarchy (Highest to Lowest Objectivity):**
+
+1. **Analysis Detail & Specificity**: Detailed monthly/weekly analyses with measurable achievements and concrete outcomes (available for all employees)
+2. **Internal Consistency**: Coherent patterns across analyses with no contradictions between months/weeks (available for all employees)
+3. **Vision Data Validation**: Objective tracking data (ONLY available for applicable roles; absence is NORMAL)
+
+**Critical Fairness Principle**: Vision data is NOT required for high confidence or high impact assessments. Detailed, consistent analyses with measurable outcomes provide sufficient evidence.
+
+**Confidence Level Guidelines:**
+
+**HIGH CONFIDENCE:**
+- 3/3 months have detailed analyses with clear, measurable outcomes
+- No contradictions between monthly/weekly assessments
+- Vision data validation (when available and applicable) strengthens but is NOT required
+
+**MEDIUM CONFIDENCE:**
+- Only 2/3 months available OR analyses lack specificity
+- Minor inconsistencies between months
+- Vague achievement descriptions without measurable outcomes
+
+**LOW CONFIDENCE:**
+- Only 1 month of data OR significant contradictions between analyses
+- Achievement status conflicts across months (e.g., complete in Month 1, ongoing in Month 3)
+- Vision data contradicts claims (when applicable)
+
+**Example Confidence Statements:**
+```
+✅ "High confidence based on consistent pattern across all three monthly analyses with specific, measurable outcomes"
+✅ "High confidence due to detailed monthly analyses with coherent, verifiable achievement patterns"
+✅ "Medium confidence due to incomplete data for Month 2"
+✅ "Low confidence due to contradictions between monthly analyses"
+```
+
+#### Career Progression Evaluation
+
+**NEW**: Quarterly analysis now includes explicit promotion readiness and career trajectory assessment.
+
+**Evaluation Dimensions:**
+
+**1. Role Mastery Assessment**
+- How well did employee master each role's core competencies over the quarter?
+- Track development of capabilities across multiple role contexts
+- Identify systematic gaps between current role requirements and demonstrated capabilities
+
+**2. Readiness for Advancement**
+- Evaluate readiness for role expansion or advancement based on JD requirements
+- Assess whether achievement themes demonstrate mastery beyond current role scope
+- Determine if behavioral assessment patterns indicate promotion readiness
+
+**3. Strategic Alignment**
+- Assess how employee's contributions align with formal role responsibilities
+- Identify work performed beyond role scope (innovation, leadership, cross-functional impact)
+- Evaluate whether organizational impact matches role level expectations
+
+**Integration in Strategic Alignment Section:**
+- Role expectations baseline (what the JD requires)
+- Performance relative to baseline (meets/exceeds/below with evidence)
+- Role alignment rating (strong/partial/weak)
+- Detailed role fit assessment (stretch contributions, gaps, evolution)
+- Readiness indicators for advancement
+
+---
+
+### 🔄 **What's Changed**
+
+#### Before This Update (v2.x)
+
+**Analysis Context:**
+- Generic corporate terminology used throughout
+- No job description integration
+- Credibility assessed subjectively without clear criteria
+- Impact ratings lacked organizational context mapping
+- No role-specific performance expectations
+
+**Typical Analysis Output:**
+```json
+{
+  "achievements": [
+    {
+      "description": "Completed data analysis project",
+      "impact": "7 (Department-wide impact)"
+    }
+  ],
+  "organizational_impact": "department"
+}
+```
+
+**Issues:**
+- Inconsistent credibility assessments across analysts
+- Achievement impact not calibrated to role level
+- Corporate language inappropriate for intelligence agency
+- No systematic approach to fairness in evaluation
+
+#### After This Update (v3.0)
+
+**Analysis Context:**
+- Federal intelligence agency terminology throughout
+- Job description-based performance expectations
+- Systematic point-based credibility framework
+- Impact ratings mapped to organizational hierarchy (individual→cell→unit→section→wing→hq)
+- Role-appropriate evaluation by BPS grade
+
+**Typical Analysis Output:**
+```json
+{
+  "achievements": [
+    {
+      "description": "Completed counter-terrorism threat assessment",
+      "impact_score": 7,
+      "impact_reason": "Wing level impact, briefed to senior management",
+      "vision_verification": "supported"
+    }
+  ],
+  "strategic_alignment": {
+    "organizational_impact": "wing",
+    "role_alignment": "strong",
+    "role_fit_assessment": "Work consistently matches JD responsibilities with stretch contributions in cross-wing coordination"
+  }
+}
+```
+
+**Improvements:**
+- Consistent, fair credibility assessments with documented criteria
+- Achievement impact calibrated to role expectations
+- Mission-appropriate terminology
+- Systematic evidence standards
+- Role-based career progression insights
+
+#### Impact Rating Scale Evolution
+
+**OLD Scale (Generic):**
+```
+1-10 scale with vague guidance:
+- Low impact: 1-3
+- Medium impact: 4-6
+- High impact: 7-8
+- Strategic impact: 9-10
+```
+
+**NEW Scale (Organizationally Mapped):**
+```
+1-3: Individual/Cell-level Impact
+     - Routine task completion, personal skill development
+     
+4-6: Unit/Section-level Impact
+     - Team value addition, process improvements within section
+     
+7-8: Wing-level Impact
+     - Intelligence assessments briefed to senior management
+     - Coordination with partner LEAs
+     - Reports to provincial/federal authorities
+     
+9-10: HQ-level/Strategic Impact
+     - Intelligence products briefed to PMO/Cabinet
+     - Federal security directives
+     - Mission-critical operational successes
+```
+
+**Benefits:**
+- Clear organizational level mapping
+- Role-appropriate impact expectations
+- Consistent scoring across analysts
+- Better alignment with mission priorities
+
+#### Vision Data Handling Enhancements
+
+**OLD Approach:**
+- Vague guidance on when to use Vision data
+- Unclear whether absence of Vision data is problematic
+- No guidance on data truncation or interpretation
+
+**NEW Approach:**
+
+**1. Critical Fairness Principle**
+```
+"Many employees have NO vision tracking data (strategic, liaison, 
+field, administrative roles). This is the NORMAL state. Vision data 
+absence should NOT be mentioned or weighed negatively."
+```
+
+**2. Data Presentation Context**
+```
+"The Vision data displays detailed content items with a configured 
+limit per entity. When you see 'and X more...', this indicates 
+additional tracked items beyond those displayed. Truncated display 
+≠ incomplete tracking."
+```
+
+**3. Cross-Verification (Monthly/Quarterly)**
+```
+"Independently verify key achievements against raw Vision System Data. 
+Do not blindly trust weekly vision_verification values. Weekly LLM 
+had more detailed data; monthly/quarterly views may be truncated."
+```
+
+**4. Verification Decision Rules**
+- Set to "supported": ONLY when Vision data clearly confirms the achievement
+- Set to "contradicted": ONLY when Vision data clearly conflicts
+- Set to "none": When no Vision data exists OR not applicable (MOST COMMON)
+
+**Impact**: Fairer, more accurate analysis for employees without Vision tracking
+
+---
+
+### 📊 **Schema & Model Updates**
+
+#### Pydantic Model Changes (structured_models_llm.py)
+
+**Achievement Model:**
+```python
+class Achievement(BaseModel):
+    description: str = Field(
+        description="Detailed description of the achievement"
+    )
+    # REMOVED: impact: str
+    # ADDED:
+    impact_score: int = Field(
+        ge=1, le=10,
+        description="Impact rating from 1 to 10, where 1-3 is individual level, 4-6 is section level, 7-8 is wing level, 9-10 is HQ strategic level"
+    )
+    impact_reason: str = Field(
+        max_length=180,
+        description="Brief reason for the impact rating (max 120 characters), explaining which organizational level was impacted"
+    )
+    vision_verification: Literal["supported", "contradicted", "none"] = Field(
+        default="none",
+        description="If vision data confirms this achievement, set to 'supported'. If vision data contradicts it, set to 'contradicted'. If NO vision data appears in your prompt or it does not exist for the specific achievement, set the key to 'none'"
+    )
+```
+
+**MonthlyAchievement Model:**
+```python
+class MonthlyAchievement(BaseModel):
+    description: str
+    # REMOVED: impact: str
+    # ADDED:
+    impact_score: int = Field(ge=1, le=10, description="...")
+    impact_reason: str = Field(max_length=180, description="...")
+    vision_verification: Literal["supported", "contradicted", "none"] = Field(default="none", description="...")
+```
+
+**AchievementTheme Model:**
+```python
+class AchievementTheme(BaseModel):
+    theme: str
+    related_achievements: List[str] = Field(
+        # UPDATED description to emphasize outcomes:
+        description="List of specific achievements within this theme, including both activities performed and their outcomes. Each achievement should capture what was done and its measurable impact (e.g., 'Developed cross-reference methodology reducing discrepancies by 35%')."
+    )
+    # REMOVED: impact: str
+    # ADDED:
+    impact_score: int = Field(ge=1, le=10, description="...")
+    impact_reason: str = Field(max_length=180, description="...")
+    vision_verification: Literal["supported", "contradicted", "none"] = Field(default="none", description="...")
+```
+
+**StrategicAlignment Model:**
+```python
+class StrategicAlignment(BaseModel):
+    # CHANGED values:
+    organizational_impact: Literal["individual", "cell", "unit", "section", "wing", "hq"] = Field(
+        description="Scope of impact the employee's work has had"
+    )
+    key_initiatives: List[KeyInitiative]
+    # NEW FIELD:
+    role_alignment: Literal["strong", "partial", "weak"] = Field(
+        description="How well employee's work aligns with job description responsibilities across the quarter"
+    )
+    # NEW FIELD:
+    role_fit_assessment: str = Field(
+        description="Detailed assessment of Job Description fit, including stretch contributions beyond role scope and any gaps between role requirements and actual work patterns"
+    )
+```
+
+**StakeholderImpact Model:**
+```python
+class StakeholderImpact(BaseModel):
+    stakeholder: str
+    # CHANGED values (lowercase_underscore → Title Case):
+    collaboration_type: Literal[
+        "Leading Initiative",
+        "Contributing Expertise",
+        "Mentoring",
+        "Process Improvement"
+    ] = Field(description="Type of collaboration...")
+    impact: str
+    evidence: str
+```
+
+**Recommendation Model:**
+```python
+class Recommendation(BaseModel):
+    action: str = Field(description="The recommended action in clear, actionable language")
+    priority: Literal["high", "medium", "low"]
+    # NEW FIELD:
+    ownership: Literal["employee", "manager", "hr", "cross-team"] = Field(
+        description="Who is responsible for implementing this recommendation"
+    )
+```
+
+#### API Response Schema Changes (analysis_schema.py)
+
+All analysis response schemas updated to reflect new achievement structure:
+
+```python
+class AnalysisResponse(BaseModel):
+    # ... existing fields ...
+    achievements_json: Optional[List[Achievement]] = None  # Uses new Achievement model
+    
+class MonthlyAnalysisResponse(BaseModel):
+    # ... existing fields ...
+    monthly_achievements: List[MonthlyAchievement]  # Uses new MonthlyAchievement model
+    
+class QuarterlyAnalysisResponse(BaseModel):
+    # ... existing fields ...
+    achievement_themes: List[AchievementTheme]  # Uses new AchievementTheme model
+    strategic_alignment: StrategicAlignment  # Uses updated StrategicAlignment model
+```
+
+#### Code Updates
+
+**Update Achievement Parsing:**
+
+```python
+# OLD CODE:
+achievement_impact = achievement.get("impact", "Unknown")
+impact_score = int(achievement_impact.split(" ")[0])
+
+# NEW CODE:
+impact_score = achievement.get("impact_score", 0)
+impact_reason = achievement.get("impact_reason", "")
+vision_verification = achievement.get("vision_verification", "none")
+```
+
+---
+
+
+#### Performance Considerations
+
+**Prompt Length:**
+- New prompts are longer due to comprehensive guidance
+- Vision data may be truncated in monthly/quarterly to manage context length
+- Consider using higher-context models for optimal results
+
+**Processing Time:**
+- More detailed analysis may increase LLM processing time
+- JD integration adds 1-2 seconds for data fetching and formatting
+
+#### Security Notes
+
+**OPSEC Compliance:**
+- All prompts now include mandatory security boundaries
+- Outputs should be audited for prohibited content during initial rollout
+- Consider adding post-processing filter to sanitize responses
+
+**Sensitive Data:**
+- Job descriptions may contain role-specific security clearance info
+- Vision data may reveal sensitive work patterns
+- Ensure appropriate access controls on analysis outputs
+
+---
+
 ## [2.1.0] - 2025-12 - Job Description Management Update
 
 This update introduces Job Description tracking and management capabilities, enabling role assignment history tracking and alignment of employee performance with formal job responsibilities.

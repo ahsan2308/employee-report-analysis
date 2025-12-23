@@ -315,6 +315,43 @@
                 </span>
             </h5>`;
             
+            // Add role fit assessment first if available (most important)
+            if (strategicAlignmentData.role_fit_assessment) {
+                // Add title outside the box (like Key Strategic Initiatives)
+                const roleFitTitle = document.createElement('h6');
+                roleFitTitle.textContent = 'Role Fit Assessment';
+                alignmentSection.appendChild(roleFitTitle);
+                
+                // Add content box
+                const roleFitCard = document.createElement('div');
+                roleFitCard.className = 'role-fit-content-box';
+                
+                const roleFitContent = document.createElement('div');
+                roleFitContent.className = 'role-fit-text';
+                roleFitContent.textContent = strategicAlignmentData.role_fit_assessment;
+                roleFitCard.appendChild(roleFitContent);
+                
+                alignmentSection.appendChild(roleFitCard);
+            }
+            
+            // Add role alignment if available (second priority)
+            if (strategicAlignmentData.role_alignment) {
+                const roleAlignmentWrapper = document.createElement('div');
+                roleAlignmentWrapper.className = 'role-alignment-wrapper';
+                
+                const roleAlignmentLabel = document.createElement('span');
+                roleAlignmentLabel.className = 'role-alignment-label';
+                roleAlignmentLabel.textContent = 'Role Alignment:';
+                
+                const roleAlignmentBadge = document.createElement('span');
+                roleAlignmentBadge.className = `role-alignment role-alignment-${strategicAlignmentData.role_alignment.toLowerCase()}`;
+                roleAlignmentBadge.innerHTML = `<i class="fas fa-user-check"></i> ${capitalizeFirstLetter(strategicAlignmentData.role_alignment)}`;
+                
+                roleAlignmentWrapper.appendChild(roleAlignmentLabel);
+                roleAlignmentWrapper.appendChild(roleAlignmentBadge);
+                alignmentSection.appendChild(roleAlignmentWrapper);
+            }
+            
             // Add key initiatives if available
             const initiatives = strategicAlignmentData.key_initiatives || [];
             if (initiatives.length > 0) {
@@ -366,7 +403,7 @@
                 alignmentSection.appendChild(initiativesGrid);
             }
             
-            // Add organizational impact if available - styled to match screenshot
+            // Add organizational impact if available
             if (strategicAlignmentData.organizational_impact || data.organizational_impact) {
                 const impactValue = strategicAlignmentData.organizational_impact || data.organizational_impact;
                 const impactDisplay = document.createElement('div');
@@ -401,8 +438,8 @@
                 // Create theme header
                 const themeHeader = document.createElement('h6');
                 
-                // Add the 'has-verification' class if the theme is verified
-                if (theme.vision_verified) {
+                // Add the 'has-verification' class if the theme has vision verification
+                if (theme.vision_verification && theme.vision_verification.toLowerCase() !== 'none') {
                     themeHeader.className = 'has-verification';
                 }
                 
@@ -412,11 +449,18 @@
                 titleTextSpan.textContent = theme.theme || theme.name || 'Achievement Theme';
                 themeHeader.appendChild(titleTextSpan);
                 
-                // If the theme is verified, add the badge to the header
-                if (theme.vision_verified) {
+                // If the theme has vision verification, add the badge to the header
+                if (theme.vision_verification && theme.vision_verification.toLowerCase() !== 'none') {
+                    const visionStatus = theme.vision_verification.toLowerCase();
                     const verifiedBadge = document.createElement('span');
-                    verifiedBadge.className = 'vision-verified-badge';
-                    verifiedBadge.innerHTML = '<i class="fas fa-check-circle"></i>Verified';
+                    verifiedBadge.className = `vision-verification-badge vision-${visionStatus}`;
+                    
+                    if (visionStatus === 'supported') {
+                        verifiedBadge.innerHTML = '<i class="fas fa-check-circle"></i> Verified';
+                    } else if (visionStatus === 'contradicted') {
+                        verifiedBadge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Data Mismatch';
+                    }
+                    
                     themeHeader.appendChild(verifiedBadge);
                 }
                 
@@ -447,8 +491,15 @@
                     }
                 }
                 
-                // Add impact if available
-                if (theme.impact) {
+                // Add impact if available - support both old format (impact) and new format (impact_score + impact_reason)
+                if (theme.impact_score !== undefined && theme.impact_reason !== undefined) {
+                    // New format: separate score and reason
+                    const impactText = document.createElement('div');
+                    impactText.className = 'theme-impact';
+                    impactText.innerHTML = `<strong>Impact:</strong> ${theme.impact_score} (${theme.impact_reason})`;
+                    themeItem.appendChild(impactText);
+                } else if (theme.impact) {
+                    // Old format: combined string (for backward compatibility)
                     const impactText = document.createElement('div');
                     impactText.className = 'theme-impact';
                     impactText.innerHTML = `<strong>Impact:</strong> ${theme.impact}`;
@@ -908,16 +959,32 @@
                     const stakeholderCard = document.createElement('div');
                     stakeholderCard.className = 'stakeholder-card';
 
-                    const nameEl = document.createElement('h6');
-                    nameEl.textContent = stakeholder.stakeholder || stakeholder.name || stakeholder.title || 'Stakeholder';
-                    stakeholderCard.appendChild(nameEl);
+                    // Create header container with name and type on same line
+                    const headerContainer = document.createElement('div');
+                    headerContainer.className = 'stakeholder-header';
+                    headerContainer.style.display = 'flex';
+                    headerContainer.style.justifyContent = 'space-between';
+                    headerContainer.style.alignItems = 'center';
+                    headerContainer.style.marginBottom = '10px';
 
-                    if (stakeholder.role) {
-                        const roleEl = document.createElement('div');
+                    const nameEl = document.createElement('h6');
+                    nameEl.style.margin = '0';
+                    nameEl.textContent = stakeholder.stakeholder || stakeholder.name || stakeholder.title || 'Stakeholder';
+                    headerContainer.appendChild(nameEl);
+
+                    if (stakeholder.collaboration_type) {
+                        const collabType = document.createElement('span');
+                        collabType.className = `collaboration-type collaboration-${stakeholder.collaboration_type.toLowerCase().replace(/\s+/g, '-')}`;
+                        collabType.innerHTML = `<i class="fas fa-handshake"></i> ${stakeholder.collaboration_type}`;
+                        headerContainer.appendChild(collabType);
+                    } else if (stakeholder.role) {
+                        const roleEl = document.createElement('span');
                         roleEl.className = 'stakeholder-role';
-                        roleEl.innerHTML = `<strong>Role:</strong> ${stakeholder.role}`;
-                        stakeholderCard.appendChild(roleEl);
+                        roleEl.innerHTML = `${stakeholder.role}`;
+                        headerContainer.appendChild(roleEl);
                     }
+
+                    stakeholderCard.appendChild(headerContainer);
 
                     if (stakeholder.impact || stakeholder.description) {
                         const impactP = document.createElement('p');
@@ -927,8 +994,24 @@
 
                     if (stakeholder.evidence) {
                         const evidence = document.createElement('div');
-                        evidence.className = 'theme-impact';
-                        evidence.innerHTML = `<strong>Evidence:</strong> ${stakeholder.evidence}`;
+                        evidence.className = 'stakeholder-evidence';
+                        
+                        const evidenceIcon = document.createElement('i');
+                        evidenceIcon.className = 'fas fa-check-circle';
+                        evidence.appendChild(evidenceIcon);
+                        
+                        const evidenceContent = document.createElement('div');
+                        evidenceContent.className = 'evidence-content';
+                        
+                        const evidenceLabel = document.createElement('strong');
+                        evidenceLabel.textContent = 'Evidence: ';
+                        evidenceContent.appendChild(evidenceLabel);
+                        
+                        const evidenceText = document.createElement('span');
+                        evidenceText.textContent = stakeholder.evidence;
+                        evidenceContent.appendChild(evidenceText);
+                        
+                        evidence.appendChild(evidenceContent);
                         stakeholderCard.appendChild(evidence);
                     }
 
@@ -936,25 +1019,6 @@
                 });
 
                 impactSection.appendChild(stakeholdersGrid);
-            }
-            
-            // Add knowledge sharing examples if available
-            const knowledgeItems = impactData?.knowledge_sharing || [];
-            if (knowledgeItems.length > 0) {
-                const knowledgeTitle = document.createElement('h6');
-                knowledgeTitle.textContent = 'Knowledge Sharing';
-                impactSection.appendChild(knowledgeTitle);
-                
-                const knowledgeList = document.createElement('ul');
-                knowledgeList.className = 'knowledge-sharing-list';
-                
-                knowledgeItems.forEach(item => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = item;
-                    knowledgeList.appendChild(listItem);
-                });
-                
-                impactSection.appendChild(knowledgeList);
             }
             
             // Add collaboration effectiveness if available
@@ -1501,8 +1565,8 @@
                 metricsGrid.appendChild(credibilityMetric);
             }
             
-            // Add vision data alignment metric
-            if (credibilityData.vision_data_alignment) {
+            // Add vision data alignment metric - only if it exists and is not 'none'
+            if (credibilityData.vision_data_alignment && credibilityData.vision_data_alignment.toLowerCase() !== 'none') {
                 const alignmentMetric = document.createElement('div');
                 alignmentMetric.className = 'metric';
                 
@@ -1574,11 +1638,43 @@
             if (continueItems.length > 0) {
                 continueItems.forEach(item => {
                     const listItem = document.createElement('li');
+                    
+                    // Create content wrapper
+                    const contentWrapper = document.createElement('div');
+                    contentWrapper.className = 'recommendation-content';
+                    
                     if (typeof item === 'string') {
-                        listItem.textContent = item;
+                        contentWrapper.textContent = item;
                     } else {
-                        listItem.textContent = item.description || item.recommendation || JSON.stringify(item);
+                        const actionText = item.action || item.description || item.recommendation || JSON.stringify(item);
+                        contentWrapper.textContent = actionText;
                     }
+                    
+                    listItem.appendChild(contentWrapper);
+                    
+                    // Add priority and ownership badges if available
+                    if (typeof item === 'object' && (item.priority || item.ownership)) {
+                        const badgesDiv = document.createElement('div');
+                        badgesDiv.className = 'recommendation-badges';
+                        
+                        if (item.priority) {
+                            const priorityBadge = document.createElement('span');
+                            priorityBadge.className = `priority-badge priority-${item.priority.toLowerCase()}`;
+                            priorityBadge.textContent = `Priority: ${capitalizeFirstLetter(item.priority)}`;
+                            badgesDiv.appendChild(priorityBadge);
+                        }
+                        
+                        if (item.ownership) {
+                            const ownershipBadge = document.createElement('span');
+                            ownershipBadge.className = `ownership-badge ownership-${item.ownership.toLowerCase().replace(/ /g, '-')}`;
+                            const ownerLabel = item.ownership.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                            ownershipBadge.innerHTML = `<i class="fas fa-user"></i> Owner: ${ownerLabel}`;
+                            badgesDiv.appendChild(ownershipBadge);
+                        }
+                        
+                        listItem.appendChild(badgesDiv);
+                    }
+                    
                     continueList.appendChild(listItem);
                 });
             } else {
@@ -1613,11 +1709,43 @@
             if (improveItems.length > 0) {
                 improveItems.forEach(item => {
                     const listItem = document.createElement('li');
+                    
+                    // Create content wrapper
+                    const contentWrapper = document.createElement('div');
+                    contentWrapper.className = 'recommendation-content';
+                    
                     if (typeof item === 'string') {
-                        listItem.textContent = item;
+                        contentWrapper.textContent = item;
                     } else {
-                        listItem.textContent = item.description || item.recommendation || JSON.stringify(item);
+                        const actionText = item.action || item.description || item.recommendation || JSON.stringify(item);
+                        contentWrapper.textContent = actionText;
                     }
+                    
+                    listItem.appendChild(contentWrapper);
+                    
+                    // Add priority and ownership badges if available
+                    if (typeof item === 'object' && (item.priority || item.ownership)) {
+                        const badgesDiv = document.createElement('div');
+                        badgesDiv.className = 'recommendation-badges';
+                        
+                        if (item.priority) {
+                            const priorityBadge = document.createElement('span');
+                            priorityBadge.className = `priority-badge priority-${item.priority.toLowerCase()}`;
+                            priorityBadge.textContent = `Priority: ${capitalizeFirstLetter(item.priority)}`;
+                            badgesDiv.appendChild(priorityBadge);
+                        }
+                        
+                        if (item.ownership) {
+                            const ownershipBadge = document.createElement('span');
+                            ownershipBadge.className = `ownership-badge ownership-${item.ownership.toLowerCase().replace(/ /g, '-')}`;
+                            const ownerLabel = item.ownership.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                            ownershipBadge.innerHTML = `<i class="fas fa-user"></i> Owner: ${ownerLabel}`;
+                            badgesDiv.appendChild(ownershipBadge);
+                        }
+                        
+                        listItem.appendChild(badgesDiv);
+                    }
+                    
                     improveList.appendChild(listItem);
                 });
             } else {
@@ -1649,11 +1777,43 @@
                 
                 startItems.forEach(item => {
                     const listItem = document.createElement('li');
+                    
+                    // Create content wrapper
+                    const contentWrapper = document.createElement('div');
+                    contentWrapper.className = 'recommendation-content';
+                    
                     if (typeof item === 'string') {
-                        listItem.textContent = item;
+                        contentWrapper.textContent = item;
                     } else {
-                        listItem.textContent = item.description || item.recommendation || JSON.stringify(item);
+                        const actionText = item.action || item.description || item.recommendation || JSON.stringify(item);
+                        contentWrapper.textContent = actionText;
                     }
+                    
+                    listItem.appendChild(contentWrapper);
+                    
+                    // Add priority and ownership badges if available
+                    if (typeof item === 'object' && (item.priority || item.ownership)) {
+                        const badgesDiv = document.createElement('div');
+                        badgesDiv.className = 'recommendation-badges';
+                        
+                        if (item.priority) {
+                            const priorityBadge = document.createElement('span');
+                            priorityBadge.className = `priority-badge priority-${item.priority.toLowerCase()}`;
+                            priorityBadge.textContent = `Priority: ${capitalizeFirstLetter(item.priority)}`;
+                            badgesDiv.appendChild(priorityBadge);
+                        }
+                        
+                        if (item.ownership) {
+                            const ownershipBadge = document.createElement('span');
+                            ownershipBadge.className = `ownership-badge ownership-${item.ownership.toLowerCase().replace(/ /g, '-')}`;
+                            const ownerLabel = item.ownership.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                            ownershipBadge.innerHTML = `<i class="fas fa-user"></i> Owner: ${ownerLabel}`;
+                            badgesDiv.appendChild(ownershipBadge);
+                        }
+                        
+                        listItem.appendChild(badgesDiv);
+                    }
+                    
                     startList.appendChild(listItem);
                 });
                 
@@ -1680,11 +1840,43 @@
                 
                 stopItems.forEach(item => {
                     const listItem = document.createElement('li');
+                    
+                    // Create content wrapper
+                    const contentWrapper = document.createElement('div');
+                    contentWrapper.className = 'recommendation-content';
+                    
                     if (typeof item === 'string') {
-                        listItem.textContent = item;
+                        contentWrapper.textContent = item;
                     } else {
-                        listItem.textContent = item.description || item.recommendation || JSON.stringify(item);
+                        const actionText = item.action || item.description || item.recommendation || JSON.stringify(item);
+                        contentWrapper.textContent = actionText;
                     }
+                    
+                    listItem.appendChild(contentWrapper);
+                    
+                    // Add priority and ownership badges if available
+                    if (typeof item === 'object' && (item.priority || item.ownership)) {
+                        const badgesDiv = document.createElement('div');
+                        badgesDiv.className = 'recommendation-badges';
+                        
+                        if (item.priority) {
+                            const priorityBadge = document.createElement('span');
+                            priorityBadge.className = `priority-badge priority-${item.priority.toLowerCase()}`;
+                            priorityBadge.textContent = `Priority: ${capitalizeFirstLetter(item.priority)}`;
+                            badgesDiv.appendChild(priorityBadge);
+                        }
+                        
+                        if (item.ownership) {
+                            const ownershipBadge = document.createElement('span');
+                            ownershipBadge.className = `ownership-badge ownership-${item.ownership.toLowerCase().replace(/ /g, '-')}`;
+                            const ownerLabel = item.ownership.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                            ownershipBadge.innerHTML = `<i class="fas fa-user"></i> Owner: ${ownerLabel}`;
+                            badgesDiv.appendChild(ownershipBadge);
+                        }
+                        
+                        listItem.appendChild(badgesDiv);
+                    }
+                    
                     stopList.appendChild(listItem);
                 });
                 
@@ -1702,11 +1894,44 @@
                 
                 planningData.support_needed.forEach(item => {
                     const listItem = document.createElement('li');
+                    
+                    // Create content wrapper
+                    const contentWrapper = document.createElement('div');
+                    contentWrapper.className = 'recommendation-content';
+                    
                     if (typeof item === 'string') {
-                        listItem.textContent = item;
+                        contentWrapper.textContent = item;
                     } else {
-                        listItem.textContent = item.description || item.recommendation || JSON.stringify(item);
+                        // Extract the action/description from the object
+                        const actionText = item.action || item.description || item.recommendation || '';
+                        contentWrapper.textContent = actionText;
                     }
+                    
+                    listItem.appendChild(contentWrapper);
+                    
+                    // Add priority and ownership badges if available
+                    if (typeof item === 'object' && (item.priority || item.ownership)) {
+                        const badgesDiv = document.createElement('div');
+                        badgesDiv.className = 'recommendation-badges';
+                        
+                        if (item.priority) {
+                            const priorityBadge = document.createElement('span');
+                            priorityBadge.className = `priority-badge priority-${item.priority.toLowerCase()}`;
+                            priorityBadge.textContent = `Priority: ${capitalizeFirstLetter(item.priority)}`;
+                            badgesDiv.appendChild(priorityBadge);
+                        }
+                        
+                        if (item.ownership) {
+                            const ownershipBadge = document.createElement('span');
+                            ownershipBadge.className = `ownership-badge ownership-${item.ownership.toLowerCase().replace(/ /g, '-')}`;
+                            const ownerLabel = item.ownership.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                            ownershipBadge.innerHTML = `<i class="fas fa-user"></i> Owner: ${ownerLabel}`;
+                            badgesDiv.appendChild(ownershipBadge);
+                        }
+                        
+                        listItem.appendChild(badgesDiv);
+                    }
+                    
                     supportList.appendChild(listItem);
                 });
                 

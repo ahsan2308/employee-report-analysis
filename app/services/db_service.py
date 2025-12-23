@@ -436,7 +436,7 @@ def get_monthly_analysis_by_params(employee_id: int, year: int, month: int) -> O
                 "risk_mitigation_recommendations": analysis.risk_mitigation_recommendations,
                 
                 # Monthly achievements & challenges
-                "key_achievements": analysis.monthly_achievements,  
+                "monthly_achievements": analysis.monthly_achievements,  
                 "recurring_challenges": analysis.recurring_challenges,
                 "achievement_impact_avg": analysis.achievement_impact_avg,
                 

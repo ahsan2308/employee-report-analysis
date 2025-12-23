@@ -144,15 +144,21 @@ def get_monthly_data_for_analysis(employee_id: int, year: int, month: int) -> Di
             impact_count = 0
             
             for achievement in total_achievements:
-                impact_str = achievement.get("impact", "0")
-                # Extract numeric part if in format "8 (reason)"
-                if impact_str and isinstance(impact_str, str):
-                    try:
-                        impact_value = int(impact_str.split(" ")[0])
-                        achievement_impact_avg += impact_value
-                        impact_count += 1
-                    except (ValueError, IndexError):
-                        pass
+                # Try new format first (impact_score), fall back to old format (impact string)
+                impact_score = achievement.get("impact_score")
+                if impact_score is not None:
+                    achievement_impact_avg += impact_score
+                    impact_count += 1
+                else:
+                    # Legacy format: parse "8 (reason)" string
+                    impact_str = achievement.get("impact", "0")
+                    if impact_str and isinstance(impact_str, str):
+                        try:
+                            impact_value = int(impact_str.split(" ")[0])
+                            achievement_impact_avg += impact_value
+                            impact_count += 1
+                        except (ValueError, IndexError):
+                            pass
             
             if impact_count > 0:
                 result["metrics"]["achievement_impact_avg"] = round(achievement_impact_avg / impact_count, 2)

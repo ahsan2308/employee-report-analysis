@@ -999,6 +999,7 @@
     padding-bottom: 0.6rem;
     border-bottom: 1px solid var(--border);
     font-weight: 600;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1007,6 +1008,7 @@
 .monthly-assessment-section h5::before {
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
+    font-size: 1rem;
 }
 
 .progress-trends-section h5::before { content: '\f201'; color: var(--primary); }
@@ -2266,3 +2268,33 @@
     background-color: rgba(185, 28, 28, 0.1);
 }
 .performance-low::before { content: '\f201'; }
+
+/* Vision verification styling for weekly and monthly achievements */
+.achievement-vision {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    margin-left: 8px;
+}
+
+.achievement-vision i {
+    margin-right: 6px;
+    font-size: 0.75rem;
+}
+
+.achievement-vision.vision-supported {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #059669;
+}
+
+.achievement-vision.vision-contradicted {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+}

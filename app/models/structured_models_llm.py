@@ -15,8 +15,18 @@ class Achievement(BaseModel):
     description: str = Field(
         description="Detailed description of the achievement in complete sentences without referencing the impact rating"
     )
-    impact: str = Field(
-        description="Format must be: 'N (reason)' where N is an integer rating 1-10, followed by a concise reason for the rating in parentheses"
+    impact_score: int = Field(
+        ge=1,
+        le=10,
+        description="Impact rating from 1 to 10, where 1-3 is individual level, 4-6 is section level, 7-8 is wing level, 9-10 is HQ strategic level"
+    )
+    impact_reason: str = Field(
+        max_length=180,
+        description="Brief reason for the impact rating (max 120 characters), explaining which organizational level was impacted"
+    )
+    vision_verification: Literal["supported", "contradicted", "none"] = Field(
+        default="none",
+        description="If vision data confirms this achievement, set to 'supported'. If vision data contradicts it, set to 'contradicted'. If NO vision data appears in your prompt or it does not exist for the specific achievement, set the key to 'none'"
     )
 
     class Config:
@@ -112,8 +122,18 @@ class MonthlyAchievement(BaseModel):
     description: str = Field(
         description="Detailed description of a significant monthly achievement"
     )
-    impact: str = Field(
-        description="Format must be: 'N (reason)' where N is an integer rating 1-10, followed by a concise impact assessment"
+    impact_score: int = Field(
+        ge=1,
+        le=10,
+        description="Impact rating from 1 to 10, where 1-3 is individual level, 4-6 is section level, 7-8 is wing level, 9-10 is HQ strategic level"
+    )
+    impact_reason: str = Field(
+        max_length=180,
+        description="Brief reason for the impact rating (max 80 characters), explaining which organizational level was impacted"
+    )
+    vision_verification: Literal["supported", "contradicted", "none"] = Field(
+        default="none",
+        description="If vision data confirms this achievement, set to 'supported'. If vision data contradicts it, set to 'contradicted'. If NO vision data appears in your prompt or it does not exist for the specific achievement, set the key to 'none'"
     )
 
 class RecurringChallenge(BaseModel):
@@ -250,15 +270,21 @@ class KeyInitiative(BaseModel):
         description="Level of alignment with organizational priorities"
     )
     outcomes: str = Field(
-        description="Concrete business outcomes achieved through this initiative"
+        description="Concrete mission outcomes achieved through this initiative"
     )
 
 class StrategicAlignment(BaseModel):
-    organizational_impact: Literal["individual", "team", "department", "organization"] = Field(
+    organizational_impact: Literal["individual", "cell", "unit", "section", "wing", "hq"] = Field(
         description="Scope of impact the employee's work has had"
     )
     key_initiatives: List[KeyInitiative] = Field(
         description="Strategic initiatives the employee has contributed to"
+    )
+    role_alignment: Literal["strong", "partial", "weak"] = Field(
+        description="How well employee's work aligns with job description responsibilities across the quarter"
+    )
+    role_fit_assessment: str = Field(
+        description="Detailed assessment of Job Description fit, including stretch contributions beyond role scope and any gaps between role requirements and actual work patterns"
     )
 
 class AchievementTheme(BaseModel):
@@ -266,16 +292,20 @@ class AchievementTheme(BaseModel):
         description="Name of the achievement theme grouping related accomplishments"
     )
     related_achievements: List[str] = Field(
-        description="List of specific achievements related to this theme"
+        description="List of specific achievements within this theme, including both activities performed and their outcomes. Each achievement should capture what was done and its measurable impact (e.g., 'Developed cross-reference methodology reducing discrepancies by 35%')."
     )
-    impact: str = Field(
-        description="Format must be: 'N (reason)' where N is an integer rating 1-10, followed by a concise reason for the rating"
+    impact_score: int = Field(
+        ge=1,
+        le=10,
+        description="Impact rating from 1 to 10, where 1-3 is individual level, 4-6 is section level, 7-8 is wing level, 9-10 is HQ strategic level"
     )
-    business_outcome: str = Field(
-        description="Specific measurable results or business impact of these achievements"
+    impact_reason: str = Field(
+        max_length=180,
+        description="Brief reason for the impact rating (max 120 characters), explaining which organizational level was impacted and why"
     )
-    vision_verified: bool = Field(
-        description="Whether this achievement theme is verified by vision system data"
+    vision_verification: Literal["supported", "contradicted", "none"] = Field(
+        default="none",
+        description="If vision data confirms this achievement theme, set to 'supported'. If vision data contradicts it, set to 'contradicted'. If NO vision data appears in your prompt or it does not exist for the specific achievement, set the key to 'none'"
     )
 
 class ConsistencyMetrics(BaseModel):
@@ -311,7 +341,7 @@ class PerformanceTrajectory(BaseModel):
         description="Significant shifts in performance during the quarter"
     )
 
-class RecurringChallenge(BaseModel):
+class QuarterlyRecurringChallenge(BaseModel):
     description: str = Field(
         description="Description of a recurring challenge"
     )
@@ -329,7 +359,7 @@ class RecurringChallenge(BaseModel):
     )
 
 class ChallengePatterns(BaseModel):
-    recurring_challenges: List[RecurringChallenge] = Field(
+    recurring_challenges: List[QuarterlyRecurringChallenge] = Field(
         description="Challenges that recurred throughout the quarter"
     )
     adaptation_effectiveness: Literal["high", "medium", "low"] = Field(
@@ -340,6 +370,14 @@ class StakeholderImpact(BaseModel):
     stakeholder: str = Field(
         description="Team or department impacted by the employee's work"
     )
+    collaboration_type: Literal[
+        "Leading Initiative",
+        "Contributing Expertise",
+        "Mentoring",
+        "Process Improvement"
+    ] = Field(
+        description="Type of collaboration: leading_initiative (coordinating across Wings/Sections), contributing_expertise (specialized knowledge to other teams), mentoring (knowledge transfer/capability building), process_improvement (benefiting multiple units)"
+    )
     impact: str = Field(
         description="Description of the impact on this stakeholder"
     )
@@ -349,13 +387,10 @@ class StakeholderImpact(BaseModel):
 
 class CrossFunctionalImpact(BaseModel):
     collaboration_effectiveness: Literal["high", "medium", "low"] = Field(
-        description="Effectiveness of collaboration with other teams/departments"
+        description="Effectiveness of collaboration with other teams/departments across the quarter"
     )
     stakeholder_impacts: List[StakeholderImpact] = Field(
-        description="Specific impacts on different stakeholders"
-    )
-    knowledge_sharing: List[str] = Field(
-        description="Examples of knowledge sharing with other teams/individuals"
+        description="Specific collaboration activities with different stakeholders. Each represents a distinct collaboration pattern with its type, impact, and supporting evidence."
     )
 
 class Capability(BaseModel):
@@ -429,28 +464,39 @@ class QuarterlyCredibilityAssessment(BaseModel):
     explanation: str = Field(
         description="Rationale for the credibility assessment"
     )
-    vision_data_alignment: Literal["high", "medium", "low"] = Field(
-        description="Alignment between self-reported activities and vision system data"
+    vision_data_alignment: Optional[Literal["high", "medium", "low", "none"]] = Field(
+        description="Alignment between self-reported activities and vision system data. Set to 'high' if vision data strongly validates claims, 'medium' if partially validates, 'low' if contradicts or shows significant discrepancies. If NO vision data exists for this employee, either OMIT this key entirely OR set to 'none' (both are acceptable)."
     )
     impact_on_evaluation: str = Field(
         description="How credibility concerns affected the overall assessment"
     )
 
+class Recommendation(BaseModel):
+    action: str = Field(
+        description="The recommended action in clear, actionable language"
+    )
+    priority: Literal["high", "medium", "low"] = Field(
+        description="Priority level: high (immediate intervention needed), medium (address within next quarter), low (desirable improvements)"
+    )
+    ownership: Literal["employee", "manager", "hr", "cross-team"] = Field(
+        description="Who is responsible for implementing this recommendation: employee (independent action), manager (intervention/approval required), hr (HR resources/training/policy support), cross-team (coordination with other Wings/Sections)"
+    )
+
 class ForwardPlanning(BaseModel):
-    keep_doing: List[str] = Field(
-        description="Activities the employee should continue"
+    keep_doing: List[Recommendation] = Field(
+        description="Activities the employee should continue (with rationale for value)"
     )
-    improve: List[str] = Field(
-        description="Areas where the employee should focus on improvement"
+    improve: List[Recommendation] = Field(
+        description="Areas where the employee should focus on enhancement (with specific actions)"
     )
-    start: List[str] = Field(
-        description="New initiatives or activities the employee should begin"
+    start: List[Recommendation] = Field(
+        description="New initiatives or activities the employee should begin (growth opportunities)"
     )
-    stop: List[str] = Field(
-        description="Activities the employee should discontinue"
+    stop: List[Recommendation] = Field(
+        description="Activities the employee should discontinue (low value or ineffective, provide alternatives)"
     )
-    support_needed: List[str] = Field(
-        description="Resources or support required for success"
+    support_needed: List[Recommendation] = Field(
+        description="Resources or support required for success (with justification and timeline context)"
     )
 
 class QuarterlyAnalysis(BaseModel):

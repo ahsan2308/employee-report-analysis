@@ -82,7 +82,7 @@ def analyze_report_task(self, task_id: str):
         
         # Perform analysis
         # Get recent reports for context - with clearer parameters
-        target_recent_reports = 2  # Target number of recent reports
+        target_recent_reports = 3  # Target number of recent reports
         target_similar_reports = 0  # Target number of similar historical reports
         
         logger.info(f"Fetching {target_recent_reports} most recent reports for employee {report.employee_id} (task: {task_id})")
@@ -152,7 +152,7 @@ def analyze_report_task(self, task_id: str):
             recent_report_data,     
             similar_report_data,
             formatted_jd_data,    
-            num_ctx=40000
+            num_ctx=64000
         )
         
         # Extract key fields
@@ -436,7 +436,7 @@ def analyze_monthly_reports_task(self, task_id: str):
             risk_level_pattern = progress_trends.get("risk_level_pattern", "stable")
             challenge_resolution_progress = progress_trends.get("challenge_resolution_progress", "unchanged")
             
-            # Extract monthly achievements (maps to key_achievements in DB)
+            # Extract monthly achievements
             monthly_achievements = analysis_result.get("monthly_achievements", [])
             
             # Extract recurring challenges
@@ -821,7 +821,6 @@ def analyze_quarterly_reports_task(self, task_id: str):
             cross_functional_impact = analysis_result.get("cross_functional_impact", {})
             collaboration_effectiveness = cross_functional_impact.get("collaboration_effectiveness", "medium")
             stakeholder_impacts = cross_functional_impact.get("stakeholder_impacts", [])
-            knowledge_sharing = cross_functional_impact.get("knowledge_sharing", [])
             
             # Calculate stakeholder count
             stakeholder_count = len(stakeholder_impacts)
@@ -846,9 +845,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
             # Extract credibility assessment
             credibility_assessment = analysis_result.get("credibility_assessment", {})
             credibility_rating = credibility_assessment.get("rating", "medium")
-            vision_data_alignment = credibility_assessment.get("vision_data_alignment", "medium")
-            
-            # Extract forward planning
+            vision_data_alignment = credibility_assessment.get("vision_data_alignment", "none") 
             forward_planning = analysis_result.get("forward_planning", {})
             
             # Extract quarterly summary

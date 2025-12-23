@@ -1010,24 +1010,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 const achievementCard = document.createElement('div');
                 achievementCard.className = 'achievement-card';
                 
-                // Extract impact value and determine class
-                let impactValue = achievement.impact;
-                let impactClass = 'impact-medium';
+                // Extract impact value and determine class - handle both old and new formats
+                let impactValue;
                 let numericImpact = 5; // Default medium value
+                let impactClass = 'impact-medium';
                 
-                // Try to extract numeric part if available (for color coding)
-                if (typeof impactValue === 'number') {
-                    numericImpact = impactValue;
-                } else if (typeof impactValue === 'string') {
-                    // Extract numeric part if in format like "8 (high priority)"
-                    const numericMatch = impactValue.match(/^(\d+)/);
-                    if (numericMatch) {
-                        numericImpact = parseInt(numericMatch[1]);
-                    } else if (impactValue.toLowerCase().includes('high')) {
-                        numericImpact = 8;
-                    } else if (impactValue.toLowerCase().includes('low')) {
-                        numericImpact = 3;
+                // Check for new format first (impact_score + impact_reason)
+                if (achievement.impact_score !== undefined && achievement.impact_reason !== undefined) {
+                    numericImpact = achievement.impact_score;
+                    impactValue = `${achievement.impact_score} (${achievement.impact_reason})`;
+                } else if (achievement.impact !== undefined) {
+                    // Old format: combined impact field
+                    impactValue = achievement.impact;
+                    
+                    // Try to extract numeric part if available (for color coding)
+                    if (typeof impactValue === 'number') {
+                        numericImpact = impactValue;
+                    } else if (typeof impactValue === 'string') {
+                        // Extract numeric part if in format like "8 (high priority)"
+                        const numericMatch = impactValue.match(/^(\d+)/);
+                        if (numericMatch) {
+                            numericImpact = parseInt(numericMatch[1]);
+                        } else if (impactValue.toLowerCase().includes('high')) {
+                            numericImpact = 8;
+                        } else if (impactValue.toLowerCase().includes('low')) {
+                            numericImpact = 3;
+                        }
                     }
+                } else {
+                    impactValue = 'Not rated';
                 }
                 
                 // Determine class based on numeric impact
@@ -1046,8 +1057,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="achievement-footer">
                         <div class="achievement-impact ${impactClass}">Impact: ${impactValue}</div>
-                    </div>
                 `;
+                
+                // Add vision verification if available (objective data alignment from Vision System tracking)
+                if (achievement.vision_verification && achievement.vision_verification.toLowerCase() !== 'none') {
+                    const visionStatus = achievement.vision_verification.toLowerCase();
+                    const visionIcon = visionStatus === 'supported' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+                    const visionClass = visionStatus === 'supported' ? 'vision-supported' : 'vision-contradicted';
+                    achievementContent += `
+                        <div class="achievement-vision ${visionClass}">
+                            <i class="fas ${visionIcon}"></i> Data: ${achievement.vision_verification}
+                        </div>
+                    `;
+                }
+                
+                achievementContent += `</div>`; // Close achievement-footer
                 
                 achievementCard.innerHTML = achievementContent;
                 achievementsContainer.appendChild(achievementCard);
@@ -1696,19 +1720,19 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Credibility assessment:", data.credibility_assessment);
         console.log("Performance assessment:", data.performance_assessment);
         
-        // Extract data from analysis result
+        // Extract data from analysis result with defaults
         const { 
             full_analysis_json,
-            sentiment_score, 
-            risk_level, 
-            risk_explanation,
-            achievements_json,
-            challenges_json,
-            topics,
-            action_items,
-            credibility_assessment,
-            performance_assessment
-        } = data;
+            sentiment_score = 0.5, 
+            risk_level = 'medium', 
+            risk_explanation = '',
+            achievements_json = [],
+            challenges_json = [],
+            topics = [],
+            action_items = [],
+            credibility_assessment = null,
+            performance_assessment = null
+        } = data || {};
         
         // Determine sentiment text based on score
         let sentimentText = "Neutral";
@@ -1778,7 +1802,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mainContainer.appendChild(header);
 
         // Add performance assessment section if available - NOW BEFORE credibility assessment
-        if (performance_assessment) {
+        if (performance_assessment && performance_assessment.summary) {
             const performanceSection = document.createElement('div');
             performanceSection.className = 'performance-assessment-section analysis-section';
             
@@ -1792,7 +1816,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Add summary paragraph
             const summaryPara = document.createElement('p');
-            summaryPara.textContent = performance_assessment.summary;
+            summaryPara.textContent = performance_assessment.summary || 'No performance summary available.';
             performanceSection.appendChild(summaryPara);
             
             // Add key strengths if available
@@ -1861,7 +1885,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 performanceSection.appendChild(improvementContainer);
             } else {
                 // Empty state for improvements (weekly)
-                const improvementContainer = documentElement('div');
+                const improvementContainer = document.createElement('div');
                 improvementContainer.className = 'improvement-areas-container card-style-container';
                 improvementContainer.innerHTML = `<h6><i class="fas fa-lightbulb"></i> Areas for Improvement</h6>`;
                 const emptyMessage = document.createElement('div');
@@ -1875,7 +1899,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Add credibility assessment section if available
-        if (credibility_assessment) {
+        if (credibility_assessment && credibility_assessment.explanation) {
             const credibilitySection = document.createElement('div');
             credibilitySection.className = 'credibility-assessment-section analysis-section';
             
@@ -1889,7 +1913,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Add explanation paragraph
             const explanationPara = document.createElement('p');
-            explanationPara.textContent = credibility_assessment.explanation;
+            explanationPara.textContent = credibility_assessment.explanation || 'No credibility assessment available.';
             credibilitySection.appendChild(explanationPara);
             
             // Add exaggeration flags if any exist
@@ -1959,6 +1983,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             topicsSection.appendChild(topicsContainer);
             mainContainer.appendChild(topicsSection);
+        } else {
+            // Show empty state for topics
+            const topicsSection = document.createElement('div');
+            topicsSection.className = 'topics-section analysis-section';
+            topicsSection.innerHTML = `<h5>Key Topics
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">Main themes, projects, and focus areas mentioned throughout the employee's report.</span>
+                </span>
+            </h5>
+            <p><em>No key topics were extracted from this report.</em></p>`;
+            mainContainer.appendChild(topicsSection);
         }
         
         // Add achievements section
@@ -1979,11 +2015,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 const achievementItem = document.createElement('li');
                 achievementItem.className = 'achievement-item';
                 
-                // Add description as before
-                let achievementContent = `<div class="achievement-description">${achievement.description || achievement}</div>`;
+                // Handle both string and object formats
+                const description = typeof achievement === 'string' ? achievement : (achievement.description || 'No description available');
                 
-                // Add impact with tooltip using an info icon instead of underlining the text
-                if (achievement.impact) {
+                // Add description as before
+                let achievementContent = `<div class="achievement-description">${description}</div>`;
+                
+                // Add impact with tooltip - handle both old format (impact) and new format (impact_score + impact_reason)
+                if (achievement.impact_score !== undefined && achievement.impact_reason !== undefined) {
+                    // New format: separate score and reason
+                    achievementContent += `
+                        <div class="achievement-impact">
+                            Impact: ${achievement.impact_score} (${achievement.impact_reason})
+                            <span class="tooltip-trigger">
+                                <i class="fas fa-question-circle"></i>
+                                <span class="tooltip">Impact ratings range from 1-10, where 10 represents the highest impact and 1 represents minimal impact.</span>
+                            </span>
+                        </div>`;
+                } else if (achievement.impact) {
+                    // Old format: combined string (for backward compatibility)
                     achievementContent += `
                         <div class="achievement-impact">
                             Impact: ${achievement.impact}
@@ -1994,11 +2044,38 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>`;
                 }
                 
+                // Add vision verification if available (objective data alignment from Vision System tracking)
+                if (achievement.vision_verification && achievement.vision_verification.toLowerCase() !== 'none') {
+                    const visionStatus = achievement.vision_verification.toLowerCase();
+                    const visionIcon = visionStatus === 'supported' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+                    const visionClass = visionStatus === 'supported' ? 'vision-supported' : 'vision-contradicted';
+                    achievementContent += `
+                        <div class="achievement-vision ${visionClass}">
+                            <i class="fas ${visionIcon}"></i> Objective Data: ${achievement.vision_verification}
+                            <span class="tooltip-trigger">
+                                <i class="fas fa-question-circle"></i>
+                                <span class="tooltip">Cross-reference with Vision System tracking data. 'Supported' means objective data confirms this achievement. 'Contradicted' means data conflicts with the claim.</span>
+                            </span>
+                        </div>`;
+                }
+                
                 achievementItem.innerHTML = achievementContent;
                 achievementsList.appendChild(achievementItem);
             });
             
             achievementsSection.appendChild(achievementsList);
+            mainContainer.appendChild(achievementsSection);
+        } else {
+            // Show empty state for achievements
+            const achievementsSection = document.createElement('div');
+            achievementsSection.className = 'achievements-section analysis-section';
+            achievementsSection.innerHTML = `<h5>Achievements
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">Key accomplishments reported by the employee with impact ratings where higher numbers represent greater positive effects on goals and outcomes.</span>
+                </span>
+            </h5>
+            <p><em>No achievements were identified in this report.</em></p>`;
             mainContainer.appendChild(achievementsSection);
         }
         
@@ -2053,6 +2130,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             challengesSection.appendChild(challengesList);
             mainContainer.appendChild(challengesSection);
+        } else {
+            // Show empty state for challenges
+            const challengesSection = document.createElement('div');
+            challengesSection.className = 'challenges-section analysis-section';
+            challengesSection.innerHTML = `<h5>Challenges
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">Obstacles or issues reported by the employee with severity ratings indicating their impact on work performance.</span>
+                </span>
+            </h5>
+            <p><em>No challenges were identified in this report.</em></p>`;
+            mainContainer.appendChild(challengesSection);
         }
         
         // Add action items section
@@ -2076,6 +2165,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             actionItemsSection.appendChild(actionItemsList);
+            mainContainer.appendChild(actionItemsSection);
+        } else {
+            // Show empty state for action items
+            const actionItemsSection = document.createElement('div');
+            actionItemsSection.className = 'action-items-section analysis-section';
+            actionItemsSection.innerHTML = `<h5>Recommended Actions
+                <span class="tooltip-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip">Suggested follow-up items for both management and employees to address based on the report content, including resource needs, support requirements, and opportunities to build on achievements.</span>
+                </span>
+            </h5>
+            <p><em>No specific action items were recommended for this report.</em></p>`;
             mainContainer.appendChild(actionItemsSection);
         }
         
