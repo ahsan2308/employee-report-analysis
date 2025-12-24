@@ -2275,7 +2275,7 @@ When assigning the optional `vision_verification` field to achievement themes:
 """
 
 
-        # STRATEGIC PLACEMENT: Insert JD data AFTER vision data, BEFORE requirements
+        # Insert JD data AFTER vision data, BEFORE requirements
         formatted_jd_data = quarterly_data.get("formatted_jd_data", "")
         if formatted_jd_data:
             prompt += f"""
@@ -3052,16 +3052,16 @@ If context limitations require prioritizing information:
 
 """
 
-        # TODO: REMOVE THIS - For testing only to see full generated prompt
-        with open("generated_quarterly_prompt.txt", "w", encoding="utf-8") as f:
-            f.write("="*100 + "\n")
-            f.write("GENERATED QUARTERLY ANALYSIS PROMPT:\n")
-            f.write("="*100 + "\n\n")
-            f.write(prompt)
-            f.write("\n\n" + "="*100 + "\n")
-            f.write(f"Total prompt length: {len(prompt)} characters\n")
-            f.write("="*100 + "\n")
-        print(f"[DEBUG] Quarterly prompt saved to generated_quarterly_prompt.txt ({len(prompt)} characters)")
+        # # TODO: REMOVE THIS - For testing only to see full generated prompt
+        # with open("generated_quarterly_prompt.txt", "w", encoding="utf-8") as f:
+        #     f.write("="*100 + "\n")
+        #     f.write("GENERATED QUARTERLY ANALYSIS PROMPT:\n")
+        #     f.write("="*100 + "\n\n")
+        #     f.write(prompt)
+        #     f.write("\n\n" + "="*100 + "\n")
+        #     f.write(f"Total prompt length: {len(prompt)} characters\n")
+        #     f.write("="*100 + "\n")
+        # print(f"[DEBUG] Quarterly prompt saved to generated_quarterly_prompt.txt ({len(prompt)} characters)")
 
 
         return prompt
