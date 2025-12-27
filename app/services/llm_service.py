@@ -255,6 +255,7 @@ class LLMService:
         recent_reports: List[Dict[str, Any]] = None,
         similar_reports: List[str] = None,
         formatted_jd_data: str = None,
+        employee_info: Dict[str, Any] = None,
         use_custom_format: bool = False,
         custom_format: Optional[Dict[str, Any]] = None,
         num_ctx: int = 8192
@@ -267,6 +268,8 @@ class LLMService:
             formatted_vision_data: Pre-formatted vision data string
             recent_reports: List of recent reports with date information
             similar_reports: List of semantically similar historical reports
+            formatted_jd_data: Formatted job description data
+            employee_info: Dictionary containing employee details (name, position, wing)
             use_custom_format: If True, use custom_format instead of the Pydantic model
             custom_format: Optional custom response format to use instead of Pydantic model
             
@@ -279,7 +282,8 @@ class LLMService:
             formatted_vision_data, 
             recent_reports,
             similar_reports,
-            formatted_jd_data
+            formatted_jd_data,
+            employee_info
         )
         logger.debug(report_text)
 

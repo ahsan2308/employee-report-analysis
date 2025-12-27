@@ -44,7 +44,8 @@ class StructuredPrompts:
     def employee_analysis_prompt(report_text: str, formatted_vision_data: str = None, 
                            recent_reports: List[Dict[str, Any]] = None, 
                            similar_reports: List[Dict[str, Any]] = None,
-                           formatted_jd_data: str = None) -> str:
+                           formatted_jd_data: str = None,
+                           employee_info: Dict[str, Any] = None) -> str:
         """
         Generate a prompt for analyzing an employee report.
         
@@ -54,10 +55,15 @@ class StructuredPrompts:
             recent_reports: List of recent report dictionaries, each containing text and date
             similar_reports: List of similar historical report dictionaries with text and date
             formatted_jd_data: Optional formatted job description data
+            employee_info: Dictionary containing employee details (name, position, wing)
             
         Returns:
             Prompt for employee report analysis
         """
+        # Extract employee information
+        employee_name = employee_info.get("name", "Unknown Employee") if employee_info else "Unknown Employee"
+        employee_position = employee_info.get("position", "Unknown Position") if employee_info else "Unknown Position"
+        employee_wing = employee_info.get("wing", "Unknown Department") if employee_info else "Unknown Department"
         # Split vision data into current and historical parts if available
         current_data = ""
         historical_data = ""
@@ -106,7 +112,26 @@ This is a civilian intelligence organization serving national security objective
 - Highest-tier achievements contribute to "national security" or "federal security objectives"
 - Primary stakeholders: State & citizens, federal government leadership (Prime Minister's Office/Cabinet Secretariat), provincial authorities, partner law enforcement agencies (LEAs)
 - Outcomes are measured as "mission achievements," "operational outcomes," or "service delivery results"
-- Organizational structure combines rank-based hierarchy (BPS grades 17-22) with functional divisions (Wings, Sections, Units, Cells)
+
+**Organizational Structure:**
+This organization operates through two parallel hierarchies:
+
+*Functional Hierarchy* (bottom to top):
+Cell/Desk → Unit/Branch → Section → Wing → HQ
+
+*Geographic Hierarchy* (bottom to top):
+Tehsil HQ (THQ) → District HQ (DHQ) → Zonal HQ (ZHQ) → Provincial HQ (PHQ) / Regional HQ (RHQ) → IBD HQ
+
+*Terminology clarification:*
+- Cell and Desk are interchangeable terms for the lowest functional unit
+- Unit and Branch are interchangeable terms for mid-level functional grouping
+- Officers operate within both hierarchies simultaneously (e.g., "Cell within Wing at DHQ")
+
+*Impact Context:*
+- Cell/Desk-level: Individual or small team outputs
+- Unit/Branch and Section-level: Coordination within immediate organizational unit
+- Wing-level: Cross-sectional coordination, departmental impact
+- HQ-level (PHQ/RHQ/IBD HQ): Strategic organizational decisions, inter-agency coordination
 
 IMPORTANT: While assessing credibility is one aspect of your analysis, your primary goal is to provide a balanced and fair assessment of the employee's report. Do not be overly skeptical of reasonable positive statements or measured claims.
 
@@ -289,6 +314,11 @@ Example entries:
 - "Vision data shows 3 tracked activities vs. claimed 15 major accomplishments"
 
 **Timeframe-Based Credibility:** If credibility patterns changed over time, apply ratings to specific time periods and document improvement trajectory in explanation.
+
+## EMPLOYEE INFORMATION
+- Name: {employee_name}
+- Position: {employee_position}
+- Wing/Department: {employee_wing}
 
 ## EMPLOYEE REPORT TO ANALYZE
 
@@ -553,17 +583,17 @@ Complete all of the following analyses. The order below reflects logical depende
    Rate impact 1-10 using this scale:
    
    IMPACT RATING SCALE:
-   - 1-3: Individual/Cell-level task completion with no broader effect
-     Examples including but are not limited to Routine administrative tasks, individual case file updates, personal skill development
+   - 1-3: Individual/Cell/Desk-level task completion with no broader effect
+     Examples include but are not limited to routine administrative tasks, individual case file updates, personal skill development, THQ/DHQ routine operations
    
-   - 4-6: Unit/Section-level impact or multi-cell coordination
-     Examples including but are not limited to Analytical products used by immediate team, process improvements within section, coordination across multiple desks
+   - 4-6: Unit/Branch and Section-level impact or multi-cell coordination
+     Examples include but are not limited to analytical products used by immediate team, process improvements within section, coordination across multiple desks, DHQ/ZHQ coordination activities
    
-   - 7-8: Wing-level impact, cross-wing collaboration, or external stakeholder engagement
-     Examples including but are not limited to Intelligence assessments briefed to senior management, coordination with partner LEAs, reports delivered to provincial/federal authorities, process changes affecting multiple sections
+   - 7-8: Wing-level impact at HQ facilities, cross-wing collaboration, or external stakeholder engagement
+     Examples include but are not limited to intelligence assessments briefed to senior management, coordination with partner LEAs, reports delivered to provincial/federal authorities, process changes affecting multiple sections, ZHQ/PHQ/RHQ level coordination
    
-   - 9-10: HQ-level strategic impact, national security significance, or high-level inter-agency outcomes
-     Examples including but are not limited to Intelligence products briefed to PMO/Cabinet, contributions to federal security directives, strategic partnerships with multiple LEAs, mission-critical operational successes
+   - 9-10: IBD HQ-level strategic impact, national security significance, or high-level inter-agency outcomes
+     Examples include but are not limited to intelligence products briefed to PMO/Cabinet, contributions to federal security directives, strategic partnerships with multiple LEAs, mission-critical operational successes, IBD HQ strategic initiatives
    
    Apply credibility-based discounts to impact scores. If Vision data available, mark achievements as vision-verified.
    
@@ -1035,7 +1065,26 @@ This is a civilian intelligence organization serving national security objective
 - Highest-tier achievements contribute to "national security" or "federal security objectives"
 - Primary stakeholders: State & citizens, federal government leadership (Prime Minister's Office/Cabinet Secretariat), provincial authorities, partner law enforcement agencies (LEAs)
 - Outcomes are measured as "mission achievements," "operational outcomes," or "service delivery results"
-- Organizational structure combines rank-based hierarchy (BPS grades 17-22) with functional divisions (Wings, Sections, Units, Cells)
+
+**Organizational Structure:**
+This organization operates through two parallel hierarchies:
+
+*Functional Hierarchy* (bottom to top):
+Cell/Desk → Unit/Branch → Section → Wing → HQ
+
+*Geographic Hierarchy* (bottom to top):
+Tehsil HQ (THQ) → District HQ (DHQ) → Zonal HQ (ZHQ) → Provincial HQ (PHQ) / Regional HQ (RHQ) → IBD HQ
+
+*Terminology clarification:*
+- Cell and Desk are interchangeable terms for the lowest functional unit
+- Unit and Branch are interchangeable terms for mid-level functional grouping
+- Officers operate within both hierarchies simultaneously (e.g., "Cell within Wing at DHQ")
+
+*Impact Context:*
+- Cell/Desk-level: Individual or small team outputs
+- Unit/Branch and Section-level: Coordination within immediate organizational unit
+- Wing-level: Cross-sectional coordination, departmental impact
+- HQ-level (PHQ/RHQ/IBD HQ): Strategic organizational decisions, inter-agency coordination
 
 ### Monthly Analysis Focus
 - Identify PATTERNS across weeks (not individual events). 
@@ -1387,27 +1436,31 @@ If weeks are missing (leave, incomplete data):
 
 Rate cumulative/significant achievements using this scale:
 
-**1-3: Individual/Cell-level Impact**
+**1-3: Individual/Cell/Desk-level Impact**
 - Routine task completion patterns
 - Personal skill development
 - Individual case file maintenance
+- THQ/DHQ routine operations
 
-**4-6: Unit/Section-level Impact**
+**4-6: Unit/Branch and Section-level Impact**
 - Value addition in immediate team
 - Process improvements within section
 - Coordination across multiple desks/cells
+- DHQ/ZHQ coordination activities
 
-**7-8: Wing-level Impact**
+**7-8: Wing-level Impact at HQ Facilities**
 - Intelligence assessments briefed to senior management
 - Coordination with partner LEAs
 - Reports delivered to provincial/federal authorities
 - Process changes affecting multiple sections
+- ZHQ/PHQ/RHQ level coordination
 
-**9-10: HQ-level/Strategic Impact**
+**9-10: IBD HQ-level/Strategic Impact**
 - Intelligence products briefed to PMO/Cabinet
 - Contributions to federal security directives
 - Strategic partnerships with multiple LEAs
 - Mission-critical operational successes
+- IBD HQ strategic initiatives
 
 **Monthly Application:**
 - Rate cumulative impact of achievement clusters, not individual items
@@ -2152,7 +2205,26 @@ This is a civilian intelligence organization serving national security objective
 - Highest-tier achievements contribute to "national security" or "federal security objectives"
 - Primary stakeholders: State & citizens, federal government leadership (Prime Minister's Office/Cabinet Secretariat), provincial authorities, partner law enforcement agencies (LEAs)
 - Outcomes are measured as "mission achievements," "operational outcomes," or "service delivery results"
-- Organizational structure combines rank-based hierarchy (BPS grades 17-22) with functional divisions (Wings, Sections, Units, Cells)
+
+**Organizational Structure:**
+This organization operates through two parallel hierarchies:
+
+*Functional Hierarchy* (bottom to top):
+Cell/Desk → Unit/Branch → Section → Wing → HQ
+
+*Geographic Hierarchy* (bottom to top):
+Tehsil HQ (THQ) → District HQ (DHQ) → Zonal HQ (ZHQ) → Provincial HQ (PHQ) / Regional HQ (RHQ) → IBD HQ
+
+*Terminology clarification:*
+- Cell and Desk are interchangeable terms for the lowest functional unit
+- Unit and Branch are interchangeable terms for mid-level functional grouping
+- Officers operate within both hierarchies simultaneously (e.g., "Cell within Wing at DHQ")
+
+*Impact Context:*
+- Cell/Desk-level: Individual or small team outputs
+- Unit/Branch and Section-level: Coordination within immediate organizational unit
+- Wing-level: Cross-sectional coordination, departmental impact
+- HQ-level (PHQ/RHQ/IBD HQ): Strategic organizational decisions, inter-agency coordination
 
 ### Quarterly Analysis Focus
 - Identify PATTERNS across months (not individual events)
@@ -2465,27 +2537,31 @@ If months are missing (leave, incomplete data):
 
 Rate cumulative/thematic achievements using this scale:
 
-**1-3: Individual/Cell-level Impact**
+**1-3: Individual/Cell/Desk-level Impact**
 - Routine task completion patterns across quarter
 - Personal skill development
 - Individual case file maintenance
+- THQ/DHQ routine operations
 
-**4-6: Unit/Section-level Impact**
-- Value addition in immediate team over time
+**4-6: Unit/Branch and Section-level Impact**
+- Sustained value addition to immediate team
 - Process improvements within section
-- Coordination across multiple desks/cells
+- Consistent coordination across multiple desks/cells
+- DHQ/ZHQ coordination activities
 
-**7-8: Wing-level Impact**
-- Intelligence assessments briefed to senior management
-- Coordination with partner LEAs
-- Reports delivered to provincial/federal authorities
+**7-8: Wing-level Impact at HQ Facilities**
+- Intelligence assessments regularly briefed to senior management
+- Ongoing coordination with partner LEAs
+- Regular reports delivered to provincial/federal authorities
 - Process changes affecting multiple sections
+- ZHQ/PHQ/RHQ level coordination
 
-**9-10: HQ-level/Strategic Impact**
-- Intelligence products briefed to PMO/Cabinet
+**9-10: IBD HQ-level/Strategic Impact**
+- Intelligence products regularly briefed to PMO/Cabinet
 - Contributions to federal security directives
-- Strategic partnerships with multiple LEAs
-- Mission-critical operational successes
+- Strategic partnerships established with multiple LEAs
+- Mission-critical operational successes with lasting impact
+- IBD HQ strategic initiatives
 
 **Quarterly Application:**
 - Rate cumulative impact of achievement clusters, not individual items
@@ -3052,16 +3128,16 @@ If context limitations require prioritizing information:
 
 """
 
-        # # TODO: REMOVE THIS - For testing only to see full generated prompt
-        # with open("generated_quarterly_prompt.txt", "w", encoding="utf-8") as f:
-        #     f.write("="*100 + "\n")
-        #     f.write("GENERATED QUARTERLY ANALYSIS PROMPT:\n")
-        #     f.write("="*100 + "\n\n")
-        #     f.write(prompt)
-        #     f.write("\n\n" + "="*100 + "\n")
-        #     f.write(f"Total prompt length: {len(prompt)} characters\n")
-        #     f.write("="*100 + "\n")
-        # print(f"[DEBUG] Quarterly prompt saved to generated_quarterly_prompt.txt ({len(prompt)} characters)")
+        # TODO: REMOVE THIS - For testing only to see full generated prompt
+        with open("generated_quarterly_prompt.txt", "w", encoding="utf-8") as f:
+            f.write("="*100 + "\n")
+            f.write("GENERATED QUARTERLY ANALYSIS PROMPT:\n")
+            f.write("="*100 + "\n\n")
+            f.write(prompt)
+            f.write("\n\n" + "="*100 + "\n")
+            f.write(f"Total prompt length: {len(prompt)} characters\n")
+            f.write("="*100 + "\n")
+        print(f"[DEBUG] Quarterly prompt saved to generated_quarterly_prompt.txt ({len(prompt)} characters)")
 
 
         return prompt

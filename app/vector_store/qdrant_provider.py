@@ -371,7 +371,7 @@ class QdrantProvider(BaseVectorStore):
                     # Process response from grouped search
                     results = []
                     
-                    # FIXED: Properly iterate over response.groups (not response itself)
+                    # Properly iterate over response.groups (not response itself)
                     for group in response.groups:
                         # Skip empty groups
                         if not group.hits:

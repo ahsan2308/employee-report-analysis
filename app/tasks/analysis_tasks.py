@@ -151,7 +151,12 @@ def analyze_report_task(self, task_id: str):
             formatted_vision_data,
             recent_report_data,     
             similar_report_data,
-            formatted_jd_data,    
+            formatted_jd_data,
+            employee_info={
+                "name": employee.name,
+                "position": employee.position,
+                "wing": employee.wing
+            },
             num_ctx=64000
         )
         
@@ -483,15 +488,13 @@ def analyze_monthly_reports_task(self, task_id: str):
                 impact_sum = 0.0
                 
                 for achievement in monthly_achievements:
-                    impact_str = achievement.get("impact", "0")
-                    # Extract numeric part if in format "8 (reason)"
-                    if impact_str and isinstance(impact_str, str):
-                        try:
-                            impact_value = int(impact_str.split(" ")[0])
-                            impact_sum += impact_value
-                            impact_count += 1
-                        except (ValueError, IndexError):
-                            pass
+                    impact_score = achievement.get("impact_score", 0)
+                    try:
+                        impact_value = int(impact_score)
+                        impact_sum += impact_value
+                        impact_count += 1
+                    except (ValueError, IndexError):
+                        pass
                 
                 if impact_count > 0:
                     achievement_impact_avg = round(impact_sum / impact_count, 2)
