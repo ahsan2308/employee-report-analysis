@@ -31,6 +31,11 @@ MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS = config.get("max_content_items
 MAX_CONTENT_ITEMS_PER_ENTITY_FOR_MONTHLY_ANALYSIS = config.get("max_content_items_per_entity_for_monthly_analysis", 10, section="vector_db.search")
 MAX_CONTENT_ITEMS_PER_ENTITY_FOR_QUARTERLY_ANALYSIS = config.get("max_content_items_per_entity_for_quarterly_analysis", 10, section="vector_db.search")
 
+# Content item length limits (Characters) for truncation
+MAX_CONTENT_ITEM_LENGTH_WEEKLY = config.get("max_content_item_length_weekly", 300, section="vector_db.search")
+MAX_CONTENT_ITEM_LENGTH_MONTHLY = config.get("max_content_item_length_monthly", 250, section="vector_db.search")
+MAX_CONTENT_ITEM_LENGTH_QUARTERLY = config.get("max_content_item_length_quarterly", 200, section="vector_db.search")
+
 @celery_app.task(bind=True)
 def analyze_report_task(self, task_id: str):
     """
@@ -129,7 +134,11 @@ def analyze_report_task(self, task_id: str):
         # Get vision data, filter it, and format it
         raw_vision_data = get_employee_vision_data(report.employee_id, report.report_date, num_previous_weeks=4)
         filtered_vision_data = filter_vision_data(raw_vision_data)
-        formatted_vision_data = format_vision_data_for_weekly_analysis_prompt(filtered_vision_data, max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS)
+        formatted_vision_data = format_vision_data_for_weekly_analysis_prompt(
+            filtered_vision_data, 
+            max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS,
+            max_content_item_length=MAX_CONTENT_ITEM_LENGTH_WEEKLY
+        )
         
         report_week_start = report.report_date - timedelta(days=6)
         report_week_end = report.report_date
@@ -376,7 +385,11 @@ def analyze_monthly_reports_task(self, task_id: str):
         # Add vision data for the month
         raw_monthly_vision_data = get_employee_vision_data_for_month(employee_id, year, month)
         filtered_monthly_vision_data = filter_vision_data(raw_monthly_vision_data)
-        formatted_monthly_vision_data = format_vision_data_for_monthly_analysis_prompt(filtered_monthly_vision_data, max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_MONTHLY_ANALYSIS)
+        formatted_monthly_vision_data = format_vision_data_for_monthly_analysis_prompt(
+            filtered_monthly_vision_data, 
+            max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_MONTHLY_ANALYSIS,
+            max_content_item_length=MAX_CONTENT_ITEM_LENGTH_MONTHLY
+        )
         
         monthly_data["formatted_vision_data"] = formatted_monthly_vision_data
         
@@ -740,7 +753,8 @@ def analyze_quarterly_reports_task(self, task_id: str):
        
         formatted_quarterly_vision_data = format_vision_data_for_quarterly_analysis_prompt(
             filtered_quarterly_vision_data, 
-            max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_QUARTERLY_ANALYSIS  
+            max_content_items_per_entity=MAX_CONTENT_ITEMS_PER_ENTITY_FOR_QUARTERLY_ANALYSIS,
+            max_content_item_length=MAX_CONTENT_ITEM_LENGTH_QUARTERLY
         )
         quarterly_data["formatted_vision_data"] = formatted_quarterly_vision_data
 

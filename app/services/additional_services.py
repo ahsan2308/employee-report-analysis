@@ -2,6 +2,28 @@ from typing import Dict, Any, List
 from datetime import date
 from app.core.logger import logger
 
+def _truncate_content_value(value: Any, max_length: int = 300) -> str:
+    """
+    Truncate a content value to prevent context overflow.
+    
+    Args:
+        value: The value to truncate (can be any type)
+        max_length: Maximum character length for the value
+        
+    Returns:
+        Truncated string representation with ellipsis if needed
+    """
+    if value is None:
+        return ""
+    
+    value_str = str(value)
+    
+    if len(value_str) <= max_length:
+        return value_str
+    
+    # Truncate and add ellipsis
+    return value_str[:max_length] + "..."
+
 def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dict[str, str] = None) -> Dict[str, Any]:
     """
     Filter vision data to remove zero-value sub-entities and add descriptions.
@@ -240,7 +262,8 @@ def _process_entity_data(entity_data: List[Dict[str, Any]], sub_entity_descripti
 
 def format_vision_data_for_weekly_analysis_prompt(
     vision_data: Dict[str, Any], 
-    max_content_items_per_entity: int = 5
+    max_content_items_per_entity: int = 5,
+    max_content_item_length: int = 300
 ) -> str:
     """
     Format filtered vision data into a string representation suitable for prompt inclusion.
@@ -249,6 +272,7 @@ def format_vision_data_for_weekly_analysis_prompt(
     Args:
         vision_data: Filtered vision data with descriptions
         max_content_items_per_entity: Maximum number of entities to show per sub-entity's content list
+        max_content_item_length: Maximum character length for each content item value
         
     Returns:
         Formatted string for inclusion in prompts
@@ -265,7 +289,11 @@ def format_vision_data_for_weekly_analysis_prompt(
         display_count = min(len(entity_items), max_content_items_per_entity)
         for entry in entity_items[:display_count]:
             if entry:
-                entry_str = ", ".join(f"{k}: {v}" for k, v in entry.items() if v)
+                # Truncate each value to prevent context overflow
+                entry_str = ", ".join(
+                    f"{k}: {_truncate_content_value(v, max_content_item_length)}" 
+                    for k, v in entry.items() if v
+                )
                 if entry_str:
                     lines.append(f"      ---> {entry_str}")  
         if len(entity_items) > max_content_items_per_entity:
@@ -308,7 +336,8 @@ def format_vision_data_for_weekly_analysis_prompt(
 
 def format_vision_data_for_monthly_analysis_prompt(
     vision_data: Dict[str, Any],
-    max_content_items_per_entity: int = 5
+    max_content_items_per_entity: int = 5,
+    max_content_item_length: int = 250
 ) -> str:
     """
     Format filtered vision data into a string representation suitable for monthly analysis prompt.
@@ -317,6 +346,7 @@ def format_vision_data_for_monthly_analysis_prompt(
     Args:
         vision_data: Filtered vision data with descriptions
         max_content_items_per_entity: Maximum number of entities to show per sub-entity's content list
+        max_content_item_length: Maximum character length for each content item value (default: 250)
         
     Returns:
         Formatted string for inclusion in monthly analysis prompts
@@ -335,7 +365,11 @@ def format_vision_data_for_monthly_analysis_prompt(
         display_count = min(len(entity_items), max_content_items_per_entity)
         for entry in entity_items[:display_count]:
             if entry:
-                entry_str = ", ".join(f"{k}: {v}" for k, v in entry.items() if v)
+                # Truncate each value to prevent context overflow
+                entry_str = ", ".join(
+                    f"{k}: {_truncate_content_value(v, max_content_item_length)}" 
+                    for k, v in entry.items() if v
+                )
                 if entry_str:
                     lines.append(f"      ---> {entry_str}")
         if len(entity_items) > max_content_items_per_entity:
@@ -367,13 +401,18 @@ def format_vision_data_for_monthly_analysis_prompt(
 
     return formatted_text
 
-def format_vision_data_for_quarterly_analysis_prompt(vision_data: Dict[str, Any], max_content_items_per_entity: int = 10) -> str:
+def format_vision_data_for_quarterly_analysis_prompt(
+    vision_data: Dict[str, Any], 
+    max_content_items_per_entity: int = 10,
+    max_content_item_length: int = 200
+) -> str:
     """
     Format quarterly vision data into a structured string for inclusion in a quarterly analysis prompt.
     
     Args:
         vision_data: Dictionary containing vision data from get_employee_vision_data_for_quarter
         max_content_items_per_entity: Maximum number of content items to include per entity
+        max_content_item_length: Maximum character length for each content item value 
         
     Returns:
         Formatted string for inclusion in the quarterly analysis prompt
@@ -414,9 +453,13 @@ def format_vision_data_for_quarterly_analysis_prompt(vision_data: Dict[str, Any]
         for entry in entity_items[:display_count]:
             if entry:
                 if isinstance(entry, dict):
-                    entry_str = ", ".join(f"{k}: {v}" for k, v in entry.items() if v)
+                    # Truncate each value to prevent context overflow
+                    entry_str = ", ".join(
+                        f"{k}: {_truncate_content_value(v, max_content_item_length)}" 
+                        for k, v in entry.items() if v
+                    )
                 else:
-                    entry_str = str(entry)
+                    entry_str = _truncate_content_value(entry, max_content_item_length)
                 
                 if entry_str:
                     lines.append(f"      ---> {entry_str}")
