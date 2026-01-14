@@ -66,6 +66,77 @@ A supervisor feedback data pipeline enabling structured performance assessments 
 - Fields: id (unqiue), l_ro_form_metric_id, form_id (FK), metric_definition_id (FK), metric_value
 - Supports both rating values and text responses
 
+**PostgreSQL Table Schemas:**
+
+**supervisor_feedback_metric_definitions:**
+```sql
+CREATE TABLE employee_reports.supervisor_feedback_metric_definitions (
+    id SERIAL PRIMARY KEY,
+    section_id INTEGER NOT NULL,
+    section VARCHAR(100) NOT NULL,
+    metric_id INTEGER NOT NULL UNIQUE,
+    metric_name VARCHAR(200) NOT NULL,
+    metric_description TEXT,
+    metric_type CHAR(1) NOT NULL CHECK (metric_type IN ('R', 'T')),
+    possible_values VARCHAR(500),
+    max_value INTEGER,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX ix_supervisor_feedback_metric_definitions_section_id 
+ON employee_reports.supervisor_feedback_metric_definitions(section_id);
+```
+
+**supervisor_feedback_forms:**
+```sql
+CREATE TABLE employee_reports.supervisor_feedback_forms (
+    id SERIAL PRIMARY KEY,
+    ro_form_id INTEGER NOT NULL UNIQUE,
+    employee_id INTEGER NOT NULL REFERENCES employee_reports.employees(id) ON DELETE CASCADE,
+    from_date DATE NOT NULL,
+    to_date DATE NOT NULL,
+    feedback_cache JSONB,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX ix_supervisor_feedback_forms_employee_id 
+ON employee_reports.supervisor_feedback_forms(employee_id);
+
+CREATE INDEX ix_supervisor_feedback_forms_date_range 
+ON employee_reports.supervisor_feedback_forms(from_date, to_date);
+```
+
+**supervisor_feedback_responses:**
+```sql
+CREATE TABLE employee_reports.supervisor_feedback_responses (
+    id SERIAL PRIMARY KEY,
+    l_ro_form_metric_id INTEGER NOT NULL UNIQUE,
+    form_id INTEGER NOT NULL REFERENCES employee_reports.supervisor_feedback_forms(id) ON DELETE CASCADE,
+    metric_definition_id INTEGER NOT NULL REFERENCES employee_reports.supervisor_feedback_metric_definitions(id) ON DELETE CASCADE,
+    text_response TEXT,
+    numeric_rating INTEGER,
+    max_value INTEGER,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX ix_supervisor_feedback_responses_form_id 
+ON employee_reports.supervisor_feedback_responses(form_id);
+
+CREATE INDEX ix_supervisor_feedback_responses_metric_definition_id 
+ON employee_reports.supervisor_feedback_responses(metric_definition_id);
+```
+
+**Note:** No need to create these tables in PostgreSQL manually. They are automatically created upon app startup. For the other tables, either use Alembic or Manual Table Deletion followed by Manual Table Creation using app startup to cater for new fields/values & columns in the already existed tables.
+
+**Key Design Decisions:**
+- **Cascade Delete**: When an employee is deleted, all their feedback forms and responses are automatically removed
+- **Cascade Delete on Forms**: When a form is deleted, all its responses are removed
+- **Unique Constraints**: Prevent duplicate forms (ro_form_id) and responses (l_ro_form_metric_id)
+- **JSONB Cache**: Stores denormalized form data for fast retrieval without joins
+- **Indexed Lookups**: Optimized queries for employee forms, date ranges, and metric definitions
+- **Check Constraint**: Ensures metric_type is only 'R' (rating) or 'T' (text)
+
 #### Frontend Enhancements
 
 **Sync Page:**
@@ -113,6 +184,32 @@ A supervisor feedback data pipeline enabling structured performance assessments 
 **Response Data:**
 - Value: Supervisor's response (rating label or free text)
 
+**Validation Rules:**
+- **L_RO_Form_Metric_ID**: Must be unique across all forms (primary key for responses), positive integer
+- **RO_Form_ID**: Positive integer, groups multiple metric rows into single form
+- **Employee_ID**: Must reference an existing employee (validated before import)
+- **Name**: Employee name for reference (accepted but not stored in PostgreSQL)
+- **Designation**: Employee position (accepted but not stored in PostgreSQL)
+- **BPS**: Basic Pay Scale (accepted but not stored in PostgreSQL)
+- **Office_Hierarchy**: Office hierarchy path (accepted but not stored in PostgreSQL)
+- **Executive_Office**: Executive office (accepted but not stored in PostgreSQL)
+- **From**: Evaluation period start date, REQUIRED field, accepts formats: YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY
+- **To**: Evaluation period end date, REQUIRED field, same format requirements as From
+- **Section_ID**: Positive integer for section categorization
+- **Section**: Section name, minimum 2 characters
+- **Metric_ID**: Positive integer, must be unique within a form
+- **Metric_Title**: Metric display name, minimum 3 characters, maximum 200 characters
+- **Instructions**: Optional help text, maximum 500 characters
+- **Metric_Type**: Must be 'R' (rating) or 'T' (text)
+- **Possible_Values**: For rating metrics (Type R), comma-separated options, maximum 500 characters
+- **Value**: REQUIRED field, maximum 5000 characters for text responses
+
+**Processing Features:**
+- Automatic duplicate handling via upsert on unique constraints
+- Bulk processing using PostgreSQL `INSERT ... ON CONFLICT DO UPDATE/NOTHING`
+- Pre-validation of employee existence before bulk operations
+- Detailed error reporting with row-level information
+
 #### Sync Operations
 
 **Features:**
@@ -143,6 +240,52 @@ A supervisor feedback data pipeline enabling structured performance assessments 
 - Parameterized queries preventing SQL injection
 - Batch size limits preventing memory exhaustion
 - Error threshold abort mechanism
+
+#### SQL Server Table Requirements
+
+```sql
+CREATE TABLE SupervisorFeedback (
+    RecordID INT IDENTITY(1,1) PRIMARY KEY,
+    L_RO_Form_Metric_ID INT NOT NULL,
+    RO_Form_ID INT NOT NULL,
+    Employee_ID INT NOT NULL,
+    Name NVARCHAR(100),
+    Designation NVARCHAR(100),
+    BPS NVARCHAR(20),
+    Office_Hierarchy NVARCHAR(200),
+    Executive_Office NVARCHAR(100),
+    [From] DATE NOT NULL,
+    [To] DATE NOT NULL,
+    Section_ID INT NOT NULL,
+    Section NVARCHAR(100) NOT NULL,
+    Metric_ID INT NOT NULL,
+    Metric_Title NVARCHAR(200) NOT NULL,
+    Instructions NVARCHAR(500),
+    Metric_Type CHAR(1) NOT NULL,
+    Possible_Values NVARCHAR(500),
+    Value NVARCHAR(MAX) NOT NULL,
+    LastModifiedDate DATETIME DEFAULT GETDATE()
+);
+
+-- Index for efficient incremental sync
+CREATE INDEX IX_SupervisorFeedback_LastModifiedDate 
+ON SupervisorFeedback(LastModifiedDate);
+
+-- Index for form grouping
+CREATE INDEX IX_SupervisorFeedback_RO_Form_ID
+ON SupervisorFeedback(RO_Form_ID);
+
+-- Unique constraint for responses
+CREATE UNIQUE INDEX UQ_SupervisorFeedback_L_RO_Form_Metric_ID
+ON SupervisorFeedback(L_RO_Form_Metric_ID);
+```
+
+**Important Sync Notes:**
+- Always update `LastModifiedDate` when records change for incremental sync to work
+- All rows with same `RO_Form_ID` must have same `Employee_ID`, `From`, and `To` values
+- `Metric_Type` must be 'R' or 'T'
+- For rating metrics (Type R), `Possible_Values` should contain comma-separated options
+- Order by `RO_Form_ID` in SQL Server queries to prevent form splitting across batches
 
 ### 🔄 **What's Changed**
 

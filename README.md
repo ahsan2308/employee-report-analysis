@@ -32,7 +32,7 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Evidence Standards**: Explicit confidence indicators based on analysis detail, consistency, and objective validation 
 - **Security Boundaries**: Built-in OPSEC guidelines preventing disclosure of sensitive operational details in analysis outputs
 - **Career Progression Evaluation**: Promotion readiness assessment, role mastery tracking, and strategic alignment evaluation
-- **Supervisor Feedback Integeration**: Structured performance evaluations with rating and text metrics
+- **Supervisor Feedback Integeration**: Structured performance evaluations with rating and text metrics (from supervisor) incorporated in the analysis
 - **Semantic Search**: Find relevant reports based on context, not just keywords
 - **Risk Assessment**: Automatically identify potential issues with credibility-adjusted risk levels
 - **Sentiment Analysis**: Track employee sentiment over time
