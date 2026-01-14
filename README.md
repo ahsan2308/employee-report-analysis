@@ -32,6 +32,7 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Evidence Standards**: Explicit confidence indicators based on analysis detail, consistency, and objective validation 
 - **Security Boundaries**: Built-in OPSEC guidelines preventing disclosure of sensitive operational details in analysis outputs
 - **Career Progression Evaluation**: Promotion readiness assessment, role mastery tracking, and strategic alignment evaluation
+- **Supervisor Feedback Integeration**: Structured performance evaluations with rating and text metrics
 - **Semantic Search**: Find relevant reports based on context, not just keywords
 - **Risk Assessment**: Automatically identify potential issues with credibility-adjusted risk levels
 - **Sentiment Analysis**: Track employee sentiment over time
@@ -39,14 +40,14 @@ The system also performs **monthly analysis** across all reports from an employe
 - **Historical Context**: Analyze reports with previous submissions for reference
 - **Asynchronous Processing**: Background task processing for analysis requests
 - **Direct URL Sharing**: Share analysis results via URL parameters
-- **CSV Data Import**: Bulk import of employee data, historical reports, job descriptions, and other information
+- **CSV Data Import**: Bulk import of employee data, historical reports, job descriptions, supervisor feedback evaluations, and other information
 - **SQL Server Data Sync**: Automated synchronization from SQL Server to PostgreSQL with:
   - Incremental sync (only new/modified records)
   - Full sync (complete data refresh)
   - Real-time progress monitoring
   - Scheduled automatic sync
   - Comprehensive error tracking
-  - Support for three data types: Employee Reports, Vision Data, and Job Descriptions
+  - Support for four data types: Employee Reports, Vision Data, Job Descriptions, and Supervisor Feedback
 - **Task Management System**: Track and monitor long-running analysis processes
 - **Interactive Visualizations**: Visual representation of key metrics including:
   - Sentiment trends over time
@@ -391,13 +392,45 @@ The system also performs **monthly analysis** across all reports from an employe
        LastModifiedDate DATETIME DEFAULT GETDATE()
    );
 
+   -- Supervisor Feedback Table
+   CREATE TABLE SupervisorFeedback (
+       RecordID INT IDENTITY(1,1) PRIMARY KEY,
+       RO_Form_ID INT NOT NULL,
+       L_RO_Form_Metric_ID INT NOT NULL,
+       Employee_ID INT NOT NULL,
+       Name NVARCHAR(500) NOT NULL,
+       Designation NVARCHAR(200) NULL,
+       BPS NVARCHAR(50) NULL,
+       Office_Hierarchy NVARCHAR(500) NULL,
+       Executive_Office NVARCHAR(200) NULL,
+       [From] DATE NOT NULL,
+       [To] DATE NOT NULL,
+       Section_ID INT NOT NULL,
+       Section NVARCHAR(200) NOT NULL,
+       Metric_ID INT NOT NULL,
+       Metric_Title NVARCHAR(200) NOT NULL,
+       Instructions NVARCHAR(1000) NULL,
+       Metric_Type CHAR(1) NOT NULL,  -- 'R' for rating, 'T' for text
+       Possible_Values NVARCHAR(500) NULL,
+       Value NVARCHAR(MAX) NULL,
+       LastModifiedDate DATETIME DEFAULT GETDATE()
+   );
+
    -- Create indexes for timestamp columns (important for incremental sync)
    CREATE INDEX IX_EmployeeReports_LastModifiedDate ON EmployeeReports(LastModifiedDate);
    CREATE INDEX IX_VisionEmployeeData_LastModifiedDate ON VisionEmployeeData(LastModifiedDate);
    CREATE INDEX IX_JobDescriptions_LastModifiedDate ON JobDescriptions(LastModifiedDate);
+   CREATE INDEX IX_SupervisorFeedback_LastModifiedDate ON SupervisorFeedback(LastModifiedDate);
    
    -- Create unique constraint for JobDescriptions to prevent duplicates
    CREATE UNIQUE INDEX UQ_JobDescriptions_Employee_JD ON JobDescriptions(Employee_ID, JD_ID);
+   
+   -- Create indexes for efficient querying of supervisor feedback
+   CREATE INDEX IX_SupervisorFeedback_Employee_ID ON SupervisorFeedback(Employee_ID);
+   CREATE INDEX IX_SupervisorFeedback_RO_Form_ID ON SupervisorFeedback(RO_Form_ID);
+   
+   -- Ensure form metric responses are unique
+   CREATE UNIQUE INDEX UQ_SupervisorFeedback_Metric_Response ON SupervisorFeedback(L_RO_Form_Metric_ID);
    ```
 
 5. **Verify Required Tables Exist**
@@ -406,6 +439,7 @@ The system also performs **monthly analysis** across all reports from an employe
    - `EmployeeReports` table with a `LastModifiedDate` column (can be changed using .env file)
    - `VisionEmployeeData` table with a `LastModifiedDate` column (can be changed using .env file)
    - `JobDescriptions` table with a `LastModifiedDate` column (can be changed using .env file)
+   - `SupervisorFeedback` table with a `LastModifiedDate` column (can be changed using .env file)
 
    These timestamp columns are essential for incremental sync to detect changes.
 
@@ -558,6 +592,7 @@ The system also performs **monthly analysis** across all reports from an employe
   - Import historical reports (backfill data)
   - Import vision data
   - Import job descriptions
+  - Import supervisor feedback evaluations
 
 - **Import Features**:
   - Dry run validation (validate without committing to database)
@@ -617,7 +652,8 @@ The sync functionality allows you to migrate data from SQL Server to PostgreSQL,
 - **Employee Reports Sync**: Synchronizes employee report data from the `EmployeeReports` table
 - **Vision Data Sync**: Synchronizes vision/goal data from the `VisionEmployeeData` table
 - **Job Descriptions Sync**: Synchronizes job description data from the `EmployeeJobDescriptions` table
-- **Full System Sync**: Runs all three syncs sequentially
+- **Supervisor Feedback Sync**: Synchronizes performance evaluation data from the `SupervisorFeedback` table
+- **Full System Sync**: Runs all four syncs sequentially
 
 #### Sync Modes
 
@@ -697,7 +733,8 @@ The system provides a comprehensive REST API:
 - `POST /sync/trigger/employee_reports` - Trigger employee reports sync
 - `POST /sync/trigger/vision_data` - Trigger vision data sync
 - `POST /sync/trigger/job_descriptions` - Trigger job descriptions sync
-- `POST /sync/trigger/full` - Trigger full system sync (all three types)
+- `POST /sync/trigger/supervisor_feedback` - Trigger supervisor feedback sync
+- `POST /sync/trigger/full` - Trigger full system sync (all four types)
 - `GET /sync/status/{sync_id}` - Get sync job status
 - `GET /sync/last-successful/{sync_type}` - Get last successful sync info
 - `GET /sync/history` - List sync history

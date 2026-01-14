@@ -11,8 +11,8 @@ from app.api.reports import router as report_router
 from app.api.analyses import router as analyses_router
 from app.api.visualizations import router as visualizations_router
 from app.api.tasks import router as tasks_router
-from app.api.imports import router as imports_router  # Add this import
-from app.api.sync_routes import router as sync_router  # Add this import
+from app.api.imports import router as imports_router 
+from app.api.sync_routes import router as sync_router 
 
 # Create all tables (if they don't exist)
 db_instance = get_database()  

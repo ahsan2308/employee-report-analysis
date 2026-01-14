@@ -52,16 +52,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const jdRecordsCreated = document.getElementById('jdRecordsCreated');
     const jdRecordsUpdated = document.getElementById('jdRecordsUpdated');
     
+    // DOM Elements - Supervisor Feedback Metrics (NEW)
+    const metricContainerSupervisorFeedback = document.getElementById('metricContainerSupervisorFeedback');
+    const supervisorFeedbackFormsCreated = document.getElementById('supervisorFeedbackFormsCreated');
+    const supervisorFeedbackFormsUpdated = document.getElementById('supervisorFeedbackFormsUpdated');
+    const supervisorFeedbackResponsesCreated = document.getElementById('supervisorFeedbackResponsesCreated');
+    const supervisorFeedbackMetricDefsCreated = document.getElementById('supervisorFeedbackMetricDefsCreated');
+    
     // DOM Elements - Template Buttons (UPDATED)
     const employeeReportTemplateBtn = document.getElementById('employeeReportTemplateBtn');
     const visionDataTemplateBtn = document.getElementById('visionDataTemplateBtn');
     const jobDescriptionsTemplateBtn = document.getElementById('jobDescriptionsTemplateBtn');
+    const supervisorFeedbackTemplateBtn = document.getElementById('supervisorFeedbackTemplateBtn');
     const employeeReportTemplate = document.getElementById('employeeReportTemplate');
     const visionDataTemplate = document.getElementById('visionDataTemplate');
     const jobDescriptionsTemplate = document.getElementById('jobDescriptionsTemplate');
+    const supervisorFeedbackTemplate = document.getElementById('supervisorFeedbackTemplate');
     const downloadEmployeeReportTemplate = document.getElementById('downloadEmployeeReportTemplate');
     const downloadVisionDataTemplate = document.getElementById('downloadVisionDataTemplate');
     const downloadJobDescriptionsTemplate = document.getElementById('downloadJobDescriptionsTemplate');
+    const downloadSupervisorFeedbackTemplate = document.getElementById('downloadSupervisorFeedbackTemplate');
     
     // DOM Elements - Buttons
     const viewErrorsBtn = document.getElementById('viewErrorsBtn');
@@ -135,6 +145,10 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleTemplateSection('job_descriptions');
     });
     
+    supervisorFeedbackTemplateBtn.addEventListener('click', function() {
+        toggleTemplateSection('supervisor_feedback');
+    });
+    
     // Download template links (UPDATED)
     downloadEmployeeReportTemplate.addEventListener('click', function(event) {
         event.preventDefault();
@@ -149,6 +163,11 @@ document.addEventListener('DOMContentLoaded', function() {
     downloadJobDescriptionsTemplate.addEventListener('click', function(event) {
         event.preventDefault();
         generateAndDownloadTemplate('job_descriptions');
+    });
+    
+    downloadSupervisorFeedbackTemplate.addEventListener('click', function(event) {
+        event.preventDefault();
+        generateAndDownloadTemplate('supervisor_feedback');
     });
     
     // Form submission
@@ -225,9 +244,12 @@ document.addEventListener('DOMContentLoaded', function() {
             visionDataTemplateBtn.classList.remove('primary-button');
             jobDescriptionsTemplateBtn.classList.add('secondary-button');
             jobDescriptionsTemplateBtn.classList.remove('primary-button');
+            supervisorFeedbackTemplateBtn.classList.add('secondary-button');
+            supervisorFeedbackTemplateBtn.classList.remove('primary-button');
             employeeReportTemplate.style.display = 'block';
             visionDataTemplate.style.display = 'none';
             jobDescriptionsTemplate.style.display = 'none';
+            supervisorFeedbackTemplate.style.display = 'none';
         } else if (type === 'vision_data') {
             employeeReportTemplateBtn.classList.add('secondary-button');
             employeeReportTemplateBtn.classList.remove('primary-button');
@@ -235,9 +257,12 @@ document.addEventListener('DOMContentLoaded', function() {
             visionDataTemplateBtn.classList.remove('secondary-button');
             jobDescriptionsTemplateBtn.classList.add('secondary-button');
             jobDescriptionsTemplateBtn.classList.remove('primary-button');
+            supervisorFeedbackTemplateBtn.classList.add('secondary-button');
+            supervisorFeedbackTemplateBtn.classList.remove('primary-button');
             employeeReportTemplate.style.display = 'none';
             visionDataTemplate.style.display = 'block';
             jobDescriptionsTemplate.style.display = 'none';
+            supervisorFeedbackTemplate.style.display = 'none';
         } else if (type === 'job_descriptions') {
             employeeReportTemplateBtn.classList.add('secondary-button');
             employeeReportTemplateBtn.classList.remove('primary-button');
@@ -245,9 +270,25 @@ document.addEventListener('DOMContentLoaded', function() {
             visionDataTemplateBtn.classList.remove('primary-button');
             jobDescriptionsTemplateBtn.classList.add('primary-button');
             jobDescriptionsTemplateBtn.classList.remove('secondary-button');
+            supervisorFeedbackTemplateBtn.classList.add('secondary-button');
+            supervisorFeedbackTemplateBtn.classList.remove('primary-button');
             employeeReportTemplate.style.display = 'none';
             visionDataTemplate.style.display = 'none';
             jobDescriptionsTemplate.style.display = 'block';
+            supervisorFeedbackTemplate.style.display = 'none';
+        } else if (type === 'supervisor_feedback') {
+            employeeReportTemplateBtn.classList.add('secondary-button');
+            employeeReportTemplateBtn.classList.remove('primary-button');
+            visionDataTemplateBtn.classList.add('secondary-button');
+            visionDataTemplateBtn.classList.remove('primary-button');
+            jobDescriptionsTemplateBtn.classList.add('secondary-button');
+            jobDescriptionsTemplateBtn.classList.remove('primary-button');
+            supervisorFeedbackTemplateBtn.classList.add('primary-button');
+            supervisorFeedbackTemplateBtn.classList.remove('secondary-button');
+            employeeReportTemplate.style.display = 'none';
+            visionDataTemplate.style.display = 'none';
+            jobDescriptionsTemplate.style.display = 'none';
+            supervisorFeedbackTemplate.style.display = 'block';
         }
     }
     
@@ -260,6 +301,9 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (selectedType === 'job_descriptions') {
             downloadTemplateLink.setAttribute('data-type', 'job_descriptions');
             toggleTemplateSection('job_descriptions');
+        } else if (selectedType === 'supervisor_feedback') {
+            downloadTemplateLink.setAttribute('data-type', 'supervisor_feedback');
+            toggleTemplateSection('supervisor_feedback');
         } else {
             // Default to employee_report for empty or employee_report
             downloadTemplateLink.setAttribute('data-type', 'employee_report');
@@ -457,6 +501,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return 'Vision Data';
             case 'job_descriptions':
                 return 'Job Descriptions';
+            case 'supervisor_feedback':
+                return 'Supervisor Feedback';
             default:
                 return capitalizeFirst(type.replace('_', ' '));
         }
@@ -471,6 +517,7 @@ document.addEventListener('DOMContentLoaded', function() {
             metricContainerEmployeeReport.style.display = 'flex';
             metricContainerVisionData.style.display = 'none';
             metricContainerJobDescriptions.style.display = 'none';
+            metricContainerSupervisorFeedback.style.display = 'none';
             
             // Update metrics values
             employeesCreated.textContent = metrics.employees_created || 0;
@@ -483,6 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
             metricContainerEmployeeReport.style.display = 'none';
             metricContainerVisionData.style.display = 'flex';
             metricContainerJobDescriptions.style.display = 'none';
+            metricContainerSupervisorFeedback.style.display = 'none';
             
             // Update metrics values
             visionRecordsCreated.textContent = metrics.vision_records_created || 0;
@@ -493,16 +541,31 @@ document.addEventListener('DOMContentLoaded', function() {
             metricContainerEmployeeReport.style.display = 'none';
             metricContainerVisionData.style.display = 'none';
             metricContainerJobDescriptions.style.display = 'flex';
+            metricContainerSupervisorFeedback.style.display = 'none';
             
             // Update metrics values
             jdRecordsCreated.textContent = metrics.jd_records_created || 0;
             jdRecordsUpdated.textContent = metrics.jd_records_updated || 0;
+        }
+        else if (jobDetails.csv_type === 'supervisor_feedback') {
+            // Show Supervisor Feedback metrics
+            metricContainerEmployeeReport.style.display = 'none';
+            metricContainerVisionData.style.display = 'none';
+            metricContainerJobDescriptions.style.display = 'none';
+            metricContainerSupervisorFeedback.style.display = 'flex';
+            
+            // Update metrics values
+            supervisorFeedbackFormsCreated.textContent = metrics.forms_created || 0;
+            supervisorFeedbackFormsUpdated.textContent = metrics.forms_updated || 0;
+            supervisorFeedbackResponsesCreated.textContent = metrics.responses_created || 0;
+            supervisorFeedbackMetricDefsCreated.textContent = metrics.metric_definitions_created || 0;
         }
         else {
             // Hide specific metrics if type is unknown
             metricContainerEmployeeReport.style.display = 'none';
             metricContainerVisionData.style.display = 'none';
             metricContainerJobDescriptions.style.display = 'none';
+            metricContainerSupervisorFeedback.style.display = 'none';
         }
     }
     
@@ -793,6 +856,84 @@ document.addEventListener('DOMContentLoaded', function() {
             // Generate comma-delimited CSV
             let csvContent = headers.join(',') + '\n' + sampleRow.join(',');
             downloadCSV(csvContent, 'job_descriptions_template.csv');
+        }
+        else if (templateType === 'supervisor_feedback') {
+            const headers = [
+                'RO_Form_ID',
+                'L_RO_Form_Metric_ID',
+                'Employee_ID',
+                'Name',
+                'From',
+                'To',
+                'Section_ID',
+                'Section',
+                'Metric_ID',
+                'Metric_Title',
+                'Instructions',
+                'Metric_Type',
+                'Possible_Values',
+                'Value'
+            ];
+            
+            // Sample rows - typically multiple rows per form (one per metric)
+            const sampleRow1 = [
+                '5001',
+                '50001',
+                '101',
+                'John Doe',
+                '2025-11-01',
+                '2025-11-30',
+                '1',
+                'Performance Quality',
+                '101',
+                'Quality of Work',
+                'Ability to deliver precise, complete, and high-quality output',
+                'R',
+                'Poor, Fair, Good, Excellent',
+                'Good'
+            ];
+            
+            const sampleRow2 = [
+                '5001',
+                '50002',
+                '101',
+                'John Doe',
+                '2025-11-01',
+                '2025-11-30',
+                '1',
+                'Performance Quality',
+                '102',
+                'Attention to Detail',
+                'Demonstrates thoroughness and accuracy in work',
+                'R',
+                'Poor, Fair, Good, Excellent',
+                'Excellent'
+            ];
+            
+            const sampleRow3 = [
+                '5001',
+                '50003',
+                '101',
+                'John Doe',
+                '2025-11-01',
+                '2025-11-30',
+                '2',
+                'Additional Comments',
+                '201',
+                'Supervisor Comments',
+                '',
+                'T',
+                '',
+                'Employee demonstrates strong technical skills and consistently delivers quality work.'
+            ];
+            
+            // Generate comma-delimited CSV with multiple sample rows
+            let csvContent = headers.join(',') + '\n';
+            csvContent += sampleRow1.join(',') + '\n';
+            csvContent += sampleRow2.join(',') + '\n';
+            csvContent += sampleRow3.join(',');
+            
+            downloadCSV(csvContent, 'supervisor_feedback_template.csv');
         }
     }
     

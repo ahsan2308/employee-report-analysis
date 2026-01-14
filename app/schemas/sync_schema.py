@@ -15,6 +15,7 @@ class SyncTypeEnum(str, Enum):
     EMPLOYEE_REPORTS = "employee_reports"
     VISION_DATA = "vision_data"
     JOB_DESCRIPTIONS = "job_descriptions"
+    SUPERVISOR_FEEDBACK = "supervisor_feedback"
 
 
 class SyncStatusEnum(str, Enum):
@@ -56,6 +57,7 @@ class FullSyncTriggerResponse(BaseModel):
     employee_reports_sync_id: UUID4
     vision_data_sync_id: UUID4
     job_descriptions_sync_id: UUID4
+    supervisor_feedback_sync_id: UUID4
     task_id: str
     status: SyncStatusEnum
     triggered_at: datetime
@@ -68,6 +70,7 @@ class FullSyncTriggerResponse(BaseModel):
                 "employee_reports_sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
                 "vision_data_sync_id": "0c563781-7366-465d-931d-874b98af6277",
                 "job_descriptions_sync_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                "supervisor_feedback_sync_id": "f1e2d3c4-b5a6-7890-abcd-ef1234567890",
                 "task_id": "full-sync-task-id",
                 "status": "pending",
                 "triggered_at": "2025-11-24T13:13:19Z",

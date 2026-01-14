@@ -165,6 +165,16 @@ def process_csv_import(self, job_id: str, file_path: Optional[str] = None,
             metrics_log += f", {jd_records_created} JD records created, " \
                           f"{jd_records_updated} JD records updated"
         
+        elif csv_type == "supervisor_feedback":
+            forms_created = metrics.get('forms_created', 0)
+            forms_updated = metrics.get('forms_updated', 0)
+            responses_created = metrics.get('responses_created', 0)
+            metric_definitions_created = metrics.get('metric_definitions_created', 0)
+            
+            metrics_log += f", {forms_created} forms created, {forms_updated} forms updated, " \
+                          f"{responses_created} responses created, " \
+                          f"{metric_definitions_created} metric definitions created"
+        
         logger.info(metrics_log)
         
         # Return the dictionary directly

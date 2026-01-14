@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Index, Float, DateTime, Text, ARRAY, UniqueConstraint, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Index, Float, DateTime, Text, ARRAY, UniqueConstraint, Boolean, text
 from sqlalchemy.orm import relationship
 from app.models.base import Base
 from app.models.base import schema_name
@@ -14,11 +14,13 @@ class Employee(Base):
     wing = Column(String, nullable=False, index=True)
     position = Column(String, nullable=False, index=True)
     
-    # Add relationship to vision data
+    # Add relationship
     vision_data = relationship("EmployeeVisionData", back_populates="employee")
+    analyses = relationship("EmployeeAnalysis", back_populates="employee")
     monthly_analyses = relationship("MonthlyAnalysis", back_populates="employee", cascade="all, delete-orphan")
     quarterly_analyses = relationship("QuarterlyAnalysis", back_populates="employee", cascade="all, delete-orphan")
     job_descriptions = relationship("EmployeeJobDescription", back_populates="employee", cascade="all, delete-orphan")
+    supervisor_feedback_forms = relationship("SupervisorFeedbackForm", back_populates="employee", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Employee(id={self.id}, name='{self.name}', wing='{self.wing}', position='{self.position}')>"
@@ -30,6 +32,9 @@ class Report(Base):
     employee_id = Column(Integer, ForeignKey(f"{schema_name}.employees.id", ondelete="CASCADE"), nullable=False, index=True)
     report_date = Column(Date, nullable=False, index=True)
     report_text = Column(String, nullable=False)
+    
+    # Relationships
+    analyses = relationship("EmployeeAnalysis", back_populates="report", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Report(id={self.report_id}, employee_id={self.employee_id}, report_date={self.report_date})>"
@@ -104,10 +109,6 @@ class EmployeeAnalysis(Base):
     
     def __repr__(self):
         return f"<EmployeeAnalysis(analysis_id={self.analysis_id}, report_id={self.report_id}, date={self.analysis_date})>"
-
-# Add relationship backref to existing models
-Report.analyses = relationship("EmployeeAnalysis", back_populates="report", cascade="all, delete-orphan")
-Employee.analyses = relationship("EmployeeAnalysis", back_populates="employee")
 
 class MonthlyAnalysis(Base):
     """
@@ -187,8 +188,6 @@ class MonthlyAnalysis(Base):
         }.get(self.month, "Unknown")
         
         return f"<MonthlyAnalysis id={self.analysis_id} employee={self.employee_id} period={self.year}-{month_name}>"
-
-Employee.monthly_analyses = relationship("MonthlyAnalysis", back_populates="employee")
 
 class QuarterlyAnalysis(Base):
     """
@@ -323,3 +322,169 @@ class EmployeeJobDescription(Base):
     
     def __repr__(self):
         return f"<EmployeeJobDescription(id={self.id}, employee_id={self.employee_id}, jd_id={self.jd_id}, is_current={self.is_current})>"
+
+
+class SupervisorFeedbackMetricDefinition(Base):
+    """
+    Master data table for supervisor feedback metric definitions.
+    
+    Stores the template/schema for each metric that can be evaluated.
+    Each metric is defined once and referenced many times across forms.
+    This eliminates redundancy and ensures consistency across all evaluations.
+    
+    Maps to SQL Server fields: Section_ID, Section, Metric_ID, Metric_Title, Instructions, Metric_Type, Possible_Values
+    """
+    __tablename__ = "supervisor_feedback_metric_definitions"
+    
+    # Primary key
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    
+    # Section information (categorization)
+    section_id = Column(Integer, nullable=False, index=True, comment="Section_ID")
+    section = Column(String(200), nullable=False, index=True, comment="Section name")
+    
+    # Metric identification from SQL Server
+    metric_id = Column(Integer, nullable=False, unique=True, index=True, comment="Metric_ID - unique identifier")
+    
+    # Display name and description
+    metric_name = Column(String(200), nullable=False, comment="Metric_Title")
+    metric_description = Column(Text, nullable=True, comment="Instructions - brief explanation of the metric")
+    
+    # Metric type and possible values
+    metric_type = Column(String(1), nullable=False, comment="R for rating questions, T for text questions")
+    possible_values = Column(String(500), nullable=True, comment="Comma-separated values like 'Poor, Fair, Good, Excellent' (NULL for text type)")
+    max_value = Column(Integer, nullable=True, comment="Maximum possible rating for this metric (count of possible_values; NULL for text type)")
+    
+    # Audit timestamp
+    created_at = Column(DateTime, default=func.now(), nullable=False)
+    
+    # Relationships
+    responses = relationship("SupervisorFeedbackResponse", back_populates="metric_definition")
+    
+    def __repr__(self):
+        return f"<SupervisorFeedbackMetricDefinition(id={self.id}, metric_id={self.metric_id}, section='{self.section}', name='{self.metric_name}')>"
+
+
+class SupervisorFeedbackForm(Base):
+    """
+    Master/header table for supervisor feedback forms.
+    
+    Stores one record per employee per evaluation period.
+    This is the "document" level that aggregates all metrics for a single evaluation.
+    Follows the header-detail pattern with responses as details.
+    
+    Maps to SQL Server fields: RO_Form_ID, Employee_ID, Designation, BPS, Office_Hierarchy, Executive Office, From, To
+    Note: Name is already in Employee table, so not duplicated here
+    """
+    __tablename__ = "supervisor_feedback_forms"
+    
+    # Primary key
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    
+    # SQL Server unique identifier for deduplication
+    ro_form_id = Column(Integer, nullable=False, unique=True, index=True, comment="RO_Form_ID")
+    
+    # Foreign key to employee (Employee_ID and Name are in Employee table)
+    employee_id = Column(
+        Integer,
+        ForeignKey(f"{schema_name}.employees.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+        comment="Employee_ID"
+    )
+    
+    # Evaluation period (From and To dates)
+    from_date = Column(Date, nullable=False, comment="Start date of feedback period (From)")
+    to_date = Column(Date, nullable=False, comment="End date of feedback period (To)")
+    
+    # Performance cache - denormalized data for fast retrieval
+    feedback_cache = Column(JSONB, nullable=True, server_default=text("'{}'::jsonb"), comment="Cached denormalized feedback for fast retrieval")
+    
+    # Audit timestamps
+    created_at = Column(DateTime, default=func.now(), nullable=False)
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    
+    # Relationships
+    employee = relationship("Employee", back_populates="supervisor_feedback_forms")
+    responses = relationship(
+        "SupervisorFeedbackResponse",
+        back_populates="form",
+        cascade="all, delete-orphan"
+    )
+    
+    # Table constraints
+    __table_args__ = (
+        # Index for querying by employee and date range
+        Index(
+            'ix_supervisor_feedback_form_employee_dates',
+            'employee_id', 'from_date', 'to_date'
+        ),
+        {'schema': schema_name}
+    )
+    
+    def __repr__(self):
+        return f"<SupervisorFeedbackForm(id={self.id}, employee_id={self.employee_id}, period={self.from_date} to {self.to_date})>"
+
+
+class SupervisorFeedbackResponse(Base):
+    """
+    Junction/detail table for individual metric responses.
+    
+    Stores one row per metric per form.
+    Links forms to metric definitions with actual response data.
+    This is the "detail" in the header-detail pattern.
+    
+    Maps to SQL Server fields: L_RO_Form_Metric_ID, Value (stored as text_response and/or numeric_rating)
+    """
+    __tablename__ = "supervisor_feedback_responses"
+    
+    # Primary key
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    
+    # Composite key identifier for deduplication
+    l_ro_form_metric_id = Column(Integer, nullable=False, unique=True, index=True, comment="L_RO_Form_Metric_ID - primary key in source")
+    
+    # Foreign keys
+    form_id = Column(
+        Integer,
+        ForeignKey(f"{schema_name}.supervisor_feedback_forms.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+        comment="Links to supervisor_feedback_forms table"
+    )
+    
+    metric_definition_id = Column(
+        Integer,
+        ForeignKey(f"{schema_name}.supervisor_feedback_metric_definitions.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+        comment="Links to metric definition"
+    )
+    
+    # Response data (Value field from SQL Server)
+    # For Metric_Type='T': text_response contains the value, numeric_rating is NULL
+    # For Metric_Type='R': text_response contains original value, numeric_rating is position-based (1st option=1, 2nd=2, etc.)
+    text_response = Column(Text, nullable=True, comment="Value from SQL Server - supervisor's feedback text or rating label")
+    numeric_rating = Column(Integer, nullable=True, comment="Position-based rating from metric's possible_values (1st option=1, 2nd=2, etc.; NULL for text type)")
+    max_value = Column(Integer, nullable=True, comment="Maximum possible rating for this metric (count of possible_values; NULL for text type)")
+    
+    # Audit timestamp
+    created_at = Column(DateTime, default=func.now(), nullable=False)
+    
+    # Relationships
+    form = relationship("SupervisorFeedbackForm", back_populates="responses")
+    metric_definition = relationship("SupervisorFeedbackMetricDefinition", back_populates="responses")
+    
+    # Table constraints
+    __table_args__ = (
+        # Business logic constraint: each form can have only ONE response per metric
+        UniqueConstraint('form_id', 'metric_definition_id', name='uq_form_metric'),
+        
+        # Composite index for fast lookups
+        Index('ix_supervisor_response_form_metric', 'form_id', 'metric_definition_id'),
+        
+        {'schema': schema_name}
+    )
+    
+    def __repr__(self):
+        return f"<SupervisorFeedbackResponse(id={self.id}, form_id={self.form_id}, metric_id={self.metric_definition_id}, value='{self.text_response}')>"

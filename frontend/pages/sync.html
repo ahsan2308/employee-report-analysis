@@ -113,12 +113,32 @@
                         </div>
                     </div>
                     
+                    <div class="sync-type-card" data-sync-type="supervisor_feedback">
+                        <div class="sync-type-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3>Supervisor Feedback</h3>
+                        <p>Sync supervisor feedback and performance ratings from SQL Server</p>
+                        <div class="sync-type-actions">
+                            <button class="button primary-button trigger-sync-btn" data-sync-type="supervisor_feedback" data-full-sync="false">
+                                <i class="fas fa-sync"></i> Incremental Sync
+                            </button>
+                            <button class="button secondary-button trigger-sync-btn" data-sync-type="supervisor_feedback" data-full-sync="true">
+                                <i class="fas fa-database"></i> Full Sync
+                            </button>
+                        </div>
+                        <div class="last-sync-info">
+                            <i class="fas fa-clock"></i>
+                            <span id="lastSyncSupervisorFeedback">Never synced</span>
+                        </div>
+                    </div>
+                    
                     <div class="sync-type-card sync-type-full" data-sync-type="full">
                         <div class="sync-type-icon">
                             <i class="fas fa-globe"></i>
                         </div>
                         <h3>Complete Sync</h3>
-                        <p>Sync employee reports, vision data, and job descriptions</p>
+                        <p>Sync all data types: employee reports, vision data, job descriptions, and supervisor feedback</p>
                         <div class="sync-type-actions">
                             <button class="button full-sync-button trigger-sync-btn" data-sync-type="full" data-full-sync="true">
                                 <i class="fas fa-sync-alt"></i> Full System Sync

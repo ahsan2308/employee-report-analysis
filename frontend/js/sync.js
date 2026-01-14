@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const lastSyncEmployeeReports = document.getElementById('lastSyncEmployeeReports');
     const lastSyncVisionData = document.getElementById('lastSyncVisionData');
     const lastSyncJobDescriptions = document.getElementById('lastSyncJobDescriptions');
+    const lastSyncSupervisorFeedback = document.getElementById('lastSyncSupervisorFeedback');
     
     // Active Sync Monitor Elements
     const activeSyncSection = document.getElementById('activeSyncSection');
@@ -300,6 +301,14 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 lastSyncJobDescriptions.textContent = 'Never synced';
             }
+            
+            // Load last successful sync for supervisor feedback
+            const supervisorFeedbackSync = await syncApi.getLastSuccessfulSync('supervisor_feedback');
+            if (supervisorFeedbackSync && supervisorFeedbackSync.last_sync_timestamp) {
+                lastSyncSupervisorFeedback.textContent = `Last synced: ${formatDateTime(supervisorFeedbackSync.last_sync_timestamp)}`;
+            } else {
+                lastSyncSupervisorFeedback.textContent = 'Never synced';
+            }
         } catch (error) {
             console.error('Error loading last sync times:', error);
         }
@@ -466,6 +475,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (syncType === 'job_descriptions') {
             addDetailedMetric('JD Records Created', metrics.jd_records_created || 0);
             addDetailedMetric('JD Records Updated', metrics.jd_records_updated || 0);
+        } else if (syncType === 'supervisor_feedback') {
+            addDetailedMetric('Forms Created', metrics.forms_created || 0);
+            addDetailedMetric('Forms Updated', metrics.forms_updated || 0);
+            addDetailedMetric('Responses Created', metrics.responses_created || 0);
+            addDetailedMetric('Metric Definitions Created', metrics.metric_definitions_created || 0);
         }
     }
     
@@ -789,6 +803,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'employee_reports': 'Employee Reports',
             'vision_data': 'Vision Data',
             'job_descriptions': 'Job Descriptions',
+            'supervisor_feedback': 'Supervisor Feedback',
             'full': 'Full Sync'
         };
         return typeMap[syncType] || syncType;
@@ -799,6 +814,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'employee_reports': 'fa-file-alt',
             'vision_data': 'fa-eye',
             'job_descriptions': 'fa-briefcase',
+            'supervisor_feedback': 'fa-star',
             'full': 'fa-globe'
         };
         return iconMap[syncType] || 'fa-sync';

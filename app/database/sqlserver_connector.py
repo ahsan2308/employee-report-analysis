@@ -40,7 +40,7 @@ class SQLServerConnector:
     """
     
     # Default whitelists (used as fallback if env vars not set)
-    DEFAULT_ALLOWED_TABLES = {'EmployeeReports', 'VisionEmployeeData', 'EmployeeJobDescriptions'}
+    DEFAULT_ALLOWED_TABLES = {'EmployeeReports', 'VisionEmployeeData', 'EmployeeJobDescriptions', 'SupervisorFeedback'}
     DEFAULT_ALLOWED_TIMESTAMP_COLUMNS = {'LastModifiedDate', 'ModifiedDate', 'UpdatedAt'}
     DEFAULT_MAX_BATCH_SIZE = 10000
     
@@ -244,31 +244,35 @@ class SQLServerConnector:
         Validate column name to prevent SQL injection.
         
         Args:
-            column_name: Name of the column to validate
+            column_name: Name of the column to validate (can be comma-separated for ORDER BY)
             allowed_columns: Optional set of allowed column names
             
         Raises:
             ValueError: If column name contains suspicious patterns
         """
-        # Check for SQL injection patterns
-        dangerous_patterns = [';', '--', '/*', '*/', 'DROP', 'DELETE', 'INSERT', 'UPDATE', '(', ')']
+        # Handle ORDER BY clauses with multiple columns (e.g., "RO_Form_ID, LastModifiedDate")
+        columns = [col.strip() for col in column_name.split(',')]
         
-        for pattern in dangerous_patterns:
-            if pattern in column_name:
-                logger.error(f"Suspicious pattern in column name: {column_name}")
-                raise ValueError(f"Invalid column name: contains prohibited pattern '{pattern}'")
-        
-        # Validate against whitelist if provided
-        if allowed_columns and column_name not in allowed_columns:
-            logger.error(f"Column '{column_name}' not in allowed list")
-            raise ValueError(
-                f"Column '{column_name}' is not authorized. "
-                f"Allowed columns: {', '.join(sorted(allowed_columns))}"
-            )
-        
-        # Ensure column name follows SQL naming conventions
-        if not column_name.replace('_', '').isalnum():
-            raise ValueError(f"Invalid column name: must contain only alphanumeric characters and underscores")
+        for col in columns:
+            # Check for SQL injection patterns
+            dangerous_patterns = [';', '--', '/*', '*/', 'DROP', 'DELETE', 'INSERT', 'UPDATE', '(', ')']
+            
+            for pattern in dangerous_patterns:
+                if pattern in col:
+                    logger.error(f"Suspicious pattern in column name: {col}")
+                    raise ValueError(f"Invalid column name: contains prohibited pattern '{pattern}'")
+            
+            # Validate against whitelist if provided
+            if allowed_columns and col not in allowed_columns:
+                logger.error(f"Column '{col}' not in allowed list")
+                raise ValueError(
+                    f"Column '{col}' is not authorized. "
+                    f"Allowed columns: {', '.join(sorted(allowed_columns))}"
+                )
+            
+            # Ensure column name follows SQL naming conventions
+            if not col.replace('_', '').isalnum():
+                raise ValueError(f"Invalid column name: must contain only alphanumeric characters and underscores")
     
     def _detect_odbc_driver(self) -> str:
         """

@@ -49,6 +49,7 @@
                             <option value="employee_report">Employee Reports</option>
                             <option value="vision_data">Vision Data</option>
                             <option value="job_descriptions">Job Descriptions</option>
+                            <option value="supervisor_feedback">Supervisor Feedback</option>
                         </select>
                         <small class="form-text">Leave as Auto-Detect to let the system determine the format from headers.</small>
                     </div>
@@ -266,6 +267,27 @@
                     </div>
                     <div class="metric-item">
                         <div class="metric-value" id="jdRecordsUpdated">0</div>
+                        <div class="metric-label">JD Records Updated</div>
+                    </div>
+                </div>
+                
+                <!-- Supervisor Feedback Metrics (NEW) -->
+                <div class="metrics-container" id="metricContainerSupervisorFeedback" style="display: none;">
+                    <div class="metric-item">
+                        <div class="metric-value" id="supervisorFeedbackFormsCreated">0</div>
+                        <div class="metric-label">Forms Created</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="supervisorFeedbackFormsUpdated">0</div>
+                        <div class="metric-label">Forms Updated</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="supervisorFeedbackResponsesCreated">0</div>
+                        <div class="metric-label">Responses Created</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="supervisorFeedbackMetricDefsCreated">0</div>
+                        <div class="metric-label">Metric Definitions Created</div>
                     </div>
                 </div>
                 
@@ -353,6 +375,9 @@
                     </button>
                     <button id="jobDescriptionsTemplateBtn" class="button secondary-button">
                         <i class="fas fa-briefcase"></i> Job Descriptions Format
+                    </button>
+                    <button id="supervisorFeedbackTemplateBtn" class="button secondary-button">
+                        <i class="fas fa-star"></i> Supervisor Feedback Format
                     </button>
                 </div>
                 
@@ -594,6 +619,120 @@
                     
                     <div class="action-buttons">
                         <a href="#" id="downloadJobDescriptionsTemplate" class="button small-button"><i class="fas fa-download"></i> Download Template</a>
+                    </div>
+                </div>
+                
+                <!-- Supervisor Feedback template information (NEW) -->
+                <div id="supervisorFeedbackTemplate" style="display: none;">
+                    <p>Your CSV file for Supervisor Feedback should include the following columns:</p>
+                    
+                    <table class="template-table">
+                        <thead>
+                            <tr>
+                                <th>Column Name</th>
+                                <th>Description</th>
+                                <th>Required</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>RO_Form_ID</td>
+                                <td>Unique identifier for the feedback form</td>
+                                <td>Required</td>
+                                <td>5001</td>
+                            </tr>
+                            <tr>
+                                <td>L_RO_Form_Metric_ID</td>
+                                <td>Primary key for the specific metric response</td>
+                                <td>Required</td>
+                                <td>50001</td>
+                            </tr>
+                            <tr>
+                                <td>Employee_ID</td>
+                                <td>Employee identifier (must exist in system)</td>
+                                <td>Required</td>
+                                <td>101</td>
+                            </tr>
+                            <tr>
+                                <td>Name</td>
+                                <td>Employee name (reference only, already in system)</td>
+                                <td>Optional</td>
+                                <td>John Doe</td>
+                            </tr>
+                            <tr>
+                                <td>From</td>
+                                <td>Start date of feedback period (YYYY-MM-DD)</td>
+                                <td>Required</td>
+                                <td>2025-11-01</td>
+                            </tr>
+                            <tr>
+                                <td>To</td>
+                                <td>End date of feedback period (YYYY-MM-DD)</td>
+                                <td>Required</td>
+                                <td>2025-11-30</td>
+                            </tr>
+                            <tr>
+                                <td>Section_ID</td>
+                                <td>Section identifier (numeric)</td>
+                                <td>Required</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>Section</td>
+                                <td>Section name/category</td>
+                                <td>Required</td>
+                                <td>Performance Quality</td>
+                            </tr>
+                            <tr>
+                                <td>Metric_ID</td>
+                                <td>Unique metric identifier (numeric)</td>
+                                <td>Required</td>
+                                <td>101</td>
+                            </tr>
+                            <tr>
+                                <td>Metric_Title</td>
+                                <td>Name of the evaluation metric</td>
+                                <td>Required</td>
+                                <td>Quality of Work</td>
+                            </tr>
+                            <tr>
+                                <td>Instructions</td>
+                                <td>Explanation/description of the metric</td>
+                                <td>Optional</td>
+                                <td>Ability to deliver precise, complete, and high-quality output</td>
+                            </tr>
+                            <tr>
+                                <td>Metric_Type</td>
+                                <td>Type of metric: "R" for rating, "T" for text</td>
+                                <td>Required</td>
+                                <td>R</td>
+                            </tr>
+                            <tr>
+                                <td>Possible_Values</td>
+                                <td>Comma-separated rating options (NULL for text type)</td>
+                                <td>Conditional*</td>
+                                <td>Poor, Fair, Good, Excellent</td>
+                            </tr>
+                            <tr>
+                                <td>Value</td>
+                                <td>Supervisor's rating or text feedback</td>
+                                <td>Required</td>
+                                <td>Good</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <p class="notes">
+                        <small>* Possible_Values is required for Metric_Type="R" (rating), NULL for Metric_Type="T" (text).</small><br>
+                        <small>* Value must match one of the options in Possible_Values for rating metrics.</small><br>
+                        <small>* Each form (RO_Form_ID) typically has multiple rows (one per metric).</small><br>
+                        <small>* Employee_ID must exist in the system before importing feedback.</small><br>
+                        <small>* System automatically normalizes ratings and calculates aggregated scores.</small>
+                    </p>
+                    
+                    <div class="action-buttons">
+                        <a href="#" id="downloadSupervisorFeedbackTemplate" class="button small-button"><i class="fas fa-download"></i> Download Template</a>
                     </div>
                 </div>
             </section>

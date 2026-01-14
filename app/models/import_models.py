@@ -22,6 +22,7 @@ class CSVImportType(str, enum.Enum):
     EMPLOYEE_REPORT = "employee_report"
     VISION_DATA = "vision_data"
     JOB_DESCRIPTIONS = "job_descriptions"
+    SUPERVISOR_FEEDBACK = "supervisor_feedback"
 
 class CSVImportJob(Base):
     """Model for tracking CSV import jobs."""

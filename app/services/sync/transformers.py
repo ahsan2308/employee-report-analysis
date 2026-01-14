@@ -206,3 +206,107 @@ class JobDescriptionTransformer:
             # NOTE: LastModifiedDate is intentionally excluded
             # It's tracked separately in _process_job_description_batches_bulk()
         }
+
+
+class SupervisorFeedbackTransformer:
+    """
+    Transforms SQL Server supervisor feedback rows to SupervisorFeedbackCSVRow-compatible format.
+    
+    ONLY does type conversion (datetime → string).
+    All validation is handled by SupervisorFeedbackCSVRow Pydantic schema.
+    
+    Data Structure:
+    - SQL Server table is denormalized: ONE row per metric per form
+    - Each form has multiple rows (one per metric)
+    - All form header fields (RO_Form_ID, Employee_ID, From, To, etc.) are repeated in each row
+    
+    SQL Server Column → Pydantic Field Mapping:
+    - L_RO_Form_Metric_ID: pass through (already int)
+    - RO_Form_ID: pass through (already int)
+    - Employee_ID: pass through (already int)
+    - Name: pass through (string, for reference only)
+    - Designation: pass through (string, not stored in database but required by schema)
+    - BPS: pass through (string, not stored in database but required by schema)
+    - Office_Hierarchy: pass through (string, not stored in database but required by schema)
+    - Executive_Office: pass through (string, not stored in database but required by schema)
+    - From: pass through as date object (Pydantic accepts Union[str, date, datetime])
+    - To: pass through as date object (Pydantic accepts Union[str, date, datetime])
+    - Section_ID: pass through (already int)
+    - Section: pass through (string)
+    - Metric_ID: pass through (already int)
+    - Metric_Title: pass through (string)
+    - Instructions: pass through (string)
+    - Value: pass through (string)
+    - Metric_Type: pass through (string, 'R' or 'T')
+    - Possible_Values: pass through (string, e.g., "Poor,Fair,Good,Excellent")
+    
+    Note: LastModifiedDate from SQL Server is NOT included in the output dictionary.
+    It's tracked separately by sync service for incremental sync logic.
+    """
+    
+    @staticmethod
+    def transform(sql_row: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Convert SQL Server row to SupervisorFeedbackCSVRow-compatible dict.
+        
+        Only includes fields that are part of the CSV import schema.
+        
+        Args:
+            sql_row: Row from SQL Server as dictionary with column names as keys
+                Expected format from SQL Server:
+                {
+                    "L_RO_Form_Metric_ID": 74,                # int
+                    "RO_Form_ID": 15,                         # int
+                    "Employee_ID": 1012,                      # int
+                    "Name": "MAJ.(R) NADEEM ARIF CH",         # str
+                    "Designation": "Director",                # str
+                    "BPS": "BS-19",                           # str
+                    "Office_Hierarchy": "PPHQ>CI",            # str
+                    "Executive_Office": "PPHQ",               # str
+                    "From": date(2025, 11, 1),                # date object
+                    "To": date(2025, 11, 30),                 # date object
+                    "Section_ID": 1,                          # int
+                    "Section": "Performance & Work Habits",   # str
+                    "Metric_ID": 1,                           # int
+                    "Metric_Title": "Quality & Accuracy...",  # str
+                    "Instructions": "Ability to deliver...",  # str
+                    "Value": "Good",                          # str
+                    "Metric_Type": "R",                       # str ('R' or 'T')
+                    "Possible_Values": "Poor,Fair,Good,Excellent",  # str
+                    "LastModifiedDate": datetime(...)         # NOT INCLUDED IN OUTPUT
+                }
+            
+        Returns:
+            Dictionary compatible with SupervisorFeedbackCSVRow Pydantic schema
+        """
+        return {
+            # Form header fields
+            "L_RO_Form_Metric_ID": sql_row.get("L_RO_Form_Metric_ID"),
+            "RO_Form_ID": sql_row.get("RO_Form_ID"),
+            "Employee_ID": sql_row.get("Employee_ID"),
+            "Name": sql_row.get("Name"),
+            
+            # Fields not stored in database but required by schema (extra='ignore')
+            "Designation": sql_row.get("Designation"),
+            "BPS": sql_row.get("BPS"),
+            "Office_Hierarchy": sql_row.get("Office_Hierarchy"),
+            "Executive_Office": sql_row.get("Executive_Office"),
+            
+            # Date fields - pass through (Pydantic accepts date objects)
+            "From": sql_row.get("From"),
+            "To": sql_row.get("To"),
+            
+            # Metric definition fields
+            "Section_ID": sql_row.get("Section_ID"),
+            "Section": sql_row.get("Section"),
+            "Metric_ID": sql_row.get("Metric_ID"),
+            "Metric_Title": sql_row.get("Metric_Title"),
+            "Instructions": sql_row.get("Instructions"),
+            "Metric_Type": sql_row.get("Metric_Type"),
+            "Possible_Values": sql_row.get("Possible_Values"),
+            
+            # Response data
+            "Value": sql_row.get("Value")
+            # NOTE: LastModifiedDate is intentionally excluded
+            # It's tracked separately by sync service for incremental sync logic
+        }

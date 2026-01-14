@@ -81,7 +81,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                 existing_emp = self.db.query(Employee).filter(Employee.id == emp_id).first()
                 if existing_emp:
                     existing_emp.position = row_dict['Designation'] + f" ({row_dict['BPS']})"
-                    existing_emp.wing = row_dict.get('department', 'Unspecified')
+                    existing_emp.wing = row_dict['Office_Hierarchy']
                     self.employees_updated += 1
                 else:
                     # Employee ID provided but not found - create new employee with specified ID
@@ -89,7 +89,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                         id=emp_id,
                         name=row_dict['Name'],
                         position=row_dict['Designation'] + f" ({row_dict['BPS']})", 
-                        wing=row_dict.get('department', 'Unspecified')
+                        wing=row_dict['Office_Hierarchy']
                     )
                     self.db.add(new_employee)
                     self.db.flush()
@@ -264,7 +264,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                 existing_emp = self.db.query(Employee).filter(Employee.id == emp_id).first()
                 if existing_emp:
                     existing_emp.position = row['Designation'] + f" ({row['BPS']})"
-                    existing_emp.wing = row.get('department', 'Unspecified')
+                    existing_emp.wing = row['Office_Hierarchy']
                     self.employees_updated += 1
                 else:
                     # Employee ID provided but not found - create new employee with specified ID
@@ -272,7 +272,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                         id=emp_id,
                         name=row['Name'],
                         position=row['Designation'] + f" ({row['BPS']})",
-                        wing=row.get('department', 'Unspecified')
+                        wing=row['Office_Hierarchy']
                     )
                     self.db.add(new_employee)
                     self.db.flush()

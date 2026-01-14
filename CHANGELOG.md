@@ -4,6 +4,303 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ---
 
+## [3.1.0] - 2026-01-14 - Supervisor Feedback Data Pipeline
+
+A supervisor feedback data pipeline enabling structured performance assessments with multi-metric rating forms and text responses to be used for employee evaluation.
+
+### 🚀 **New Features**
+
+#### Supervisor Feedback Data Pipeline
+
+**Key Capabilities:**
+
+**1. SQL Server Sync Support**
+- Automated synchronization of supervisor feedback forms from SQL Server to PostgreSQL
+- Incremental sync (only new/modified records since last sync)
+- Full sync (complete data refresh)
+- Real-time progress monitoring with detailed metrics
+
+**2. File Import Support**
+- Manual import of supervisor feedback evaluation data
+- Auto-detection of supervisor feedback file format
+- Bulk processing with configurable batch sizes (e.g. 1000 rows per batch)
+- Comprehensive error tracking and validation
+
+**3. 3-Table Normalized Database Structure**
+- **SupervisorFeedbackForm**: Master/header table storing one record per employee per evaluation period
+- **SupervisorFeedbackMetricDefinition**: Reusable metric templates (e.g., Communication Skills, Quality of Work, Team Collaboration)
+- **SupervisorFeedbackResponse**: Individual metric ratings and text responses linked to forms and definitions
+- JSONB cache for fast denormalized data retrieval
+- Cascade delete support maintaining referential integrity
+
+**4. Multi-Row Form Processing**
+- Groups denormalized rows (one per metric) into normalized database structure
+- Typical form has multiple metric rows with same RO_Form_ID
+- Automatic form grouping and validation
+- Hybrid response strategy: DELETE+INSERT for complete batches, upsert for split batches (batch idempotency protection)
+
+**5. Dual Metric Types**
+- **Rating Questions (Type "R")**: Predefined choices (e.g., "Poor, Fair, Good, Excellent")
+- **Text Questions (Type "T")**: Free-form qualitative feedback
+- Support for max_value calculation based on possible values count
+
+#### Database Schema
+
+**New Tables:**
+
+**SupervisorFeedbackMetricDefinition:**
+- Master data table for metric definitions
+- Stores template/schema for each evaluable metric
+- Eliminates redundancy across evaluations
+- Fields: id (unqiue), section_id, section, metric_id, metric_name, metric_description, metric_type, possible_values, max_value
+
+**SupervisorFeedbackForm:**
+- Master/header table for evaluation forms
+- One record per employee per evaluation period
+- Fields: id (unqiue), ro_form_id (unique), employee_id (FK), from_date, to_date, feedback_cache (JSONB)
+- Indexed for efficient querying by employee and date range
+
+**SupervisorFeedbackResponse:**
+- Detail table storing individual metric responses
+- Links forms to metric definitions with actual values
+- Fields: id (unqiue), l_ro_form_metric_id, form_id (FK), metric_definition_id (FK), metric_value
+- Supports both rating values and text responses
+
+#### Frontend Enhancements
+
+**Sync Page:**
+- New supervisor feedback sync card
+- Incremental and full sync trigger buttons
+- Last sync timestamp display
+- Updated full sync description to include supervisor feedback
+
+**Imports Page:**
+- Supervisor feedback CSV type option in dropdown
+- Template selector button with detailed column documentation
+- Real-time metrics display showing:
+  - Forms Created
+  - Forms Updated
+  - Responses Created
+  - Metric Definitions Created
+- Complete template section with 18-column definitions table
+- Sample data generator with realistic examples (2 rating + 1 text metric)
+
+#### Data Structure
+
+**18 CSV Columns:**
+
+**Form Header Fields** (repeated in every row):
+- RO_Form_ID: Unique form identifier (integer)
+- L_RO_Form_Metric_ID: Primary key for metric response (integer)
+- Employee_ID: Foreign key to employees table (integer)
+- Name: Employee name (reference only, not stored)
+- Designation: Employee position (accepted but not stored in PostgreSQL)
+- BPS: Basic Pay Scale (accepted but not stored in PostgreSQL)
+- Office_Hierarchy: Office hierarchy path (accepted but not stored in PostgreSQL)
+- Executive_Office: Executive office (accepted but not stored in PostgreSQL)
+- From: Feedback period start date (YYYY-MM-DD)
+- To: Feedback period end date (YYYY-MM-DD)
+
+**Metric Definition Fields:**
+- Section_ID: Section identifier for categorization (integer)
+- Section: Section name (e.g., "Performance", "Communication", "Leadership")
+- Metric_ID: Unique metric identifier (integer)
+- Metric_Title: Metric display name (e.g., "Communication Skills")
+- Instructions: Brief explanation/help text (optional)
+- Metric_Type: "R" for rating or "T" for text
+- Possible_Values: Comma-separated options for ratings (e.g., "Poor, Fair, Good, Excellent")
+
+**Response Data:**
+- Value: Supervisor's response (rating label or free text)
+
+#### Sync Operations
+
+**Features:**
+- **Incremental Sync**: Queries LastModifiedDate column to detect changes since last successful sync
+- **Full Sync**: Syncs all records regardless of modification date
+- **Batch Processing**: Memory-efficient processing with configurable batch sizes
+- **Employee Validation**: Verifies employee existence before processing (caches employee IDs for efficiency)
+- **Form Ordering**: Orders by RO_Form_ID to prevent form splitting across batches
+- **Error Handling**: Detailed error logging with row number, field name, and error message
+- **Metrics Tracking**: Four specific metrics tracked:
+  - forms_created: Number of new forms inserted
+  - forms_updated: Number of existing forms updated
+  - responses_created: Total metric responses created
+  - metric_definitions_created: New metric definitions added
+
+**Processing Strategy:**
+1. Validate all rows with Pydantic schema
+2. Filter for existing employees BEFORE bulk operations
+3. Group rows by RO_Form_ID (multiple rows → 1 form)
+4. Process metric definitions in bulk (INSERT ... ON CONFLICT DO NOTHING)
+5. Process forms in bulk (INSERT ... ON CONFLICT DO UPDATE)
+6. Process responses with DELETE+INSERT / UPDATE strategy per form
+7. Generate JSONB caches for all forms
+
+**Sync Security:**
+- Table whitelisting (only configured tables can be queried)
+- Column whitelisting for timestamp columns
+- Parameterized queries preventing SQL injection
+- Batch size limits preventing memory exhaustion
+- Error threshold abort mechanism
+
+### 🔄 **What's Changed**
+
+#### Full Sync Expansion
+
+**Before:**
+- Full sync included 3 data types: employee_reports, vision_data, job_descriptions
+- Response returned 3 sync_id values
+- Description: "Full sync (employee reports, vision data, and job descriptions)"
+
+**After:**
+- Full sync includes 4 data types: employee_reports, vision_data, job_descriptions, **supervisor_feedback**
+- Response returns 4 sync_id values (added supervisor_feedback_sync_id)
+- Description: "Full sync (employee reports, vision data, job descriptions, and supervisor feedback)"
+- Sequential processing updated to handle 4 sync operations
+
+#### Import System Enhancement
+
+**Processor Auto-Detection:**
+- File/CSV type auto-detection now recognizes supervisor_feedback format
+- ProcessorFactory updated with SupervisorFeedbackProcessor
+- 14 required headers checked: L_RO_Form_Metric_ID, RO_Form_ID, Employee_ID, Name, From, To, Section_ID, Section, Metric_ID, Metric_Title, Instructions, Metric_Type, Possible_Values, Value
+
+**CSV Type Options:**
+- Added 'supervisor_feedback' to csv_type enum in API endpoints
+- Import form dropdown includes new supervisor feedback option
+- Template download supports supervisor feedback format
+
+#### Metrics System
+
+**New Metric Structure:**
+Unlike standard CSV imports that track `records_created` and `records_updated`, supervisor feedback tracks form-specific metrics:
+```json
+{
+  "forms_created": 2,
+  "forms_updated": 0,
+  "responses_created": 20,
+  "metric_definitions_created": 10,
+  "processed_rows": 30,
+  "successful_rows": 20
+}
+```
+
+**Rationale**: Multi-row forms require tracking at form level (not row level) plus metric definition creation.
+
+### 📊 **Technical Details**
+
+#### Processing Strategy
+
+**Denormalized → Normalized Transformation:**
+```
+CSV (30 rows, same RO_Form_ID) → 1 Form + 10 Metric Definitions + 30 Responses
+```
+
+**Step-by-Step:**
+1. **Grouping**: Rows with same RO_Form_ID grouped together
+2. **Metric Definitions**: Extract unique metrics across all forms (INSERT ... ON CONFLICT DO NOTHING)
+3. **Forms**: Upsert forms (INSERT ... ON CONFLICT DO UPDATE SET from_date, to_date)
+4. **Responses**: Hybrid strategy for responses
+   - **Complete batches or new forms**: DELETE existing responses + INSERT new (clean slate)
+   - **Incomplete/split batches**: Detect via existing_count > incoming_count, use upsert strategy
+   - **Batch idempotency**: Prevents data loss when forms span multiple batch imports
+5. **Cache**: Generate JSONB cache with metric aggregations for fast retrieval
+
+**Hybrid Response Strategy (DELETE+INSERT with Upsert Fallback):**
+- **Primary approach (complete batches)**: DELETE+INSERT is cleaner for variable-length metric lists
+  - Guarantees no orphaned responses from removed metrics
+  - Better performance for typical form sizes (10-30 metrics)
+  - Cleaner than individual upserts
+- **Fallback approach (incomplete batches)**: Detects when incoming batch has fewer responses than existing form
+  - Switches to upsert strategy to prevent data loss
+  - Preserves data from previous batch imports
+  - Example: Form with 25 metrics split across 3 imports (10 + 10 + 5 rows)
+  - Without idempotency: 3rd batch would DELETE all 20 responses from batches 1-2
+  - With idempotency: 3rd batch uses upsert, preserves existing data
+
+#### Data Not Stored in PostgreSQL
+
+**Fields Accepted But Not Persisted:**
+- Designation
+- BPS (Basic Pay Scale)
+- Office_Hierarchy
+- Executive_Office
+
+**Rationale:**
+- Employee master data maintained in Employee table
+- Supervisor feedback focuses on performance metrics, not organizational structure
+- Reduces data redundancy and update anomalies
+- Simplifies sync logic and database schema
+
+**Where These Fields Are Available:**
+- Passed through CSV import validation
+- Can be logged in error messages for debugging
+- Available in SQL Server source system
+
+#### Form Integrity Validation
+
+**Multi-Row Form Checks:**
+- All rows with same RO_Form_ID must have same Employee_ID
+- All rows must have same From/To date range
+- At least one response required per form
+- Metric_ID uniqueness within form (no duplicate metrics)
+
+**Employee Validation:**
+- Employee_ID must exist in employees table before processing
+- Cached lookup for efficiency (single query, used for all rows)
+- Validation occurs BEFORE bulk processing begins
+
+#### Bulk Operations
+
+**Performance Optimizations:**
+- Batch processing: 1000 rows per batch (configurable)
+- Single query for all metric definitions per batch
+- Single query for all forms per batch
+- Hybrid response processing per form (DELETE+INSERT for complete, upsert for split batches)
+- Batch idempotency detection via existing_count vs incoming_count comparison
+- Cached employee ID lookups (avoid N+1 queries)
+- Efficient form grouping algorithm (O(n) complexity)
+
+**Memory Management:**
+- Generator-based batch retrieval from SQL Server
+- Streaming DataFrame processing
+- Immediate commit after each batch
+- No full-table loads into memory
+
+### 🔒 **Security & Validation**
+
+**Input Validation:**
+- Pydantic schema validation for all 18 columns
+- Date format parsing (YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY)
+- Metric_Type validation (must be 'R' or 'T')
+- Value length limits (5000 characters max)
+- Numeric field range checks (IDs must be > 0)
+
+**SQL Injection Prevention:**
+- Parameterized queries throughout
+- Table name whitelisting
+- Column name whitelisting
+- No dynamic SQL generation from user input
+
+**Data Integrity:**
+- Foreign key constraints (employee_id → employees.id)
+- Unique constraints (ro_form_id, metric_id)
+- NOT NULL constraints on critical fields
+- Cascade delete for referential integrity
+
+**Error Handling:**
+- Validation errors don't stop sync (logged and skipped)
+- Partial completion support (PARTIAL status)
+- Error threshold check (abort if > 10% errors)
+- Detailed error messages with row number and field name
+
+### 📦 **Dependencies**
+
+**No New External Dependencies Required**
+
+---
+
 ## [3.0.0] - 2025-12-23 - Prompt System Overhaul & Intelligence Agency Alignment
 
 This is a **major update** introducing federal intelligence agency context alignment, job description-based performance evaluation, restructured achievement data format, and enhanced credibility assessment framework. 

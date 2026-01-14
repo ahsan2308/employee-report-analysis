@@ -318,7 +318,7 @@ Example entries:
 ## EMPLOYEE INFORMATION
 - Name: {employee_name}
 - Position: {employee_position}
-- Wing/Department: {employee_wing}
+- Wing/Department (Office Hierarchy): {employee_wing}
 
 ## EMPLOYEE REPORT TO ANALYZE
 
@@ -1112,7 +1112,7 @@ This is a mandatory security requirement. Violations could compromise operations
 ## EMPLOYEE INFORMATION
 - Name: {employee_name}
 - Position: {employee_position}
-- Wing/Department: {employee_wing}
+- Wing/Department (Office Hierarchy): {employee_wing}
 - Analysis Period: {period_start} to {period_end} ({month_name} {year})
 
 ## MONTHLY SUMMARY METRICS
@@ -2254,7 +2254,7 @@ This is a mandatory security requirement. Violations could compromise operations
     ## EMPLOYEE INFORMATION
     - Name: {employee_name}
     - Position: {employee_position}
-    - Department: {employee_wing}
+    - Department/Wing (Office Hierarchy): {employee_wing}
     - Analysis Period: {period_start} to {period_end} ({quarter_description})
 
     ## QUARTERLY SUMMARY METRICS

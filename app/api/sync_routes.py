@@ -302,28 +302,105 @@ def trigger_job_descriptions_sync(
         raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
 
 
+@router.post("/trigger/supervisor_feedback", response_model=SyncTriggerResponse, status_code=202)
+def trigger_supervisor_feedback_sync(
+    is_full_sync: bool = Query(False, description="If true, perform full sync. If false, incremental sync."),
+    db: Session = Depends(get_db)
+):
+    """
+    Trigger supervisor feedback synchronization from SQL Server to PostgreSQL.
+    
+    This endpoint queues an asynchronous Celery task and returns immediately.
+    Use the returned sync_id to poll for status updates.
+    
+    - **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)
+    """
+    logger.info(f"Received request to trigger supervisor feedback sync (is_full_sync={is_full_sync})")
+    
+    try:
+        # Clear stale syncs before checking
+        _check_and_clear_stale_syncs(db, SyncType.SUPERVISOR_FEEDBACK.value, timeout_minutes=60)
+        
+        # Check if a sync is already running
+        running_sync = db.query(SyncHistory).filter(
+            SyncHistory.sync_type == SyncType.SUPERVISOR_FEEDBACK.value,
+            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
+        ).first()
+        
+        if running_sync:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Supervisor feedback sync already in progress (sync_id: {running_sync.sync_id})"
+            )
+        
+        # Create SyncHistory record HERE in the API endpoint
+        from app.services.sync.sync_tracker import SyncTracker
+        from app.database import get_database
+        
+        db_instance = get_database()
+        sync_tracker = SyncTracker(db_instance)
+        
+        # Create sync job record BEFORE queuing task
+        sync_job = sync_tracker.create_sync_job(
+            sync_type=SyncType.SUPERVISOR_FEEDBACK,
+            session=db,
+            is_full_sync=is_full_sync
+        )
+        
+        # Get the real sync_id
+        real_sync_id = sync_job.sync_id
+        
+        # Trigger Celery task using registered task name
+        task = celery_app.send_task(
+            'sync.supervisor_feedback',  # ← Use registered task name as string
+            kwargs={
+                'is_full_sync': is_full_sync,
+                'sync_id': str(real_sync_id)
+            }
+        )
+        
+        # Return REAL sync_id (no placeholder!)
+        return SyncTriggerResponse(
+            sync_id=real_sync_id,
+            task_id=str(task.id),
+            sync_type="supervisor_feedback",
+            status="pending",
+            is_full_sync=is_full_sync,
+            triggered_at=datetime.now(),
+            message=f"Supervisor feedback sync {'(full)' if is_full_sync else '(incremental)'} started successfully"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error triggering supervisor feedback sync: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
+
+
 @router.post("/trigger/full", response_model=FullSyncTriggerResponse, status_code=202)
 def trigger_full_sync(db: Session = Depends(get_db)):
     """
-    Trigger full synchronization of employee reports, vision data, and job descriptions.
+    Trigger full synchronization of employee reports, vision data, job descriptions, and supervisor feedback.
     
-    This runs all three sync types sequentially in a single Celery task.
+    This runs all four sync types sequentially in a single Celery task.
     All syncs will be in FULL mode (all records, not incremental).
     """
-    logger.info("Received request to trigger full sync (all three types)")
+    logger.info("Received request to trigger full sync (all four types)")
     
     try:
-        # Clear stale syncs for all three types
+        # Clear stale syncs for all four types
         _check_and_clear_stale_syncs(db, SyncType.EMPLOYEE_REPORTS.value, timeout_minutes=60)
         _check_and_clear_stale_syncs(db, SyncType.VISION_DATA.value, timeout_minutes=60)
         _check_and_clear_stale_syncs(db, SyncType.JOB_DESCRIPTIONS.value, timeout_minutes=60)
+        _check_and_clear_stale_syncs(db, SyncType.SUPERVISOR_FEEDBACK.value, timeout_minutes=60)
         
         # Check if any sync is already running
         running_syncs = db.query(SyncHistory).filter(
             SyncHistory.sync_type.in_([
                 SyncType.EMPLOYEE_REPORTS.value, 
                 SyncType.VISION_DATA.value,
-                SyncType.JOB_DESCRIPTIONS.value
+                SyncType.JOB_DESCRIPTIONS.value,
+                SyncType.SUPERVISOR_FEEDBACK.value
             ]),
             SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
         ).all()
@@ -362,11 +439,19 @@ def trigger_full_sync(db: Session = Depends(get_db)):
             session=db,
             is_full_sync=True
         )
+
+        # Create sync job for supervisor feedback (full mode)
+        sf_sync_job = sync_tracker.create_sync_job(
+            sync_type=SyncType.SUPERVISOR_FEEDBACK,
+            session=db,
+            is_full_sync=True
+        )
         
         # Get the real sync_ids
         employee_sync_id = employee_sync_job.sync_id
         vision_sync_id = vision_sync_job.sync_id
         jd_sync_id = jd_sync_job.sync_id
+        sf_sync_id = sf_sync_job.sync_id
         
         # Trigger full sync task with ALL THREE sync_ids
         task = celery_app.send_task(
@@ -374,20 +459,22 @@ def trigger_full_sync(db: Session = Depends(get_db)):
             kwargs={
                 'employee_sync_id': str(employee_sync_id),
                 'vision_sync_id': str(vision_sync_id),
-                'jd_sync_id': str(jd_sync_id)
+                'jd_sync_id': str(jd_sync_id),
+                'sf_sync_id': str(sf_sync_id)
             }
         )
         
-        # Return ALL THREE sync_ids
+        # Return ALL FOUR sync_ids
         return FullSyncTriggerResponse(
             sync_type="full",
             employee_reports_sync_id=employee_sync_id,
             vision_data_sync_id=vision_sync_id,
             job_descriptions_sync_id=jd_sync_id,
+            supervisor_feedback_sync_id=sf_sync_id,
             task_id=str(task.id),
             status="pending",
             triggered_at=datetime.now(),
-            message="Full sync (employee reports, vision data, and job descriptions) started successfully"
+            message="Full sync (employee reports, vision data, job descriptions, and supervisor feedback) started successfully"
         )
         
     except HTTPException:
@@ -481,11 +568,12 @@ def get_last_successful_sync(
         if sync_type not in [
             SyncType.EMPLOYEE_REPORTS.value, 
             SyncType.VISION_DATA.value,
-            SyncType.JOB_DESCRIPTIONS.value 
+            SyncType.JOB_DESCRIPTIONS.value,
+            SyncType.SUPERVISOR_FEEDBACK.value
         ]:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid sync_type. Must be 'employee_reports', 'vision_data', or 'job_descriptions'"
+                detail=f"Invalid sync_type. Must be 'employee_reports', 'vision_data', 'job_descriptions', or 'supervisor_feedback'"
             )
         
         # Query for last successful sync
@@ -549,11 +637,12 @@ def list_sync_history(
         
         # Apply filters
         if sync_type:
-            # Added job_descriptions to validation
+            # Validate sync_type includes all four types
             if sync_type not in [
                 SyncType.EMPLOYEE_REPORTS.value, 
                 SyncType.VISION_DATA.value,
-                SyncType.JOB_DESCRIPTIONS.value  
+                SyncType.JOB_DESCRIPTIONS.value,
+                SyncType.SUPERVISOR_FEEDBACK.value
             ]:
                 raise HTTPException(status_code=400, detail=f"Invalid sync_type")
             query = query.filter(SyncHistory.sync_type == sync_type)

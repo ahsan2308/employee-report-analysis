@@ -979,7 +979,7 @@ Uploads a CSV file for import and processing.
 - `error_threshold_percent` (float, optional, default: 10.0): Maximum percentage of errors before aborting
 - `chunk_size` (integer, optional, default: 1000): Number of rows to process in each chunk
 - `processing_mode` (string, optional, default: "bulk"): Processing mode ("row_by_row" or "bulk")
-- `csv_type` (string, optional): CSV type override (e.g., 'employee_report', 'vision_data', 'job_descriptions')
+- `csv_type` (string, optional): CSV type override (e.g., 'employee_report', 'vision_data', 'job_descriptions', 'supervisor_feedback')
 
 **Response:**
 ```json
@@ -1262,9 +1262,68 @@ curl -X POST "http://localhost:8000/sync/trigger/job_descriptions?is_full_sync=t
 
 <div style="page-break-after: always;"></div>
 
+#### Trigger Supervisor Feedback Sync
+
+Triggers supervisor feedback synchronization from SQL Server to PostgreSQL.
+
+**Endpoint:** `POST /sync/trigger/supervisor_feedback`
+
+**Query Parameters:**
+- `is_full_sync` (boolean, default: false): If true, perform full sync. If false, incremental sync.
+
+**Response (202 Accepted):**
+```json
+{
+  "sync_id": "f1a2b3c4-d5e6-7890-abcd-ef1234567890",
+  "task_id": "task-uuid-here",
+  "sync_type": "supervisor_feedback",
+  "status": "pending",
+  "is_full_sync": false,
+  "triggered_at": "2026-01-14T10:00:00Z",
+  "message": "Supervisor feedback sync (incremental) started successfully"
+}
+```
+
+**Error Responses:**
+- `409 Conflict`: Sync already in progress
+```json
+{
+  "detail": "Supervisor feedback sync already in progress (sync_id: f1a2b3c4-d5e6-7890-abcd-ef1234567890)"
+}
+```
+
+**Data Structure:**
+- **18 Columns**: RO_Form_ID, L_RO_Form_Metric_ID, Employee_ID, Name, Designation, BPS, Office_Hierarchy, Executive_Office, From, To, Section_ID, Section, Metric_ID, Metric_Title, Instructions, Metric_Type, Possible_Values, Value
+- **Multi-row Forms**: Each form consists of 10-30 rows with the same RO_Form_ID (one row per metric)
+- **Metric Types**: "R" (rating with predefined choices) or "T" (text free-form)
+- **Denormalized → Normalized**: CSV rows are grouped and transformed into 3 database tables (forms, metric definitions, responses)
+
+**Special Considerations:**
+- **Employee Validation**: Employee_ID must exist in the system before processing
+- **Fields Not Stored**: Designation, BPS, Office_Hierarchy, Executive_Office are accepted for compatibility but not persisted in PostgreSQL
+- **Form Grouping**: Rows with the same RO_Form_ID are automatically grouped into a single form with multiple responses
+- **Metrics Tracked**: forms_created, forms_updated, responses_created, metric_definitions_created
+
+**Notes:**
+- This endpoint queues an asynchronous Celery task and returns immediately
+- Use the returned `sync_id` to poll for status updates via `/sync/status/{sync_id}`
+- Recommended for quarterly or bi-annual performance evaluation cycles
+- Stale syncs (running > 60 minutes) are automatically cleared before checking for conflicts
+
+**Example Usage:**
+```bash
+# Incremental sync (only new/modified feedback)
+curl -X POST "http://localhost:8000/sync/trigger/supervisor_feedback?is_full_sync=false"
+
+# Full sync (all feedback records)
+curl -X POST "http://localhost:8000/sync/trigger/supervisor_feedback?is_full_sync=true"
+```
+
+<div style="page-break-after: always;"></div>
+
 #### Trigger Full Sync
 
-Triggers full synchronization of employee reports, vision data, and job descriptions.
+Triggers full synchronization of employee reports, vision data, job descriptions, and supervisor feedback.
 
 **Endpoint:** `POST /sync/trigger/full`
 
@@ -1275,10 +1334,11 @@ Triggers full synchronization of employee reports, vision data, and job descript
   "employee_reports_sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
   "vision_data_sync_id": "0c563781-7366-465d-931d-874b98af6277",
   "job_descriptions_sync_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "supervisor_feedback_sync_id": "f1a2b3c4-d5e6-7890-abcd-ef1234567890",
   "task_id": "full-sync-task-id",
   "status": "pending",
-  "triggered_at": "2025-11-24T13:13:19Z",
-  "message": "Full sync (employee reports, vision data, and job descriptions) started successfully"
+  "triggered_at": "2026-01-14T13:13:19Z",
+  "message": "Full sync (employee reports, vision data, job descriptions, and supervisor feedback) started successfully"
 }
 ```
 
@@ -1286,14 +1346,14 @@ Triggers full synchronization of employee reports, vision data, and job descript
 - `409 Conflict`: One or more sync types already in progress
 ```json
 {
-  "detail": "Sync already in progress for: employee_reports, vision_data, job_descriptions"
+  "detail": "Sync already in progress for: employee_reports, vision_data, job_descriptions, supervisor_feedback"
 }
 ```
 
 **Notes:**
-- This runs all three sync types sequentially in a single Celery task
+- This runs all four sync types sequentially in a single Celery task
 - All syncs will be in FULL mode (all records, not incremental)
-- Three separate `sync_id` values are returned - one for each sync type
+- Four separate `sync_id` values are returned - one for each sync type
 - Use any `sync_id` to monitor progress via `/sync/status/{sync_id}`
 - Recommended for initial setup or complete data refresh
 
