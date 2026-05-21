@@ -1,4 +1,4 @@
-# 🧠 Employee Report Analysis System
+# 🧠 Employee Performance Analysis System
 
 A AI-powered system for analyzing employee reports to extract valuable insights, identify trends, and facilitate data-driven management decisions through natural language processing.
 
@@ -6,7 +6,7 @@ A AI-powered system for analyzing employee reports to extract valuable insights,
 
 ## 📋 Overview
 
-**Employee Report Analysis** is an intelligent application that leverages **Large Language Models (LLMs)** and **vector search** to automatically analyze employee reports. The system extracts key information such as:
+**Employee Performance Analysis** is an intelligent application that leverages **Large Language Models (LLMs)** and **vector search** to automatically analyze employee reports. The system extracts key information such as:
 
 - Achievements and their impact
 - Challenges and their severity
