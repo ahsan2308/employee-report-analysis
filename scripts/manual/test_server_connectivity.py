@@ -8,7 +8,7 @@ import sys
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from app.database.sqlserver_connector import create_sqlserver_connector
+from app.integrations.sqlserver.connector import create_sqlserver_connector
 from app.core.logger import logger
 
 def test_server_connectivity():

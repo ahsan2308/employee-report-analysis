@@ -44,7 +44,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.api.main import app
-from app.database import get_database
+from app.db.database import get_database
 from app.models.sync_models import SyncHistory, SyncStatus, SyncType
 from app.core.logger import logger
 

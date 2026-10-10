@@ -10,7 +10,7 @@ from unittest.mock import MagicMock
 import pyodbc as real_pyodbc
 import pytest
 
-from app.database import sqlserver_connector as connector_module
+from app.integrations.sqlserver import connector as connector_module
 from app.services import sync_service as sync_module
 from app.services.csv.error_handler import ImportErrorHandler
 from app.services.sync_service import SyncService, create_sync_service

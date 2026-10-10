@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from app.database import get_database
+from app.db.database import get_database
 from app.models.db_models import Employee
 from sqlalchemy import text
 

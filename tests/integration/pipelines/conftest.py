@@ -54,7 +54,7 @@ class External:
 
 @pytest.fixture
 def ext(monkeypatch):
-    import app.model_host.ollama as ollama_host
+    import app.integrations.llm.ollama as ollama_host
     import app.services.embedding_service as embedding_service
     import app.services.sync_service as sync_service
     import app.services.vector_store_service as vector_store_service

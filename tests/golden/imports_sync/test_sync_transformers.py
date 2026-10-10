@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pytest
 
-from app.schemas.csv_import_schema import (
+from app.services.csv.row_models import (
     CombinedCSVRow,
     JobDescriptionCSVRow,
     SupervisorFeedbackCSVRow,

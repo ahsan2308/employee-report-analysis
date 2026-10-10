@@ -17,7 +17,7 @@ import time
 # Add parent directory to path to import from app
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.database import get_database
+from app.db.database import get_database
 from app.models.db_models import Employee, Report
 from app.models.vision_data_models import EmployeeVisionData
 from app.models.import_models import CSVImportJob, ImportStatus, CSVImportType

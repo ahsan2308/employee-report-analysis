@@ -24,12 +24,12 @@ from typing import Dict, Any, List
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from app.services.db_service import get_employee_job_descriptions_for_period
-from app.services.additional_services import (
-    map_reports_to_jds,
+from app.repositories.job_descriptions import get_employee_job_descriptions_for_period
+from app.services.analysis.jd_mapping import map_reports_to_jds
+from app.services.analysis.jd_formatting import (
     format_job_descriptions_for_weekly_prompt,
     format_job_descriptions_for_monthly_prompt,
-    format_job_descriptions_for_quarterly_prompt
+    format_job_descriptions_for_quarterly_prompt,
 )
 from app.core.logger import logger
 

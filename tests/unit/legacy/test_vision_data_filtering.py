@@ -11,7 +11,10 @@ from datetime import date, timedelta
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 # format_vision_data_for_prompt was renamed in commit 4213c2f
-from app.services.additional_services import filter_vision_data, format_vision_data_for_weekly_analysis_prompt as format_vision_data_for_prompt
+from app.services.analysis.vision_formatting import (
+    filter_vision_data,
+    format_vision_data_for_weekly_analysis_prompt as format_vision_data_for_prompt,
+)
 from app.core.logger import logger
 
 def create_sample_vision_data():

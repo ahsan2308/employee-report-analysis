@@ -48,7 +48,7 @@ To allow access to a new table or timestamp column:
 You can also modify allowed tables at runtime:
 
 ```python
-from app.database.sqlserver_connector import create_sqlserver_connector
+from app.integrations.sqlserver.connector import create_sqlserver_connector
 
 connector = create_sqlserver_connector()
 

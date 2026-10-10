@@ -32,9 +32,9 @@ from app.tasks.sync_tasks import (
     sync_vision_data_task,
     full_sync_task
 )
-from app.database import get_database
+from app.db.database import get_database
 from app.models.sync_models import SyncHistory, SyncStatus, SyncType
-from app.database.sqlserver_connector import create_sqlserver_connector
+from app.integrations.sqlserver.connector import create_sqlserver_connector
 
 # Configure logging to see output during tests
 logging.basicConfig(level=logging.INFO)

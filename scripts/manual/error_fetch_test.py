@@ -12,7 +12,7 @@ import requests
 # Add parent directory to path so we can import our application modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.database import get_database
+from app.db.database import get_database
 from app.models.import_models import CSVImportJob, ImportError, ImportStatus
 from app.services.csv_import_service import get_csv_import_service
 from app.core.logger import logger

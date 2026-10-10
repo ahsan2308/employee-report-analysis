@@ -20,9 +20,9 @@ from app.services.vector_store_service import (
     COLLECTION_NAME
 )
 from app.services.embedding_service import get_embedding
-from app.vector_store import get_vector_store
+from app.integrations.vector_store import get_vector_store
 from app.core.logger import logger
-from app.database import get_database
+from app.db.database import get_database
 from app.models.db_models import Report, Employee
 
 # Get vector store and collection name

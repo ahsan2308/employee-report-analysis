@@ -4,6 +4,39 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ---
 
+## Unreleased - Restructuring and bug fixes
+
+### Removed: old import paths
+
+The modules moved during the restructuring no longer have compatibility
+re-exports. Update imports as follows:
+
+| Old path | New path |
+| --- | --- |
+| `app.database` (`get_database`) | `app.db.database` |
+| `app.database.postgres_database` | `app.db.postgres` |
+| `app.database.mssql_database` | `app.db.mssql` |
+| `app.database.sqlserver_connector` | `app.integrations.sqlserver.connector` |
+| `app.models.base` | `app.db.base` |
+| `app.base.base_db` | `app.db.base_database` |
+| `app.base.base_llm` | `app.integrations.llm.base` |
+| `app.base.base_embedding` | `app.integrations.embeddings.base` |
+| `app.base.base_vector_store` | `app.integrations.vector_store.base` |
+| `app.base.base_csv_processor` | `app.services.csv.processors.base` |
+| `app.model_host` | `app.integrations.providers` |
+| `app.model_host.ollama`, `app.model_host.vllm` | `app.integrations.llm.ollama`, `app.integrations.llm.vllm` |
+| `app.model_host.ollama_embedding`, `app.model_host.vllm_embedding` | `app.integrations.embeddings.ollama`, `app.integrations.embeddings.vllm` |
+| `app.vector_store` | `app.integrations.vector_store` |
+| `app.vector_store.qdrant_provider` | `app.integrations.vector_store.qdrant` |
+| `app.services.db_service` | `app.repositories.reports`, `.vision_data`, `.analyses`, `.employees`, `.job_descriptions`, and `app.domain.periods` |
+| `app.services.additional_services` | `app.services.analysis.vision_formatting`, `.jd_mapping`, `.jd_formatting` |
+| CSV row models in `app.schemas.csv_import_schema` | `app.services.csv.row_models` |
+
+Celery task names, API routes, environment variables and `config/config.yaml`
+keys are unaffected by the moves.
+
+---
+
 ## [3.1.0] - 2026-01-14 - Supervisor Feedback Data Pipeline
 
 A supervisor feedback data pipeline enabling structured performance assessments with multi-metric rating forms and text responses to be used for employee evaluation.

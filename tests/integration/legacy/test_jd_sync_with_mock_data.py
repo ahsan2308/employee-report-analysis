@@ -29,7 +29,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from app.models.db_models import Employee, EmployeeJobDescription
 from app.models.sync_models import SyncHistory, SyncType, SyncStatus
 from app.services.sync_service import SyncService
-from app.database import get_database
+from app.db.database import get_database
 from app.core.logger import logger
 
 

@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from app.database.sqlserver_connector import (
+from app.integrations.sqlserver.connector import (
     SQLServerConnector,
     create_sqlserver_connector,
     SQLServerConnectionError,

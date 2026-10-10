@@ -18,7 +18,10 @@ import re
 # Add the parent directory to the Python path so we can import the app modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from app.services.additional_services import filter_vision_data, format_vision_data_for_quarterly_analysis_prompt
+from app.services.analysis.vision_formatting import (
+    filter_vision_data,
+    format_vision_data_for_quarterly_analysis_prompt,
+)
 
 def json_serializer(obj):
     """Helper function to serialize date/datetime objects in JSON"""

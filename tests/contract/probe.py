@@ -21,11 +21,10 @@ env_loader.load_dotenv = lambda *args, **kwargs: False
 env_loader.load_env_from_file()
 
 CONFIG_MODULES = [
-    "app.database",
-    "app.database.postgres_database",
-    "app.models.base",
-    "app.model_host",
-    "app.vector_store",
+    "app.db.postgres",
+    "app.db.base",
+    "app.integrations.providers",
+    "app.integrations.vector_store",
     "app.services.vector_store_service",
     "app.services.llm_service",
     "app.services.embedding_service",
@@ -63,7 +62,7 @@ def probe_config() -> dict:
         "beat_schedule": {key: {k: str(v) for k, v in entry.items()} for key, entry in conf.beat_schedule.items()},
     }
 
-    import app.database as database
+    import app.db.database as database
 
     try:
         db = database.get_database()
@@ -127,7 +126,7 @@ def probe_worker_tasks() -> dict:
 
 def probe_tables_after_database_import() -> dict:
     """Tables registered when a script imports only the database layer (e.g. to call create_tables())."""
-    database = importlib.import_module("app.database")
+    database = importlib.import_module("app.db.database")
     base = database.get_database().Base  # builds an engine, does not connect
     return {"tables": sorted(base.metadata.tables)}
 

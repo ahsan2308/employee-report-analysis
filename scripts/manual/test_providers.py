@@ -7,7 +7,7 @@ import time
 import argparse
 from pprint import pprint
 
-from app.model_host import get_llm_provider, get_embedding_provider
+from app.integrations.providers import get_llm_provider, get_embedding_provider
 from app.core.logger import logger
 
 def test_llm_provider(provider_type):

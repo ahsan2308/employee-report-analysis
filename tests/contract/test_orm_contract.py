@@ -2,7 +2,7 @@
 from sqlalchemy.sql import ClauseElement
 
 import app.models  # noqa: F401  (registers every model)
-from app.models.base import Base
+from app.db.base import Base
 
 
 def _default(default):

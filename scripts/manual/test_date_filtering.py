@@ -17,7 +17,7 @@ import json
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.vector_store import get_vector_store
+from app.integrations.vector_store import get_vector_store
 from app.core.logger import logger
 
 # Constants

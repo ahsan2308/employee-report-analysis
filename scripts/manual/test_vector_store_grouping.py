@@ -12,7 +12,7 @@ from typing import List, Dict, Any
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from app.services.vector_store_service import add_report_to_vector_store, search_reports, setup_collection
-from app.database import get_database
+from app.db.database import get_database
 from app.models.db_models import Employee, Report
 from app.core.logger import logger
 

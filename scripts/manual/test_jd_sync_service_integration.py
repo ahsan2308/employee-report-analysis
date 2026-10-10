@@ -34,8 +34,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from app.models.db_models import Employee, EmployeeJobDescription
 from app.models.sync_models import SyncHistory, SyncType, SyncStatus
 from app.services.sync_service import create_sync_service, SyncService
-from app.database import get_database
-from app.database.sqlserver_connector import create_sqlserver_connector
+from app.db.database import get_database
+from app.integrations.sqlserver.connector import create_sqlserver_connector
 from app.core.logger import logger
 
 
