@@ -86,6 +86,28 @@ The system also performs **monthly analysis** across all reports from an employe
   - Batch processing with configurable chunk sizes
   - Error threshold management
 
+### Project Structure
+
+```
+app/
+├── api/              # FastAPI routers (main.py is the entry point), shared deps and response builders
+├── core/             # settings.py (all import-time settings), config_provider.py, logger.py
+├── db/               # SQLAlchemy Base, database classes and get_database()
+├── domain/           # Pure logic with no I/O: period ranges, scoring, vision sub-entity catalog
+├── repositories/     # Database queries grouped by model (reports, analyses, vision data, ...)
+├── services/         # Business logic: analysis context, LLM, vector store, CSV import, sync, tasks
+├── integrations/     # Adapters to external systems: LLM and embedding providers, Qdrant, SQL Server
+├── prompts/          # LLM prompt builders (weekly, monthly, quarterly)
+├── models/           # SQLAlchemy models
+├── schemas/          # API request/response schemas
+├── tasks/            # Celery tasks
+└── worker/           # Celery app (celery_app.py) and worker entry point
+tests/                # Characterization suite (see tests/README.md)
+scripts/manual/       # Manual scripts that need live services (not run by pytest)
+```
+
+Older import paths (for example `app.database`, `app.model_host`, `app.services.db_service`) still work and re-export the code from its new location.
+
 ---
 
 ## 🛠️ Technologies Used
@@ -447,7 +469,7 @@ The system also performs **monthly analysis** across all reports from an employe
 
    - **Start the backend server**:
      ```bash
-     uvicorn app.main:app --reload
+     uvicorn app.api.main:app --reload
      ```
    
    - **Start the Celery worker** (in a separate terminal):
@@ -744,6 +766,19 @@ The system provides a comprehensive REST API:
 
 
 API documentation is available at `/docs` when running the application.
+
+---
+
+## 🧪 Running Tests
+
+```bash
+pip install -r requirements.txt -r requirements-dev.txt
+python -m pytest                      # unit, golden and contract tests
+TEST_DATABASE_URL=postgresql://user:pass@localhost:5432/scratch_db python -m pytest   # adds integration tests
+ruff check .                          # unused imports and undefined names
+```
+
+Use a throwaway database for `TEST_DATABASE_URL`. See [tests/README.md](tests/README.md) for the test layout and how to update snapshots, and [tests/KNOWN_BUGS.md](tests/KNOWN_BUGS.md) for behaviours the tests record as they are.
 
 ---
 
