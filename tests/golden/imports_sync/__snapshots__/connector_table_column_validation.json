@@ -26,7 +26,7 @@
       "raised": "ValueError"
     },
     "dash_comment": {
-      "message": "Invalid column name: contains prohibited pattern '--'",
+      "message": "Invalid column name: must contain only alphanumeric characters and underscores",
       "raised": "ValueError"
     },
     "empty": {
@@ -54,7 +54,7 @@
       "raised": "ValueError"
     },
     "parentheses": {
-      "message": "Invalid column name: contains prohibited pattern '('",
+      "message": "Invalid column name: must contain only alphanumeric characters and underscores",
       "raised": "ValueError"
     },
     "plain": {
@@ -64,7 +64,7 @@
       "ok": null
     },
     "semicolon": {
-      "message": "Invalid column name: contains prohibited pattern ';'",
+      "message": "Invalid column name: must contain only alphanumeric characters and underscores",
       "raised": "ValueError"
     },
     "space_in_name": {
@@ -79,8 +79,7 @@
       "ok": null
     },
     "uppercase_update": {
-      "message": "Invalid column name: contains prohibited pattern 'UPDATE'",
-      "raised": "ValueError"
+      "ok": null
     }
   },
   "tables": {

@@ -1,15 +1,69 @@
 {
   "comment_dash": {
-    "message": "Invalid database: contains prohibited pattern '--'",
-    "raised": "ValueError"
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HR--DB;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
   },
   "delete_in_db": {
-    "message": "Invalid database: contains prohibited pattern 'DELETE'",
-    "raised": "ValueError"
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=Deleted_Items;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
   },
   "drop_lowercase_db": {
-    "message": "Invalid database: contains prohibited pattern 'DROP'",
-    "raised": "ValueError"
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=dropzone;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
   },
   "empty_server": {
     "message": "Invalid server: must be a non-empty string",
@@ -84,7 +138,7 @@
         "ModifiedDate",
         "UpdatedAt"
       ],
-      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=sync_user;PWD=p;w=d};Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=sync_user;PWD={p;w=d}}};Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
       "connection_timeout": 30,
       "driver": "ODBC Driver 18 for SQL Server",
       "max_batch_size": 10000,
@@ -160,8 +214,26 @@
     }
   },
   "semicolon_server": {
-    "message": "Invalid server: contains prohibited pattern ';'",
-    "raised": "ValueError"
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER={host;Trusted_Connection=yes};DATABASE=HRDB;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
   },
   "server_200": {
     "ok": {
@@ -208,8 +280,26 @@
     }
   },
   "sp_prefix_in_host": {
-    "message": "Invalid server: contains prohibited pattern 'sp_'",
-    "raised": "ValueError"
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=dsp_host;DATABASE=HRDB;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
   },
   "timeouts": {
     "ok": {
@@ -234,11 +324,47 @@
     }
   },
   "update_in_username": {
-    "message": "Invalid username: contains prohibited pattern 'UPDATE'",
-    "raised": "ValueError"
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=update_svc;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
   },
   "xp_in_username": {
-    "message": "Invalid username: contains prohibited pattern 'xp_'",
-    "raised": "ValueError"
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=exp_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
   }
 }

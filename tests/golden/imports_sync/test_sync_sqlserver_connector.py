@@ -291,7 +291,7 @@ def test_create_from_env(fake_pyodbc, monkeypatch, snapshot):
     out = {"all_defaults": outcome(lambda: _describe(create_sqlserver_connector()))}
     c = create_sqlserver_connector()
     out["all_defaults_identity"] = {"server": c.server, "database": c.database, "username": c.username,
-                                    "password_is_default": c.password == "abc12345"}
+                                    "password_is_empty": c.password == ""}
     envs = {
         "full": {"SQLSERVER_HOST": "sql.prod", "SQLSERVER_DATABASE": "Prod", "SQLSERVER_USERNAME": "reader",
                  "SQLSERVER_PASSWORD": "pw", "SQLSERVER_PORT": "1444", "SQLSERVER_USE_ENCRYPTION": "TRUE"},

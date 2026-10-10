@@ -12,7 +12,7 @@
         "ModifiedDate",
         "UpdatedAt"
       ],
-      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=abc12345;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
       "connection_timeout": 30,
       "driver": "ODBC Driver 18 for SQL Server",
       "max_batch_size": 10000,
@@ -23,7 +23,7 @@
   },
   "all_defaults_identity": {
     "database": "EmployeeTestDB",
-    "password_is_default": true,
+    "password_is_empty": true,
     "server": "localhost\\SQLEXPRESS",
     "username": "test_sync_user"
   },
@@ -40,7 +40,7 @@
         "ModifiedDate",
         "UpdatedAt"
       ],
-      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=abc12345;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
       "connection_timeout": 30,
       "driver": "ODBC Driver 18 for SQL Server",
       "max_batch_size": 10000,
@@ -62,7 +62,7 @@
         "ModifiedDate",
         "UpdatedAt"
       ],
-      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=abc12345;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
       "connection_timeout": 30,
       "driver": "ODBC Driver 18 for SQL Server",
       "max_batch_size": 10000,
@@ -84,7 +84,7 @@
         "ModifiedDate",
         "UpdatedAt"
       ],
-      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=abc12345;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
       "connection_timeout": 30,
       "driver": "ODBC Driver 18 for SQL Server",
       "max_batch_size": 10000,
@@ -116,8 +116,26 @@
     }
   },
   "host_with_sp_": {
-    "message": "Invalid server: contains prohibited pattern 'sp_'",
-    "raised": "ValueError"
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=sp_server;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
   },
   "port_empty": {
     "ok": {
@@ -132,7 +150,7 @@
         "ModifiedDate",
         "UpdatedAt"
       ],
-      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=abc12345;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
       "connection_timeout": 30,
       "driver": "ODBC Driver 18 for SQL Server",
       "max_batch_size": 10000,
