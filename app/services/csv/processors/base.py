@@ -7,6 +7,7 @@ The Strategy Pattern allows for different CSV formats to be processed using the 
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Tuple, List
 import pandas as pd
+from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.services.csv.error_handler import ImportErrorHandler
@@ -38,6 +39,26 @@ class BaseCSVProcessor(ABC):
         self.processed_rows = 0
         self.successful_rows = 0
     
+    # Pydantic model for one CSV row; set by each processor
+    row_model = None
+
+    def validate_row(self, row_data: Dict[str, Any], row_number: int) -> bool:
+        """
+        Check a row without writing anything (used by dry runs).
+
+        Returns:
+            True if the row is valid; otherwise the errors are recorded and False is returned
+        """
+        return self._validate_model(row_data, row_number) is not None
+
+    def _validate_model(self, row_data: Dict[str, Any], row_number: int):
+        """The validated row model, or None after recording its validation errors."""
+        try:
+            return self.row_model(**row_data)
+        except ValidationError as e:
+            self.error_handler.normalize_pydantic_errors(e, row_number, row_data)
+            return None
+
     @abstractmethod
     def process_row(self, row_data: Dict[str, Any], row_number: int) -> bool:
         """

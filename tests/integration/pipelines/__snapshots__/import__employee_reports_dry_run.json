@@ -1,84 +1,5 @@
 {
-  "external_calls": [
-    {
-      "call": "vs.get_collection_info",
-      "collection_name": "employee_reports"
-    },
-    {
-      "call": "embed",
-      "input": "Test text",
-      "is_query": false
-    },
-    {
-      "call": "embed",
-      "input": [
-        "Tasks Completed: First version of the week.\n\nImpact: x\n\nChallenges: x\n\nSupport Required: x\n\nTasks Planned: x\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07"
-      ],
-      "is_query": false
-    },
-    {
-      "call": "vs.add_documents_batch",
-      "collection_name": "employee_reports",
-      "points": [
-        {
-          "document_id": "<uuid:3>",
-          "payload": {
-            "chunk_index": 0,
-            "employee_id": 201,
-            "report_date": "2025-03-07",
-            "report_date_ts": 1741305600.0,
-            "report_id": "<uuid:2>",
-            "text": "Tasks Completed: First version of the week.\n\nImpact: x\n\nChallenges: x\n\nSupport Required: x\n\nTasks Planned: x\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07"
-          },
-          "vector": [
-            0.2353,
-            0.2275,
-            0.7961,
-            0.4863
-          ]
-        }
-      ]
-    },
-    {
-      "call": "vs.get_collection_info",
-      "collection_name": "employee_reports"
-    },
-    {
-      "call": "embed",
-      "input": "Test text",
-      "is_query": false
-    },
-    {
-      "call": "embed",
-      "input": [
-        "Tasks Completed: Second version of the same week wins.\n\nImpact: y\n\nChallenges: y\n\nSupport Required: y\n\nTasks Planned: y\n\nConfidence Level: 2\n\nReport Period: 2025-03-01 to 2025-03-07"
-      ],
-      "is_query": false
-    },
-    {
-      "call": "vs.add_documents_batch",
-      "collection_name": "employee_reports",
-      "points": [
-        {
-          "document_id": "<uuid:4>",
-          "payload": {
-            "chunk_index": 0,
-            "employee_id": 201,
-            "report_date": "2025-03-07",
-            "report_date_ts": 1741305600.0,
-            "report_id": "<uuid:2>",
-            "text": "Tasks Completed: Second version of the same week wins.\n\nImpact: y\n\nChallenges: y\n\nSupport Required: y\n\nTasks Planned: y\n\nConfidence Level: 2\n\nReport Period: 2025-03-01 to 2025-03-07"
-          },
-          "vector": [
-            0.8196,
-            0.7569,
-            0.3647,
-            0.7255
-          ]
-        }
-      ]
-    }
-  ],
+  "external_calls": [],
   "import": {
     "csv_import_jobs": [
       {
@@ -100,11 +21,11 @@
           "processing_mode": "row_by_row",
           "stop_on_error": false
         },
-        "processed_rows": 0,
+        "processed_rows": 7,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
-        "successful_rows": 0,
+        "successful_rows": 2,
         "total_rows": 7
       }
     ],
@@ -240,11 +161,11 @@
         "filename": "employee_reports_bad.csv",
         "job_id": "<uuid:1>",
         "metrics": {},
-        "processed_rows": 0,
+        "processed_rows": 7,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
-        "successful_rows": 0,
+        "successful_rows": 2,
         "total_rows": 7
       },
       "state": "SUCCESS"
@@ -253,36 +174,9 @@
   "tables": {
     "employee_job_descriptions": [],
     "employee_vision_data": [],
-    "employees": [
-      {
-        "id": 201,
-        "name": "Sana Malik",
-        "position": "Analyst (BS-17)",
-        "wing": "Technical>Tech-I>SOC"
-      }
-    ],
-    "qdrant_mappings": [
-      {
-        "chunk_index": 0,
-        "employee_id": 201,
-        "report_date": "2025-03-07",
-        "upserted_point_index": 0
-      },
-      {
-        "chunk_index": 0,
-        "employee_id": 201,
-        "report_date": "2025-03-07",
-        "upserted_point_index": 1
-      }
-    ],
-    "reports": [
-      {
-        "employee_id": 201,
-        "report_date": "2025-03-07",
-        "report_id": "<uuid:2>",
-        "report_text": "Tasks Completed: Second version of the same week wins.\n\nImpact: y\n\nChallenges: y\n\nSupport Required: y\n\nTasks Planned: y\n\nConfidence Level: 2\n\nReport Period: 2025-03-01 to 2025-03-07"
-      }
-    ],
+    "employees": [],
+    "qdrant_mappings": [],
+    "reports": [],
     "supervisor_feedback_forms": [],
     "supervisor_feedback_metric_definitions": [],
     "supervisor_feedback_responses": []

@@ -7,6 +7,51 @@ from app.core.logger import logger
 import json
 
 
+def parse_period_date(value: str) -> date:
+    """Parse a report-period date string.
+
+    Accepts MM/DD/YYYY (DD/MM/YYYY when that is not a valid date), YYYY-MM-DD,
+    and MM-DD-YYYY (DD-MM-YYYY when that is not a valid date). A trailing time,
+    as spreadsheet exports write it ("2024-03-01 00:00:00", "2024-03-01T10:30"),
+    is ignored. Raises ValueError for anything else.
+    """
+    value = re.sub(r"[ T]\d{1,2}:\d{2}(:\d{2}(\.\d+)?)?$", "", value.strip())
+    if re.fullmatch(r"\d{1,2}/\d{1,2}/\d{4}", value):
+        formats = ("%m/%d/%Y", "%d/%m/%Y")
+    elif re.fullmatch(r"\d{4}-\d{1,2}-\d{1,2}", value):
+        formats = ("%Y-%m-%d",)
+    elif re.fullmatch(r"\d{1,2}-\d{1,2}-\d{4}", value):
+        formats = ("%m-%d-%Y", "%d-%m-%Y")
+    else:
+        raise ValueError(f"Unrecognised date: {value}")
+    for date_format in formats:
+        try:
+            return datetime.strptime(value, date_format).date()
+        except ValueError:
+            continue
+    raise ValueError(f"Invalid date: {value}")
+
+
+def check_period_date(v):
+    """Field check shared by the report-period models (From/To, From_Date/To_Date)."""
+    if isinstance(v, date):
+        if v > date.today():
+            raise ValueError(f"Date cannot be in the future: {v}")
+        return v
+    if isinstance(v, str):
+        v = v.strip()
+        if not v:
+            raise ValueError("Date is required")
+        try:
+            parsed = parse_period_date(v)
+        except ValueError:
+            raise ValueError(f"Invalid date format: {v}. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.")
+        if parsed > date.today():
+            raise ValueError(f"Date cannot be in the future: {parsed}")
+        return v
+    return v
+
+
 class CombinedCSVRow(BaseModel):
     """
     Schema for a single row of combined employee and report data in a CSV file.
@@ -127,59 +172,11 @@ class CombinedCSVRow(BaseModel):
     @field_validator('From', 'To')
     @classmethod
     def validate_dates(cls, v, info):
+        """Check a report-period date: not in the future, in a format parse_period_date accepts.
+
+        Strings are returned as given and converted in convert_date_strings.
         """
-        Parse and validate dates in various formats.
-        Uses MM/DD/YYYY as the default format for slash-separated dates.
-        """
-        from datetime import datetime, date
-        today = date.today()
-        
-        # If already a date object, just validate it's not in future
-        if isinstance(v, date):
-            if v > today:
-                raise ValueError(f"Date cannot be in the future: {v}")
-            return v
-            
-        # Handle string dates in various formats
-        if isinstance(v, str):
-            v = v.strip()
-            
-            try:
-                # Try to parse different date formats
-                if '/' in v:
-                    import re
-                    # Format with slashes - interpret as MM/DD/YYYY by default
-                    if re.match(r'^\d{1,2}/\d{1,2}/\d{4}$', v):
-                        # First try MM/DD/YYYY (US format - the default)
-                        try:
-                            parsed_date = datetime.strptime(v, '%m/%d/%Y').date()
-                        except ValueError:
-                            # If MM/DD/YYYY fails, try DD/MM/YYYY as fallback
-                            parsed_date = datetime.strptime(v, '%d/%m/%Y').date()
-                        
-                        # Check if the date is in the future
-                        if parsed_date > today:
-                            raise ValueError(f"Date cannot be in the future: {parsed_date}")
-                        
-                        # Return the original string - we'll convert to date in the model_validator
-                        return v
-                
-                # Format: MM-DD-YYYY or DD-MM-YYYY
-                elif '-' in v:
-                    # ... Same logic as above, but return v instead of parsed_date ...
-                    return v
-                
-                # For ISO format (YYYY-MM-DD), validate but return the string
-                elif re.match(r'^\d{4}-\d{2}-\d{2}$', v):
-                    parsed_date = datetime.strptime(v, '%Y-%m-%d').date()
-                    if parsed_date > today:
-                        raise ValueError(f"Date cannot be in the future: {parsed_date}")
-                    return v
-                
-            except ValueError as e:
-                raise ValueError(f"Invalid date format: {v}. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.")
-        
-        return v
+        return check_period_date(v)
     
     @field_validator('Confidence_Level')
     @classmethod
@@ -211,66 +208,11 @@ class CombinedCSVRow(BaseModel):
     
     @model_validator(mode='after')
     def convert_date_strings(self):
-        """Convert date strings to actual date objects after all validation."""
-        from datetime import datetime
-
-        # Handle From date
-        from_date = self.From
-        if isinstance(from_date, str):
-            if '/' in from_date:
-                try:
-                    # First try MM/DD/YYYY
-                    self.From = datetime.strptime(from_date, '%m/%d/%Y').date()
-                except ValueError:
-                    # Then try DD/MM/YYYY
-                    try:
-                        self.From = datetime.strptime(from_date, '%d/%m/%Y').date()
-                    except ValueError:
-                        # If all else fails, let it pass - likely already validated
-                        pass
-            elif '-' in from_date and not from_date.startswith('20'):  # Not ISO format
-                try:
-                    # First try MM-DD-YYYY
-                    self.From = datetime.strptime(from_date, '%m-%d-%Y').date()
-                except ValueError:
-                    # Then try DD-MM-YYYY
-                    try:
-                        self.From = datetime.strptime(from_date, '%d-%m-%Y').date()
-                    except ValueError:
-                        pass
-            else:
-                # Try ISO format
-                try:
-                    self.From = datetime.strptime(from_date, '%Y-%m-%d').date()
-                except ValueError:
-                    pass
-
-        # Handle To date (same logic as From)
-        to_date = self.To
-        if isinstance(to_date, str):
-            # Same conversion logic as above for To date
-            if '/' in to_date:
-                try:
-                    self.To = datetime.strptime(to_date, '%m/%d/%Y').date()
-                except ValueError:
-                    try:
-                        self.To = datetime.strptime(to_date, '%d/%m/%Y').date()
-                    except ValueError:
-                        pass
-            elif '-' in to_date and not to_date.startswith('20'):
-                try:
-                    self.To = datetime.strptime(to_date, '%m-%d-%Y').date()
-                except ValueError:
-                    try:
-                        self.To = datetime.strptime(to_date, '%d-%m-%Y').date()
-                    except ValueError:
-                        pass
-            else:
-                try:
-                    self.To = datetime.strptime(to_date, '%Y-%m-%d').date()
-                except ValueError:
-                    pass
-
+        """Convert the validated date strings to date objects."""
+        for date_field in ['From', 'To']:
+            value = getattr(self, date_field)
+            if isinstance(value, str):
+                setattr(self, date_field, parse_period_date(value))
         return self
 
     @model_validator(mode='after')
@@ -448,71 +390,11 @@ class VisionDataCSVRow(BaseModel):
     @field_validator('From_Date', 'To_Date')
     @classmethod
     def validate_dates(cls, v, info):
+        """Check a report-period date: not in the future, in a format parse_period_date accepts.
+
+        Strings are returned as given and converted in convert_date_strings.
         """
-        Parse and validate dates in various formats.
-        Uses MM/DD/YYYY as the default format for slash-separated dates.
-        """
-        from datetime import datetime, date
-        today = date.today()
-        
-        # If already a date object, just validate it's not in future
-        if isinstance(v, date):
-            if v > today:
-                raise ValueError(f"Date cannot be in the future: {v}")
-            return v
-            
-        # Handle string dates in various formats
-        if isinstance(v, str):
-            v = v.strip()
-            
-            try:
-                # Try to parse different date formats
-                if '/' in v:
-                    import re
-                    # Format with slashes - interpret as MM/DD/YYYY by default
-                    if re.match(r'^\d{1,2}/\d{1,2}/\d{4}$', v):
-                        # First try MM/DD/YYYY (US format - the default)
-                        try:
-                            parsed_date = datetime.strptime(v, '%m/%d/%Y').date()
-                        except ValueError:
-                            # If MM/DD/YYYY fails, try DD/MM/YYYY as fallback
-                            parsed_date = datetime.strptime(v, '%d/%m/%Y').date()
-                        
-                        # Check if the date is in the future
-                        if parsed_date > today:
-                            raise ValueError(f"Date cannot be in the future: {parsed_date}")
-                        
-                        # Return the original string - we'll convert to date in the model_validator
-                        return v
-                
-                # Format: MM-DD-YYYY or DD-MM-YYYY
-                elif '-' in v:
-                    # Try both formats
-                    try:
-                        parsed_date = datetime.strptime(v, '%m-%d-%Y').date()
-                    except ValueError:
-                        try:
-                            parsed_date = datetime.strptime(v, '%d-%m-%Y').date()
-                        except ValueError:
-                            parsed_date = datetime.strptime(v, '%Y-%m-%d').date()
-                    
-                    # Check if the date is in the future
-                    if parsed_date > today:
-                        raise ValueError(f"Date cannot be in the future: {parsed_date}")
-                    
-                    return v
-                
-                # For ISO format (YYYY-MM-DD), validate but return the string
-                elif re.match(r'^\d{4}-\d{2}-\d{2}$', v):
-                    parsed_date = datetime.strptime(v, '%Y-%m-%d').date()
-                    if parsed_date > today:
-                        raise ValueError(f"Date cannot be in the future: {parsed_date}")
-                    return v
-                
-            except ValueError as e:
-                raise ValueError(f"Invalid date format: {v}. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.")
-        
-        return v
+        return check_period_date(v)
     
     @field_validator('Main_Entity')
     @classmethod
@@ -548,7 +430,6 @@ class VisionDataCSVRow(BaseModel):
         if not v or not v.strip():
             return "{}"  # Return empty JSON object if no sub-entities
             
-        import re
         import json
         
         # Expected format: "Name1:Count1, Name2:Count2, ..."
@@ -611,41 +492,11 @@ class VisionDataCSVRow(BaseModel):
         return content_dict
     @model_validator(mode='after')
     def convert_date_strings(self):
-        """Convert date strings to actual date objects after all validation."""
-        from datetime import datetime
-        
-        # Apply same date conversion logic as in CombinedCSVRow
+        """Convert the validated date strings to date objects."""
         for date_field in ['From_Date', 'To_Date']:
-            date_str = getattr(self, date_field)
-            if isinstance(date_str, str):
-                if '/' in date_str:
-                    try:
-                        # First try MM/DD/YYYY
-                        setattr(self, date_field, datetime.strptime(date_str, '%m/%d/%Y').date())
-                    except ValueError:
-                        # Then try DD/MM/YYYY
-                        try:
-                            setattr(self, date_field, datetime.strptime(date_str, '%d/%m/%Y').date())
-                        except ValueError:
-                            # If all else fails, let it pass - likely already validated
-                            pass
-                elif '-' in date_str and not date_str.startswith('20'):  # Not ISO format
-                    try:
-                        # First try MM-DD-YYYY
-                        setattr(self, date_field, datetime.strptime(date_str, '%m-%d-%Y').date())
-                    except ValueError:
-                        # Then try DD-MM-YYYY
-                        try:
-                            setattr(self, date_field, datetime.strptime(date_str, '%d-%m-%Y').date())
-                        except ValueError:
-                            pass
-                else:
-                    # Try ISO format
-                    try:
-                        setattr(self, date_field, datetime.strptime(date_str, '%Y-%m-%d').date())
-                    except ValueError:
-                        pass
-        
+            value = getattr(self, date_field)
+            if isinstance(value, str):
+                setattr(self, date_field, parse_period_date(value))
         return self
     
     @model_validator(mode='after')
@@ -955,7 +806,6 @@ class JobDescriptionCSVRow(BaseModel):
             try:
                 # Try to parse different date formats
                 if '/' in v:
-                    import re
                     if re.match(r'^\d{1,2}/\d{1,2}/\d{4}$', v):
                         try:
                             parsed_date = datetime.strptime(v, '%m/%d/%Y').date()
@@ -1072,7 +922,6 @@ class JobDescriptionCSVRow(BaseModel):
             try:
                 # Try to parse different date formats (same as Assigned_Date)
                 if '/' in v:
-                    import re
                     if re.match(r'^\d{1,2}/\d{1,2}/\d{4}$', v):
                         try:
                             parsed_date = datetime.strptime(v, '%m/%d/%Y').date()
@@ -1434,70 +1283,11 @@ class SupervisorFeedbackCSVRow(BaseModel):
     @field_validator('From', 'To')
     @classmethod
     def validate_dates(cls, v: Union[str, date], info) -> Union[str, date]:
+        """Check a report-period date: not in the future, in a format parse_period_date accepts.
+
+        Strings are returned as given and converted in convert_date_strings.
         """
-        Parse and validate dates in various formats.
-        
-        Accepts:
-        - date objects (validates and returns as-is)
-        - String dates in YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY formats
-        
-        Returns:
-        - date objects unchanged (for direct input)
-        - Validated string dates (converted to date objects in model validator)
-        """
-        from datetime import datetime, date
-        today = date.today()
-        
-        # If already a date object, validate and return as-is
-        if isinstance(v, date):
-            if v > today:
-                raise ValueError(f"Date cannot be in the future: {v}")
-            return v
-            
-        # Handle string dates in various formats
-        if isinstance(v, str):
-            v = v.strip()
-            
-            try:
-                # Try to parse different date formats
-                if '/' in v:
-                    # Format with slashes - interpret as MM/DD/YYYY by default
-                    if re.match(r'^\d{1,2}/\d{1,2}/\d{4}$', v):
-                        try:
-                            parsed_date = datetime.strptime(v, '%m/%d/%Y').date()
-                        except ValueError:
-                            parsed_date = datetime.strptime(v, '%d/%m/%Y').date()
-                        
-                        if parsed_date > today:
-                            raise ValueError(f"Date cannot be in the future: {parsed_date}")
-                        
-                        return v
-                
-                elif '-' in v:
-                    # Try both formats
-                    try:
-                        parsed_date = datetime.strptime(v, '%m-%d-%Y').date()
-                    except ValueError:
-                        try:
-                            parsed_date = datetime.strptime(v, '%d-%m-%Y').date()
-                        except ValueError:
-                            parsed_date = datetime.strptime(v, '%Y-%m-%d').date()
-                    
-                    if parsed_date > today:
-                        raise ValueError(f"Date cannot be in the future: {parsed_date}")
-                    
-                    return v
-                
-                elif re.match(r'^\d{4}-\d{2}-\d{2}$', v):
-                    parsed_date = datetime.strptime(v, '%Y-%m-%d').date()
-                    if parsed_date > today:
-                        raise ValueError(f"Date cannot be in the future: {parsed_date}")
-                    return v
-                
-            except ValueError as e:
-                raise ValueError(f"Invalid date format: {v}. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.")
-        
-        return v
+        return check_period_date(v)
     
     @field_validator('Metric_Type')
     @classmethod
@@ -1511,64 +1301,11 @@ class SupervisorFeedbackCSVRow(BaseModel):
     
     @model_validator(mode='after')
     def convert_date_strings(self):
-        """
-        Convert date strings to actual date objects after all validation.
-        
-        Note: If From/To are already date objects (passed directly),
-        they are left unchanged. Only string dates are converted.
-        """
-        from datetime import datetime
-        
-        # Handle From date - only convert if string
-        from_date = self.From
-        if isinstance(from_date, str):
-            if '/' in from_date:
-                try:
-                    self.From = datetime.strptime(from_date, '%m/%d/%Y').date()
-                except ValueError:
-                    try:
-                        self.From = datetime.strptime(from_date, '%d/%m/%Y').date()
-                    except ValueError:
-                        pass
-            elif '-' in from_date and not from_date.startswith('20'):
-                try:
-                    self.From = datetime.strptime(from_date, '%m-%d-%Y').date()
-                except ValueError:
-                    try:
-                        self.From = datetime.strptime(from_date, '%d-%m-%Y').date()
-                    except ValueError:
-                        pass
-            else:
-                try:
-                    self.From = datetime.strptime(from_date, '%Y-%m-%d').date()
-                except ValueError:
-                    pass
-        
-        # Handle To date - only convert if string
-        to_date = self.To
-        if isinstance(to_date, str):
-            if '/' in to_date:
-                try:
-                    self.To = datetime.strptime(to_date, '%m/%d/%Y').date()
-                except ValueError:
-                    try:
-                        self.To = datetime.strptime(to_date, '%d/%m/%Y').date()
-                    except ValueError:
-                        pass
-            elif '-' in to_date and not to_date.startswith('20'):
-                try:
-                    self.To = datetime.strptime(to_date, '%m-%d-%Y').date()
-                except ValueError:
-                    try:
-                        self.To = datetime.strptime(to_date, '%d-%m-%Y').date()
-                    except ValueError:
-                        pass
-            else:
-                try:
-                    self.To = datetime.strptime(to_date, '%Y-%m-%d').date()
-                except ValueError:
-                    pass
-        
+        """Convert the validated date strings to date objects."""
+        for date_field in ['From', 'To']:
+            value = getattr(self, date_field)
+            if isinstance(value, str):
+                setattr(self, date_field, parse_period_date(value))
         return self
     
     @model_validator(mode='after')

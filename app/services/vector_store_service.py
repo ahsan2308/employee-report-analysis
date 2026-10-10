@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Optional
 from datetime import datetime, date
-from uuid import uuid4
+from uuid import NAMESPACE_URL, uuid5
 import json
 import numpy as np
 import time
@@ -181,7 +181,7 @@ def store_mappings_batch(mappings: List[Dict], session=None) -> bool:
         # Execute bulk insert if we have any mappings
         if insert_values:
             session.execute(
-                text(f"INSERT INTO {schema_name}.qdrant_mappings (qdrant_id, report_id, chunk_index) VALUES (:qdrant_id, :report_id, :chunk_index)"),
+                text(f"INSERT INTO {schema_name}.qdrant_mappings (qdrant_id, report_id, chunk_index) VALUES (:qdrant_id, :report_id, :chunk_index) ON CONFLICT (qdrant_id) DO NOTHING"),
                 insert_values
             )
         
@@ -201,6 +201,53 @@ def store_mappings_batch(mappings: List[Dict], session=None) -> bool:
     finally:
         if close_session and session:
             session.close()
+
+# Point IDs are derived from (report, chunk), so re-adding a report overwrites its points
+_REPORT_CHUNK_NAMESPACE = uuid5(NAMESPACE_URL, "employee-report-analysis/report-chunk")
+
+
+def report_chunk_point_id(report_id, chunk_index: int) -> str:
+    """The vector store point ID of one chunk of a report."""
+    return str(uuid5(_REPORT_CHUNK_NAMESPACE, f"{report_id}:{chunk_index}"))
+
+
+def _remove_stale_report_vectors(vector_store, report_ids, keep_ids, session=None) -> bool:
+    """Delete the points and mappings of these reports that are not in keep_ids.
+
+    They are left by an earlier, longer version of a report, or by imports from
+    before point IDs were derived from (report, chunk).
+    """
+    close_session = session is None
+    if close_session:
+        session = get_database().create_session()
+    try:
+        rows = session.execute(
+            text(f"SELECT qdrant_id FROM {schema_name}.qdrant_mappings WHERE CAST(report_id AS text) = ANY(:report_ids)"),
+            {"report_ids": [str(report_id) for report_id in report_ids]},
+        ).fetchall()
+        stale = [str(row[0]) for row in rows if str(row[0]) not in keep_ids]
+        if not stale:
+            return True
+        if not vector_store.delete_document(collection_name=COLLECTION_NAME, points_selector=stale):
+            logger.error(f"Failed to delete {len(stale)} stale vectors")
+            return False
+        session.execute(
+            text(f"DELETE FROM {schema_name}.qdrant_mappings WHERE CAST(qdrant_id AS text) = ANY(:ids)"),
+            {"ids": stale},
+        )
+        if close_session:
+            session.commit()
+        logger.info(f"Removed {len(stale)} stale vectors for {len(report_ids)} reports")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to remove stale vectors: {e}")
+        if close_session:
+            session.rollback()
+        return False
+    finally:
+        if close_session:
+            session.close()
+
 
 def add_report_to_vector_store(report_id=None, employee_id=None, report_date=None, report_text=None, reports=None, session=None) -> bool:
     """
@@ -301,8 +348,8 @@ def add_report_to_vector_store(report_id=None, employee_id=None, report_date=Non
                     chunk = all_chunks[i]
                     meta = chunk_metadata[i]
                     
-                    # Generate unique ID for each vector document
-                    document_id = str(uuid4())
+                    # Point ID derived from (report, chunk), so a re-import overwrites it
+                    document_id = report_chunk_point_id(meta["report_id"], meta["chunk_idx"])
                     
                     # Create payload - convert date to timestamp
                     payload = {
@@ -359,6 +406,11 @@ def add_report_to_vector_store(report_id=None, employee_id=None, report_date=Non
                 if not store_mappings_batch(all_mappings, session):
                     logger.error("Failed to store vector mappings in database")
                     return False
+
+                if not _remove_stale_report_vectors(
+                    vector_store, {m["report_id"] for m in all_mappings}, {m["document_id"] for m in all_mappings}, session
+                ):
+                    return False
                     
                 logger.info(f"Successfully added {len(reports)} reports with total {len(all_points)} vectors")
                 return True
@@ -403,8 +455,8 @@ def add_report_to_vector_store(report_id=None, employee_id=None, report_date=Non
                     
                     # Create points and mappings using the generated embeddings
                     for chunk_index, (chunk, embedding) in enumerate(zip(chunks, chunk_embeddings)):
-                        # Generate unique ID for each vector document
-                        document_id = str(uuid4())
+                        # Point ID derived from (report, chunk), so re-adding the report overwrites it
+                        document_id = report_chunk_point_id(report_id, chunk_index)
                         
                         # Create payload with timestamp for filtering
                         payload = {
@@ -456,6 +508,11 @@ def add_report_to_vector_store(report_id=None, employee_id=None, report_date=Non
                     if not store_mappings_batch(mappings, session):
                         logger.error("Failed to store vector mappings in database")
                         return False
+
+                    if not _remove_stale_report_vectors(
+                        vector_store, [str(report_id)], {m["document_id"] for m in mappings}, session
+                    ):
+                        return False
                     
                     logger.info(f"Successfully added report {report_id} with {len(chunks)} chunks in batch mode")
                     
@@ -464,8 +521,8 @@ def add_report_to_vector_store(report_id=None, employee_id=None, report_date=Non
                     mappings = []
                     
                     for chunk_index, chunk in enumerate(chunks):
-                        # Generate unique ID for each vector document
-                        document_id = str(uuid4())
+                        # Point ID derived from (report, chunk), so re-adding the report overwrites it
+                        document_id = report_chunk_point_id(report_id, chunk_index)
                         
                         # Generate embedding
                         embedding = get_embedding(chunk)
@@ -501,6 +558,10 @@ def add_report_to_vector_store(report_id=None, employee_id=None, report_date=Non
                     
                     # Store mappings in batch
                     store_mappings_batch(mappings, session)
+                    if not _remove_stale_report_vectors(
+                        vector_store, [str(report_id)], {m["document_id"] for m in mappings}, session
+                    ):
+                        return False
                     
                     logger.info(f"Report added with {len(chunks)} chunks in single mode")
             

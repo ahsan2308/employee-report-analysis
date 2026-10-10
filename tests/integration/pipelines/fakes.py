@@ -186,6 +186,15 @@ class FakeVectorStore:
         self._remember(document_id, vector, payload)
         return True
 
+    def delete_document(self, collection_name: str, document_id: str = None, points_selector=None) -> bool:
+        ids = [document_id] if document_id else list(points_selector or [])
+        self.recorder.record("vs.delete_document", collection_name=collection_name, ids=sorted(ids))
+        for point_id in ids:
+            self.points.pop(point_id, None)
+            if point_id in self.document_order:
+                self.document_order.remove(point_id)
+        return True
+
     def search(self, **kwargs) -> List[Dict[str, Any]]:
         self.recorder.record("vs.search", **kwargs)
         return copy.deepcopy(self.search_hits)

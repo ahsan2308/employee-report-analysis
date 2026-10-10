@@ -1,7 +1,14 @@
 {
   "compact_no_separator": {
-    "message": "cannot access local variable 're' where it is not associated with a value",
-    "raised": "UnboundLocalError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: 20240301. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "dash_dd_mm_yyyy": {
     "ok": {
@@ -24,12 +31,35 @@
     }
   },
   "dash_invalid": {
-    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
-    "raised": "TypeError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: 31-31-2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "dash_iso_with_time": {
-    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
-    "raised": "TypeError"
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-03-01>",
+      "department": "Technical"
+    }
   },
   "dash_mm_dd_yyyy": {
     "ok": {
@@ -52,8 +82,15 @@
     }
   },
   "dash_token": {
-    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
-    "raised": "TypeError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: -. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "date_obj": {
     "validation_errors": [
@@ -98,32 +135,37 @@
     }
   },
   "dotted": {
-    "message": "cannot access local variable 're' where it is not associated with a value",
-    "raised": "UnboundLocalError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: 01.03.2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "empty": {
-    "message": "cannot access local variable 're' where it is not associated with a value",
-    "raised": "UnboundLocalError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Date is required",
+        "type": "value_error"
+      }
+    ]
   },
   "future_dash": {
-    "ok": {
-      "BPS": "BS-18",
-      "Challenges": null,
-      "Confidence_Level": 4,
-      "Designation": "Deputy Director",
-      "Draft": null,
-      "Employee_ID": 101,
-      "From": "<date 2020-01-01>",
-      "Impact": "Faster turnaround",
-      "NTR": null,
-      "Name": "Ayesha Khan",
-      "Office_Hierarchy": "Technical>Tech-I>SOC",
-      "Support_Required": null,
-      "Tasks_Completed": "Reviewed 12 cases",
-      "Tasks_Planned": "Audit",
-      "To": "<date 2099-01-01>",
-      "department": "Technical"
-    }
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Date cannot be in the future: 2099-01-01",
+        "type": "value_error"
+      }
+    ]
   },
   "future_date_obj": {
     "validation_errors": [
@@ -137,24 +179,15 @@
     ]
   },
   "future_iso": {
-    "ok": {
-      "BPS": "BS-18",
-      "Challenges": null,
-      "Confidence_Level": 4,
-      "Designation": "Deputy Director",
-      "Draft": null,
-      "Employee_ID": 101,
-      "From": "<date 2020-01-01>",
-      "Impact": "Faster turnaround",
-      "NTR": null,
-      "Name": "Ayesha Khan",
-      "Office_Hierarchy": "Technical>Tech-I>SOC",
-      "Support_Required": null,
-      "Tasks_Completed": "Reviewed 12 cases",
-      "Tasks_Planned": "Audit",
-      "To": "<date 2099-01-01>",
-      "department": "Technical"
-    }
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Date cannot be in the future: 2099-01-01",
+        "type": "value_error"
+      }
+    ]
   },
   "future_slash": {
     "validation_errors": [
@@ -162,7 +195,7 @@
         "loc": [
           "To"
         ],
-        "msg": "Value error, Invalid date format: 01/01/2099. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "msg": "Value error, Date cannot be in the future: 2099-01-01",
         "type": "value_error"
       }
     ]
@@ -199,8 +232,15 @@
     }
   },
   "iso_invalid_month": {
-    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
-    "raised": "TypeError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: 2024-13-01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "iso_single_digit_parts": {
     "ok": {
@@ -223,12 +263,35 @@
     }
   },
   "iso_slashes_year_first": {
-    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
-    "raised": "TypeError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: 2024/03/01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "iso_t_time": {
-    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
-    "raised": "TypeError"
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-03-01>",
+      "department": "Technical"
+    }
   },
   "iso_whitespace": {
     "ok": {
@@ -271,8 +334,15 @@
     }
   },
   "na_token": {
-    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
-    "raised": "TypeError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: N/A. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "none": {
     "validation_errors": [
@@ -286,8 +356,15 @@
     ]
   },
   "null_token": {
-    "message": "cannot access local variable 're' where it is not associated with a value",
-    "raised": "UnboundLocalError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: null. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "old_date_obj": {
     "validation_errors": [
@@ -301,8 +378,13 @@
     ]
   },
   "old_iso": {
-    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
-    "raised": "TypeError"
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, From date (2020-01-01) cannot be after To date (1965-01-01)",
+        "type": "value_error"
+      }
+    ]
   },
   "old_slash": {
     "validation_errors": [
@@ -336,16 +418,37 @@
     ]
   },
   "slash_two_digit_year": {
-    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
-    "raised": "TypeError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: 03/01/24. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "spaces_only": {
-    "message": "cannot access local variable 're' where it is not associated with a value",
-    "raised": "UnboundLocalError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Date is required",
+        "type": "value_error"
+      }
+    ]
   },
   "text_month": {
-    "message": "cannot access local variable 're' where it is not associated with a value",
-    "raised": "UnboundLocalError"
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: March 1, 2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "us_mm_dd_ambiguous": {
     "ok": {

@@ -344,8 +344,15 @@
     ]
   },
   "from_unparsed_vs_date": {
-    "message": "'>' not supported between instances of 'str' and 'datetime.date'",
-    "raised": "TypeError"
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Value error, Invalid date format: 2024/01/01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "main_entity_padded": {
     "ok": {

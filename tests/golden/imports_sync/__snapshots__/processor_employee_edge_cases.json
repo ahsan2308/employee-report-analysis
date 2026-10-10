@@ -35,7 +35,8 @@
       "processed_rows": 0,
       "reports_created": 2,
       "reports_updated": 0,
-      "successful_rows": 4
+      "successful_rows": 4,
+      "vector_store_failures": 0
     },
     "pg_insert_values": [
       {
@@ -103,7 +104,8 @@
       "processed_rows": 0,
       "reports_created": 2,
       "reports_updated": 0,
-      "successful_rows": 4
+      "successful_rows": 4,
+      "vector_store_failures": 0
     },
     "pg_insert_values": [
       {
@@ -165,7 +167,8 @@
       "processed_rows": 0,
       "reports_created": 2,
       "reports_updated": 0,
-      "successful_rows": 4
+      "successful_rows": 4,
+      "vector_store_failures": 0
     },
     "pg_insert_values": [
       {
@@ -192,7 +195,9 @@
     }
   },
   "type_error_escapes": {
-    "message": "'>' not supported between instances of 'str' and 'datetime.date'",
-    "raised": "TypeError"
+    "ok": [
+      0,
+      1
+    ]
   }
 }

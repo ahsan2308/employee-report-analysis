@@ -406,8 +406,15 @@
     ]
   },
   "from_unparsed_string_vs_date": {
-    "message": "'>' not supported between instances of 'str' and 'datetime.date'",
-    "raised": "TypeError"
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: 2024/01/01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
   },
   "missing_dates": {
     "validation_errors": [
@@ -441,6 +448,13 @@
           "BPS"
         ],
         "msg": "Value error, BPS should be in format 'BS-XX' or 'TS-XX' where XX is a number (e.g., BS-21)",
+        "type": "value_error"
+      },
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Date cannot be in the future: 2099-01-01",
         "type": "value_error"
       },
       {

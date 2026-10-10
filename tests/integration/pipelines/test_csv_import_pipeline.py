@@ -9,6 +9,7 @@ from pathlib import Path
 
 import pytest
 
+from app.models.import_models import ImportError
 from app.schemas.csv_import_schema import CSVImportOptions
 from app.services.csv_import_service import CSVImportService
 from app.tasks.import_tasks import process_csv_import
@@ -66,7 +67,7 @@ def test_employee_reports_bad_rows(db_session, ext, snapshot):
 
 
 def test_employee_reports_bad_rows_small_chunks(db_session, ext, snapshot):
-    """chunk_size=2 -> four DataFrame chunks; shows how row numbers are reported across chunks."""
+    """chunk_size=2 -> four DataFrame chunks; rows are numbered as in a single-chunk import."""
     outcomes = [run_import("employee_reports_bad.csv", options={"chunk_size": 2})]
     snapshot_world(snapshot, "import__employee_reports_bad_rows_chunk2", db_session, ext, outcomes)
 
@@ -111,3 +112,19 @@ def test_import_unknown_format(db_session, ext, snapshot):
     """Comma file read with delimiter=";" -> one merged header column that no processor recognises."""
     outcomes = [run_import("employee_reports.csv", options={"delimiter": ";"})]
     snapshot_world(snapshot, "import__unrecognised_headers", db_session, ext, outcomes)
+
+
+def test_error_row_numbers_do_not_depend_on_chunk_size(db_session, ext):
+    """Rows are numbered from the file's first data row, whatever the chunking (duplicates dropped included)."""
+    def error_rows(options):
+        run_import("employee_reports_bad.csv", options=options)
+        db_session.expire_all()
+        rows = [(e.row_number, (e.row_data or {}).get("Name")) for e in db_session.query(ImportError).order_by(ImportError.row_number)]
+        db_session.query(ImportError).delete()
+        db_session.commit()
+        return rows
+
+    single = error_rows(None)
+    assert single == [(2, "Omar Farooq"), (3, "Zara Shah"), (4, "Ali <b>"), (5, "Kamran Ali"), (6, "Nida Khan")]
+    for chunk_size in (1, 2, 3):
+        assert error_rows({"chunk_size": chunk_size}) == single
