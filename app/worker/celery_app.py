@@ -159,13 +159,6 @@ celery_app.autodiscover_tasks(
     related_name=None,
 )
 
-# Explicitly import sync tasks to ensure they're registered
-try:
-    from app.tasks import sync_tasks
-    logger.info("Explicitly imported sync_tasks module")
-except ImportError as e:
-    logger.error(f"Failed to import sync_tasks: {e}")
-
 # Check if sync is enabled from environment variable
 SYNC_ENABLED = os.getenv('SYNC_ENABLED', 'true').lower() == 'true'
 
