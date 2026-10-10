@@ -38,8 +38,7 @@ None open. New defects found by the characterization suite get the next ID (B17)
 Found while writing the characterization tests and snapshotted as-is. Open ones
 are candidates for the bug-fix track; fixed ones are listed at the end.
 
-**SQL Server connector**
-- The password is put into the ODBC connection string unescaped. There is a hard-coded default password. Substring blocklists reject harmless names such as "LastUpdated" and hosts containing "sp_" (`sqlserver_connector.py:209,327,855`).
+None open.
 
 ### Fixed observations
 
@@ -64,3 +63,6 @@ are candidates for the bug-fix track; fixed ones are listed at the end.
 - The visualization cache stores and returns copies, so callers cannot change a cached result. Heatmaps accept and apply `employee_id` and `department` (`integration/api/test_visualizations.py`).
 - The quarterly prompt's week ranges cover the 7 days ending on the report date, as in the weekly prompt, and weeks are attached to the month with the same number and year (`golden/prompts/test_quarterly_prompt.py`).
 - `get_complete_reports_by_ids` keeps the given (relevance) order, so similar reports appear in prompts in a stable order (`integration/services/test_db_service.py`).
+
+**SQL Server connector**
+- Connection-string values are brace-quoted per the ODBC rules when they contain `;`, `{`, `}`, `=` or edge spaces, so a password or server name cannot add connection attributes. There is no hard-coded default password: an unset `SQLSERVER_PASSWORD` means an empty one (and a warning). Connection parameters are no longer matched against SQL keywords ("sp_server" and "UPDATES_DB" are accepted; control characters are not), column names rely on the identifier check, and query keyword checks match whole words ("LastUpdated", "CreatedAt" pass) (`golden/imports_sync/test_sync_sqlserver_connector.py`).

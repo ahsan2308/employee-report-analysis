@@ -141,12 +141,26 @@
     ]
   },
   "execute_created_at_column": {
-    "connect_timeouts": [],
+    "connect_timeouts": [
+      30
+    ],
     "result": {
-      "message": "Query contains prohibited operation: CREATE",
-      "raised": "ValueError"
+      "ok": [
+        {
+          "x": 1
+        }
+      ]
     },
-    "sql_log": []
+    "sql_log": [
+      {
+        "params": [],
+        "sql": "SELECT CreatedAt FROM T"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
   },
   "execute_non_select": {
     "connect_timeouts": [],
@@ -327,12 +341,26 @@
     ]
   },
   "record_count_exec_substring": {
-    "connect_timeouts": [],
+    "connect_timeouts": [
+      30
+    ],
     "result": {
-      "message": "WHERE clause contains prohibited pattern: EXEC",
-      "raised": "ValueError"
+      "ok": 1
     },
-    "sql_log": []
+    "sql_log": [
+      {
+        "params": [
+          [
+            "PPHQ"
+          ]
+        ],
+        "sql": "SELECT COUNT(*) FROM EmployeeReports WHERE ExecutiveOffice = ?"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
   },
   "record_count_is_null_no_params": {
     "connect_timeouts": [
@@ -401,12 +429,26 @@
     ]
   },
   "record_count_update_substring": {
-    "connect_timeouts": [],
+    "connect_timeouts": [
+      30
+    ],
     "result": {
-      "message": "WHERE clause contains prohibited pattern: UPDATE",
-      "raised": "ValueError"
+      "ok": 1
     },
-    "sql_log": []
+    "sql_log": [
+      {
+        "params": [
+          [
+            "<datetime 2024-05-01T12:30:00.500000>"
+          ]
+        ],
+        "sql": "SELECT COUNT(*) FROM EmployeeReports WHERE LastUpdated > ?"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
   },
   "records_since_bad_column": {
     "connect_timeouts": [],

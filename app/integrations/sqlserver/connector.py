@@ -9,6 +9,7 @@ memory-efficient data retrieval.
 from typing import Generator, Dict, Any, List, Optional, Set
 import pyodbc
 import os
+import re
 from datetime import datetime
 from contextlib import contextmanager
 
@@ -24,6 +25,21 @@ class SQLServerQueryError(Exception):
     """Raised when SQL Server query execution fails."""
     pass
 
+
+
+def _odbc_value(value) -> str:
+    """An ODBC connection-string value, brace-quoted when it contains ; { } = or edge spaces."""
+    value = "" if value is None else str(value)
+    if any(char in value for char in ";{}=") or value != value.strip():
+        return "{" + value.replace("}", "}}") + "}"
+    return value
+
+
+def _contains_sql_token(sql: str, token: str) -> bool:
+    """True if a keyword appears as a whole word ("UPDATE", not "LastUpdated"), or a comment marker appears."""
+    if not token[0].isalnum():
+        return token in sql
+    return re.search(rf"\b{re.escape(token)}\b", sql, re.IGNORECASE) is not None
 
 class SQLServerConnector:
     """
@@ -205,18 +221,15 @@ class SQLServerConnector:
         Raises:
             ValueError: If parameters contain suspicious characters
         """
-        # Check for SQL injection patterns in connection parameters
-        dangerous_chars = [';', '--', '/*', '*/', 'xp_', 'sp_', 'DROP', 'DELETE', 'INSERT', 'UPDATE']
-        
+        # The values never reach SQL, and _build_connection_string escapes them, so
+        # names such as "sp_server" or "UPDATES_DB" are fine; control characters are not.
         for param_name, param_value in [('server', server), ('database', database), ('username', username)]:
             if not param_value or not isinstance(param_value, str):
                 raise ValueError(f"Invalid {param_name}: must be a non-empty string")
             
-            # Check for dangerous SQL keywords/characters
-            for dangerous in dangerous_chars:
-                if dangerous.lower() in param_value.lower():
-                    logger.error(f"Suspicious pattern detected in {param_name}: {dangerous}")
-                    raise ValueError(f"Invalid {param_name}: contains prohibited pattern '{dangerous}'")
+            if any(ord(char) < 32 for char in param_value):
+                logger.error(f"Control character in {param_name}")
+                raise ValueError(f"Invalid {param_name}: contains control characters")
             
             # Ensure reasonable length (prevent buffer overflow attempts)
             if len(param_value) > 200:
@@ -254,14 +267,6 @@ class SQLServerConnector:
         columns = [col.strip() for col in column_name.split(',')]
         
         for col in columns:
-            # Check for SQL injection patterns
-            dangerous_patterns = [';', '--', '/*', '*/', 'DROP', 'DELETE', 'INSERT', 'UPDATE', '(', ')']
-            
-            for pattern in dangerous_patterns:
-                if pattern in col:
-                    logger.error(f"Suspicious pattern in column name: {col}")
-                    raise ValueError(f"Invalid column name: contains prohibited pattern '{pattern}'")
-            
             # Validate against whitelist if provided
             if allowed_columns and col not in allowed_columns:
                 logger.error(f"Column '{col}' not in allowed list")
@@ -270,7 +275,8 @@ class SQLServerConnector:
                     f"Allowed columns: {', '.join(sorted(allowed_columns))}"
                 )
             
-            # Ensure column name follows SQL naming conventions
+            # Only letters, digits and underscores: this is what keeps the name safe in SQL
+            # (a keyword inside a name, as in "UPDATED_AT", is harmless)
             if not col.replace('_', '').isalnum():
                 raise ValueError(f"Invalid column name: must contain only alphanumeric characters and underscores")
     
@@ -321,10 +327,10 @@ class SQLServerConnector:
         # Basic connection parameters
         conn_str = (
             f"DRIVER={{{self.driver}}};"
-            f"SERVER={self.server};"
-            f"DATABASE={self.database};"
-            f"UID={self.username};"
-            f"PWD={self.password};"
+            f"SERVER={_odbc_value(self.server)};"
+            f"DATABASE={_odbc_value(self.database)};"
+            f"UID={_odbc_value(self.username)};"
+            f"PWD={_odbc_value(self.password)};"
         )
         
         # Only add port if explicitly specified (not None)
@@ -472,9 +478,8 @@ class SQLServerConnector:
         # Validate where clause doesn't contain dangerous patterns
         if where_clause:
             dangerous_patterns = ['DROP', 'DELETE', 'INSERT', 'UPDATE', 'EXEC', 'EXECUTE', '--', '/*', '*/']
-            where_upper = where_clause.upper()
             for pattern in dangerous_patterns:
-                if pattern in where_upper:
+                if _contains_sql_token(where_clause, pattern):
                     logger.error(f"Dangerous pattern detected in WHERE clause: {pattern}")
                     raise ValueError(f"WHERE clause contains prohibited pattern: {pattern}")
             
@@ -713,12 +718,12 @@ class SQLServerConnector:
                                'ALTER', 'CREATE', 'TRUNCATE', 'MERGE', 'GRANT', 'REVOKE']
         
         for operation in dangerous_operations:
-            if operation in sql_upper:
+            if _contains_sql_token(sql, operation):
                 logger.error(f"Dangerous SQL operation detected: {operation}")
                 raise ValueError(f"Query contains prohibited operation: {operation}")
         
         # Ensure parameterized queries if WHERE clause is present
-        if 'WHERE' in sql_upper and params is None:
+        if _contains_sql_token(sql, 'WHERE') and params is None:
             logger.warning("Query with WHERE clause but no parameters - potential SQL injection risk")
             raise ValueError("Queries with WHERE clauses must use parameterized queries")
         
@@ -852,7 +857,9 @@ def create_sqlserver_connector() -> SQLServerConnector:
     server = os.getenv('SQLSERVER_HOST', 'localhost\\SQLEXPRESS')
     database = os.getenv('SQLSERVER_DATABASE', 'EmployeeTestDB')
     username = os.getenv('SQLSERVER_USERNAME', 'test_sync_user')
-    password = os.getenv('SQLSERVER_PASSWORD', 'abc12345')
+    password = os.getenv('SQLSERVER_PASSWORD', '')
+    if not password:
+        logger.warning("SQLSERVER_PASSWORD is not set; connecting with an empty password")
     
     # Port is optional - only use if explicitly set in environment
     port_env = os.getenv('SQLSERVER_PORT')
