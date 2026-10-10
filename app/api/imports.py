@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime
 
 from app.database import get_database
+from app.api.deps import get_db
 from app.models.import_models import CSVImportJob, ImportStatus, ImportError, CSVImportType
 from app.schemas.csv_import_schema import (
     CSVImportOptions, 
@@ -19,14 +20,6 @@ from app.core.logger import logger
 # Initialize Router
 router = APIRouter(prefix="/imports", tags=["CSV Imports"])
 
-# Dependency to get database session (consistent with other API files)
-def get_db():
-    db_instance = get_database()
-    session = db_instance.create_session()
-    try:
-        yield session
-    finally:
-        session.close()
 
 @router.post("/upload", response_model=CSVImportJobResponse)
 async def upload_csv_file(

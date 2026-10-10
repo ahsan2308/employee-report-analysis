@@ -1,6 +1,7 @@
 {
   "app.api": "ok",
   "app.api.analyses": "ok",
+  "app.api.deps": "ok",
   "app.api.employees": "ok",
   "app.api.imports": "ok",
   "app.api.main": "OperationalError: <database connection refused> [prints to stdout at import]",

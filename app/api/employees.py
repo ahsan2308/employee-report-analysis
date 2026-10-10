@@ -1,20 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_database
+from app.api.deps import get_db
 from app.models.db_models import Employee
 from app.schemas.employee_schema import EmployeeCreate 
 
 # Initialize Router
 router = APIRouter(prefix="/employees", tags=["Employees"])
 
-# Dependency to get database session
-def get_db():
-    db_instance = get_database()  
-    session = db_instance.create_session()
-    try:
-        yield session
-    finally:
-        session.close()
 
 # Create new employee 
 @router.post("/")

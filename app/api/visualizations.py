@@ -4,6 +4,7 @@ from typing import Optional, List
 from datetime import date
 
 from app.database import get_database
+from app.api.deps import get_db
 from app.services.visualization_service import (
     get_sentiment_trends, 
     get_impact_score_trends, 
@@ -21,14 +22,6 @@ from app.core.logger import logger
 # Initialize Router
 router = APIRouter(prefix="/visualizations", tags=["Visualizations"])
 
-# Dependency to get database session (consistent with other API files)
-def get_db():
-    db_instance = get_database()
-    session = db_instance.create_session()
-    try:
-        yield session
-    finally:
-        session.close()
 
 @router.get("/sentiment-trends", response_model=TrendResponse)
 def read_sentiment_trends(

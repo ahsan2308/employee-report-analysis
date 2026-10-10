@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
 from app.database import get_database
+from app.api.deps import get_db
 from app.models.db_models import EmployeeAnalysis, Report, Employee, MonthlyAnalysis, QuarterlyAnalysis
 from app.schemas.analysis_schema import AnalysisResponse, MonthlyAnalysisResponse, MonthlyAnalysisSummary, QuarterlyAnalysisResponse
 from app.services.llm_service import get_llm_service
@@ -21,14 +22,6 @@ from app.services.task_service import create_task_for_analysis, create_task_for_
 # Initialize Router
 router = APIRouter(prefix="/analyses", tags=["Analyses"])
 
-# Dependency to get database session
-def get_db():
-    db_instance = get_database()  
-    session = db_instance.create_session()
-    try:
-        yield session
-    finally:
-        session.close()
 
 # Modify to return a task ID instead of waiting for analysis
 @router.post("/analyze/{report_id}", response_model=TaskStatusResponse)
@@ -668,6 +661,5 @@ def get_employee_quarterly_analysis_by_period(
     except Exception as e:
         logger.error(f"Error retrieving quarterly analysis by period: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
 
 

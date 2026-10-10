@@ -12,6 +12,7 @@ import time
 import os
 
 from app.database import get_database
+from app.api.deps import get_db
 from app.models.sync_models import SyncHistory, SyncStatus, SyncType
 from app.schemas.sync_schema import (
     SyncTriggerResponse,
@@ -37,16 +38,6 @@ from app.worker.celery_app import celery_app
 
 # Initialize Router
 router = APIRouter(prefix="/sync", tags=["SQL Server Sync"])
-
-
-# Dependency to get database session
-def get_db():
-    db_instance = get_database()
-    session = db_instance.create_session()
-    try:
-        yield session
-    finally:
-        session.close()
 
 
 def _check_and_clear_stale_syncs(db: Session, sync_type: str, timeout_minutes: int = 60):

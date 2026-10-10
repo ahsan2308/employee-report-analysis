@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_database
+from app.api.deps import get_db
 from app.models.db_models import Report
 from app.schemas.reports_schema import ReportCreate
 from app.models.db_models import Employee
@@ -12,14 +13,6 @@ from app.core.logger import logger  # Import the existing logger
 # Initialize Router
 router = APIRouter(prefix="/reports", tags=["Reports"])
 
-# Dependency to get database session
-def get_db():
-    db_instance = get_database()  
-    session = db_instance.create_session()
-    try:
-        yield session
-    finally:
-        session.close()
 
 # Submit a new report
 @router.post("/create")
