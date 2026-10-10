@@ -1,0 +1,35 @@
+{
+  "body": {
+    "cells": [
+      {
+        "value": 3.0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "value": 7.2,
+        "x": 1,
+        "y": 0
+      },
+      {
+        "value": 5.0,
+        "x": 1,
+        "y": 1
+      }
+    ],
+    "metadata": {
+      "avg": 5.07,
+      "max": 7.2,
+      "min": 3.0
+    },
+    "x_labels": [
+      "2024",
+      "2025"
+    ],
+    "y_labels": [
+      "Engineering",
+      "Finance"
+    ]
+  },
+  "status": 200
+}

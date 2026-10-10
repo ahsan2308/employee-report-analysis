@@ -1,0 +1,39 @@
+{
+  "dimension_team_400": {
+    "body": {
+      "detail": "Invalid dimension. Allowed values are: department, employee"
+    },
+    "status": 400
+  },
+  "interval_checked_before_dimension": {
+    "body": {
+      "detail": "Invalid interval. Allowed values are: day, week, month, quarter, year"
+    },
+    "status": 400
+  },
+  "interval_hour_400": {
+    "body": {
+      "detail": "Invalid interval. Allowed values are: day, week, month, quarter, year"
+    },
+    "status": 400
+  },
+  "start_date_bad_format_422": {
+    "body": {
+      "detail": [
+        {
+          "ctx": {
+            "error": "input is too short"
+          },
+          "input": "yesterday",
+          "loc": [
+            "query",
+            "start_date"
+          ],
+          "msg": "Input should be a valid date or datetime, input is too short",
+          "type": "date_from_datetime_parsing"
+        }
+      ]
+    },
+    "status": 422
+  }
+}

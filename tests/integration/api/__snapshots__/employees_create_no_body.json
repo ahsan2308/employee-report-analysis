@@ -1,0 +1,15 @@
+{
+  "body": {
+    "detail": [
+      {
+        "input": null,
+        "loc": [
+          "body"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      }
+    ]
+  },
+  "status": 422
+}

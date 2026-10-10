@@ -1,0 +1,127 @@
+{
+  "collections": {
+    "employee_reports": 4
+  },
+  "external_calls": [
+    {
+      "call": "vs.get_collection_info",
+      "collection_name": "employee_reports"
+    },
+    {
+      "call": "embed",
+      "input": "Test text",
+      "is_query": false
+    },
+    {
+      "call": "embed",
+      "input": [
+        "Reviewed twelve case files for the regional desk and reconciled every entry against the archive ledger. Prepared a consolidated digest for the wing head covering the backlog and the pending field reports. Coordinated with the operations section to schedule the archive scanner for the next fortnight. Drafted three analytical notes on recurring discrepancies in the district submissions. Trained two new desk officers on the reporting template and checked their first submissions.",
+        "Closed the long standing request from the provincial office after verifying the supporting documents.",
+        "A final sentence without any full stop that keeps going past the chunk limit so the splitter has to cut it xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      ],
+      "is_query": false
+    },
+    {
+      "call": "vs.add_documents_batch",
+      "collection_name": "employee_reports",
+      "points": [
+        {
+          "document_id": "<uuid:1>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 101,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "00000000-0000-4000-8000-0000000000a1",
+            "text": "Reviewed twelve case files for the regional desk and reconciled every entry against the archive ledger. Prepared a consolidated digest for the wing head covering the backlog and the pending field reports. Coordinated with the operations section to schedule the archive scanner for the next fortnight. Drafted three analytical notes on recurring discrepancies in the district submissions. Trained two new desk officers on the reporting template and checked their first submissions."
+          },
+          "vector": [
+            0.5843,
+            0.9255,
+            0.9686,
+            0.7569
+          ]
+        },
+        {
+          "document_id": "<uuid:2>",
+          "payload": {
+            "chunk_index": 1,
+            "employee_id": 101,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "00000000-0000-4000-8000-0000000000a1",
+            "text": "Closed the long standing request from the provincial office after verifying the supporting documents."
+          },
+          "vector": [
+            0.0353,
+            0.7804,
+            0.7961,
+            0.7961
+          ]
+        },
+        {
+          "document_id": "<uuid:3>",
+          "payload": {
+            "chunk_index": 2,
+            "employee_id": 101,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "00000000-0000-4000-8000-0000000000a1",
+            "text": "A final sentence without any full stop that keeps going past the chunk limit so the splitter has to cut it xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          "vector": [
+            0.7882,
+            0.9294,
+            0.2667,
+            0.2314
+          ]
+        },
+        {
+          "document_id": "<uuid:4>",
+          "payload": {
+            "chunk_index": 3,
+            "employee_id": 101,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "00000000-0000-4000-8000-0000000000a1",
+            "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          "vector": [
+            0.098,
+            0.5961,
+            0.102,
+            0.7294
+          ]
+        }
+      ]
+    }
+  ],
+  "outcome": true,
+  "qdrant_mappings": [
+    {
+      "chunk_index": 0,
+      "employee_id": 101,
+      "report_date": "2025-03-07",
+      "upserted_point_index": 0
+    },
+    {
+      "chunk_index": 1,
+      "employee_id": 101,
+      "report_date": "2025-03-07",
+      "upserted_point_index": 1
+    },
+    {
+      "chunk_index": 2,
+      "employee_id": 101,
+      "report_date": "2025-03-07",
+      "upserted_point_index": 2
+    },
+    {
+      "chunk_index": 3,
+      "employee_id": 101,
+      "report_date": "2025-03-07",
+      "upserted_point_index": 3
+    }
+  ]
+}

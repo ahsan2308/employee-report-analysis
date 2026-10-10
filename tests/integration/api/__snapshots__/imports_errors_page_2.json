@@ -1,0 +1,26 @@
+{
+  "body": {
+    "errors": [
+      {
+        "error_message": "bad row 5",
+        "field_name": "F5",
+        "row_data": {
+          "row": 5
+        },
+        "row_number": 5
+      },
+      {
+        "error_message": "bad row 7",
+        "field_name": "F7",
+        "row_data": {
+          "row": 7
+        },
+        "row_number": 7
+      }
+    ],
+    "page": 2,
+    "page_size": 2,
+    "total": 5
+  },
+  "status": 200
+}

@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Error listing history: 'Table' object has no attribute 'desc'"
+  },
+  "status": 500
+}

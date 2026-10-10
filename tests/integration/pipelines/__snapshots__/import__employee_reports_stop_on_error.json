@@ -1,0 +1,256 @@
+{
+  "external_calls": [],
+  "import": {
+    "csv_import_jobs": [
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": null,
+        "error_count": 8,
+        "filename": "employee_reports_bad.csv",
+        "job_id": "<uuid:1>",
+        "metrics_json": null,
+        "options": {
+          "auto_mode_selection": true,
+          "chunk_size": 1000,
+          "delimiter": null,
+          "dry_run": false,
+          "encoding": null,
+          "error_threshold_percent": 10.0,
+          "file_format": "auto",
+          "file_size_threshold_mb": 10.0,
+          "processing_mode": "row_by_row",
+          "stop_on_error": true
+        },
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "failed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 0,
+        "total_rows": 7
+      }
+    ],
+    "import_errors": [
+      {
+        "error_id": 1,
+        "error_message": "Value error, BPS should be in format 'BS-XX' or 'TS-XX' where XX is a number (e.g., BS-21)",
+        "field_name": "BPS",
+        "job_id": "<uuid:1>",
+        "row_data": {
+          "BPS": "Grade-17",
+          "Challenges": "x",
+          "Confidence_Level": "4",
+          "Designation": "Officer",
+          "Draft": null,
+          "Employee_ID": "202",
+          "From": "2025-03-01",
+          "Impact": "x",
+          "NTR": null,
+          "Name": "Omar Farooq",
+          "Office_Hierarchy": "Operations",
+          "Support_Required": "x",
+          "Tasks_Completed": "Bad BPS row.",
+          "Tasks_Planned": "x",
+          "To": "2025-03-07"
+        },
+        "row_number": 2
+      },
+      {
+        "error_id": 2,
+        "error_message": "tuple index out of range",
+        "field_name": null,
+        "job_id": "<uuid:1>",
+        "row_data": {
+          "BPS": "BS-17",
+          "Challenges": "x",
+          "Confidence_Level": "4",
+          "Designation": "Analyst",
+          "Draft": null,
+          "Employee_ID": "201",
+          "From": "2025-03-01",
+          "Impact": "x",
+          "NTR": null,
+          "Name": "Sana Malik",
+          "Office_Hierarchy": "Technical>Tech-I>SOC",
+          "Support_Required": "x",
+          "Tasks_Completed": "First version of the week.",
+          "Tasks_Planned": "x",
+          "To": "2025-03-07"
+        },
+        "row_number": 1
+      },
+      {
+        "error_id": 3,
+        "error_message": "tuple index out of range",
+        "field_name": null,
+        "job_id": "<uuid:1>",
+        "row_data": {
+          "BPS": "Grade-17",
+          "Challenges": "x",
+          "Confidence_Level": "4",
+          "Designation": "Officer",
+          "Draft": null,
+          "Employee_ID": "202",
+          "From": "2025-03-01",
+          "Impact": "x",
+          "NTR": null,
+          "Name": "Omar Farooq",
+          "Office_Hierarchy": "Operations",
+          "Support_Required": "x",
+          "Tasks_Completed": "Bad BPS row.",
+          "Tasks_Planned": "x",
+          "To": "2025-03-07"
+        },
+        "row_number": 2
+      },
+      {
+        "error_id": 4,
+        "error_message": "tuple index out of range",
+        "field_name": null,
+        "job_id": "<uuid:1>",
+        "row_data": {
+          "BPS": "BS-16",
+          "Challenges": "x",
+          "Confidence_Level": "4",
+          "Designation": "Officer",
+          "Draft": null,
+          "Employee_ID": "204",
+          "From": "2025-03-10",
+          "Impact": "x",
+          "NTR": null,
+          "Name": "Zara Shah",
+          "Office_Hierarchy": "Admin",
+          "Support_Required": "x",
+          "Tasks_Completed": "From after To.",
+          "Tasks_Planned": "x",
+          "To": "2025-03-03"
+        },
+        "row_number": 3
+      },
+      {
+        "error_id": 5,
+        "error_message": "tuple index out of range",
+        "field_name": null,
+        "job_id": "<uuid:1>",
+        "row_data": {
+          "BPS": "BS-16",
+          "Challenges": "x",
+          "Confidence_Level": "4",
+          "Designation": "Officer",
+          "Draft": null,
+          "Employee_ID": "205",
+          "From": "2025-03-01",
+          "Impact": "x",
+          "NTR": null,
+          "Name": "Ali <b>",
+          "Office_Hierarchy": "Admin",
+          "Support_Required": "x",
+          "Tasks_Completed": "Bad name.",
+          "Tasks_Planned": "x",
+          "To": "2025-03-07"
+        },
+        "row_number": 4
+      },
+      {
+        "error_id": 6,
+        "error_message": "tuple index out of range",
+        "field_name": null,
+        "job_id": "<uuid:1>",
+        "row_data": {
+          "BPS": "BS-16",
+          "Challenges": "x",
+          "Confidence_Level": "4",
+          "Designation": "Officer",
+          "Draft": null,
+          "Employee_ID": "206",
+          "From": "2025-03-01",
+          "Impact": "x",
+          "NTR": null,
+          "Name": "Kamran Ali",
+          "Office_Hierarchy": "Admin",
+          "Support_Required": "x",
+          "Tasks_Completed": null,
+          "Tasks_Planned": "x",
+          "To": "2025-03-07"
+        },
+        "row_number": 5
+      },
+      {
+        "error_id": 7,
+        "error_message": "tuple index out of range",
+        "field_name": null,
+        "job_id": "<uuid:1>",
+        "row_data": {
+          "BPS": "BS-16",
+          "Challenges": "x",
+          "Confidence_Level": "9",
+          "Designation": "Officer",
+          "Draft": null,
+          "Employee_ID": "207",
+          "From": "2025-03-01",
+          "Impact": "x",
+          "NTR": null,
+          "Name": "Nida Khan",
+          "Office_Hierarchy": "Admin",
+          "Support_Required": "x",
+          "Tasks_Completed": "Bad confidence.",
+          "Tasks_Planned": "x",
+          "To": "2025-03-07"
+        },
+        "row_number": 6
+      },
+      {
+        "error_id": 8,
+        "error_message": "tuple index out of range",
+        "field_name": null,
+        "job_id": "<uuid:1>",
+        "row_data": {
+          "BPS": "BS-17",
+          "Challenges": "y",
+          "Confidence_Level": "2",
+          "Designation": "Analyst",
+          "Draft": null,
+          "Employee_ID": "201",
+          "From": "2025-03-01",
+          "Impact": "y",
+          "NTR": null,
+          "Name": "Sana Malik",
+          "Office_Hierarchy": "Technical>Tech-I>SOC",
+          "Support_Required": "y",
+          "Tasks_Completed": "Second version of the same week wins.",
+          "Tasks_Planned": "y",
+          "To": "2025-03-07"
+        },
+        "row_number": 7
+      }
+    ]
+  },
+  "outcomes": [
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": null,
+        "error_count": 8,
+        "filename": "employee_reports_bad.csv",
+        "job_id": "<uuid:1>",
+        "metrics": {},
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "failed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 0,
+        "total_rows": 7
+      },
+      "state": "SUCCESS"
+    }
+  ],
+  "tables": {
+    "employee_job_descriptions": [],
+    "employee_vision_data": [],
+    "employees": [],
+    "qdrant_mappings": [],
+    "reports": [],
+    "supervisor_feedback_forms": [],
+    "supervisor_feedback_metric_definitions": [],
+    "supervisor_feedback_responses": []
+  }
+}

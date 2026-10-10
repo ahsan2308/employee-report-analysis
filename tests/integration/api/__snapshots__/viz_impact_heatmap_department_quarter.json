@@ -1,0 +1,41 @@
+{
+  "body": {
+    "cells": [
+      {
+        "value": 3.0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "value": 8.0,
+        "x": 1,
+        "y": 0
+      },
+      {
+        "value": 5.0,
+        "x": 1,
+        "y": 1
+      },
+      {
+        "value": 4.0,
+        "x": 2,
+        "y": 0
+      }
+    ],
+    "metadata": {
+      "avg": 5.0,
+      "max": 8.0,
+      "min": 3.0
+    },
+    "x_labels": [
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2"
+    ],
+    "y_labels": [
+      "Engineering",
+      "Finance"
+    ]
+  },
+  "status": 200
+}

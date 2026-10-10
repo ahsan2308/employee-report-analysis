@@ -1,0 +1,13 @@
+{
+  "body": {
+    "celery_task_id": "pending",
+    "completed_at": null,
+    "created_at": "<timestamp>",
+    "duration": null,
+    "is_complete": false,
+    "started_at": null,
+    "status": "pending",
+    "task_id": "<uuid:1>"
+  },
+  "status": 200
+}

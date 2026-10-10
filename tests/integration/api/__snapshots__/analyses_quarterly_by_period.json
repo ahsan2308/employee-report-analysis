@@ -1,0 +1,174 @@
+{
+  "body": {
+    "achievement_themes": [
+      {
+        "impact_reason": "team",
+        "impact_score": 8,
+        "related_achievements": [
+          "Release 1.2"
+        ],
+        "theme": "Delivery",
+        "vision_verification": "supported"
+      }
+    ],
+    "adaptation_effectiveness": "medium",
+    "analysis_id": 1,
+    "autonomy_level": "medium",
+    "behavioral_assessment": {
+      "collaboration": {
+        "evidence": "Observed in reviews",
+        "rating": "meets"
+      },
+      "communication": {
+        "evidence": "Observed in reviews",
+        "rating": "meets"
+      },
+      "ownership": {
+        "evidence": "Observed in reviews",
+        "rating": "meets"
+      },
+      "problem_solving": {
+        "evidence": "Observed in reviews",
+        "rating": "meets"
+      },
+      "quality_standards": {
+        "evidence": "Observed in reviews",
+        "rating": "meets"
+      }
+    },
+    "challenge_patterns": {
+      "recurring": [
+        "Flaky CI"
+      ]
+    },
+    "collaboration_effectiveness": "high",
+    "credibility_assessment": {
+      "explanation": "Consistent",
+      "impact_on_evaluation": "None",
+      "rating": "high",
+      "vision_data_alignment": "high"
+    },
+    "credibility_rating": "high",
+    "cross_functional_impact": {
+      "collaboration_effectiveness": "high",
+      "stakeholder_impacts": [
+        {
+          "collaboration_type": "contributing_expertise",
+          "evidence": "Automated report",
+          "impact": "Faster close",
+          "stakeholder": "Finance"
+        }
+      ]
+    },
+    "development_focus": "System design",
+    "employee_id": 1,
+    "employee_name": "Alice Analyst",
+    "forward_planning": {
+      "improve": [
+        {
+          "action": "Keep shipping",
+          "ownership": "employee",
+          "priority": "high"
+        }
+      ],
+      "keep_doing": [
+        {
+          "action": "Keep shipping",
+          "ownership": "employee",
+          "priority": "high"
+        }
+      ],
+      "start": [
+        {
+          "action": "Keep shipping",
+          "ownership": "employee",
+          "priority": "high"
+        }
+      ],
+      "stop": [
+        {
+          "action": "Keep shipping",
+          "ownership": "employee",
+          "priority": "high"
+        }
+      ],
+      "support_needed": [
+        {
+          "action": "Keep shipping",
+          "ownership": "employee",
+          "priority": "high"
+        }
+      ]
+    },
+    "learning_agility": "high",
+    "monthly_analysis_ids": [
+      1,
+      2,
+      3
+    ],
+    "organizational_impact": "team",
+    "performance_stability": "medium",
+    "performance_trajectory": {
+      "consistency": {
+        "performance_stability": "medium",
+        "task_completion_reliability": "high",
+        "work_quality_consistency": "high"
+      },
+      "notable_shifts": [
+        {
+          "description": "Took ownership",
+          "factors": "New project",
+          "month": "February"
+        }
+      ],
+      "trend": "improving"
+    },
+    "performance_trend": "improving",
+    "period_end": "2025-03-28",
+    "period_start": "2025-01-01",
+    "quarter": 1,
+    "quarterly_summary": "Strong quarter.",
+    "risk_assessment": {
+      "key_risk_factors": [
+        "single point of failure"
+      ],
+      "mitigation_strategies": [
+        "pairing"
+      ],
+      "overall_risk_level": "low",
+      "risk_trend": "stable"
+    },
+    "risk_level": "low",
+    "risk_trend": "stable",
+    "skill_development": {
+      "autonomy_level": "medium",
+      "development_focus": "System design",
+      "key_capabilities": [
+        {
+          "growth": "improved",
+          "proficiency": "advanced",
+          "skill": "Python"
+        }
+      ],
+      "learning_agility": "high"
+    },
+    "stakeholder_count": 4,
+    "strategic_alignment": {
+      "key_initiatives": [
+        {
+          "alignment": "high",
+          "initiative": "Billing v2",
+          "outcomes": "Launched"
+        }
+      ],
+      "organizational_impact": "team",
+      "role_alignment": "strong",
+      "role_fit_assessment": "Good fit"
+    },
+    "task_completion_reliability": "high",
+    "vision_data_alignment": "high",
+    "work_quality_consistency": "high",
+    "year": 2025
+  },
+  "status": 200
+}

@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Error retrieving configuration: ODBC driver missing"
+  },
+  "status": 500
+}

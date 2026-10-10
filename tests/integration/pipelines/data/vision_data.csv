@@ -1,0 +1,4 @@
+Employee_ID,From_Date,To_Date,Main_Entity,Sub_Entities,Sub_Entities_Content
+201,2025-03-01,2025-03-07,Persons,"Persons:3, Pictures:1","Persons:[{""name"": ""Person A""}, {""name"": ""Person B""}], Pictures:[]"
+201,2025-03-08,2025-03-14,Tasks,"Tasks:2, Task Updates:5","Tasks:[{""title"": ""Archive audit""}]"
+202,03/01/2025,03/07/2025,Activities and Cases,"Cases:1, Activities:0",

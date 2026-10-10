@@ -1,0 +1,629 @@
+{
+  "db": {
+    "background_tasks": [
+      {
+        "celery_task_id": "celery-weekly",
+        "completed_at": "<timestamp>",
+        "created_at": "<timestamp>",
+        "employee_id": 101,
+        "error_message": null,
+        "month": null,
+        "quarter": null,
+        "report_id": "00000000-0000-4000-8000-0000000000a4",
+        "result_data": {
+          "achievements_json": [
+            {
+              "description": "Closed the backlog",
+              "impact": "8 (cleared 20 percent)"
+            }
+          ],
+          "action_items": [
+            "Escalate late reports to the wing head"
+          ],
+          "analysis_id": 4,
+          "challenges_json": [
+            {
+              "description": "Late field reports",
+              "severity": "medium"
+            }
+          ],
+          "credibility_assessment": {
+            "consistency_score": "high",
+            "exaggeration_flags": [
+              "'closed the backlog' is broad"
+            ],
+            "explanation": "Matches vision activity",
+            "rating": "high"
+          },
+          "employee_name": "Ayesha Khan",
+          "full_analysis_json": {
+            "achievements": [
+              {
+                "description": "Closed the backlog",
+                "impact": "8 (cleared 20 percent)"
+              }
+            ],
+            "action_items": [
+              "Escalate late reports to the wing head"
+            ],
+            "challenges": [
+              {
+                "description": "Late field reports",
+                "severity": "medium"
+              }
+            ],
+            "credibility_assessment": {
+              "consistency_score": "high",
+              "exaggeration_flags": [
+                "'closed the backlog' is broad"
+              ],
+              "explanation": "Matches vision activity",
+              "rating": "high"
+            },
+            "performance_assessment": {
+              "improvement_areas": [
+                "Delegation"
+              ],
+              "key_strengths": [
+                "Diligent"
+              ],
+              "rating": "high",
+              "summary": "Strong week"
+            },
+            "risk_explanation": "Late field reports could delay the monthly summary.",
+            "risk_level": "medium",
+            "sentiment": "positive",
+            "topics": [
+              "backlog",
+              "archives"
+            ]
+          },
+          "performance_assessment": {
+            "improvement_areas": [
+              "Delegation"
+            ],
+            "key_strengths": [
+              "Diligent"
+            ],
+            "rating": "high",
+            "summary": "Strong week"
+          },
+          "report_id": "00000000-0000-4000-8000-0000000000a4",
+          "risk_explanation": "Late field reports could delay the monthly summary.",
+          "risk_level": "medium",
+          "sentiment": 0.8,
+          "sentiment_score": 0.8,
+          "topics": [
+            "backlog",
+            "archives"
+          ]
+        },
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "task_id": "00000000-0000-4000-9000-000000000001",
+        "task_type": "REPORT_ANALYSIS",
+        "year": null
+      }
+    ],
+    "employee_analyses": [
+      {
+        "achievements_json": [
+          {
+            "description": "Closed backlog batch 0",
+            "impact": "6 (backlog)"
+          }
+        ],
+        "action_items": [
+          "Escalate late reports"
+        ],
+        "analysis_date": "<timestamp>",
+        "analysis_id": 1,
+        "challenges_json": [
+          {
+            "description": "Late field reports",
+            "severity": "medium"
+          }
+        ],
+        "consistency_score": "high",
+        "created_at": "<timestamp>",
+        "credibility_explanation": "Consistent with vision data",
+        "credibility_rating": "high",
+        "employee_id": 101,
+        "exaggeration_flags": [],
+        "full_analysis_json": {
+          "sentiment": "positive",
+          "week": "2025-03-07"
+        },
+        "performance_improvement_areas": [
+          "Delegation"
+        ],
+        "performance_rating": "high",
+        "performance_strengths": [
+          "Diligent"
+        ],
+        "performance_summary": "Solid week 0",
+        "report_id": "00000000-0000-4000-8000-0000000000a1",
+        "risk_explanation": "Risk note 0",
+        "risk_level": "low",
+        "sentiment_score": 0.5,
+        "topics": [
+          "backlog",
+          "archives"
+        ],
+        "updated_at": "<timestamp>"
+      },
+      {
+        "achievements_json": [
+          {
+            "description": "Closed backlog batch 1",
+            "impact": "7 (backlog)"
+          }
+        ],
+        "action_items": [
+          "Escalate late reports"
+        ],
+        "analysis_date": "<timestamp>",
+        "analysis_id": 2,
+        "challenges_json": [
+          {
+            "description": "Late field reports",
+            "severity": "medium"
+          }
+        ],
+        "consistency_score": "high",
+        "created_at": "<timestamp>",
+        "credibility_explanation": "Consistent with vision data",
+        "credibility_rating": "high",
+        "employee_id": 101,
+        "exaggeration_flags": [],
+        "full_analysis_json": {
+          "sentiment": "positive",
+          "week": "2025-03-14"
+        },
+        "performance_improvement_areas": [
+          "Delegation"
+        ],
+        "performance_rating": "high",
+        "performance_strengths": [
+          "Diligent"
+        ],
+        "performance_summary": "Solid week 1",
+        "report_id": "00000000-0000-4000-8000-0000000000a2",
+        "risk_explanation": "Risk note 1",
+        "risk_level": "medium",
+        "sentiment_score": 0.8,
+        "topics": [
+          "backlog"
+        ],
+        "updated_at": "<timestamp>"
+      },
+      {
+        "achievements_json": [
+          {
+            "description": "Closed backlog batch 2",
+            "impact": "8 (backlog)"
+          }
+        ],
+        "action_items": [
+          "Escalate late reports"
+        ],
+        "analysis_date": "<timestamp>",
+        "analysis_id": 3,
+        "challenges_json": [
+          {
+            "description": "Late field reports",
+            "severity": "medium"
+          }
+        ],
+        "consistency_score": "high",
+        "created_at": "<timestamp>",
+        "credibility_explanation": "Consistent with vision data",
+        "credibility_rating": "high",
+        "employee_id": 101,
+        "exaggeration_flags": [],
+        "full_analysis_json": {
+          "sentiment": "positive",
+          "week": "2025-03-21"
+        },
+        "performance_improvement_areas": [
+          "Delegation"
+        ],
+        "performance_rating": "high",
+        "performance_strengths": [
+          "Diligent"
+        ],
+        "performance_summary": "Solid week 2",
+        "report_id": "00000000-0000-4000-8000-0000000000a3",
+        "risk_explanation": "Risk note 2",
+        "risk_level": "low",
+        "sentiment_score": 0.8,
+        "topics": [
+          "backlog",
+          "archives"
+        ],
+        "updated_at": "<timestamp>"
+      },
+      {
+        "achievements_json": [
+          {
+            "description": "Closed the backlog",
+            "impact": "8 (cleared 20 percent)"
+          }
+        ],
+        "action_items": [
+          "Escalate late reports to the wing head"
+        ],
+        "analysis_date": "<timestamp>",
+        "analysis_id": 4,
+        "challenges_json": [
+          {
+            "description": "Late field reports",
+            "severity": "medium"
+          }
+        ],
+        "consistency_score": "high",
+        "created_at": "<timestamp>",
+        "credibility_explanation": "Matches vision activity",
+        "credibility_rating": "high",
+        "employee_id": 101,
+        "exaggeration_flags": [
+          "'closed the backlog' is broad"
+        ],
+        "full_analysis_json": {
+          "achievements": [
+            {
+              "description": "Closed the backlog",
+              "impact": "8 (cleared 20 percent)"
+            }
+          ],
+          "action_items": [
+            "Escalate late reports to the wing head"
+          ],
+          "challenges": [
+            {
+              "description": "Late field reports",
+              "severity": "medium"
+            }
+          ],
+          "credibility_assessment": {
+            "consistency_score": "high",
+            "exaggeration_flags": [
+              "'closed the backlog' is broad"
+            ],
+            "explanation": "Matches vision activity",
+            "rating": "high"
+          },
+          "performance_assessment": {
+            "improvement_areas": [
+              "Delegation"
+            ],
+            "key_strengths": [
+              "Diligent"
+            ],
+            "rating": "high",
+            "summary": "Strong week"
+          },
+          "risk_explanation": "Late field reports could delay the monthly summary.",
+          "risk_level": "medium",
+          "sentiment": "positive",
+          "topics": [
+            "backlog",
+            "archives"
+          ]
+        },
+        "performance_improvement_areas": [
+          "Delegation"
+        ],
+        "performance_rating": "high",
+        "performance_strengths": [
+          "Diligent"
+        ],
+        "performance_summary": "Strong week",
+        "report_id": "00000000-0000-4000-8000-0000000000a4",
+        "risk_explanation": "Late field reports could delay the monthly summary.",
+        "risk_level": "medium",
+        "sentiment_score": 0.8,
+        "topics": [
+          "backlog",
+          "archives"
+        ],
+        "updated_at": "<timestamp>"
+      }
+    ],
+    "monthly_analyses": [
+      {
+        "achievement_impact_avg": 8.0,
+        "analysis_date": "<timestamp>",
+        "analysis_id": 1,
+        "approach_to_challenges": "more proactive",
+        "avg_sentiment_score": 0.7,
+        "challenge_resolution_progress": "improved",
+        "complexity_of_tasks": "increased",
+        "confidence_level_change": "increased",
+        "consistency_notable_strengths": [
+          "Reliable"
+        ],
+        "consistency_notable_weaknesses": [
+          "Delegation"
+        ],
+        "employee_id": 101,
+        "escalating_risks": [],
+        "focus_areas": [
+          {
+            "priority_level": "high",
+            "project": "Archive audit",
+            "time_investment": "high"
+          }
+        ],
+        "full_analysis_json": {
+          "month": 1
+        },
+        "month": 1,
+        "monthly_achievements": [
+          {
+            "description": "Month 1 backlog cleared",
+            "impact": "8 (major)",
+            "impact_score": 8
+          }
+        ],
+        "monthly_summary": "Summary for month 1.",
+        "performance_stability": "medium",
+        "performance_trend": "improving",
+        "period_end": "2025-01-31",
+        "period_start": "2025-01-01",
+        "recurring_challenges": [
+          {
+            "description": "Late field reports",
+            "severity": "medium",
+            "status": "ongoing"
+          }
+        ],
+        "risk_explanation": "Month 1 risk",
+        "risk_level": "low",
+        "risk_level_pattern": "stable",
+        "risk_mitigation_recommendations": [
+          "Weekly sync"
+        ],
+        "sentiment_trend": "stable",
+        "significant_risks": [
+          "Late reports"
+        ],
+        "skill_development_evidence": "medium",
+        "strategic_recommendations": [
+          {
+            "action": "Mentor juniors",
+            "priority": "medium"
+          }
+        ],
+        "task_completion_reliability": "high",
+        "weekly_report_ids": [
+          "00000000-0000-4000-8000-0000000000c1"
+        ],
+        "work_quality_consistency": "high",
+        "year": 2025
+      },
+      {
+        "achievement_impact_avg": 8.0,
+        "analysis_date": "<timestamp>",
+        "analysis_id": 2,
+        "approach_to_challenges": "more proactive",
+        "avg_sentiment_score": 0.8,
+        "challenge_resolution_progress": "improved",
+        "complexity_of_tasks": "increased",
+        "confidence_level_change": "increased",
+        "consistency_notable_strengths": [
+          "Reliable"
+        ],
+        "consistency_notable_weaknesses": [
+          "Delegation"
+        ],
+        "employee_id": 101,
+        "escalating_risks": [],
+        "focus_areas": [
+          {
+            "priority_level": "high",
+            "project": "Archive audit",
+            "time_investment": "high"
+          }
+        ],
+        "full_analysis_json": {
+          "month": 2
+        },
+        "month": 2,
+        "monthly_achievements": [
+          {
+            "description": "Month 2 backlog cleared",
+            "impact": "8 (major)",
+            "impact_score": 8
+          }
+        ],
+        "monthly_summary": "Summary for month 2.",
+        "performance_stability": "medium",
+        "performance_trend": "improving",
+        "period_end": "2025-02-28",
+        "period_start": "2025-02-01",
+        "recurring_challenges": [
+          {
+            "description": "Late field reports",
+            "severity": "medium",
+            "status": "ongoing"
+          }
+        ],
+        "risk_explanation": "Month 2 risk",
+        "risk_level": "low",
+        "risk_level_pattern": "stable",
+        "risk_mitigation_recommendations": [
+          "Weekly sync"
+        ],
+        "sentiment_trend": "stable",
+        "significant_risks": [
+          "Late reports"
+        ],
+        "skill_development_evidence": "medium",
+        "strategic_recommendations": [
+          {
+            "action": "Mentor juniors",
+            "priority": "medium"
+          }
+        ],
+        "task_completion_reliability": "high",
+        "weekly_report_ids": [
+          "00000000-0000-4000-8000-0000000000b1"
+        ],
+        "work_quality_consistency": "high",
+        "year": 2025
+      }
+    ],
+    "quarterly_analyses": []
+  },
+  "external_calls": [
+    {
+      "call": "embed",
+      "input": "Tasks Completed: Reviewed 28 case files and closed the backlog for week ending 2025-03-28.\n\nImpact: Backlog reduced by 20 percent.\n\nChallenges: Two field reports arrived late.\n\nSupport Required: Access to the archive scanner.\n\nTasks Planned: Draft the monthly summary.\n\nConfidence Level: 4\n\nReport Period: 2025-03-22 to 2025-03-28",
+      "is_query": true
+    },
+    {
+      "call": "vs.search",
+      "collection_name": "employee_reports",
+      "filter_params": {
+        "must": [
+          {
+            "key": "employee_id",
+            "match": {
+              "value": 101
+            }
+          },
+          {
+            "key": "report_date_ts",
+            "range": {
+              "lt": 1741305600.0
+            }
+          }
+        ]
+      },
+      "group_by": "report_id",
+      "group_size": 1,
+      "limit": 0,
+      "query_vector": [
+        0.0784,
+        0.6627,
+        0.302,
+        0.0471
+      ],
+      "search_params": {
+        "hnsw_ef": 128
+      }
+    },
+    {
+      "call": "llm.client",
+      "host": "http://localhost:11434"
+    },
+    {
+      "call": "llm.generate",
+      "extra": [],
+      "format": {
+        "sha256": "f90efd54b7d82968",
+        "title": "EmployeeAnalysis"
+      },
+      "model": "llama3.1:8b",
+      "options": {
+        "num_ctx": 64000,
+        "num_predict": 10000,
+        "temperature": 0
+      },
+      "prompt_chars": 32439,
+      "prompt_index": 0
+    }
+  ],
+  "outcome": {
+    "return": {
+      "achievements_json": [
+        {
+          "description": "Closed the backlog",
+          "impact": "8 (cleared 20 percent)"
+        }
+      ],
+      "action_items": [
+        "Escalate late reports to the wing head"
+      ],
+      "analysis_id": 4,
+      "challenges_json": [
+        {
+          "description": "Late field reports",
+          "severity": "medium"
+        }
+      ],
+      "credibility_assessment": {
+        "consistency_score": "high",
+        "exaggeration_flags": [
+          "'closed the backlog' is broad"
+        ],
+        "explanation": "Matches vision activity",
+        "rating": "high"
+      },
+      "employee_name": "Ayesha Khan",
+      "full_analysis_json": {
+        "achievements": [
+          {
+            "description": "Closed the backlog",
+            "impact": "8 (cleared 20 percent)"
+          }
+        ],
+        "action_items": [
+          "Escalate late reports to the wing head"
+        ],
+        "challenges": [
+          {
+            "description": "Late field reports",
+            "severity": "medium"
+          }
+        ],
+        "credibility_assessment": {
+          "consistency_score": "high",
+          "exaggeration_flags": [
+            "'closed the backlog' is broad"
+          ],
+          "explanation": "Matches vision activity",
+          "rating": "high"
+        },
+        "performance_assessment": {
+          "improvement_areas": [
+            "Delegation"
+          ],
+          "key_strengths": [
+            "Diligent"
+          ],
+          "rating": "high",
+          "summary": "Strong week"
+        },
+        "risk_explanation": "Late field reports could delay the monthly summary.",
+        "risk_level": "medium",
+        "sentiment": "positive",
+        "topics": [
+          "backlog",
+          "archives"
+        ]
+      },
+      "performance_assessment": {
+        "improvement_areas": [
+          "Delegation"
+        ],
+        "key_strengths": [
+          "Diligent"
+        ],
+        "rating": "high",
+        "summary": "Strong week"
+      },
+      "report_id": "00000000-0000-4000-8000-0000000000a4",
+      "risk_explanation": "Late field reports could delay the monthly summary.",
+      "risk_level": "medium",
+      "sentiment": 0.8,
+      "sentiment_score": 0.8,
+      "topics": [
+        "backlog",
+        "archives"
+      ]
+    },
+    "state": "SUCCESS"
+  }
+}

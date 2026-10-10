@@ -1,0 +1,15 @@
+{
+  "body": {
+    "message": "Report submitted successfully.",
+    "report_id": "<uuid:1>"
+  },
+  "db": [
+    {
+      "employee_id": 1,
+      "report_date": "2025-03-14",
+      "report_id": "<uuid:1>",
+      "report_text": "Key Tasks: Closed 5 tickets\nImpact: Faster support\nChallenges: None\nSupport: No\nPlanned Tasks: Refactor\nConfidence Level: 4\nNothing to Report Reason: None"
+    }
+  ],
+  "status": 200
+}

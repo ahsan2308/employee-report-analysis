@@ -1,0 +1,50 @@
+{
+  "body": {
+    "errors": [
+      {
+        "error_category": "validation",
+        "error_message": "missing",
+        "field_name": "Name",
+        "row_data": {
+          "Name": null
+        },
+        "row_number": 1
+      },
+      {
+        "error_category": null,
+        "error_message": "bad date",
+        "field_name": null,
+        "row_data": null,
+        "row_number": 4
+      },
+      {
+        "error_category": null,
+        "error_message": "Unknown error",
+        "field_name": "BPS",
+        "row_data": null,
+        "row_number": 0
+      },
+      {
+        "error_category": null,
+        "error_message": "dup",
+        "field_name": null,
+        "row_data": {
+          "id": 9
+        },
+        "row_number": 9
+      },
+      {
+        "error_category": "db",
+        "error_message": "late",
+        "field_name": null,
+        "row_data": null,
+        "row_number": 12
+      }
+    ],
+    "page": 1,
+    "page_size": 100,
+    "sync_id": "<uuid:1>",
+    "total_errors": 5
+  },
+  "status": 200
+}

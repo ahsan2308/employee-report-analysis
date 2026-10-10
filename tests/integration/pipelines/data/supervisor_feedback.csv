@@ -1,0 +1,6 @@
+L_RO_Form_Metric_ID,RO_Form_ID,Employee_ID,Name,Designation,BPS,Office_Hierarchy,Executive_Office,From,To,Section_ID,Section,Metric_ID,Metric_Title,Instructions,Metric_Type,Possible_Values,Value
+74,15,201,Sana Malik,Analyst,BS-17,Technical>Tech-I,HQ,2025-01-01,2025-03-31,1,Performance & Work Habits,1,Quality,Rate quality,R,"Poor,Fair,Good,Excellent",Good
+75,15,201,Sana Malik,Analyst,BS-17,Technical>Tech-I,HQ,2025-01-01,2025-03-31,1,Performance & Work Habits,2,Timeliness,Rate timeliness,R,"Poor,Fair,Good,Excellent",Excellent
+76,15,201,Sana Malik,Analyst,BS-17,Technical>Tech-I,HQ,2025-01-01,2025-03-31,2,Remarks,3,Comments,Rate comments,T,,Steady performer
+77,16,202,Omar Farooq,Analyst,BS-17,Technical>Tech-I,HQ,2025-01-01,2025-03-31,1,Performance & Work Habits,1,Quality,Rate quality,R,"Poor,Fair,Good,Excellent",Fair
+78,16,202,Omar Farooq,Analyst,BS-17,Technical>Tech-I,HQ,2025-01-01,2025-03-31,1,Performance & Work Habits,2,Timeliness,Rate timeliness,R,"Poor,Fair,Good,Excellent",Unknown value

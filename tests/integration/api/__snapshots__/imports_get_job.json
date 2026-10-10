@@ -1,0 +1,40 @@
+{
+  "body": {
+    "completed_at": null,
+    "csv_type": "employee_report",
+    "error_count": 0,
+    "estimated_time_remaining": null,
+    "filename": "reports.csv",
+    "job_id": "<uuid:1>",
+    "metrics": {
+      "reports_created": 2
+    },
+    "percent_complete": 37.5,
+    "processed_rows": 3,
+    "started_at": "<timestamp>",
+    "status": "running",
+    "submitted_at": "<timestamp>",
+    "successful_rows": 2,
+    "total_rows": 8
+  },
+  "db": [
+    {
+      "completed_at": null,
+      "csv_type": "employee_report",
+      "error_count": 0,
+      "filename": "reports.csv",
+      "job_id": "<uuid:1>",
+      "metrics_json": {
+        "reports_created": 2
+      },
+      "options": null,
+      "processed_rows": 3,
+      "started_at": "<timestamp>",
+      "status": "running",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 2,
+      "total_rows": 8
+    }
+  ],
+  "status": 200
+}

@@ -1,0 +1,20 @@
+{
+  "body": {
+    "detail": [
+      {
+        "ctx": {
+          "le": 12
+        },
+        "input": "13",
+        "loc": [
+          "query",
+          "month"
+        ],
+        "msg": "Input should be less than or equal to 12",
+        "type": "less_than_equal"
+      }
+    ]
+  },
+  "dispatch": [],
+  "status": 422
+}

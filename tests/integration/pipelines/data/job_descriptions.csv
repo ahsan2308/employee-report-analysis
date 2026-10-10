@@ -1,0 +1,4 @@
+Employee_ID,JD_ID,Job_Description,Assigned_Date,Is_Current,End_Date
+201,1001,"Analyst: leads backlog reduction, audits archives and drafts monthly performance summaries for the wing.",2025-01-15,TRUE,
+201,900,Junior analyst: maintains the case register and prepares weekly digests for the wing head.,01/01/2023,no,2025-01-14
+202,1002,"Field officer: inspects district offices, verifies submissions and reports discrepancies to operations.",2024-06-01,yes,N/A

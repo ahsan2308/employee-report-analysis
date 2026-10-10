@@ -1,0 +1,40 @@
+{
+  "body": {
+    "celery_task_id": "pending",
+    "completed_at": null,
+    "created_at": "<timestamp>",
+    "duration": null,
+    "is_complete": false,
+    "started_at": null,
+    "status": "pending",
+    "task_id": "<uuid:1>"
+  },
+  "db": [
+    {
+      "celery_task_id": "pending",
+      "completed_at": null,
+      "created_at": "<timestamp>",
+      "employee_id": 1,
+      "error_message": null,
+      "month": 2,
+      "quarter": null,
+      "report_id": null,
+      "result_data": null,
+      "started_at": null,
+      "status": "pending",
+      "task_id": "<uuid:1>",
+      "task_type": "MONTHLY_ANALYSIS",
+      "year": 2025
+    }
+  ],
+  "dispatch": [
+    {
+      "args": [
+        "<uuid:1>"
+      ],
+      "call": "analyze_monthly_reports_task.delay",
+      "kwargs": {}
+    }
+  ],
+  "status": 200
+}

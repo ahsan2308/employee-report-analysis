@@ -1,0 +1,835 @@
+{
+  "external_calls": [
+    {
+      "call": "sql.get_table_schema",
+      "table_name": "EmployeeReports"
+    },
+    {
+      "batch_size": 1000,
+      "call": "sql.get_all_records",
+      "order_by": "LastModifiedDate",
+      "table_name": "EmployeeReports"
+    },
+    {
+      "call": "vs.get_collection_info",
+      "collection_name": "employee_reports"
+    },
+    {
+      "call": "embed",
+      "input": "Test text",
+      "is_query": false
+    },
+    {
+      "call": "embed",
+      "input": [
+        "Tasks Completed: Closed twelve case files.\n\nImpact: Backlog reduced\n\nChallenges: Late inputs\n\nSupport Required: None\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07",
+        "Tasks Completed: Visited two districts.\n\nImpact: Backlog reduced\n\nChallenges: Late inputs\n\nSupport Required: None\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07"
+      ],
+      "is_query": false
+    },
+    {
+      "call": "vs.add_documents_batch",
+      "collection_name": "employee_reports",
+      "points": [
+        {
+          "document_id": "<uuid:12>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 201,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "<uuid:9>",
+            "text": "Tasks Completed: Closed twelve case files.\n\nImpact: Backlog reduced\n\nChallenges: Late inputs\n\nSupport Required: None\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07"
+          },
+          "vector": [
+            0.0471,
+            0.2,
+            0.4471,
+            0.2784
+          ]
+        },
+        {
+          "document_id": "<uuid:13>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 202,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "<uuid:11>",
+            "text": "Tasks Completed: Visited two districts.\n\nImpact: Backlog reduced\n\nChallenges: Late inputs\n\nSupport Required: None\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07"
+          },
+          "vector": [
+            0.9176,
+            0.0902,
+            0.9647,
+            0.9333
+          ]
+        }
+      ]
+    },
+    {
+      "call": "sql.get_table_schema",
+      "table_name": "VisionEmployeeData"
+    },
+    {
+      "batch_size": 1000,
+      "call": "sql.get_all_records",
+      "order_by": "ModifiedDate",
+      "table_name": "VisionEmployeeData"
+    },
+    {
+      "call": "sql.get_table_schema",
+      "table_name": "EmployeeJobDescriptions"
+    },
+    {
+      "batch_size": 1000,
+      "call": "sql.get_all_records",
+      "order_by": "LastModifiedDate",
+      "table_name": "EmployeeJobDescriptions"
+    },
+    {
+      "call": "sql.get_table_schema",
+      "table_name": "SupervisorFeedback"
+    },
+    {
+      "batch_size": 1000,
+      "call": "sql.get_all_records",
+      "order_by": "RO_Form_ID, LastModifiedDate",
+      "table_name": "SupervisorFeedback"
+    },
+    {
+      "call": "sql.get_table_schema",
+      "table_name": "EmployeeReports"
+    },
+    {
+      "batch_size": 1000,
+      "call": "sql.get_records_since",
+      "order_by": "LastModifiedDate",
+      "since_timestamp": "datetime.datetime(2025, 3, 8, 11, 30, 0, 251000)",
+      "table_name": "EmployeeReports",
+      "timestamp_column": "LastModifiedDate"
+    },
+    {
+      "call": "vs.get_collection_info",
+      "collection_name": "employee_reports"
+    },
+    {
+      "call": "embed",
+      "input": "Test text",
+      "is_query": false
+    },
+    {
+      "call": "embed",
+      "input": [
+        "Tasks Completed: Closed twelve case files (edited).\n\nImpact: Backlog reduced\n\nChallenges: Late inputs\n\nSupport Required: None\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07",
+        "Tasks Completed: Second week.\n\nImpact: Backlog reduced\n\nChallenges: Late inputs\n\nSupport Required: None\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-08 to 2025-03-14"
+      ],
+      "is_query": false
+    },
+    {
+      "call": "vs.add_documents_batch",
+      "collection_name": "employee_reports",
+      "points": [
+        {
+          "document_id": "<uuid:14>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 201,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "<uuid:9>",
+            "text": "Tasks Completed: Closed twelve case files (edited).\n\nImpact: Backlog reduced\n\nChallenges: Late inputs\n\nSupport Required: None\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07"
+          },
+          "vector": [
+            0.1373,
+            1.0,
+            0.6667,
+            0.3843
+          ]
+        },
+        {
+          "document_id": "<uuid:15>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 201,
+            "report_date": "2025-03-14",
+            "report_date_ts": 1741910400.0,
+            "report_id": "<uuid:10>",
+            "text": "Tasks Completed: Second week.\n\nImpact: Backlog reduced\n\nChallenges: Late inputs\n\nSupport Required: None\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-08 to 2025-03-14"
+          },
+          "vector": [
+            0.6118,
+            0.5216,
+            0.0,
+            0.702
+          ]
+        }
+      ]
+    },
+    {
+      "call": "sql.get_table_schema",
+      "table_name": "VisionEmployeeData"
+    },
+    {
+      "batch_size": 1000,
+      "call": "sql.get_records_since",
+      "order_by": "ModifiedDate",
+      "since_timestamp": "datetime.datetime(2025, 3, 8, 12, 6, 0, 1000)",
+      "table_name": "VisionEmployeeData",
+      "timestamp_column": "ModifiedDate"
+    },
+    {
+      "call": "sql.get_table_schema",
+      "table_name": "EmployeeJobDescriptions"
+    },
+    {
+      "batch_size": 1000,
+      "call": "sql.get_records_since",
+      "order_by": "LastModifiedDate",
+      "since_timestamp": "datetime.datetime(2025, 3, 1, 8, 0, 0, 1000)",
+      "table_name": "EmployeeJobDescriptions",
+      "timestamp_column": "LastModifiedDate"
+    },
+    {
+      "call": "sql.get_table_schema",
+      "table_name": "SupervisorFeedback"
+    },
+    {
+      "batch_size": 1000,
+      "call": "sql.get_records_since",
+      "order_by": "RO_Form_ID, LastModifiedDate",
+      "since_timestamp": "datetime.datetime(2025, 4, 2, 9, 1, 0, 1000)",
+      "table_name": "SupervisorFeedback",
+      "timestamp_column": "LastModifiedDate"
+    }
+  ],
+  "outcomes": [
+    {
+      "return": {
+        "employee_reports": {
+          "error_count": 1,
+          "metrics": {
+            "employees_created": 3,
+            "employees_updated": 0,
+            "processed_rows": 0,
+            "reports_created": 2,
+            "reports_updated": 0,
+            "successful_rows": 3
+          },
+          "records_queried": 4,
+          "records_synced": 3,
+          "status": "partial",
+          "sync_id": "<uuid:1>",
+          "sync_type": "employee_reports"
+        },
+        "job_descriptions": {
+          "error_count": 0,
+          "metrics": {
+            "jd_records_created": 2,
+            "jd_records_updated": 0,
+            "processed_rows": 0,
+            "successful_rows": 2
+          },
+          "records_queried": 2,
+          "records_synced": 2,
+          "status": "completed",
+          "sync_id": "<uuid:3>",
+          "sync_type": "job_descriptions"
+        },
+        "supervisor_feedback": {
+          "error_count": 0,
+          "metrics": {
+            "forms_created": 1,
+            "forms_updated": 0,
+            "metric_definitions_created": 3,
+            "processed_rows": 3,
+            "responses_created": 3,
+            "successful_rows": 3
+          },
+          "records_queried": 3,
+          "records_synced": 3,
+          "status": "completed",
+          "sync_id": "<uuid:4>",
+          "sync_type": "supervisor_feedback"
+        },
+        "sync_type": "full",
+        "total_errors": 2,
+        "total_records_synced": 10,
+        "vision_data": {
+          "error_count": 1,
+          "metrics": {
+            "processed_rows": 0,
+            "successful_rows": 2,
+            "vision_records_created": 2,
+            "vision_records_updated": 0
+          },
+          "records_queried": 3,
+          "records_synced": 2,
+          "status": "partial",
+          "sync_id": "<uuid:2>",
+          "sync_type": "vision_data"
+        }
+      },
+      "state": "SUCCESS"
+    },
+    {
+      "return": {
+        "employee_reports": {
+          "error_count": 0,
+          "metrics": {
+            "employees_created": 0,
+            "employees_updated": 2,
+            "processed_rows": 0,
+            "reports_created": 1,
+            "reports_updated": 1,
+            "successful_rows": 2
+          },
+          "records_queried": 2,
+          "records_synced": 2,
+          "status": "completed",
+          "sync_id": "<uuid:5>",
+          "sync_type": "employee_reports"
+        },
+        "job_descriptions": {
+          "error_count": 0,
+          "metrics": {},
+          "records_queried": 0,
+          "records_synced": 0,
+          "status": "completed",
+          "sync_id": "<uuid:7>",
+          "sync_type": "job_descriptions"
+        },
+        "supervisor_feedback": {
+          "error_count": 0,
+          "metrics": {},
+          "records_queried": 0,
+          "records_synced": 0,
+          "status": "completed",
+          "sync_id": "<uuid:8>",
+          "sync_type": "supervisor_feedback"
+        },
+        "sync_type": "incremental",
+        "total_errors": 0,
+        "total_records_synced": 3,
+        "vision_data": {
+          "error_count": 0,
+          "metrics": {
+            "processed_rows": 0,
+            "successful_rows": 1,
+            "vision_records_created": 1,
+            "vision_records_updated": 0
+          },
+          "records_queried": 1,
+          "records_synced": 1,
+          "status": "completed",
+          "sync_id": "<uuid:6>",
+          "sync_type": "vision_data"
+        }
+      },
+      "state": "SUCCESS"
+    }
+  ],
+  "sync_history": [
+    {
+      "completed_at": "<timestamp>",
+      "error_count": 1,
+      "error_details": {
+        "errors": [
+          {
+            "error_message": "Value error, BPS should be in format 'BS-XX' or 'TS-XX' where XX is a number (e.g., BS-21)",
+            "field_name": "BPS",
+            "row_data": {
+              "BPS": "Grade-7",
+              "Challenges": "Late inputs",
+              "Confidence_Level": "4 - Confident",
+              "Designation": "Analyst",
+              "Draft": null,
+              "Employee_ID": 204,
+              "From": "2025-03-01",
+              "Impact": "Backlog reduced",
+              "NTR": null,
+              "Name": "Bad Bps",
+              "Office_Hierarchy": "Technical>Tech-I",
+              "Support_Required": "None",
+              "Tasks_Completed": "x",
+              "Tasks_Planned": "Monthly digest",
+              "To": "2025-03-07"
+            },
+            "row_number": 4
+          }
+        ]
+      },
+      "error_message": null,
+      "last_sync_timestamp": "datetime.datetime(2025, 3, 8, 11, 30, 0, 251000)",
+      "records_created": 5,
+      "records_queried": 4,
+      "records_skipped": 1,
+      "records_synced": 3,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "partial",
+      "sync_id": "<uuid:1>",
+      "sync_metadata": {
+        "employees_created": 3,
+        "employees_updated": 0,
+        "processed_rows": 0,
+        "reports_created": 2,
+        "reports_updated": 0,
+        "successful_rows": 3
+      },
+      "sync_options": {
+        "is_full_sync": true
+      },
+      "sync_type": "employee_reports"
+    },
+    {
+      "completed_at": "<timestamp>",
+      "error_count": 0,
+      "error_details": null,
+      "error_message": null,
+      "last_sync_timestamp": "datetime.datetime(2025, 3, 16, 8, 0, 0, 1000)",
+      "records_created": 1,
+      "records_queried": 2,
+      "records_skipped": 0,
+      "records_synced": 2,
+      "records_updated": 3,
+      "started_at": "<timestamp>",
+      "status": "completed",
+      "sync_id": "<uuid:5>",
+      "sync_metadata": {
+        "employees_created": 0,
+        "employees_updated": 2,
+        "processed_rows": 0,
+        "reports_created": 1,
+        "reports_updated": 1,
+        "successful_rows": 2
+      },
+      "sync_options": {
+        "is_full_sync": false
+      },
+      "sync_type": "employee_reports"
+    },
+    {
+      "completed_at": "<timestamp>",
+      "error_count": 0,
+      "error_details": null,
+      "error_message": null,
+      "last_sync_timestamp": "datetime.datetime(2025, 3, 1, 8, 0, 0, 1000)",
+      "records_created": 2,
+      "records_queried": 2,
+      "records_skipped": 0,
+      "records_synced": 2,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "completed",
+      "sync_id": "<uuid:3>",
+      "sync_metadata": {
+        "jd_records_created": 2,
+        "jd_records_updated": 0,
+        "processed_rows": 0,
+        "successful_rows": 2
+      },
+      "sync_options": {
+        "is_full_sync": true
+      },
+      "sync_type": "job_descriptions"
+    },
+    {
+      "completed_at": "<timestamp>",
+      "error_count": 0,
+      "error_details": null,
+      "error_message": null,
+      "last_sync_timestamp": null,
+      "records_created": 0,
+      "records_queried": 0,
+      "records_skipped": 0,
+      "records_synced": 0,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "completed",
+      "sync_id": "<uuid:7>",
+      "sync_metadata": {},
+      "sync_options": {
+        "is_full_sync": false
+      },
+      "sync_type": "job_descriptions"
+    },
+    {
+      "completed_at": "<timestamp>",
+      "error_count": 0,
+      "error_details": null,
+      "error_message": null,
+      "last_sync_timestamp": "datetime.datetime(2025, 4, 2, 9, 1, 0, 1000)",
+      "records_created": 0,
+      "records_queried": 3,
+      "records_skipped": 0,
+      "records_synced": 3,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "completed",
+      "sync_id": "<uuid:4>",
+      "sync_metadata": {
+        "forms_created": 1,
+        "forms_updated": 0,
+        "metric_definitions_created": 3,
+        "processed_rows": 3,
+        "responses_created": 3,
+        "successful_rows": 3
+      },
+      "sync_options": {
+        "is_full_sync": true
+      },
+      "sync_type": "supervisor_feedback"
+    },
+    {
+      "completed_at": "<timestamp>",
+      "error_count": 0,
+      "error_details": null,
+      "error_message": null,
+      "last_sync_timestamp": null,
+      "records_created": 0,
+      "records_queried": 0,
+      "records_skipped": 0,
+      "records_synced": 0,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "completed",
+      "sync_id": "<uuid:8>",
+      "sync_metadata": {},
+      "sync_options": {
+        "is_full_sync": false
+      },
+      "sync_type": "supervisor_feedback"
+    },
+    {
+      "completed_at": "<timestamp>",
+      "error_count": 1,
+      "error_details": {
+        "errors": [
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 3
+          }
+        ]
+      },
+      "error_message": null,
+      "last_sync_timestamp": "datetime.datetime(2025, 3, 8, 12, 6, 0, 1000)",
+      "records_created": 2,
+      "records_queried": 3,
+      "records_skipped": 1,
+      "records_synced": 2,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "partial",
+      "sync_id": "<uuid:2>",
+      "sync_metadata": {
+        "processed_rows": 0,
+        "successful_rows": 2,
+        "vision_records_created": 2,
+        "vision_records_updated": 0
+      },
+      "sync_options": {
+        "is_full_sync": true
+      },
+      "sync_type": "vision_data"
+    },
+    {
+      "completed_at": "<timestamp>",
+      "error_count": 0,
+      "error_details": null,
+      "error_message": null,
+      "last_sync_timestamp": "datetime.datetime(2025, 3, 8, 12, 6, 0, 2000)",
+      "records_created": 1,
+      "records_queried": 1,
+      "records_skipped": 0,
+      "records_synced": 1,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "completed",
+      "sync_id": "<uuid:6>",
+      "sync_metadata": {
+        "processed_rows": 0,
+        "successful_rows": 1,
+        "vision_records_created": 1,
+        "vision_records_updated": 0
+      },
+      "sync_options": {
+        "is_full_sync": false
+      },
+      "sync_type": "vision_data"
+    }
+  ],
+  "tables": {
+    "employee_job_descriptions": [
+      {
+        "assigned_date": "2025-01-15",
+        "created_at": "<timestamp>",
+        "employee_id": 201,
+        "end_date": null,
+        "id": 1,
+        "is_current": true,
+        "jd_id": "1001",
+        "job_description": "Analyst: leads backlog reduction, audits archives and drafts monthly performance summaries.",
+        "updated_at": "<timestamp>"
+      },
+      {
+        "assigned_date": "2024-06-01",
+        "created_at": "<timestamp>",
+        "employee_id": 202,
+        "end_date": "2025-02-28",
+        "id": 2,
+        "is_current": false,
+        "jd_id": "1002",
+        "job_description": "Officer: leads backlog reduction, audits archives and drafts monthly performance summaries.",
+        "updated_at": "<timestamp>"
+      }
+    ],
+    "employee_vision_data": [
+      {
+        "created_at": "<timestamp>",
+        "employee_id": 201,
+        "from_date": "2025-03-01",
+        "main_entity": "Persons",
+        "sub_entities": {
+          "Persons": 3,
+          "Pictures": 1
+        },
+        "sub_entities_content": {
+          "Persons": [
+            {
+              "name": "Person A"
+            }
+          ],
+          "Pictures": []
+        },
+        "to_date": "2025-03-07",
+        "updated_at": "<timestamp>"
+      },
+      {
+        "created_at": "<timestamp>",
+        "employee_id": 201,
+        "from_date": "2025-03-08",
+        "main_entity": "Persons",
+        "sub_entities": {
+          "Persons": 1
+        },
+        "sub_entities_content": {},
+        "to_date": "2025-03-14",
+        "updated_at": "<timestamp>"
+      },
+      {
+        "created_at": "<timestamp>",
+        "employee_id": 202,
+        "from_date": "2025-03-01",
+        "main_entity": "Tasks",
+        "sub_entities": {
+          "Tasks": 2
+        },
+        "sub_entities_content": {
+          "Tasks": [
+            {
+              "title": "T1"
+            }
+          ]
+        },
+        "to_date": "2025-03-07",
+        "updated_at": "<timestamp>"
+      }
+    ],
+    "employees": [
+      {
+        "id": 201,
+        "name": "Sana Malik",
+        "position": "Analyst (BS-17)",
+        "wing": "Technical>Tech-I"
+      },
+      {
+        "id": 202,
+        "name": "Omar Farooq",
+        "position": "Analyst (BS-17)",
+        "wing": "Technical>Tech-I"
+      },
+      {
+        "id": 203,
+        "name": "Hina Raza",
+        "position": "Analyst (BS-17)",
+        "wing": "Technical>Tech-I"
+      }
+    ],
+    "qdrant_mappings": [
+      {
+        "chunk_index": 0,
+        "employee_id": 201,
+        "report_date": "2025-03-07",
+        "upserted_point_index": 0
+      },
+      {
+        "chunk_index": 0,
+        "employee_id": 201,
+        "report_date": "2025-03-07",
+        "upserted_point_index": 2
+      },
+      {
+        "chunk_index": 0,
+        "employee_id": 201,
+        "report_date": "2025-03-14",
+        "upserted_point_index": 3
+      },
+      {
+        "chunk_index": 0,
+        "employee_id": 202,
+        "report_date": "2025-03-07",
+        "upserted_point_index": 1
+      }
+    ],
+    "reports": [
+      {
+        "employee_id": 201,
+        "report_date": "2025-03-07",
+        "report_id": "<uuid:9>",
+        "report_text": "Tasks Completed: Closed twelve case files (edited).\n\nImpact: Backlog reduced\n\nChallenges: Late inputs\n\nSupport Required: None\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07"
+      },
+      {
+        "employee_id": 201,
+        "report_date": "2025-03-14",
+        "report_id": "<uuid:10>",
+        "report_text": "Tasks Completed: Second week.\n\nImpact: Backlog reduced\n\nChallenges: Late inputs\n\nSupport Required: None\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-08 to 2025-03-14"
+      },
+      {
+        "employee_id": 202,
+        "report_date": "2025-03-07",
+        "report_id": "<uuid:11>",
+        "report_text": "Tasks Completed: Visited two districts.\n\nImpact: Backlog reduced\n\nChallenges: Late inputs\n\nSupport Required: None\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07"
+      }
+    ],
+    "supervisor_feedback_forms": [
+      {
+        "created_at": "<timestamp>",
+        "employee_id": 201,
+        "feedback_cache": {
+          "form_data": {
+            "sections": [
+              {
+                "metrics": [
+                  {
+                    "max_value": 4,
+                    "metric_id": 1,
+                    "metric_name": "Quality",
+                    "metric_type": "R",
+                    "possible_values": "Poor,Fair,Good,Excellent",
+                    "response": "Good"
+                  },
+                  {
+                    "max_value": 4,
+                    "metric_id": 2,
+                    "metric_name": "Timeliness",
+                    "metric_type": "R",
+                    "possible_values": "Poor,Fair,Good,Excellent",
+                    "response": "Excellent"
+                  },
+                  {
+                    "max_value": null,
+                    "metric_id": 3,
+                    "metric_name": "Comments",
+                    "metric_type": "T",
+                    "possible_values": null,
+                    "response": "Steady performer"
+                  }
+                ],
+                "section_id": 1,
+                "section_name": "Performance"
+              }
+            ]
+          },
+          "generated_at": "<timestamp>",
+          "stats": {
+            "average_rating": 87.5,
+            "completion_percentage": 100.0,
+            "maximum_score": 200,
+            "metrics_completed": 3,
+            "text_responses_count": 1,
+            "total_metrics": 3,
+            "total_score": 175.0
+          }
+        },
+        "from_date": "2025-01-01",
+        "id": 1,
+        "ro_form_id": 15,
+        "to_date": "2025-03-31",
+        "updated_at": "<timestamp>"
+      }
+    ],
+    "supervisor_feedback_metric_definitions": [
+      {
+        "created_at": "<timestamp>",
+        "id": 1,
+        "max_value": 4,
+        "metric_description": "Rate Quality",
+        "metric_id": 1,
+        "metric_name": "Quality",
+        "metric_type": "R",
+        "possible_values": "Poor,Fair,Good,Excellent",
+        "section": "Performance",
+        "section_id": 1
+      },
+      {
+        "created_at": "<timestamp>",
+        "id": 2,
+        "max_value": 4,
+        "metric_description": "Rate Timeliness",
+        "metric_id": 2,
+        "metric_name": "Timeliness",
+        "metric_type": "R",
+        "possible_values": "Poor,Fair,Good,Excellent",
+        "section": "Performance",
+        "section_id": 1
+      },
+      {
+        "created_at": "<timestamp>",
+        "id": 3,
+        "max_value": null,
+        "metric_description": "Rate Comments",
+        "metric_id": 3,
+        "metric_name": "Comments",
+        "metric_type": "T",
+        "possible_values": null,
+        "section": "Performance",
+        "section_id": 1
+      }
+    ],
+    "supervisor_feedback_responses": [
+      {
+        "created_at": "<timestamp>",
+        "form_id": 1,
+        "id": 1,
+        "l_ro_form_metric_id": 74,
+        "max_value": 4,
+        "metric_definition_id": 1,
+        "numeric_rating": 3,
+        "text_response": "Good"
+      },
+      {
+        "created_at": "<timestamp>",
+        "form_id": 1,
+        "id": 2,
+        "l_ro_form_metric_id": 75,
+        "max_value": 4,
+        "metric_definition_id": 2,
+        "numeric_rating": 4,
+        "text_response": "Excellent"
+      },
+      {
+        "created_at": "<timestamp>",
+        "form_id": 1,
+        "id": 3,
+        "l_ro_form_metric_id": 76,
+        "max_value": null,
+        "metric_definition_id": 3,
+        "numeric_rating": null,
+        "text_response": "Steady performer"
+      }
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "body": {
+    "errors": [
+      {
+        "error_category": "validation",
+        "error_message": "missing",
+        "field_name": "Name",
+        "row_data": {
+          "Name": null
+        },
+        "row_number": 1
+      },
+      {
+        "error_category": null,
+        "error_message": "bad date",
+        "field_name": null,
+        "row_data": null,
+        "row_number": 4
+      }
+    ],
+    "page": 1,
+    "page_size": 2,
+    "sync_id": "<uuid:1>",
+    "total_errors": 5
+  },
+  "status": 200
+}

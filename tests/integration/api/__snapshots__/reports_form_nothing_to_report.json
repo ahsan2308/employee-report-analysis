@@ -1,0 +1,21 @@
+{
+  "body": {
+    "detail": [
+      {
+        "ctx": {
+          "error": {}
+        },
+        "input": "On leave",
+        "loc": [
+          "body",
+          "nothing_to_report_reason"
+        ],
+        "msg": "Value error, Either 'key_tasks_completed' or 'nothing_to_report_reason' must be provided.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "db": [],
+  "status": 422,
+  "vector_store": []
+}

@@ -1,0 +1,25 @@
+{
+  "body": {
+    "datasets": [
+      {
+        "backgroundColor": null,
+        "borderColor": null,
+        "data": [
+          0.4,
+          0.62
+        ],
+        "label": "Average Sentiment",
+        "metadata": {
+          "avg": 0.51,
+          "max": 0.62,
+          "min": 0.4
+        }
+      }
+    ],
+    "labels": [
+      "2024",
+      "2025"
+    ]
+  },
+  "status": 200
+}

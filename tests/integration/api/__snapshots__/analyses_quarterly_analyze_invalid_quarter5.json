@@ -1,0 +1,20 @@
+{
+  "body": {
+    "detail": [
+      {
+        "ctx": {
+          "le": 4
+        },
+        "input": "5",
+        "loc": [
+          "query",
+          "quarter"
+        ],
+        "msg": "Input should be less than or equal to 4",
+        "type": "less_than_equal"
+      }
+    ]
+  },
+  "dispatch": [],
+  "status": 422
+}

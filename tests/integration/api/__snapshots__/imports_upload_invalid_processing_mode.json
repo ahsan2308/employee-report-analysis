@@ -1,0 +1,8 @@
+{
+  "body": {
+    "detail": "Error processing upload: 1 validation error for CSVImportOptions\nprocessing_mode\n  Input should be 'row_by_row' or 'bulk' [type=literal_error, input_value='turbo', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.10/v/literal_error"
+  },
+  "db": [],
+  "dispatch": [],
+  "status": 500
+}

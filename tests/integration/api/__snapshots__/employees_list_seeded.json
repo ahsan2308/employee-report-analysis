@@ -1,0 +1,23 @@
+{
+  "body": [
+    {
+      "id": 1,
+      "name": "Alice Analyst",
+      "position": "Engineer",
+      "wing": "Engineering"
+    },
+    {
+      "id": 2,
+      "name": "Bob Builder",
+      "position": "Analyst",
+      "wing": "Finance"
+    },
+    {
+      "id": 3,
+      "name": "Carol Coder",
+      "position": "Lead",
+      "wing": "Engineering"
+    }
+  ],
+  "status": 200
+}

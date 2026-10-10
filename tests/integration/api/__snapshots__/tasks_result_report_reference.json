@@ -1,0 +1,58 @@
+{
+  "body": {
+    "error_message": null,
+    "result": {
+      "achievements_json": [
+        {
+          "description": "Shipped feature",
+          "impact": "8 (Good impact)"
+        }
+      ],
+      "action_items": [
+        "write docs"
+      ],
+      "analysis_id": 1,
+      "challenges_json": [
+        {
+          "description": "Flaky CI",
+          "severity": "medium"
+        }
+      ],
+      "credibility_assessment": {
+        "consistency_score": "high",
+        "exaggeration_flags": [
+          "claimed 100% uptime"
+        ],
+        "explanation": "Claims are specific and consistent.",
+        "rating": "high"
+      },
+      "employee_name": "Alice Analyst",
+      "full_analysis_json": {
+        "score": 8,
+        "summary": "Strong week"
+      },
+      "performance_assessment": {
+        "improvement_areas": [
+          "documentation"
+        ],
+        "key_strengths": [
+          "delivery"
+        ],
+        "rating": "high",
+        "summary": "Strong week."
+      },
+      "report_id": "<uuid:2>",
+      "risk_explanation": "No notable risks.",
+      "risk_level": "low",
+      "sentiment": 0.75,
+      "sentiment_score": 0.75,
+      "topics": [
+        "release",
+        "ci"
+      ]
+    },
+    "status": "completed",
+    "task_id": "<uuid:1>"
+  },
+  "status": 200
+}

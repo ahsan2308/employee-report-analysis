@@ -1,0 +1,8 @@
+{
+  "body": {
+    "detail": "Employee not found."
+  },
+  "db": [],
+  "status": 404,
+  "vector_store": []
+}

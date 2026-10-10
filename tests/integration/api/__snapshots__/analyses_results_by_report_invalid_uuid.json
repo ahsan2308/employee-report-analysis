@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Invalid report ID format"
+  },
+  "status": 400
+}

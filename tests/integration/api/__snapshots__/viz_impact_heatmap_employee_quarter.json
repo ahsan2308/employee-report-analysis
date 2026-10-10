@@ -1,0 +1,47 @@
+{
+  "body": {
+    "cells": [
+      {
+        "value": 3.0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "value": 7.33,
+        "x": 1,
+        "y": 0
+      },
+      {
+        "value": 5.0,
+        "x": 1,
+        "y": 1
+      },
+      {
+        "value": 10.0,
+        "x": 1,
+        "y": 2
+      },
+      {
+        "value": 4.0,
+        "x": 2,
+        "y": 2
+      }
+    ],
+    "metadata": {
+      "avg": 5.87,
+      "max": 10.0,
+      "min": 3.0
+    },
+    "x_labels": [
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2"
+    ],
+    "y_labels": [
+      "Alice Analyst (#1)",
+      "Bob Builder (#2)",
+      "Carol Coder (#3)"
+    ]
+  },
+  "status": 200
+}

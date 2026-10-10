@@ -1,0 +1,36 @@
+{
+  "body": {
+    "allowed_tables": [
+      "dbo.JD",
+      "dbo.Reports",
+      "dbo.VisionData"
+    ],
+    "allowed_timestamp_columns": [
+      "Created_At",
+      "Modified_At"
+    ],
+    "sql_server": {
+      "connection_status": "disconnected",
+      "database": "EmployeeTestDB",
+      "host": "sql.test.local\\SQLEXPRESS"
+    },
+    "sync_enabled": false,
+    "sync_schedule": {
+      "full_sync": {
+        "enabled": false,
+        "schedule": "Manual trigger only"
+      },
+      "incremental_sync": {
+        "enabled": false,
+        "next_run": null,
+        "schedule": "Monday 2:00 AM"
+      }
+    },
+    "sync_settings": {
+      "default_chunk_size": 1000,
+      "error_threshold_percent": 2.5,
+      "max_batch_size": 5000
+    }
+  },
+  "status": 200
+}

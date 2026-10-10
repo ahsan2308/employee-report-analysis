@@ -1,0 +1,29 @@
+{
+  "collections": {
+    "employee_reports": 4
+  },
+  "external_calls": [
+    {
+      "call": "vs.get_collection_info",
+      "collection_name": "employee_reports"
+    },
+    {
+      "call": "embed",
+      "input": "Test text",
+      "is_query": false
+    },
+    {
+      "call": "vs.delete_collection",
+      "collection_name": "employee_reports",
+      "existed": false,
+      "points_lost": 0
+    },
+    {
+      "call": "vs.setup_collection",
+      "collection_name": "employee_reports",
+      "vector_size": 4
+    }
+  ],
+  "outcome": true,
+  "points_left": 0
+}

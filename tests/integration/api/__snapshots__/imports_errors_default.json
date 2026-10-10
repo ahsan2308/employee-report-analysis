@@ -1,0 +1,50 @@
+{
+  "body": {
+    "errors": [
+      {
+        "error_message": "bad row 1",
+        "field_name": "F1",
+        "row_data": {
+          "row": 1
+        },
+        "row_number": 1
+      },
+      {
+        "error_message": "bad row 3",
+        "field_name": "F3",
+        "row_data": {
+          "row": 3
+        },
+        "row_number": 3
+      },
+      {
+        "error_message": "bad row 5",
+        "field_name": "F5",
+        "row_data": {
+          "row": 5
+        },
+        "row_number": 5
+      },
+      {
+        "error_message": "bad row 7",
+        "field_name": "F7",
+        "row_data": {
+          "row": 7
+        },
+        "row_number": 7
+      },
+      {
+        "error_message": "bad row 9",
+        "field_name": "F9",
+        "row_data": {
+          "row": 9
+        },
+        "row_number": 9
+      }
+    ],
+    "page": 1,
+    "page_size": 100,
+    "total": 5
+  },
+  "status": 200
+}

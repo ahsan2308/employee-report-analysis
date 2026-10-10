@@ -1,0 +1,8 @@
+Employee_ID,Name,Designation,BPS,Office_Hierarchy,From,To,Draft,Tasks_Completed,Impact,Challenges,Support_Required,Tasks_Planned,Confidence_Level,NTR
+201,Sana Malik,Analyst,BS-17,Technical>Tech-I>SOC,2025-03-01,2025-03-07,,First version of the week.,x,x,x,x,4,
+202,Omar Farooq,Officer,Grade-17,Operations,2025-03-01,2025-03-07,,Bad BPS row.,x,x,x,x,4,
+204,Zara Shah,Officer,BS-16,Admin,2025-03-10,2025-03-03,,From after To.,x,x,x,x,4,
+205,Ali <b>,Officer,BS-16,Admin,2025-03-01,2025-03-07,,Bad name.,x,x,x,x,4,
+206,Kamran Ali,Officer,BS-16,Admin,2025-03-01,2025-03-07,,,x,x,x,x,4,
+207,Nida Khan,Officer,BS-16,Admin,2025-03-01,2025-03-07,,Bad confidence.,x,x,x,x,9,
+201,Sana Malik,Analyst,BS-17,Technical>Tech-I>SOC,2025-03-01,2025-03-07,,Second version of the same week wins.,y,y,y,y,2,

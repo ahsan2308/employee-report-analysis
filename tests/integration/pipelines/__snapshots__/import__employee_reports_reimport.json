@@ -1,0 +1,386 @@
+{
+  "external_calls": [
+    {
+      "call": "vs.get_collection_info",
+      "collection_name": "employee_reports"
+    },
+    {
+      "call": "embed",
+      "input": "Test text",
+      "is_query": false
+    },
+    {
+      "call": "embed",
+      "input": [
+        "Tasks Completed: Reviewed twelve case files for the regional desk and reconciled every entry against the archive ledger. Prepared a consolidated digest for the wing head covering the backlog, the pending field reports and the open requests. Coordinated with the operations section to schedule the archive scanner for the next fortnight. Drafted three analytical notes on recurring discrepancies in the district submissions.",
+        "Trained two new desk officers on the reporting template and checked their first submissions. Closed the long standing request from the provincial office after verifying the supporting documents.\n\nImpact: Backlog down 20 percent\n\nChallenges: Late field reports\n\nSupport Required: Scanner access\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07",
+        "Tasks Completed: Closed the request queue.\n\nImpact: Queue cleared\n\nChallenges: None\n\nSupport Required: None\n\nTasks Planned: Audit\n\nConfidence Level: 3\n\nReport Period: 2025-03-08 to 2025-03-14",
+        "Tasks Completed: Visited two districts.\n\nImpact: Two inspections done\n\nChallenges: Travel delays\n\nSupport Required: Vehicle\n\nTasks Planned: Report writing\n\nConfidence Level: 5\n\nReport Period: 2025-03-01 to 2025-03-07"
+      ],
+      "is_query": false
+    },
+    {
+      "call": "vs.add_documents_batch",
+      "collection_name": "employee_reports",
+      "points": [
+        {
+          "document_id": "<uuid:6>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 201,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "<uuid:3>",
+            "text": "Tasks Completed: Reviewed twelve case files for the regional desk and reconciled every entry against the archive ledger. Prepared a consolidated digest for the wing head covering the backlog, the pending field reports and the open requests. Coordinated with the operations section to schedule the archive scanner for the next fortnight. Drafted three analytical notes on recurring discrepancies in the district submissions."
+          },
+          "vector": [
+            0.9373,
+            0.4392,
+            0.3608,
+            0.8078
+          ]
+        },
+        {
+          "document_id": "<uuid:7>",
+          "payload": {
+            "chunk_index": 1,
+            "employee_id": 201,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "<uuid:3>",
+            "text": "Trained two new desk officers on the reporting template and checked their first submissions. Closed the long standing request from the provincial office after verifying the supporting documents.\n\nImpact: Backlog down 20 percent\n\nChallenges: Late field reports\n\nSupport Required: Scanner access\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07"
+          },
+          "vector": [
+            0.8863,
+            0.0824,
+            0.2588,
+            0.0196
+          ]
+        },
+        {
+          "document_id": "<uuid:8>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 201,
+            "report_date": "2025-03-14",
+            "report_date_ts": 1741910400.0,
+            "report_id": "<uuid:4>",
+            "text": "Tasks Completed: Closed the request queue.\n\nImpact: Queue cleared\n\nChallenges: None\n\nSupport Required: None\n\nTasks Planned: Audit\n\nConfidence Level: 3\n\nReport Period: 2025-03-08 to 2025-03-14"
+          },
+          "vector": [
+            0.4275,
+            0.0431,
+            0.302,
+            0.0863
+          ]
+        },
+        {
+          "document_id": "<uuid:9>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 202,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "<uuid:5>",
+            "text": "Tasks Completed: Visited two districts.\n\nImpact: Two inspections done\n\nChallenges: Travel delays\n\nSupport Required: Vehicle\n\nTasks Planned: Report writing\n\nConfidence Level: 5\n\nReport Period: 2025-03-01 to 2025-03-07"
+          },
+          "vector": [
+            0.9843,
+            0.8157,
+            0.5843,
+            0.4667
+          ]
+        }
+      ]
+    },
+    {
+      "call": "vs.get_collection_info",
+      "collection_name": "employee_reports"
+    },
+    {
+      "call": "embed",
+      "input": "Test text",
+      "is_query": false
+    },
+    {
+      "call": "embed",
+      "input": [
+        "Tasks Completed: Reviewed twelve case files for the regional desk and reconciled every entry against the archive ledger. Prepared a consolidated digest for the wing head covering the backlog, the pending field reports and the open requests. Coordinated with the operations section to schedule the archive scanner for the next fortnight. Drafted three analytical notes on recurring discrepancies in the district submissions.",
+        "Trained two new desk officers on the reporting template and checked their first submissions. Closed the long standing request from the provincial office after verifying the supporting documents.\n\nImpact: Backlog down 20 percent\n\nChallenges: Late field reports\n\nSupport Required: Scanner access\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07",
+        "Tasks Completed: Closed the request queue.\n\nImpact: Queue cleared\n\nChallenges: None\n\nSupport Required: None\n\nTasks Planned: Audit\n\nConfidence Level: 3\n\nReport Period: 2025-03-08 to 2025-03-14",
+        "Tasks Completed: Visited two districts.\n\nImpact: Two inspections done\n\nChallenges: Travel delays\n\nSupport Required: Vehicle\n\nTasks Planned: Report writing\n\nConfidence Level: 5\n\nReport Period: 2025-03-01 to 2025-03-07"
+      ],
+      "is_query": false
+    },
+    {
+      "call": "vs.add_documents_batch",
+      "collection_name": "employee_reports",
+      "points": [
+        {
+          "document_id": "<uuid:10>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 201,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "<uuid:3>",
+            "text": "Tasks Completed: Reviewed twelve case files for the regional desk and reconciled every entry against the archive ledger. Prepared a consolidated digest for the wing head covering the backlog, the pending field reports and the open requests. Coordinated with the operations section to schedule the archive scanner for the next fortnight. Drafted three analytical notes on recurring discrepancies in the district submissions."
+          },
+          "vector": [
+            0.9373,
+            0.4392,
+            0.3608,
+            0.8078
+          ]
+        },
+        {
+          "document_id": "<uuid:11>",
+          "payload": {
+            "chunk_index": 1,
+            "employee_id": 201,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "<uuid:3>",
+            "text": "Trained two new desk officers on the reporting template and checked their first submissions. Closed the long standing request from the provincial office after verifying the supporting documents.\n\nImpact: Backlog down 20 percent\n\nChallenges: Late field reports\n\nSupport Required: Scanner access\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07"
+          },
+          "vector": [
+            0.8863,
+            0.0824,
+            0.2588,
+            0.0196
+          ]
+        },
+        {
+          "document_id": "<uuid:12>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 201,
+            "report_date": "2025-03-14",
+            "report_date_ts": 1741910400.0,
+            "report_id": "<uuid:4>",
+            "text": "Tasks Completed: Closed the request queue.\n\nImpact: Queue cleared\n\nChallenges: None\n\nSupport Required: None\n\nTasks Planned: Audit\n\nConfidence Level: 3\n\nReport Period: 2025-03-08 to 2025-03-14"
+          },
+          "vector": [
+            0.4275,
+            0.0431,
+            0.302,
+            0.0863
+          ]
+        },
+        {
+          "document_id": "<uuid:13>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 202,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "<uuid:5>",
+            "text": "Tasks Completed: Visited two districts.\n\nImpact: Two inspections done\n\nChallenges: Travel delays\n\nSupport Required: Vehicle\n\nTasks Planned: Report writing\n\nConfidence Level: 5\n\nReport Period: 2025-03-01 to 2025-03-07"
+          },
+          "vector": [
+            0.9843,
+            0.8157,
+            0.5843,
+            0.4667
+          ]
+        }
+      ]
+    }
+  ],
+  "import": {
+    "csv_import_jobs": [
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": "employee_report",
+        "error_count": 0,
+        "filename": "employee_reports.csv",
+        "job_id": "<uuid:1>",
+        "metrics_json": {
+          "employees_created": 3,
+          "employees_updated": 1,
+          "processed_rows": 0,
+          "reports_created": 3,
+          "reports_updated": 0,
+          "successful_rows": 4
+        },
+        "options": null,
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 4,
+        "total_rows": 4
+      },
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": "employee_report",
+        "error_count": 0,
+        "filename": "employee_reports.csv",
+        "job_id": "<uuid:2>",
+        "metrics_json": {
+          "employees_created": 0,
+          "employees_updated": 4,
+          "processed_rows": 0,
+          "reports_created": 0,
+          "reports_updated": 3,
+          "successful_rows": 4
+        },
+        "options": null,
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 4,
+        "total_rows": 4
+      }
+    ],
+    "import_errors": []
+  },
+  "outcomes": [
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": "employee_report",
+        "error_count": 0,
+        "filename": "employee_reports.csv",
+        "job_id": "<uuid:1>",
+        "metrics": {
+          "employees_created": 3,
+          "employees_updated": 1,
+          "processed_rows": 0,
+          "reports_created": 3,
+          "reports_updated": 0,
+          "successful_rows": 4
+        },
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 4,
+        "total_rows": 4
+      },
+      "state": "SUCCESS"
+    },
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": "employee_report",
+        "error_count": 0,
+        "filename": "employee_reports.csv",
+        "job_id": "<uuid:2>",
+        "metrics": {
+          "employees_created": 0,
+          "employees_updated": 4,
+          "processed_rows": 0,
+          "reports_created": 0,
+          "reports_updated": 3,
+          "successful_rows": 4
+        },
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 4,
+        "total_rows": 4
+      },
+      "state": "SUCCESS"
+    }
+  ],
+  "tables": {
+    "employee_job_descriptions": [],
+    "employee_vision_data": [],
+    "employees": [
+      {
+        "id": 201,
+        "name": "Sana Malik",
+        "position": "Analyst (BS-17)",
+        "wing": "Technical>Tech-I>SOC"
+      },
+      {
+        "id": 202,
+        "name": "Omar Farooq",
+        "position": "Officer (BS-16)",
+        "wing": "Operations>Ops-II"
+      },
+      {
+        "id": 203,
+        "name": "Hina Raza",
+        "position": "Officer (BS-18)",
+        "wing": "Admin"
+      }
+    ],
+    "qdrant_mappings": [
+      {
+        "chunk_index": 0,
+        "employee_id": 201,
+        "report_date": "2025-03-07",
+        "upserted_point_index": 0
+      },
+      {
+        "chunk_index": 0,
+        "employee_id": 201,
+        "report_date": "2025-03-07",
+        "upserted_point_index": 4
+      },
+      {
+        "chunk_index": 1,
+        "employee_id": 201,
+        "report_date": "2025-03-07",
+        "upserted_point_index": 1
+      },
+      {
+        "chunk_index": 1,
+        "employee_id": 201,
+        "report_date": "2025-03-07",
+        "upserted_point_index": 5
+      },
+      {
+        "chunk_index": 0,
+        "employee_id": 201,
+        "report_date": "2025-03-14",
+        "upserted_point_index": 2
+      },
+      {
+        "chunk_index": 0,
+        "employee_id": 201,
+        "report_date": "2025-03-14",
+        "upserted_point_index": 6
+      },
+      {
+        "chunk_index": 0,
+        "employee_id": 202,
+        "report_date": "2025-03-07",
+        "upserted_point_index": 3
+      },
+      {
+        "chunk_index": 0,
+        "employee_id": 202,
+        "report_date": "2025-03-07",
+        "upserted_point_index": 7
+      }
+    ],
+    "reports": [
+      {
+        "employee_id": 201,
+        "report_date": "2025-03-07",
+        "report_id": "<uuid:3>",
+        "report_text": "Tasks Completed: Reviewed twelve case files for the regional desk and reconciled every entry against the archive ledger. Prepared a consolidated digest for the wing head covering the backlog, the pending field reports and the open requests. Coordinated with the operations section to schedule the archive scanner for the next fortnight. Drafted three analytical notes on recurring discrepancies in the district submissions. Trained two new desk officers on the reporting template and checked their first submissions. Closed the long standing request from the provincial office after verifying the supporting documents.\n\nImpact: Backlog down 20 percent\n\nChallenges: Late field reports\n\nSupport Required: Scanner access\n\nTasks Planned: Monthly digest\n\nConfidence Level: 4\n\nReport Period: 2025-03-01 to 2025-03-07"
+      },
+      {
+        "employee_id": 201,
+        "report_date": "2025-03-14",
+        "report_id": "<uuid:4>",
+        "report_text": "Tasks Completed: Closed the request queue.\n\nImpact: Queue cleared\n\nChallenges: None\n\nSupport Required: None\n\nTasks Planned: Audit\n\nConfidence Level: 3\n\nReport Period: 2025-03-08 to 2025-03-14"
+      },
+      {
+        "employee_id": 202,
+        "report_date": "2025-03-07",
+        "report_id": "<uuid:5>",
+        "report_text": "Tasks Completed: Visited two districts.\n\nImpact: Two inspections done\n\nChallenges: Travel delays\n\nSupport Required: Vehicle\n\nTasks Planned: Report writing\n\nConfidence Level: 5\n\nReport Period: 2025-03-01 to 2025-03-07"
+      }
+    ],
+    "supervisor_feedback_forms": [],
+    "supervisor_feedback_metric_definitions": [],
+    "supervisor_feedback_responses": []
+  }
+}

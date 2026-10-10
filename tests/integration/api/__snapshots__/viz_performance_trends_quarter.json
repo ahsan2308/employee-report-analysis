@@ -1,0 +1,27 @@
+{
+  "body": {
+    "datasets": [
+      {
+        "backgroundColor": null,
+        "borderColor": null,
+        "data": [
+          0.2,
+          0.6,
+          0.8
+        ],
+        "label": "Average Performance",
+        "metadata": {
+          "avg": 0.53,
+          "max": 0.8,
+          "min": 0.2
+        }
+      }
+    ],
+    "labels": [
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2"
+    ]
+  },
+  "status": 200
+}

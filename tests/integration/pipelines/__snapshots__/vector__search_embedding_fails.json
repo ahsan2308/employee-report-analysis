@@ -1,0 +1,14 @@
+{
+  "collections": {
+    "employee_reports": 4
+  },
+  "external_calls": [
+    {
+      "call": "embed",
+      "input": "backlog audit",
+      "is_query": true
+    }
+  ],
+  "outcome": [],
+  "points_left": 0
+}

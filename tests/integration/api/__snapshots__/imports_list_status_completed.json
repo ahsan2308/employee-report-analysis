@@ -1,0 +1,23 @@
+{
+  "body": [
+    {
+      "completed_at": null,
+      "csv_type": "employee_report",
+      "error_count": 1,
+      "estimated_time_remaining": null,
+      "filename": "a.csv",
+      "job_id": "<uuid:1>",
+      "metrics": {
+        "reports_created": 9
+      },
+      "percent_complete": 100.0,
+      "processed_rows": 10,
+      "started_at": null,
+      "status": "completed",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 9,
+      "total_rows": 10
+    }
+  ],
+  "status": 200
+}

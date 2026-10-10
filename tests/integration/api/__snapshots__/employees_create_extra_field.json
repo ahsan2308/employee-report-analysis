@@ -1,0 +1,20 @@
+{
+  "body": {
+    "employee": {
+      "id": 1,
+      "name": "Eve",
+      "position": "Partner",
+      "wing": "HR"
+    },
+    "message": "Employee added successfully"
+  },
+  "db": [
+    {
+      "id": 1,
+      "name": "Eve",
+      "position": "Partner",
+      "wing": "HR"
+    }
+  ],
+  "status": 200
+}

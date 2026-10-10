@@ -1,0 +1,10 @@
+{
+  "body": {
+    "errors": [],
+    "page": 1,
+    "page_size": 100,
+    "sync_id": "<uuid:1>",
+    "total_errors": 0
+  },
+  "status": 200
+}

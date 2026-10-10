@@ -1,0 +1,10 @@
+{
+  "body": {
+    "completed_at": null,
+    "last_successful_sync_id": null,
+    "last_sync_timestamp": null,
+    "records_synced": null,
+    "sync_type": "employee_reports"
+  },
+  "status": 200
+}

@@ -1,0 +1,21 @@
+{
+  "body": [
+    {
+      "completed_at": null,
+      "csv_type": "vision_data",
+      "error_count": 0,
+      "estimated_time_remaining": null,
+      "filename": "b.txt",
+      "job_id": "<uuid:1>",
+      "metrics": {},
+      "percent_complete": 33.3,
+      "processed_rows": 1,
+      "started_at": null,
+      "status": "running",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 0,
+      "total_rows": 3
+    }
+  ],
+  "status": 200
+}

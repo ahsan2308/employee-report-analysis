@@ -1,0 +1,7 @@
+{
+  "body": {
+    "detail": "Error creating employee: boom"
+  },
+  "db": [],
+  "status": 500
+}

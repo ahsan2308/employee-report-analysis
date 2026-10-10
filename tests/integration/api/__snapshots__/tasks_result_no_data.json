@@ -1,0 +1,9 @@
+{
+  "body": {
+    "error_message": null,
+    "result": null,
+    "status": "completed",
+    "task_id": "<uuid:1>"
+  },
+  "status": 200
+}

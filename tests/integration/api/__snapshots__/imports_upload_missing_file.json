@@ -1,0 +1,18 @@
+{
+  "body": {
+    "detail": [
+      {
+        "input": null,
+        "loc": [
+          "body",
+          "file"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      }
+    ]
+  },
+  "db": [],
+  "dispatch": [],
+  "status": 422
+}

@@ -1,0 +1,27 @@
+{
+  "body": {
+    "datasets": [
+      {
+        "backgroundColor": null,
+        "borderColor": null,
+        "data": [
+          3.0,
+          7.4,
+          4.0
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 4.8,
+          "max": 7.4,
+          "min": 3.0
+        }
+      }
+    ],
+    "labels": [
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2"
+    ]
+  },
+  "status": 200
+}

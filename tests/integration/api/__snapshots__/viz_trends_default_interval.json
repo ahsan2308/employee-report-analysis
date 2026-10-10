@@ -1,0 +1,206 @@
+{
+  "consistency-trends": {
+    "default": {
+      "body": {
+        "datasets": [
+          {
+            "backgroundColor": null,
+            "borderColor": null,
+            "data": [
+              0.2,
+              0.5,
+              0.8,
+              0.8,
+              0.5
+            ],
+            "label": "Average Consistency",
+            "metadata": {
+              "avg": 0.56,
+              "max": 0.8,
+              "min": 0.2
+            }
+          }
+        ],
+        "labels": [
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04"
+        ]
+      },
+      "status": 200
+    },
+    "same_as_month": true
+  },
+  "credibility-trends": {
+    "default": {
+      "body": {
+        "datasets": [
+          {
+            "backgroundColor": null,
+            "borderColor": null,
+            "data": [
+              0.2,
+              0.35,
+              0.8,
+              0.65,
+              0.5
+            ],
+            "label": "Average Credibility",
+            "metadata": {
+              "avg": 0.5,
+              "max": 0.8,
+              "min": 0.2
+            }
+          }
+        ],
+        "labels": [
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04"
+        ]
+      },
+      "status": 200
+    },
+    "same_as_month": true
+  },
+  "impact-trends": {
+    "default": {
+      "body": {
+        "datasets": [
+          {
+            "backgroundColor": null,
+            "borderColor": null,
+            "data": [
+              3.0,
+              5.5,
+              9.5,
+              7.0,
+              4.0
+            ],
+            "label": "Average Impact Score",
+            "metadata": {
+              "avg": 5.8,
+              "max": 9.5,
+              "min": 3.0
+            }
+          }
+        ],
+        "labels": [
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04"
+        ]
+      },
+      "status": 200
+    },
+    "same_as_month": true
+  },
+  "performance-trends": {
+    "default": {
+      "body": {
+        "datasets": [
+          {
+            "backgroundColor": null,
+            "borderColor": null,
+            "data": [
+              0.2,
+              0.35,
+              0.8,
+              0.65,
+              0.8
+            ],
+            "label": "Average Performance",
+            "metadata": {
+              "avg": 0.56,
+              "max": 0.8,
+              "min": 0.2
+            }
+          }
+        ],
+        "labels": [
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04"
+        ]
+      },
+      "status": 200
+    },
+    "same_as_month": true
+  },
+  "risk-trends": {
+    "default": {
+      "body": {
+        "datasets": [
+          {
+            "backgroundColor": null,
+            "borderColor": null,
+            "data": [
+              0.8,
+              0.65,
+              0.2,
+              0.35,
+              0.2
+            ],
+            "label": "Average Risk Level",
+            "metadata": {
+              "avg": 0.44,
+              "max": 0.8,
+              "min": 0.2
+            }
+          }
+        ],
+        "labels": [
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04"
+        ]
+      },
+      "status": 200
+    },
+    "same_as_month": true
+  },
+  "sentiment-trends": {
+    "default": {
+      "body": {
+        "datasets": [
+          {
+            "backgroundColor": null,
+            "borderColor": null,
+            "data": [
+              0.4,
+              0.4,
+              0.75,
+              0.7,
+              0.65
+            ],
+            "label": "Average Sentiment",
+            "metadata": {
+              "avg": 0.58,
+              "max": 0.75,
+              "min": 0.4
+            }
+          }
+        ],
+        "labels": [
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04"
+        ]
+      },
+      "status": 200
+    },
+    "same_as_month": true
+  }
+}

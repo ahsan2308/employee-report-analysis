@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Error retrieving task: 404: Task <uuid:1> not found"
+  },
+  "status": 500
+}

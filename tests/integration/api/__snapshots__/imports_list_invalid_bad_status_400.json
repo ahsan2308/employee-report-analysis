@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Invalid status. Must be one of: pending, running, completed, failed"
+  },
+  "status": 400
+}

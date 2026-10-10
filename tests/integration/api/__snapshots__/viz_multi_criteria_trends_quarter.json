@@ -1,0 +1,102 @@
+{
+  "body": {
+    "datasets": [
+      {
+        "backgroundColor": "rgba(52, 152, 219, 0.2)",
+        "borderColor": "rgba(52, 152, 219, 1)",
+        "data": [
+          0.4,
+          0.62,
+          0.65
+        ],
+        "label": "Sentiment Score",
+        "metadata": {
+          "avg": 0.56,
+          "max": 0.65,
+          "min": 0.4
+        }
+      },
+      {
+        "backgroundColor": "rgba(231, 76, 60, 0.2)",
+        "borderColor": "rgba(231, 76, 60, 1)",
+        "data": [
+          0.8,
+          0.44,
+          0.2
+        ],
+        "label": "Risk Level",
+        "metadata": {
+          "avg": 0.48,
+          "max": 0.8,
+          "min": 0.2
+        }
+      },
+      {
+        "backgroundColor": "rgba(241, 196, 15, 0.2)",
+        "borderColor": "rgba(241, 196, 15, 1)",
+        "data": [
+          0.2,
+          0.6,
+          0.5
+        ],
+        "label": "Credibility Rating",
+        "metadata": {
+          "avg": 0.43,
+          "max": 0.6,
+          "min": 0.2
+        }
+      },
+      {
+        "backgroundColor": "rgba(46, 204, 113, 0.2)",
+        "borderColor": "rgba(46, 204, 113, 1)",
+        "data": [
+          0.2,
+          0.68,
+          0.5
+        ],
+        "label": "Consistency Score",
+        "metadata": {
+          "avg": 0.46,
+          "max": 0.68,
+          "min": 0.2
+        }
+      },
+      {
+        "backgroundColor": "rgba(243, 156, 18, 0.2)",
+        "borderColor": "rgba(243, 156, 18, 1)",
+        "data": [
+          0.2,
+          0.6,
+          0.8
+        ],
+        "label": "Performance Rating",
+        "metadata": {
+          "avg": 0.53,
+          "max": 0.8,
+          "min": 0.2
+        }
+      },
+      {
+        "backgroundColor": "rgba(155, 89, 182, 0.2)",
+        "borderColor": "rgba(155, 89, 182, 1)",
+        "data": [
+          3.0,
+          7.4,
+          4.0
+        ],
+        "label": "Impact Score",
+        "metadata": {
+          "avg": 4.8,
+          "max": 7.4,
+          "min": 3.0
+        }
+      }
+    ],
+    "labels": [
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2"
+    ]
+  },
+  "status": 200
+}

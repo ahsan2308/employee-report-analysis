@@ -1,0 +1,9 @@
+{
+  "body": {
+    "error_message": "LLM timeout",
+    "result": null,
+    "status": "failed",
+    "task_id": "<uuid:1>"
+  },
+  "status": 200
+}

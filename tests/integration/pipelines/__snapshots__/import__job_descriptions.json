@@ -1,0 +1,269 @@
+{
+  "external_calls": [],
+  "import": {
+    "csv_import_jobs": [
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": "job_descriptions",
+        "error_count": 0,
+        "filename": "job_descriptions.csv",
+        "job_id": "<uuid:1>",
+        "metrics_json": {
+          "jd_records_created": 3,
+          "jd_records_updated": 0,
+          "processed_rows": 0,
+          "successful_rows": 3
+        },
+        "options": null,
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 3,
+        "total_rows": 3
+      },
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": "job_descriptions",
+        "error_count": 5,
+        "filename": "job_descriptions_bad.csv",
+        "job_id": "<uuid:2>",
+        "metrics_json": {
+          "jd_records_created": 0,
+          "jd_records_updated": 1,
+          "processed_rows": 0,
+          "successful_rows": 1
+        },
+        "options": null,
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 1,
+        "total_rows": 6
+      },
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": "job_descriptions",
+        "error_count": 0,
+        "filename": "job_descriptions.csv",
+        "job_id": "<uuid:3>",
+        "metrics_json": {
+          "jd_records_created": 0,
+          "jd_records_updated": 3,
+          "processed_rows": 0,
+          "successful_rows": 3
+        },
+        "options": null,
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 3,
+        "total_rows": 3
+      }
+    ],
+    "import_errors": [
+      {
+        "error_id": 1,
+        "error_message": "String should have at least 50 characters",
+        "field_name": "Job_Description",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Assigned_Date": "2025-01-15",
+          "Employee_ID": "201",
+          "End_Date": null,
+          "Is_Current": "TRUE",
+          "JD_ID": "1003",
+          "Job_Description": "Too short."
+        },
+        "row_number": 2
+      },
+      {
+        "error_id": 2,
+        "error_message": "Value error, JD_ID must be numeric. Received non-numeric string: 'ABC'",
+        "field_name": "JD_ID",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Assigned_Date": "2025-01-15",
+          "Employee_ID": "201",
+          "End_Date": null,
+          "Is_Current": "TRUE",
+          "JD_ID": "ABC",
+          "Job_Description": "Analyst: leads backlog reduction, audits archives and drafts monthly performance summaries for the wing."
+        },
+        "row_number": 3
+      },
+      {
+        "error_id": 3,
+        "error_message": "Value error, Invalid date format: 2025/13/45. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "field_name": "Assigned_Date",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Assigned_Date": "2025/13/45",
+          "Employee_ID": "202",
+          "End_Date": null,
+          "Is_Current": "TRUE",
+          "JD_ID": "1005",
+          "Job_Description": "Field officer: inspects district offices, verifies submissions and reports discrepancies to operations."
+        },
+        "row_number": 5
+      },
+      {
+        "error_id": 4,
+        "error_message": "Value error, Job description appears to contain placeholder text ('placeholder'). Please provide an actual job description.",
+        "field_name": "Job_Description",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Assigned_Date": "2025-01-15",
+          "Employee_ID": "202",
+          "End_Date": null,
+          "Is_Current": "TRUE",
+          "JD_ID": "1006",
+          "Job_Description": "TBD placeholder text for the role, to be determined later by HR."
+        },
+        "row_number": 6
+      },
+      {
+        "error_id": 5,
+        "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing their job description.",
+        "field_name": "Employee_ID",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Assigned_Date": "2025-01-15",
+          "Employee_ID": 999,
+          "End_Date": null,
+          "Is_Current": true,
+          "JD_ID": "1004",
+          "Job_Description": "Field officer: inspects district offices, verifies submissions and reports discrepancies to operations."
+        },
+        "row_number": 4
+      }
+    ]
+  },
+  "outcomes": [
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": "job_descriptions",
+        "error_count": 0,
+        "filename": "job_descriptions.csv",
+        "job_id": "<uuid:1>",
+        "metrics": {
+          "jd_records_created": 3,
+          "jd_records_updated": 0,
+          "processed_rows": 0,
+          "successful_rows": 3
+        },
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 3,
+        "total_rows": 3
+      },
+      "state": "SUCCESS"
+    },
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": "job_descriptions",
+        "error_count": 5,
+        "filename": "job_descriptions_bad.csv",
+        "job_id": "<uuid:2>",
+        "metrics": {
+          "jd_records_created": 0,
+          "jd_records_updated": 1,
+          "processed_rows": 0,
+          "successful_rows": 1
+        },
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 1,
+        "total_rows": 6
+      },
+      "state": "SUCCESS"
+    },
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": "job_descriptions",
+        "error_count": 0,
+        "filename": "job_descriptions.csv",
+        "job_id": "<uuid:3>",
+        "metrics": {
+          "jd_records_created": 0,
+          "jd_records_updated": 3,
+          "processed_rows": 0,
+          "successful_rows": 3
+        },
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 3,
+        "total_rows": 3
+      },
+      "state": "SUCCESS"
+    }
+  ],
+  "tables": {
+    "employee_job_descriptions": [
+      {
+        "assigned_date": "2025-01-15",
+        "created_at": "<timestamp>",
+        "employee_id": 201,
+        "end_date": null,
+        "id": 1,
+        "is_current": true,
+        "jd_id": "1001",
+        "job_description": "Analyst: leads backlog reduction, audits archives and drafts monthly performance summaries for the wing.",
+        "updated_at": "<timestamp>"
+      },
+      {
+        "assigned_date": "2023-01-01",
+        "created_at": "<timestamp>",
+        "employee_id": 201,
+        "end_date": "2025-01-14",
+        "id": 2,
+        "is_current": false,
+        "jd_id": "900",
+        "job_description": "Junior analyst: maintains the case register and prepares weekly digests for the wing head.",
+        "updated_at": "<timestamp>"
+      },
+      {
+        "assigned_date": "2024-06-01",
+        "created_at": "<timestamp>",
+        "employee_id": 202,
+        "end_date": null,
+        "id": 3,
+        "is_current": true,
+        "jd_id": "1002",
+        "job_description": "Field officer: inspects district offices, verifies submissions and reports discrepancies to operations.",
+        "updated_at": "<timestamp>"
+      }
+    ],
+    "employee_vision_data": [],
+    "employees": [
+      {
+        "id": 201,
+        "name": "Sana Malik",
+        "position": "Analyst (BS-17)",
+        "wing": "Technical>Tech-I>SOC"
+      },
+      {
+        "id": 202,
+        "name": "Omar Farooq",
+        "position": "Officer (BS-16)",
+        "wing": "Operations>Ops-II"
+      }
+    ],
+    "qdrant_mappings": [],
+    "reports": [],
+    "supervisor_feedback_forms": [],
+    "supervisor_feedback_metric_definitions": [],
+    "supervisor_feedback_responses": []
+  }
+}

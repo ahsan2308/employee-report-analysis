@@ -1,0 +1,25 @@
+{
+  "body": {
+    "analyses": [
+      {
+        "analysis_id": 1,
+        "performance_rating": "high",
+        "report_date": "2025-01-06",
+        "report_id": "<uuid:1>",
+        "risk_level": "low",
+        "sentiment_score": 0.75
+      },
+      {
+        "analysis_id": 2,
+        "performance_rating": "low",
+        "report_date": "2025-01-13",
+        "report_id": "<uuid:2>",
+        "risk_level": "high",
+        "sentiment_score": 0.3
+      }
+    ],
+    "employee_id": 1,
+    "employee_name": "Alice Analyst"
+  },
+  "status": 200
+}

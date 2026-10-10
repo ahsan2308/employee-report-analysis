@@ -1,0 +1,11 @@
+{
+  "body": {
+    "completed_at": "<timestamp>",
+    "last_successful_sync_id": "<uuid:1>",
+    "last_sync_timestamp": "<timestamp>",
+    "records_synced": 20,
+    "sync_type": "employee_reports"
+  },
+  "expected_sync_id": "<uuid:1>",
+  "status": 200
+}

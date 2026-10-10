@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Error listing history: 'PGDialect_psycopg2' object has no attribute 'BOOLEAN'"
+  },
+  "status": 500
+}

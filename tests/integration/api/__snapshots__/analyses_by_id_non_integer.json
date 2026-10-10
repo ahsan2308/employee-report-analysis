@@ -1,0 +1,16 @@
+{
+  "body": {
+    "detail": [
+      {
+        "input": "abc",
+        "loc": [
+          "path",
+          "analysis_id"
+        ],
+        "msg": "Input should be a valid integer, unable to parse string as an integer",
+        "type": "int_parsing"
+      }
+    ]
+  },
+  "status": 422
+}

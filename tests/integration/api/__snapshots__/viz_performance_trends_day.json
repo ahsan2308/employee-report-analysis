@@ -1,0 +1,31 @@
+{
+  "body": {
+    "datasets": [
+      {
+        "backgroundColor": null,
+        "borderColor": null,
+        "data": [
+          0.2,
+          0.35,
+          0.8,
+          0.65,
+          0.8
+        ],
+        "label": "Average Performance",
+        "metadata": {
+          "avg": 0.56,
+          "max": 0.8,
+          "min": 0.2
+        }
+      }
+    ],
+    "labels": [
+      "2024-12-30",
+      "2025-01-06",
+      "2025-02-24",
+      "2025-03-03",
+      "2025-04-15"
+    ]
+  },
+  "status": 200
+}

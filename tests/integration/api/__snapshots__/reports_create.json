@@ -1,0 +1,29 @@
+{
+  "body": {
+    "message": "Report added successfully",
+    "report": {
+      "employee_id": 1,
+      "report_date": "2025-03-10",
+      "report_id": "<uuid:1>",
+      "report_text": "Did things"
+    }
+  },
+  "db": [
+    {
+      "employee_id": 1,
+      "report_date": "2025-03-10",
+      "report_id": "<uuid:1>",
+      "report_text": "Did things"
+    }
+  ],
+  "dispatch": [],
+  "status": 200,
+  "vector_store": [
+    {
+      "employee_id": 1,
+      "report_date": "2025-03-10",
+      "report_id": "<uuid:1>",
+      "report_text": "Did things"
+    }
+  ]
+}

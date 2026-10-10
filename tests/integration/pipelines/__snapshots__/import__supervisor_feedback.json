@@ -1,0 +1,486 @@
+{
+  "external_calls": [],
+  "import": {
+    "csv_import_jobs": [
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": "supervisor_feedback",
+        "error_count": 1,
+        "filename": "supervisor_feedback.csv",
+        "job_id": "<uuid:1>",
+        "metrics_json": {
+          "forms_created": 2,
+          "forms_updated": 0,
+          "metric_definitions_created": 3,
+          "processed_rows": 5,
+          "responses_created": 4,
+          "successful_rows": 4
+        },
+        "options": null,
+        "processed_rows": 5,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 4,
+        "total_rows": 5
+      },
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": "supervisor_feedback",
+        "error_count": 3,
+        "filename": "supervisor_feedback_bad.csv",
+        "job_id": "<uuid:2>",
+        "metrics_json": {
+          "forms_created": 0,
+          "forms_updated": 1,
+          "metric_definitions_created": 0,
+          "processed_rows": 4,
+          "responses_created": 1,
+          "successful_rows": 1
+        },
+        "options": null,
+        "processed_rows": 4,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 1,
+        "total_rows": 4
+      },
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": "supervisor_feedback",
+        "error_count": 1,
+        "filename": "supervisor_feedback.csv",
+        "job_id": "<uuid:3>",
+        "metrics_json": {
+          "forms_created": 0,
+          "forms_updated": 2,
+          "metric_definitions_created": 0,
+          "processed_rows": 5,
+          "responses_created": 4,
+          "successful_rows": 4
+        },
+        "options": null,
+        "processed_rows": 5,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 4,
+        "total_rows": 5
+      }
+    ],
+    "import_errors": [
+      {
+        "error_id": 1,
+        "error_message": "Value error, Value 'Unknown value' not found in Possible_Values 'Poor,Fair,Good,Excellent' for metric 2.",
+        "field_name": null,
+        "job_id": "<uuid:1>",
+        "row_data": {
+          "BPS": "BS-17",
+          "Designation": "Analyst",
+          "Employee_ID": "202",
+          "Executive_Office": "HQ",
+          "From": "2025-01-01",
+          "Instructions": "Rate timeliness",
+          "L_RO_Form_Metric_ID": "78",
+          "Metric_ID": "2",
+          "Metric_Title": "Timeliness",
+          "Metric_Type": "R",
+          "Name": "Omar Farooq",
+          "Office_Hierarchy": "Technical>Tech-I",
+          "Possible_Values": "Poor,Fair,Good,Excellent",
+          "RO_Form_ID": "16",
+          "Section": "Performance & Work Habits",
+          "Section_ID": "1",
+          "To": "2025-03-31",
+          "Value": "Unknown value"
+        },
+        "row_number": 5
+      },
+      {
+        "error_id": 2,
+        "error_message": "String should match pattern '^[RT]$'",
+        "field_name": "Metric_Type",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "BPS": "BS-17",
+          "Designation": "Analyst",
+          "Employee_ID": "202",
+          "Executive_Office": "HQ",
+          "From": "2025-01-01",
+          "Instructions": "Rate initiative",
+          "L_RO_Form_Metric_ID": "80",
+          "Metric_ID": "4",
+          "Metric_Title": "Initiative",
+          "Metric_Type": "X",
+          "Name": "Omar Farooq",
+          "Office_Hierarchy": "Technical>Tech-I",
+          "Possible_Values": null,
+          "RO_Form_ID": "18",
+          "Section": "Performance & Work Habits",
+          "Section_ID": "1",
+          "To": "2025-03-31",
+          "Value": "Good"
+        },
+        "row_number": 3
+      },
+      {
+        "error_id": 3,
+        "error_message": "Value error, Invalid date format: 2025-13-01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "field_name": "From",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "BPS": "BS-17",
+          "Designation": "Analyst",
+          "Employee_ID": "202",
+          "Executive_Office": "HQ",
+          "From": "2025-13-01",
+          "Instructions": "Rate quality",
+          "L_RO_Form_Metric_ID": "81",
+          "Metric_ID": "1",
+          "Metric_Title": "Quality",
+          "Metric_Type": "R",
+          "Name": "Omar Farooq",
+          "Office_Hierarchy": "Technical>Tech-I",
+          "Possible_Values": "Poor,Fair,Good,Excellent",
+          "RO_Form_ID": "19",
+          "Section": "Performance & Work Habits",
+          "Section_ID": "1",
+          "To": "2025-03-31",
+          "Value": "Good"
+        },
+        "row_number": 4
+      },
+      {
+        "error_id": 4,
+        "error_message": "Employee ID 999 does not exist in database",
+        "field_name": "Employee_ID",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "BPS": "BS-17",
+          "Designation": "Analyst",
+          "Employee_ID": 999,
+          "Executive_Office": "HQ",
+          "From": "2025-01-01",
+          "Instructions": "Rate quality",
+          "L_RO_Form_Metric_ID": 79,
+          "Metric_ID": 1,
+          "Metric_Title": "Quality",
+          "Metric_Type": "R",
+          "Name": "Ghost",
+          "Office_Hierarchy": "Technical>Tech-I",
+          "Possible_Values": "Poor,Fair,Good,Excellent",
+          "RO_Form_ID": 17,
+          "Section": "Performance & Work Habits",
+          "Section_ID": 1,
+          "To": "2025-03-31",
+          "Value": "Good"
+        },
+        "row_number": 2
+      },
+      {
+        "error_id": 5,
+        "error_message": "Value error, Value 'Unknown value' not found in Possible_Values 'Poor,Fair,Good,Excellent' for metric 2.",
+        "field_name": null,
+        "job_id": "<uuid:3>",
+        "row_data": {
+          "BPS": "BS-17",
+          "Designation": "Analyst",
+          "Employee_ID": "202",
+          "Executive_Office": "HQ",
+          "From": "2025-01-01",
+          "Instructions": "Rate timeliness",
+          "L_RO_Form_Metric_ID": "78",
+          "Metric_ID": "2",
+          "Metric_Title": "Timeliness",
+          "Metric_Type": "R",
+          "Name": "Omar Farooq",
+          "Office_Hierarchy": "Technical>Tech-I",
+          "Possible_Values": "Poor,Fair,Good,Excellent",
+          "RO_Form_ID": "16",
+          "Section": "Performance & Work Habits",
+          "Section_ID": "1",
+          "To": "2025-03-31",
+          "Value": "Unknown value"
+        },
+        "row_number": 5
+      }
+    ]
+  },
+  "outcomes": [
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": "supervisor_feedback",
+        "error_count": 1,
+        "filename": "supervisor_feedback.csv",
+        "job_id": "<uuid:1>",
+        "metrics": {
+          "forms_created": 2,
+          "forms_updated": 0,
+          "metric_definitions_created": 3,
+          "processed_rows": 5,
+          "responses_created": 4,
+          "successful_rows": 4
+        },
+        "processed_rows": 5,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 4,
+        "total_rows": 5
+      },
+      "state": "SUCCESS"
+    },
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": "supervisor_feedback",
+        "error_count": 3,
+        "filename": "supervisor_feedback_bad.csv",
+        "job_id": "<uuid:2>",
+        "metrics": {
+          "forms_created": 0,
+          "forms_updated": 1,
+          "metric_definitions_created": 0,
+          "processed_rows": 4,
+          "responses_created": 1,
+          "successful_rows": 1
+        },
+        "processed_rows": 4,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 1,
+        "total_rows": 4
+      },
+      "state": "SUCCESS"
+    },
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": "supervisor_feedback",
+        "error_count": 1,
+        "filename": "supervisor_feedback.csv",
+        "job_id": "<uuid:3>",
+        "metrics": {
+          "forms_created": 0,
+          "forms_updated": 2,
+          "metric_definitions_created": 0,
+          "processed_rows": 5,
+          "responses_created": 4,
+          "successful_rows": 4
+        },
+        "processed_rows": 5,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 4,
+        "total_rows": 5
+      },
+      "state": "SUCCESS"
+    }
+  ],
+  "tables": {
+    "employee_job_descriptions": [],
+    "employee_vision_data": [],
+    "employees": [
+      {
+        "id": 201,
+        "name": "Sana Malik",
+        "position": "Analyst (BS-17)",
+        "wing": "Technical>Tech-I>SOC"
+      },
+      {
+        "id": 202,
+        "name": "Omar Farooq",
+        "position": "Officer (BS-16)",
+        "wing": "Operations>Ops-II"
+      }
+    ],
+    "qdrant_mappings": [],
+    "reports": [],
+    "supervisor_feedback_forms": [
+      {
+        "created_at": "<timestamp>",
+        "employee_id": 201,
+        "feedback_cache": {
+          "form_data": {
+            "sections": [
+              {
+                "metrics": [
+                  {
+                    "max_value": 4,
+                    "metric_id": 1,
+                    "metric_name": "Quality",
+                    "metric_type": "R",
+                    "possible_values": "Poor,Fair,Good,Excellent",
+                    "response": "Good"
+                  },
+                  {
+                    "max_value": 4,
+                    "metric_id": 2,
+                    "metric_name": "Timeliness",
+                    "metric_type": "R",
+                    "possible_values": "Poor,Fair,Good,Excellent",
+                    "response": "Excellent"
+                  }
+                ],
+                "section_id": 1,
+                "section_name": "Performance & Work Habits"
+              },
+              {
+                "metrics": [
+                  {
+                    "max_value": null,
+                    "metric_id": 3,
+                    "metric_name": "Comments",
+                    "metric_type": "T",
+                    "possible_values": null,
+                    "response": "Steady performer"
+                  }
+                ],
+                "section_id": 2,
+                "section_name": "Remarks"
+              }
+            ]
+          },
+          "generated_at": "<timestamp>",
+          "stats": {
+            "average_rating": 87.5,
+            "completion_percentage": 100.0,
+            "maximum_score": 200,
+            "metrics_completed": 3,
+            "text_responses_count": 1,
+            "total_metrics": 3,
+            "total_score": 175.0
+          }
+        },
+        "from_date": "2025-01-01",
+        "id": 1,
+        "ro_form_id": 15,
+        "to_date": "2025-03-31",
+        "updated_at": "<timestamp>"
+      },
+      {
+        "created_at": "<timestamp>",
+        "employee_id": 202,
+        "feedback_cache": {
+          "form_data": {
+            "sections": [
+              {
+                "metrics": [
+                  {
+                    "max_value": 4,
+                    "metric_id": 1,
+                    "metric_name": "Quality",
+                    "metric_type": "R",
+                    "possible_values": "Poor,Fair,Good,Excellent",
+                    "response": "Fair"
+                  }
+                ],
+                "section_id": 1,
+                "section_name": "Performance & Work Habits"
+              }
+            ]
+          },
+          "generated_at": "<timestamp>",
+          "stats": {
+            "average_rating": 50.0,
+            "completion_percentage": 100.0,
+            "maximum_score": 100,
+            "metrics_completed": 1,
+            "text_responses_count": 0,
+            "total_metrics": 1,
+            "total_score": 50.0
+          }
+        },
+        "from_date": "2025-01-01",
+        "id": 2,
+        "ro_form_id": 16,
+        "to_date": "2025-03-31",
+        "updated_at": "<timestamp>"
+      }
+    ],
+    "supervisor_feedback_metric_definitions": [
+      {
+        "created_at": "<timestamp>",
+        "id": 1,
+        "max_value": 4,
+        "metric_description": "Rate quality",
+        "metric_id": 1,
+        "metric_name": "Quality",
+        "metric_type": "R",
+        "possible_values": "Poor,Fair,Good,Excellent",
+        "section": "Performance & Work Habits",
+        "section_id": 1
+      },
+      {
+        "created_at": "<timestamp>",
+        "id": 2,
+        "max_value": 4,
+        "metric_description": "Rate timeliness",
+        "metric_id": 2,
+        "metric_name": "Timeliness",
+        "metric_type": "R",
+        "possible_values": "Poor,Fair,Good,Excellent",
+        "section": "Performance & Work Habits",
+        "section_id": 1
+      },
+      {
+        "created_at": "<timestamp>",
+        "id": 3,
+        "max_value": null,
+        "metric_description": "Rate comments",
+        "metric_id": 3,
+        "metric_name": "Comments",
+        "metric_type": "T",
+        "possible_values": null,
+        "section": "Remarks",
+        "section_id": 2
+      }
+    ],
+    "supervisor_feedback_responses": [
+      {
+        "created_at": "<timestamp>",
+        "form_id": 1,
+        "id": 6,
+        "l_ro_form_metric_id": 74,
+        "max_value": 4,
+        "metric_definition_id": 1,
+        "numeric_rating": 3,
+        "text_response": "Good"
+      },
+      {
+        "created_at": "<timestamp>",
+        "form_id": 1,
+        "id": 7,
+        "l_ro_form_metric_id": 75,
+        "max_value": 4,
+        "metric_definition_id": 2,
+        "numeric_rating": 4,
+        "text_response": "Excellent"
+      },
+      {
+        "created_at": "<timestamp>",
+        "form_id": 1,
+        "id": 8,
+        "l_ro_form_metric_id": 76,
+        "max_value": null,
+        "metric_definition_id": 3,
+        "numeric_rating": null,
+        "text_response": "Steady performer"
+      },
+      {
+        "created_at": "<timestamp>",
+        "form_id": 2,
+        "id": 9,
+        "l_ro_form_metric_id": 77,
+        "max_value": 4,
+        "metric_definition_id": 1,
+        "numeric_rating": 2,
+        "text_response": "Fair"
+      }
+    ]
+  }
+}

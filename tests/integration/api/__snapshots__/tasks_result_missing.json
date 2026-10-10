@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Task with ID <uuid:1> not found"
+  },
+  "status": 422
+}
