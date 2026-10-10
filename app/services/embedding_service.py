@@ -4,7 +4,7 @@ This is the new modular implementation that replaces app.core.embeddings.
 """
 
 from typing import List
-from app.model_host import get_embedding_provider
+from app.integrations.providers import get_embedding_provider
 from app.core.logger import logger
 from app.core.settings import EMBEDDING_PROVIDER, EMBEDDING_DEFAULT_MODEL as DEFAULT_MODEL  # noqa: F401  (module attributes kept for compatibility)
 

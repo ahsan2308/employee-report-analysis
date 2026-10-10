@@ -26,7 +26,7 @@ from app.schemas.sync_schema import (
     ConnectionTestResponse,
     SyncProgressMetrics
 )
-from app.database.sqlserver_connector import create_sqlserver_connector
+from app.integrations.sqlserver.connector import create_sqlserver_connector
 from app.core.logger import logger
 from app.worker.celery_app import celery_app 
 

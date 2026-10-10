@@ -25,7 +25,7 @@ DB_PORT = os.getenv("DB_PORT", "5432")  # Default PostgreSQL port
 DB_NAME = os.getenv("DB_NAME", "employee_reports")
 SCHEMA_NAME = os.getenv("SCHEMA_NAME", "public")
 
-# --- LLM and embedding providers (app.model_host) ---
+# --- LLM and embedding providers (app.integrations.providers) ---
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()
 EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "ollama").lower()
 EMBEDDING_USE_PREFIX = os.getenv("EMBEDDING_USE_PREFIX", "false").lower() == "true"
@@ -57,7 +57,7 @@ if EMBEDDING_PROVIDER == "vllm":
 else:
     EMBEDDING_DEFAULT_MODEL = os.getenv("OLLAMA_EMBEDDING_MODEL") or config.get("embedding_model", "bge-m3", section="llm")
 
-# --- Vector store (app.vector_store, app.services.vector_store_service) ---
+# --- Vector store (app.integrations.vector_store, app.services.vector_store_service) ---
 VECTOR_STORE_TYPE = os.getenv("VECTOR_STORE_TYPE", config.get("type", "qdrant", section="vector_db")).lower()
 VECTOR_STORE_HOST = os.getenv("VECTOR_STORE_HOST", config.get("host", "localhost", section="vector_db"))
 VECTOR_STORE_PORT = os.getenv("VECTOR_STORE_PORT", config.get("port", "6333", section="vector_db"))
