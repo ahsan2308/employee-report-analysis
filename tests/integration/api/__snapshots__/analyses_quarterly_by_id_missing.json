@@ -1,6 +1,6 @@
 {
   "body": {
-    "detail": "Internal server error: 404: Quarterly analysis not found"
+    "detail": "Quarterly analysis not found"
   },
-  "status": 500
+  "status": 404
 }

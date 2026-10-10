@@ -1,28 +1,43 @@
 {
-  "body": {
+  "dispatch": [
+    {
+      "args": [
+        "<uuid:1>"
+      ],
+      "kwargs": {},
+      "task": "analyze_report_task"
+    }
+  ],
+  "returned": {
     "celery_task_id": "pending",
     "completed_at": null,
     "created_at": "<timestamp>",
-    "duration": null,
-    "is_complete": false,
+    "employee_id": null,
+    "error_message": null,
+    "month": null,
+    "quarter": null,
+    "report_id": "00000000-0000-0000-0000-000000000001",
+    "result_data": null,
     "started_at": null,
     "status": "pending",
-    "task_id": "<uuid:1>"
+    "task_id": "<uuid:1>",
+    "task_type": "REPORT_ANALYSIS",
+    "year": null
   },
-  "db": [
+  "rows": [
     {
-      "celery_task_id": "celery-seeded",
+      "celery_task_id": "celery-52",
       "completed_at": "<timestamp>",
       "created_at": "<timestamp>",
       "employee_id": null,
-      "error_message": "Task failed to produce analysis",
+      "error_message": "Task did not finish; the worker running it was stopped or lost",
       "month": null,
       "quarter": null,
-      "report_id": "<uuid:3>",
+      "report_id": "00000000-0000-0000-0000-000000000001",
       "result_data": null,
-      "started_at": null,
+      "started_at": "<timestamp>",
       "status": "failed",
-      "task_id": "<uuid:2>",
+      "task_id": "00000000-0000-0000-0000-000000000052",
       "task_type": "REPORT_ANALYSIS",
       "year": null
     },
@@ -34,7 +49,7 @@
       "error_message": null,
       "month": null,
       "quarter": null,
-      "report_id": "<uuid:3>",
+      "report_id": "00000000-0000-0000-0000-000000000001",
       "result_data": null,
       "started_at": null,
       "status": "pending",
@@ -42,15 +57,5 @@
       "task_type": "REPORT_ANALYSIS",
       "year": null
     }
-  ],
-  "dispatch": [
-    {
-      "args": [
-        "<uuid:1>"
-      ],
-      "call": "analyze_report_task.delay",
-      "kwargs": {}
-    }
-  ],
-  "status": 200
+  ]
 }

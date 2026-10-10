@@ -45,8 +45,7 @@ def test_status_null_celery_task_id_fails_response_validation(api, db_session, s
     snap("tasks_status_null_celery_id", api.get(f"/tasks/{fixed_uuid(1)}"))
 
 
-@pytest.mark.known_bug("B3")
-def test_status_missing_task_returns_500(api, snap):
+def test_status_missing_task_returns_404(api, snap):
     snap("tasks_status_missing", api.get(f"/tasks/{fixed_uuid(404)}"))
 
 
@@ -56,8 +55,7 @@ def test_status_invalid_uuid_422(api, snap):
 
 # --------------------------------------------------------------------------- GET /tasks/{task_id}/result
 
-@pytest.mark.known_bug("B3")
-def test_result_missing_task_returns_422(api, snap):
+def test_result_missing_task_returns_404(api, snap):
     snap("tasks_result_missing", api.get(f"/tasks/{fixed_uuid(404)}/result"))
 
 

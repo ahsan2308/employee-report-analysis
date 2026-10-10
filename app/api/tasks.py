@@ -4,7 +4,7 @@ from uuid import UUID
 
 from app.api.deps import get_db
 from app.schemas.task_schema import TaskStatusResponse, TaskResultResponse 
-from app.services.task_service import get_task_status, get_task_result
+from app.services.task_service import TaskNotFoundError, get_task_status, get_task_result
 from app.models.task_models import TaskStatus
 from app.core.logger import logger
 
@@ -40,6 +40,8 @@ def get_task_status_endpoint(task_id: UUID, db: Session = Depends(get_db)):
             "duration": duration,
             "is_complete": task.status in (TaskStatus.COMPLETED.value, TaskStatus.FAILED.value)
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error getting task status: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error retrieving task: {str(e)}")
@@ -49,7 +51,7 @@ def get_task_result_endpoint(task_id: UUID, db: Session = Depends(get_db)):
     """
     Get the result of a completed task.
     
-    This endpoint will return a 422 error if the task is not yet complete.
+    This endpoint returns 404 for an unknown task and 422 if the task is not yet complete.
     """
     try:
         result = get_task_result(db, task_id)
@@ -59,6 +61,8 @@ def get_task_result_endpoint(task_id: UUID, db: Session = Depends(get_db)):
             "result": result.get("result"),
             "error_message": result.get("error_message")
         }
+    except TaskNotFoundError as nf:
+        raise HTTPException(status_code=404, detail=str(nf))
     except ValueError as ve:
         # Handle case where task is not complete
         raise HTTPException(status_code=422, detail=str(ve))

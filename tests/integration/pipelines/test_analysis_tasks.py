@@ -7,11 +7,13 @@ The real OllamaProvider and LLMService run; only ``ollama.Client`` is faked.
 import json
 from datetime import date
 from pathlib import Path
+from unittest import mock
 
 import pytest
+from celery.exceptions import SoftTimeLimitExceeded
 
 from app.models.db_models import QuarterlyAnalysis
-from app.models.task_models import TaskType
+from app.models.task_models import BackgroundTask, TaskType
 from app.tasks.analysis_tasks import (
     analyze_monthly_reports_task,
     analyze_quarterly_reports_task,
@@ -269,3 +271,26 @@ def test_quarterly_analysis_wrong_task_type(db_session, ext, snapshot):
     task_id = add_task(db_session, "quarterly", TaskType.MONTHLY_ANALYSIS, employee_id=EMP_ID, year=2025, quarter=1)
     result = analyze_quarterly_reports_task.apply(args=[str(task_id)], task_id="celery-quarterly")
     _snapshot_run(snapshot, "quarterly__wrong_task_type", result, db_session, ext)
+
+
+# --------------------------------------------------------------------------- time limits
+
+@pytest.mark.parametrize("kind, task, task_type, fields, first_lookup", [
+    ("weekly", analyze_report_task, TaskType.REPORT_ANALYSIS,
+     {"report_id": REPORT_IDS[CURRENT_REPORT_DATE], "employee_id": EMP_ID}, "get_recent_employee_reports"),
+    ("monthly", analyze_monthly_reports_task, TaskType.MONTHLY_ANALYSIS,
+     {"employee_id": EMP_ID, "year": 2025, "month": 3}, "get_monthly_analysis_by_params"),
+    ("quarterly", analyze_quarterly_reports_task, TaskType.QUARTERLY_ANALYSIS,
+     {"employee_id": EMP_ID, "year": 2025, "quarter": 1}, "get_quarterly_analysis_by_params"),
+])
+def test_soft_time_limit_marks_task_failed(db_session, ext, kind, task, task_type, fields, first_lookup):
+    """B11: the soft limit fires inside the task, which records the failure instead of staying RUNNING."""
+    seed_analysis_world(db_session)
+    task_id = add_task(db_session, kind, task_type, **fields)
+    with mock.patch(f"app.tasks.analysis_tasks.{first_lookup}", side_effect=SoftTimeLimitExceeded()):
+        result = task.apply(args=[str(task_id)], task_id=f"celery-{kind}")
+    assert result.state == "FAILURE"
+    db_session.expire_all()
+    row = db_session.get(BackgroundTask, task_id)
+    assert (row.status, row.error_message) == ("failed", "Analysis exceeded the time limit")
+    assert row.completed_at is not None

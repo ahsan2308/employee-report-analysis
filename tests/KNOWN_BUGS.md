@@ -12,16 +12,12 @@ test asserted the correct behaviour (it flips red once the bug is fixed).
 
 | ID | Bug | Where | Characterized in |
 | --- | --- | --- | --- |
-| B1 | The duplicate-task guard marks every PENDING/RUNNING task FAILED when no analysis exists yet, which is always the case while it runs, so duplicates are never prevented | `app/services/task_service.py:18,48,89` | `integration/services/test_task_service.py`, `integration/api/test_analyses.py` |
-| B2 | `GET /sync/history?is_full_sync=…` returns 500 (`dialect.BOOLEAN` does not exist); an unknown `sort_by` also returns 500 | `app/api/sync_routes.py:665,673` | `integration/api/test_sync.py` |
-| B3 | 404s are re-raised as 500 by a broad `except Exception` in the analyses and tasks routers; a missing task returns 422 | `app/api/analyses.py`, `app/api/tasks.py` | `integration/api/test_analyses.py`, `integration/api/test_tasks.py` |
 | B4 | The vision descriptions dict has 6 duplicate keys; later entries silently replace earlier ones | `app/services/additional_services.py:43` | `golden/analysis/test_golden_additional_services.py` |
 | B5 | Quarterly defaults are typos (`"stble"`, `"mdium"`) that can reach prompts; leftover debug `print()`s | `app/services/quarterly_analysis_db_service.py:49-73,118` | `golden/analysis/test_golden_quarterly_analysis_db_service.py`, `unit/legacy/test_quarterly_analysis_db_service.py` (strict xfail) |
 | B6 | LLM providers swallow errors and return `""`/`None`, so retries never fire and empty or default analyses are stored as COMPLETED | `app/model_host/ollama.py:66`, `app/model_host/vllm.py:124` | `integration/pipelines/test_analysis_tasks.py` |
 | B8 | `ConfigProvider.get(key, section=…)` reads the env var named by the bare key, so `HOST`, `PORT`, `MODEL`, `MODE`, `TYPE`, `ENABLED` override Redis, Qdrant and LLM settings | `app/core/config_provider.py:59` | `contract/test_config_contract.py` |
 | B9 | `hasattr(end, …)` should test `week_end`; a string `week_end` raises AttributeError | `app/services/additional_services.py:1146` | `golden/analysis/test_golden_additional_services.py` |
 | B10 | Chart annotation options are configured but the annotation plugin is never loaded | `frontend/js/visualizations.js` | not automated (frontend) |
-| B11 | Celery `task_time_limit=300` hard-kills long LLM runs, leaving the BackgroundTask RUNNING forever | `config/config.yaml` | `contract/test_config_contract.py` (setting only) |
 | B12 | The shared Qdrant client is disconnected by any `with vector_store:` exit, so concurrent searches can lose it | `app/vector_store/qdrant_provider.py:167` | not automated (concurrency) |
 | B13 | Full prompts, which contain report text, are logged at INFO | `app/services/llm_service.py:290,364`, `app/tasks/analysis_tasks.py:132,396` | `golden/prompts/test_llm_service.py` |
 | B14 | `ConfigProvider` converts env values `"1"`/`"0"` to booleans, so `PORT=1` becomes `True` | `app/core/config_provider.py` (`_convert_value`) | `contract/test_config_contract.py` |
@@ -32,7 +28,11 @@ test asserted the correct behaviour (it flips red once the bug is fixed).
 
 | ID | Bug | Fix |
 | --- | --- | --- |
+| B1 | The duplicate-task guard marked every PENDING/RUNNING task FAILED when no analysis existed yet, so duplicates were never prevented | An in-flight task is returned and nothing new is dispatched. Only a task active for longer than twice the Celery hard time limit (at least an hour) is marked FAILED and replaced (`integration/services/test_task_service.py`, `integration/api/test_analyses.py`) |
+| B2 | `GET /sync/history?is_full_sync=…` returned 500; an unknown `sort_by` returned 500 | The flag is compared as a JSON boolean, with a missing flag counted as incremental (as the response reports it). An unknown `sort_by` returns 400 listing the valid fields (`integration/api/test_sync.py`) |
+| B3 | 404s were re-raised as 500 by a broad `except Exception` in the analyses and tasks routers; a missing task returned 422 from `/result` | HTTPExceptions pass through. A missing task returns 404 from both task endpoints; `TaskNotFoundError` subclasses `ValueError`, so existing callers still catch it (`integration/api/test_analyses.py`, `integration/api/test_tasks.py`) |
 | B7 | `setup_collection` deleted the Qdrant collection when the embedding probe failed, the vector size differed, or Qdrant could not describe the collection | It never deletes now: a mismatch or an unreachable embedding service returns False and leaves the collection untouched (`integration/pipelines/test_vector_store_service.py`) |
+| B11 | Celery `task_time_limit=300` hard-killed long LLM runs, leaving the BackgroundTask RUNNING forever | The hard limit is 30 minutes. A soft limit (default: 60 s earlier, `task_soft_time_limit` / `CELERY_TASK_SOFT_TIME_LIMIT`) raises inside the task, which marks the run FAILED. A task killed anyway is replaced as stale (B1) (`integration/pipelines/test_analysis_tasks.py`, `contract/test_config_contract.py`) |
 
 ## Other observations
 
