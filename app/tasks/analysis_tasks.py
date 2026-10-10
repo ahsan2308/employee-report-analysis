@@ -33,6 +33,37 @@ from app.core.settings import (
     MAX_CONTENT_ITEM_LENGTH_QUARTERLY,
 )
 
+def _mark_task_failed(db, task_id: str, message: str) -> None:
+    """Mark the BackgroundTask as FAILED with message, if the row exists."""
+    with db.create_session() as session:
+        task = session.query(BackgroundTask).filter(
+            BackgroundTask.task_id == uuid.UUID(task_id)
+        ).first()
+
+        if task:
+            task.status = TaskStatus.FAILED.value
+            task.completed_at = datetime.now()
+            task.error_message = message
+            session.commit()
+
+
+def _mark_task_failed_after_error(db, task_id: str, message: str) -> None:
+    """Same, for the outer exception handlers: a failure to update is logged, not raised."""
+    with db.create_session() as session:
+        try:
+            task = session.query(BackgroundTask).filter(
+                BackgroundTask.task_id == uuid.UUID(task_id)
+            ).first()
+
+            if task:
+                task.status = TaskStatus.FAILED.value
+                task.completed_at = datetime.now()
+                task.error_message = message
+                session.commit()
+        except Exception as update_error:
+            logger.error(f"Failed to update task status: {str(update_error)}")
+
+
 @celery_app.task(bind=True, name="app.tasks.analysis_tasks.analyze_report_task")
 def analyze_report_task(self, task_id: str):
     """
@@ -273,19 +304,7 @@ def analyze_report_task(self, task_id: str):
         logger.error(f"Error in analysis task {task_id}: {str(e)}")
         
         # Update task as failed
-        with db.create_session() as session:
-            try:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
-                
-                if task:
-                    task.status = TaskStatus.FAILED.value
-                    task.completed_at = datetime.now()
-                    task.error_message = str(e)
-                    session.commit()
-            except Exception as update_error:
-                logger.error(f"Failed to update task status: {str(update_error)}")
+        _mark_task_failed_after_error(db, task_id, str(e))
         
         # Re-raise the exception for Celery to handle
         raise
@@ -405,16 +424,7 @@ def analyze_monthly_reports_task(self, task_id: str):
         # Check if we have any reports for this month
         if not monthly_data["reports"] or len(monthly_data["reports"]) == 0:
             logger.warning(f"No reports found for employee {employee_id} in {year}-{month}")
-            with db.create_session() as session:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
-                
-                if task:
-                    task.status = TaskStatus.FAILED.value
-                    task.completed_at = datetime.now()
-                    task.error_message = f"No reports found for employee {employee_id} in {year}-{month}"
-                    session.commit()
+            _mark_task_failed(db, task_id, f"No reports found for employee {employee_id} in {year}-{month}")
             
             return {"error": f"No reports found for employee {employee_id} in {year}-{month}"}
         
@@ -429,16 +439,7 @@ def analyze_monthly_reports_task(self, task_id: str):
         # Handle error in analysis generation
         if "error" in analysis_result and analysis_result["error"]:
             logger.error(f"Error in LLM analysis: {analysis_result['error']}")
-            with db.create_session() as session:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
-                
-                if task:
-                    task.status = TaskStatus.FAILED.value
-                    task.completed_at = datetime.now()
-                    task.error_message = f"LLM analysis failed: {analysis_result['error']}"
-                    session.commit()
+            _mark_task_failed(db, task_id, f"LLM analysis failed: {analysis_result['error']}")
             
             return {"error": f"LLM analysis failed: {analysis_result['error']}"}
         
@@ -570,16 +571,7 @@ def analyze_monthly_reports_task(self, task_id: str):
             
             if not analysis_id:
                 logger.error("Failed to store monthly analysis")
-                with db.create_session() as session:
-                    task = session.query(BackgroundTask).filter(
-                        BackgroundTask.task_id == uuid.UUID(task_id)
-                    ).first()
-                    
-                    if task:
-                        task.status = TaskStatus.FAILED.value
-                        task.completed_at = datetime.now()
-                        task.error_message = "Failed to store monthly analysis"
-                        session.commit()
+                _mark_task_failed(db, task_id, "Failed to store monthly analysis")
                 
                 return {"error": "Failed to store monthly analysis"}
             
@@ -620,16 +612,7 @@ def analyze_monthly_reports_task(self, task_id: str):
                 
         except Exception as e:
             logger.error(f"Error processing monthly analysis result: {str(e)}")
-            with db.create_session() as session:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
-                
-                if task:
-                    task.status = TaskStatus.FAILED.value
-                    task.completed_at = datetime.now()
-                    task.error_message = f"Error processing analysis result: {str(e)}"
-                    session.commit()
+            _mark_task_failed(db, task_id, f"Error processing analysis result: {str(e)}")
             
             return {"error": f"Error processing analysis result: {str(e)}"}
             
@@ -637,19 +620,7 @@ def analyze_monthly_reports_task(self, task_id: str):
         logger.error(f"Error in monthly analysis task {task_id}: {str(e)}")
         
         # Update task as failed
-        with db.create_session() as session:
-            try:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
-                
-                if task:
-                    task.status = TaskStatus.FAILED.value
-                    task.completed_at = datetime.now()
-                    task.error_message = str(e)
-                    session.commit()
-            except Exception as update_error:
-                logger.error(f"Failed to update task status: {str(update_error)}")
+        _mark_task_failed_after_error(db, task_id, str(e))
         
         # Re-raise the exception for Celery to handle
         raise
@@ -770,16 +741,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
         # Check if we have any monthly analyses for this quarter
         if not quarterly_data["monthly_analyses"] or len(quarterly_data["monthly_analyses"]) == 0:
             logger.warning(f"No monthly analyses found for employee {employee_id} in {year}-Q{quarter}")
-            with db.create_session() as session:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
-                
-                if task:
-                    task.status = TaskStatus.FAILED.value
-                    task.completed_at = datetime.now()
-                    task.error_message = f"No monthly analyses found for employee {employee_id} in {year}-Q{quarter}"
-                    session.commit()
+            _mark_task_failed(db, task_id, f"No monthly analyses found for employee {employee_id} in {year}-Q{quarter}")
             
             return {"error": f"No monthly analyses found for employee {employee_id} in {year}-Q{quarter}"}
         
@@ -794,16 +756,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
         # Handle error in analysis generation
         if "error" in analysis_result and analysis_result["error"]:
             logger.error(f"Error in LLM analysis: {analysis_result['error']}")
-            with db.create_session() as session:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
-                
-                if task:
-                    task.status = TaskStatus.FAILED.value
-                    task.completed_at = datetime.now()
-                    task.error_message = f"LLM analysis failed: {analysis_result['error']}"
-                    session.commit()
+            _mark_task_failed(db, task_id, f"LLM analysis failed: {analysis_result['error']}")
             
             return {"error": f"LLM analysis failed: {analysis_result['error']}"}
         
@@ -928,16 +881,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
             
             if not analysis_id:
                 logger.error("Failed to store quarterly analysis")
-                with db.create_session() as session:
-                    task = session.query(BackgroundTask).filter(
-                        BackgroundTask.task_id == uuid.UUID(task_id)
-                    ).first()
-                    
-                    if task:
-                        task.status = TaskStatus.FAILED.value
-                        task.completed_at = datetime.now()
-                        task.error_message = "Failed to store quarterly analysis"
-                        session.commit()
+                _mark_task_failed(db, task_id, "Failed to store quarterly analysis")
                 
                 return {"error": "Failed to store quarterly analysis"}
             
@@ -978,16 +922,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
                 
         except Exception as e:
             logger.error(f"Error processing quarterly analysis result: {str(e)}")
-            with db.create_session() as session:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
-                
-                if task:
-                    task.status = TaskStatus.FAILED.value
-                    task.completed_at = datetime.now()
-                    task.error_message = f"Error processing analysis result: {str(e)}"
-                    session.commit()
+            _mark_task_failed(db, task_id, f"Error processing analysis result: {str(e)}")
             
             return {"error": f"Error processing analysis result: {str(e)}"}
             
@@ -995,19 +930,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
         logger.error(f"Error in quarterly analysis task {task_id}: {str(e)}")
         
         # Update task as failed
-        with db.create_session() as session:
-            try:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
-                
-                if task:
-                    task.status = TaskStatus.FAILED.value
-                    task.completed_at = datetime.now()
-                    task.error_message = str(e)
-                    session.commit()
-            except Exception as update_error:
-                logger.error(f"Failed to update task status: {str(update_error)}")
+        _mark_task_failed_after_error(db, task_id, str(e))
         
         # Re-raise the exception for Celery to handle
         raise

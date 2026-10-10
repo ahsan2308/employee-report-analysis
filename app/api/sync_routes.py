@@ -62,6 +62,70 @@ def _check_and_clear_stale_syncs(db: Session, sync_type: str, timeout_minutes: i
         logger.info(f"Cleared {len(stale_syncs)} stale {sync_type} syncs")
 
 
+def _trigger_sync(db: Session, is_full_sync: bool, sync_type: SyncType, task_name: str, label: str):
+    """Shared body of the four single-type trigger endpoints."""
+    logger.info(f"Received request to trigger {label} sync (is_full_sync={is_full_sync})")
+    
+    try:
+        # Clear stale syncs before checking for running syncs
+        _check_and_clear_stale_syncs(db, sync_type.value, timeout_minutes=60)
+        
+        # Check if there's already a running sync of this type
+        running_sync = db.query(SyncHistory).filter(
+            SyncHistory.sync_type == sync_type.value,
+            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
+        ).first()
+        
+        if running_sync:
+            raise HTTPException(
+                status_code=409,
+                detail=f"{label.capitalize()} sync already in progress (sync_id: {running_sync.sync_id})"
+            )
+        
+        # Create SyncHistory record HERE in the API endpoint
+        from app.services.sync.sync_tracker import SyncTracker
+        from app.db.database import get_database
+        
+        db_instance = get_database()
+        sync_tracker = SyncTracker(db_instance)
+        
+        # Create sync job record BEFORE queuing task
+        sync_job = sync_tracker.create_sync_job(
+            sync_type=sync_type,
+            session=db,
+            is_full_sync=is_full_sync
+        )
+        
+        # Get the real sync_id
+        real_sync_id = sync_job.sync_id
+        
+        # Trigger Celery task using registered task name
+        task = celery_app.send_task(
+            task_name,
+            kwargs={
+                'is_full_sync': is_full_sync,
+                'sync_id': str(real_sync_id)
+            }
+        )
+        
+        # Return REAL sync_id (no placeholder!)
+        return SyncTriggerResponse(
+            sync_id=real_sync_id,
+            task_id=str(task.id),
+            sync_type=sync_type.value,
+            status="pending",
+            is_full_sync=is_full_sync,
+            triggered_at=datetime.now(),
+            message=f"{label.capitalize()} sync {'(full)' if is_full_sync else '(incremental)'} started successfully"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error triggering {label} sync: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
+
+
 # ============================================================================
 # GROUP 1: TRIGGER ENDPOINTS (Manual Sync Initiation)
 # ============================================================================
@@ -75,66 +139,7 @@ def trigger_employee_reports_sync(
     Trigger employee reports synchronization from SQL Server to PostgreSQL.
     
     """
-    logger.info(f"Received request to trigger employee reports sync (is_full_sync={is_full_sync})")
-    
-    try:
-        # Clear stale syncs before checking for running syncs
-        _check_and_clear_stale_syncs(db, SyncType.EMPLOYEE_REPORTS.value, timeout_minutes=60)
-        
-        # Check if there's already a running sync of this type
-        running_sync = db.query(SyncHistory).filter(
-            SyncHistory.sync_type == SyncType.EMPLOYEE_REPORTS.value,
-            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
-        ).first()
-        
-        if running_sync:
-            raise HTTPException(
-                status_code=409,
-                detail=f"Employee reports sync already in progress (sync_id: {running_sync.sync_id})"
-            )
-        
-        # Create SyncHistory record HERE in the API endpoint
-        from app.services.sync.sync_tracker import SyncTracker
-        from app.db.database import get_database
-        
-        db_instance = get_database()
-        sync_tracker = SyncTracker(db_instance)
-        
-        # Create sync job record BEFORE queuing task
-        sync_job = sync_tracker.create_sync_job(
-            sync_type=SyncType.EMPLOYEE_REPORTS,
-            session=db,
-            is_full_sync=is_full_sync
-        )
-        
-        # Get the real sync_id
-        real_sync_id = sync_job.sync_id
-        
-        # Trigger Celery task using registered task name
-        task = celery_app.send_task(
-            'sync.employee_reports',  # ← Use registered task name as string
-            kwargs={
-                'is_full_sync': is_full_sync,
-                'sync_id': str(real_sync_id)
-            }
-        )
-        
-        # Return REAL sync_id (no placeholder!)
-        return SyncTriggerResponse(
-            sync_id=real_sync_id,
-            task_id=str(task.id),
-            sync_type="employee_reports",
-            status="pending",
-            is_full_sync=is_full_sync,
-            triggered_at=datetime.now(),
-            message=f"Employee reports sync {'(full)' if is_full_sync else '(incremental)'} started successfully"
-        )
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error triggering employee reports sync: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
+    return _trigger_sync(db, is_full_sync, SyncType.EMPLOYEE_REPORTS, 'sync.employee_reports', "employee reports")
 
 
 @router.post("/trigger/vision_data", response_model=SyncTriggerResponse, status_code=202)
@@ -150,66 +155,7 @@ def trigger_vision_data_sync(
     
     - **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)
     """
-    logger.info(f"Received request to trigger vision data sync (is_full_sync={is_full_sync})")
-    
-    try:
-        # Clear stale syncs before checking
-        _check_and_clear_stale_syncs(db, SyncType.VISION_DATA.value, timeout_minutes=60)
-        
-        # Check if a sync is already running
-        running_sync = db.query(SyncHistory).filter(
-            SyncHistory.sync_type == SyncType.VISION_DATA.value,
-            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
-        ).first()
-        
-        if running_sync:
-            raise HTTPException(
-                status_code=409,
-                detail=f"Vision data sync already in progress (sync_id: {running_sync.sync_id})"
-            )
-        
-        # Create SyncHistory record HERE in the API endpoint
-        from app.services.sync.sync_tracker import SyncTracker
-        from app.db.database import get_database
-        
-        db_instance = get_database()
-        sync_tracker = SyncTracker(db_instance)
-        
-        # Create sync job record BEFORE queuing task
-        sync_job = sync_tracker.create_sync_job(
-            sync_type=SyncType.VISION_DATA,
-            session=db,
-            is_full_sync=is_full_sync
-        )
-        
-        # Get the real sync_id
-        real_sync_id = sync_job.sync_id
-        
-        # Trigger Celery task using registered task name
-        task = celery_app.send_task(
-            'sync.vision_data',  # ← Use registered task name as string
-            kwargs={
-                'is_full_sync': is_full_sync,
-                'sync_id': str(real_sync_id)
-            }
-        )
-        
-        # Return REAL sync_id (no placeholder!)
-        return SyncTriggerResponse(
-            sync_id=real_sync_id,
-            task_id=str(task.id),
-            sync_type="vision_data",
-            status="pending",
-            is_full_sync=is_full_sync,
-            triggered_at=datetime.now(),
-            message=f"Vision data sync {'(full)' if is_full_sync else '(incremental)'} started successfully"
-        )
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error triggering vision data sync: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
+    return _trigger_sync(db, is_full_sync, SyncType.VISION_DATA, 'sync.vision_data', "vision data")
 
 
 @router.post("/trigger/job_descriptions", response_model=SyncTriggerResponse, status_code=202)
@@ -225,66 +171,7 @@ def trigger_job_descriptions_sync(
     
     - **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)
     """
-    logger.info(f"Received request to trigger job descriptions sync (is_full_sync={is_full_sync})")
-    
-    try:
-        # Clear stale syncs before checking
-        _check_and_clear_stale_syncs(db, SyncType.JOB_DESCRIPTIONS.value, timeout_minutes=60)
-        
-        # Check if a sync is already running
-        running_sync = db.query(SyncHistory).filter(
-            SyncHistory.sync_type == SyncType.JOB_DESCRIPTIONS.value,
-            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
-        ).first()
-        
-        if running_sync:
-            raise HTTPException(
-                status_code=409,
-                detail=f"Job descriptions sync already in progress (sync_id: {running_sync.sync_id})"
-            )
-        
-        # Create SyncHistory record HERE in the API endpoint
-        from app.services.sync.sync_tracker import SyncTracker
-        from app.db.database import get_database
-        
-        db_instance = get_database()
-        sync_tracker = SyncTracker(db_instance)
-        
-        # Create sync job record BEFORE queuing task
-        sync_job = sync_tracker.create_sync_job(
-            sync_type=SyncType.JOB_DESCRIPTIONS,
-            session=db,
-            is_full_sync=is_full_sync
-        )
-        
-        # Get the real sync_id
-        real_sync_id = sync_job.sync_id
-        
-        # Trigger Celery task using registered task name
-        task = celery_app.send_task(
-            'sync.job_descriptions',  # ← Use registered task name as string
-            kwargs={
-                'is_full_sync': is_full_sync,
-                'sync_id': str(real_sync_id)
-            }
-        )
-        
-        # Return REAL sync_id (no placeholder!)
-        return SyncTriggerResponse(
-            sync_id=real_sync_id,
-            task_id=str(task.id),
-            sync_type="job_descriptions",
-            status="pending",
-            is_full_sync=is_full_sync,
-            triggered_at=datetime.now(),
-            message=f"Job descriptions sync {'(full)' if is_full_sync else '(incremental)'} started successfully"
-        )
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error triggering job descriptions sync: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
+    return _trigger_sync(db, is_full_sync, SyncType.JOB_DESCRIPTIONS, 'sync.job_descriptions', "job descriptions")
 
 
 @router.post("/trigger/supervisor_feedback", response_model=SyncTriggerResponse, status_code=202)
@@ -300,66 +187,7 @@ def trigger_supervisor_feedback_sync(
     
     - **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)
     """
-    logger.info(f"Received request to trigger supervisor feedback sync (is_full_sync={is_full_sync})")
-    
-    try:
-        # Clear stale syncs before checking
-        _check_and_clear_stale_syncs(db, SyncType.SUPERVISOR_FEEDBACK.value, timeout_minutes=60)
-        
-        # Check if a sync is already running
-        running_sync = db.query(SyncHistory).filter(
-            SyncHistory.sync_type == SyncType.SUPERVISOR_FEEDBACK.value,
-            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
-        ).first()
-        
-        if running_sync:
-            raise HTTPException(
-                status_code=409,
-                detail=f"Supervisor feedback sync already in progress (sync_id: {running_sync.sync_id})"
-            )
-        
-        # Create SyncHistory record HERE in the API endpoint
-        from app.services.sync.sync_tracker import SyncTracker
-        from app.db.database import get_database
-        
-        db_instance = get_database()
-        sync_tracker = SyncTracker(db_instance)
-        
-        # Create sync job record BEFORE queuing task
-        sync_job = sync_tracker.create_sync_job(
-            sync_type=SyncType.SUPERVISOR_FEEDBACK,
-            session=db,
-            is_full_sync=is_full_sync
-        )
-        
-        # Get the real sync_id
-        real_sync_id = sync_job.sync_id
-        
-        # Trigger Celery task using registered task name
-        task = celery_app.send_task(
-            'sync.supervisor_feedback',  # ← Use registered task name as string
-            kwargs={
-                'is_full_sync': is_full_sync,
-                'sync_id': str(real_sync_id)
-            }
-        )
-        
-        # Return REAL sync_id (no placeholder!)
-        return SyncTriggerResponse(
-            sync_id=real_sync_id,
-            task_id=str(task.id),
-            sync_type="supervisor_feedback",
-            status="pending",
-            is_full_sync=is_full_sync,
-            triggered_at=datetime.now(),
-            message=f"Supervisor feedback sync {'(full)' if is_full_sync else '(incremental)'} started successfully"
-        )
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error triggering supervisor feedback sync: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
+    return _trigger_sync(db, is_full_sync, SyncType.SUPERVISOR_FEEDBACK, 'sync.supervisor_feedback', "supervisor feedback")
 
 
 @router.post("/trigger/full", response_model=FullSyncTriggerResponse, status_code=202)

@@ -9,6 +9,7 @@ from collections import Counter
 
 from app.core.logger import logger
 from app.domain.periods import get_quarter_date_range
+from app.domain.scoring import consistency_level_score
 from app.repositories.analyses import get_monthly_analyses_for_quarter, get_weekly_analyses_for_quarter
 from app.repositories.employees import get_employee_info
 
@@ -302,15 +303,15 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
             
             task_reliability = consistency.get("task_completion_reliability")
             if task_reliability:
-                task_reliability_by_month[month_num] = 3 if task_reliability == "high" else (2 if task_reliability == "medium" else 1)
+                task_reliability_by_month[month_num] = consistency_level_score(task_reliability)
             
             work_quality = consistency.get("work_quality_consistency")
             if work_quality:
-                work_quality_by_month[month_num] = 3 if work_quality == "high" else (2 if work_quality == "medium" else 1)
+                work_quality_by_month[month_num] = consistency_level_score(work_quality)
             
             performance_stability = consistency.get("performance_stability")
             if performance_stability:
-                performance_stability_by_month[month_num] = 3 if performance_stability == "high" else (2 if performance_stability == "medium" else 1)
+                performance_stability_by_month[month_num] = consistency_level_score(performance_stability)
 
         # Apply standardized trend analysis to consistency metrics
         if task_reliability_by_month and len(task_reliability_by_month) >= 2:
