@@ -49,7 +49,7 @@
     "recurring_topics": [],
     "weekly_credibility_data": {
       "avg_credibility_rating": "medium",
-      "credibility_trend": "improving",
+      "credibility_trend": "declining",
       "exaggeration_frequency": 0
     },
     "weekly_performance_ratings": [],
@@ -202,7 +202,7 @@
         "low": 0.3333333333333333,
         "medium": 0.3333333333333333
       },
-      "rating_trend": "improving"
+      "rating_trend": "declining"
     },
     "recurring_topics": [],
     "weekly_credibility_data": {

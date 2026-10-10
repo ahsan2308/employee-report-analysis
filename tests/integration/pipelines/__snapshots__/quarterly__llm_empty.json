@@ -395,7 +395,7 @@
         "num_predict": 10000,
         "temperature": 0
       },
-      "prompt_chars": 55491,
+      "prompt_chars": 55482,
       "prompt_index": 0
     },
     {
@@ -408,7 +408,7 @@
         "num_predict": 10000,
         "temperature": 0
       },
-      "prompt_chars": 79381,
+      "prompt_chars": 79372,
       "prompt_index": 1
     }
   ],

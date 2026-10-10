@@ -9,6 +9,10 @@
       "date_trunc('year', public.reports.report_date)"
     ],
     [
+      "order_by",
+      "date_trunc('year', public.reports.report_date)"
+    ],
+    [
       "values",
       "date_trunc('year', public.reports.report_date)",
       "avg(public.employee_analyses.sentiment_score)"
@@ -17,6 +21,10 @@
   "day": [
     [
       "group_by",
+      "date_trunc('day', public.reports.report_date)"
+    ],
+    [
+      "order_by",
       "date_trunc('day', public.reports.report_date)"
     ],
     [
@@ -31,6 +39,10 @@
       "date_trunc('month', public.reports.report_date)"
     ],
     [
+      "order_by",
+      "date_trunc('month', public.reports.report_date)"
+    ],
+    [
       "values",
       "date_trunc('month', public.reports.report_date)",
       "avg(public.employee_analyses.sentiment_score)"
@@ -39,6 +51,10 @@
   "quarter": [
     [
       "group_by",
+      "date_trunc('quarter', public.reports.report_date)"
+    ],
+    [
+      "order_by",
       "date_trunc('quarter', public.reports.report_date)"
     ],
     [
@@ -53,6 +69,10 @@
       "date_trunc('week', public.reports.report_date)"
     ],
     [
+      "order_by",
+      "date_trunc('week', public.reports.report_date)"
+    ],
+    [
       "values",
       "date_trunc('week', public.reports.report_date)",
       "avg(public.employee_analyses.sentiment_score)"
@@ -61,6 +81,10 @@
   "year": [
     [
       "group_by",
+      "date_trunc('year', public.reports.report_date)"
+    ],
+    [
+      "order_by",
       "date_trunc('year', public.reports.report_date)"
     ],
     [

@@ -143,7 +143,8 @@ def test_consistency_and_risk_levels(snapshot, capsys, name, levels):
     ("sentiment_negative", [-0.2, -0.5, -0.1]),
 ])
 def test_sentiment_trend(snapshot, capsys, name, values):
-    monthly = [monthly_analysis(4 - i, sentiment=v, report_ids=["x"] * (i + 1)) for i, v in enumerate(values)]
+    # Values are in chronological order (months 1, 2, 3).
+    monthly = [monthly_analysis(1 + i, sentiment=v, report_ids=["x"] * (i + 1)) for i, v in enumerate(values)]
     metrics = run(capsys, monthly=monthly)["result"]["metrics"]
     snapshot(f"quarterly_{name}", {k: metrics[k] for k in ("avg_sentiment", "sentiment_trend")})
 

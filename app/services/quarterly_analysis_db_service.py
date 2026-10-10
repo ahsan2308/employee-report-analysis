@@ -188,6 +188,9 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
         def analyze_trend(values, keys=None, context="default"):
             """
             Analyze trend using a standardized method across all metrics
+
+            Numeric values are levels (higher is "improving" when they rise);
+            strings are monthly trend labels, whose directions are aggregated.
             
             Args:
                 values: List of values to analyze
@@ -203,7 +206,8 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
                 values = [v for _, v in sorted_items]
             
             # Convert string trend values to numeric scores for comparison
-            if all(isinstance(v, str) for v in values):
+            labels = all(isinstance(v, str) for v in values)
+            if labels:
                 numeric_values = []
                 for v in values:
                     # Default context (performance, sentiment, quality)
@@ -237,7 +241,23 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
                             
                 values = numeric_values
             
-            # Simple trend analysis based on first vs last and overall direction
+            if not labels:
+                # Levels (scores, ratings, risk levels): the direction they moved in. The
+                # least-squares change across the period, ignoring moves under 5% of the scale.
+                count = len(values)
+                mean_x = (count - 1) / 2
+                mean_y = sum(values) / count
+                slope = sum((x - mean_x) * (y - mean_y) for x, y in enumerate(values)) / sum(
+                    (x - mean_x) ** 2 for x in range(count))
+                change = slope * (count - 1)
+                tolerance = 0.05 * max(abs(v) for v in values)
+                if change > tolerance:
+                    return "improving"
+                if change < -tolerance:
+                    return "declining"
+                return "stable"
+
+            # Trend labels (one direction per month): aggregate the directions
             first, last = values[0], values[-1]
             avg = sum(values) / len(values)
             

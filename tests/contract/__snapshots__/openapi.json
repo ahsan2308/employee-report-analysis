@@ -4947,6 +4947,42 @@
               "title": "Interval",
               "type": "string"
             }
+          },
+          {
+            "description": "Filter by employee ID",
+            "in": "query",
+            "name": "employee_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by employee ID",
+              "title": "Employee Id"
+            }
+          },
+          {
+            "description": "Filter by department (wing)",
+            "in": "query",
+            "name": "department",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by department (wing)",
+              "title": "Department"
+            }
           }
         ],
         "responses": {
@@ -5536,6 +5572,42 @@
               "description": "Time interval for x-axis ('day', 'week', 'month', 'quarter', 'year')",
               "title": "Interval",
               "type": "string"
+            }
+          },
+          {
+            "description": "Filter by employee ID",
+            "in": "query",
+            "name": "employee_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by employee ID",
+              "title": "Employee Id"
+            }
+          },
+          {
+            "description": "Filter by department (wing)",
+            "in": "query",
+            "name": "department",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by department (wing)",
+              "title": "Department"
             }
           }
         ],
