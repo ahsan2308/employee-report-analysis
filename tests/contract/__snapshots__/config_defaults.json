@@ -8,6 +8,14 @@
     "DB_USER": "myuser"
   },
   "app.database.postgres_database": {},
+  "app.db.database": {
+    "DB_HOST": "localhost",
+    "DB_NAME": "employee_reports",
+    "DB_PASSWORD": "mypassword",
+    "DB_PORT": "5432",
+    "DB_TYPE": "postgres",
+    "DB_USER": "myuser"
+  },
   "app.model_host": {
     "EMBEDDING_PROVIDER": "ollama",
     "EMBEDDING_USE_PREFIX": false,
@@ -26,6 +34,10 @@
     "VLLM_MODEL": "meta-llama/Meta-Llama-3.1-8B-Instruct"
   },
   "app.models.base": {},
+  "app.services.embedding_service": {
+    "DEFAULT_MODEL": "bge-m3",
+    "EMBEDDING_PROVIDER": "ollama"
+  },
   "app.services.llm_service": {
     "DEFAULT_MODEL": "llama3.1:8b",
     "LLM_PROVIDER": "ollama"

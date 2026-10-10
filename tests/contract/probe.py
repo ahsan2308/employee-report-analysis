@@ -28,6 +28,8 @@ CONFIG_MODULES = [
     "app.vector_store",
     "app.services.vector_store_service",
     "app.services.llm_service",
+    "app.services.embedding_service",
+    "app.db.database",
     "app.tasks.analysis_tasks",
     "app.worker.celery_app",
 ]
