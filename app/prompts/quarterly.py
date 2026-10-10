@@ -37,6 +37,7 @@ def quarterly_analysis_prompt(quarterly_data: Dict[str, Any]) -> str:
     for i, monthly_analysis in enumerate(monthly_analyses):
         month_name = monthly_analysis.get("month_name", f"Month {i+1}")
         month_num = monthly_analysis.get("month", i+1)
+        month_year = monthly_analysis.get("year", year)
         month_start = monthly_analysis.get("period_start", "Unknown Start")
         month_end = monthly_analysis.get("period_end", "Unknown End")
         
@@ -179,7 +180,8 @@ Strategic Recommendations:
         month_weekly_analyses = []
         for weekly_analysis in weekly_analyses:
             week_date = weekly_analysis.get("date")
-            if week_date and hasattr(week_date, "month") and week_date.month == month_num:
+            if (week_date and hasattr(week_date, "month") and week_date.month == month_num
+                    and (not month_year or getattr(week_date, "year", month_year) == month_year)):
                 month_weekly_analyses.append(weekly_analysis)
 
         # Format and add weekly analyses for this month if available
@@ -190,15 +192,15 @@ Strategic Recommendations:
                 # Extract date information
                 week_end = weekly_analysis.get("date", "Unknown")
                 
-                # Calculate start date (7 days before end date)
+                # The week is the 7 days ending on the report date (as in the weekly prompt)
                 if isinstance(week_end, date):
                     from datetime import timedelta
-                    week_start = (week_end - timedelta(days=7)).isoformat()
+                    week_start = (week_end - timedelta(days=6)).isoformat()
                     week_end = week_end.isoformat()
                 elif hasattr(week_end, 'isoformat'):
                     from datetime import timedelta
                     try:
-                        week_start = (week_end - timedelta(days=7)).isoformat()
+                        week_start = (week_end - timedelta(days=6)).isoformat()
                         week_end = week_end.isoformat()
                     except:
                         week_start = "Unknown"

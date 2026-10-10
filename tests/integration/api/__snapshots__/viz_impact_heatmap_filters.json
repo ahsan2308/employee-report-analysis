@@ -49,54 +49,14 @@
   },
   "ignored_employee_and_department": {
     "body": {
-      "cells": [
-        {
-          "value": 3.0,
-          "x": 0,
-          "y": 0
-        },
-        {
-          "value": 6.0,
-          "x": 1,
-          "y": 0
-        },
-        {
-          "value": 5.0,
-          "x": 1,
-          "y": 1
-        },
-        {
-          "value": 9.5,
-          "x": 2,
-          "y": 0
-        },
-        {
-          "value": 7.0,
-          "x": 3,
-          "y": 0
-        },
-        {
-          "value": 4.0,
-          "x": 4,
-          "y": 0
-        }
-      ],
+      "cells": [],
       "metadata": {
-        "avg": 5.75,
-        "max": 9.5,
-        "min": 3.0
+        "avg": 0.0,
+        "max": 0.0,
+        "min": 0.0
       },
-      "x_labels": [
-        "2024-12",
-        "2025-01",
-        "2025-02",
-        "2025-03",
-        "2025-04"
-      ],
-      "y_labels": [
-        "Engineering",
-        "Finance"
-      ]
+      "x_labels": [],
+      "y_labels": []
     },
     "status": 200
   },

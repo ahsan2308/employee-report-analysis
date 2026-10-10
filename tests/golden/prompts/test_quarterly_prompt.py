@@ -66,16 +66,27 @@ def test_quarterly_monthly_analysis_without_month_keys(snapshot):
     snapshot("quarterly_month_defaults.diff_vs_minimal", prompt_diff(minimal_prompt(), build(data)))
 
 
-def test_quarterly_weekly_matched_by_month_number_only():
-    """Weeks from a different year but the same month number are attached too."""
+def test_quarterly_weekly_matched_by_month_and_year():
+    """Weeks are attached to the month with the same number and year; a week is the 7 days ending on its date."""
     data = {
-        "monthly_analyses": [{"month": 1, "month_name": "January"}],
+        "monthly_analyses": [{"month": 1, "month_name": "January", "year": 2025}],
         "weekly_analyses": [{"date": date(2025, 1, 11)}, {"date": date(2026, 1, 10)}],
     }
     prompt = build(data)
     assert "WEEKLY ANALYSES FOR JANUARY:" in prompt
-    assert "WEEK 1 (2025-01-04 to 2025-01-11)" in prompt
-    assert "WEEK 2 (2026-01-03 to 2026-01-10)" in prompt
+    assert "WEEK 1 (2025-01-05 to 2025-01-11)" in prompt
+    assert "2026-01-10" not in prompt
+
+
+def test_quarterly_weekly_matched_by_quarter_year_when_month_has_none():
+    data = {
+        "year": 2026,
+        "monthly_analyses": [{"month": 1, "month_name": "January"}],
+        "weekly_analyses": [{"date": date(2025, 1, 11)}, {"date": date(2026, 1, 10)}],
+    }
+    prompt = build(data)
+    assert "WEEK 1 (2026-01-04 to 2026-01-10)" in prompt
+    assert "2025-01-11" not in prompt
 
 
 def test_quarterly_vision_only(snapshot):

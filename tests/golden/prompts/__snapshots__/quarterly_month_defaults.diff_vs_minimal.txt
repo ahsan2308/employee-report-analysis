@@ -51,7 +51,7 @@
 +
 +WEEKLY ANALYSES FOR MONTH 1:
 +
-+WEEK 1 (2025-12-27 to 2026-01-03):
++WEEK 1 (2025-12-28 to 2026-01-03):
 +Sentiment: positive
 +Risk Level: medium
 +Risk Explanation: No explanation provided
@@ -130,7 +130,7 @@
 +
 +WEEKLY ANALYSES FOR MONTH 2:
 +
-+WEEK 1 (2026-01-31 to 2026-02-07):
++WEEK 1 (2026-02-01 to 2026-02-07):
 +Sentiment: neutral
 +Risk Level: medium
 +Risk Explanation: No explanation provided

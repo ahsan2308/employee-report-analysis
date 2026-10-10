@@ -38,14 +38,6 @@ None open. New defects found by the characterization suite get the next ID (B17)
 Found while writing the characterization tests and snapshotted as-is. Open ones
 are candidates for the bug-fix track; fixed ones are listed at the end.
 
-**Analysis and visualizations**
-- Quarterly `analyze_trend` reports "improving" for almost any series with positive values, including falling ones (`quarterly_analysis_db_service.py:250-271`).
-- Week labels combine the calendar year with the ISO week, so 2024-12-30 is "2024-W1" (`visualization_service.py:89`). Vision data is grouped by ISO week without a year (`db_service.py:620`).
-- Sentiment trends and heatmaps have no `ORDER BY`. Impact trends sort labels as text, so "2025-W10" comes before "2025-W2" (`visualization_service.py:122-175`, `:717`).
-- Visualization results are cached for 5 minutes as shared mutable objects. Heatmaps ignore `employee_id` and `department`.
-- The quarterly prompt builds weekly ranges with 7 days, the weekly prompt with 6. Weeks are matched to months by month number regardless of year (`structured_prompts.py:1959,1973`).
-- `get_complete_reports_by_ids` returns rows in `set()` order, so the order of similar reports in prompts can vary (`db_service.py:28`).
-
 **SQL Server connector**
 - The password is put into the ODBC connection string unescaped. There is a hard-coded default password. Substring blocklists reject harmless names such as "LastUpdated" and hosts containing "sp_" (`sqlserver_connector.py:209,327,855`).
 
@@ -64,3 +56,11 @@ are candidates for the bug-fix track; fixed ones are listed at the end.
 - Error row numbers count from the file's first data row whatever the chunk size, including when duplicate rows are dropped. Jobs record the real `processed_rows` and `successful_rows` (`integration/pipelines/test_csv_import_pipeline.py`).
 - A failed vector upsert is reported as an import error and counted in `vector_store_failures`; the reports are kept. Vector point IDs are derived from (report, chunk), so a re-import overwrites its points, and stale points and `qdrant_mappings` rows (including duplicates from earlier imports) are removed (`integration/pipelines/test_csv_import_pipeline.py`).
 - The three report-period row models (employee reports, vision data, supervisor feedback) share one date parser: MM/DD/YYYY (then DD/MM/YYYY), YYYY-MM-DD, MM-DD-YYYY (then DD-MM-YYYY), with a trailing time ignored. Anything else, a future date or an empty required date is a validation error, where it used to raise UnboundLocalError or pass through as an unparsed string (`golden/imports_sync/test_imports_row_schemas.py`).
+
+**Analysis and visualizations**
+- Quarterly `analyze_trend` treats numeric series (sentiment, ratings, risk levels) as levels and reports the direction they moved in (least-squares change, ignoring moves under 5% of the scale); falling series no longer read as "improving". Trend labels are still aggregated as directions (`golden/analysis/test_golden_quarterly_analysis_db_service.py`).
+- Week labels use the ISO year (2024-12-30 is "2025-W1"), and monthly vision data is grouped by (ISO year, week) (`integration/services/test_visualization_service.py`).
+- Sentiment trends are ordered by period, heatmap rows by date and employee, and impact trends sort periods chronologically ("2025-W9" before "2025-W10") (`integration/services/test_visualization_service.py`).
+- The visualization cache stores and returns copies, so callers cannot change a cached result. Heatmaps accept and apply `employee_id` and `department` (`integration/api/test_visualizations.py`).
+- The quarterly prompt's week ranges cover the 7 days ending on the report date, as in the weekly prompt, and weeks are attached to the month with the same number and year (`golden/prompts/test_quarterly_prompt.py`).
+- `get_complete_reports_by_ids` keeps the given (relevance) order, so similar reports appear in prompts in a stable order (`integration/services/test_db_service.py`).

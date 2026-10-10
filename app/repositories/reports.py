@@ -24,8 +24,8 @@ def get_complete_reports_by_ids(report_ids: List[str]) -> List[Dict[str, Any]]:
     if not report_ids:
         return []
     
-    # Convert to set to remove duplicates - no need to fetch same report multiple times
-    unique_report_ids = set(report_ids)
+    # Remove duplicates, keeping the given (relevance) order so prompts are stable
+    unique_report_ids = list(dict.fromkeys(report_ids))
     
     db_instance = get_database()
     reports = []

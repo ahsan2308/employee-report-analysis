@@ -33,9 +33,9 @@
           "backgroundColor": null,
           "borderColor": null,
           "data": [
-            7.0,
             5.5,
-            9.5
+            9.5,
+            7.0
           ],
           "label": "Average Impact Score",
           "metadata": {
@@ -46,9 +46,9 @@
         }
       ],
       "labels": [
-        "2025-W10",
         "2025-W2",
-        "2025-W9"
+        "2025-W9",
+        "2025-W10"
       ]
     },
     "status": 200

@@ -7,8 +7,7 @@
     "2025-02",
     "2025-03",
     "2025-04",
-    "2025-06",
-    "MUTATED"
+    "2025-06"
   ],
   "fourth_after_expiry": {
     "datasets": [
@@ -40,7 +39,7 @@
       "2025-09"
     ]
   },
-  "hit_is_same_object": true,
+  "hit_is_same_object": false,
   "keys_after_multi": [
     "multi_criteria_trends_risk_sentiment_None_None_None_None_quarter",
     "risk_level_trends_None_None_2025-01-01_None_month",
@@ -58,7 +57,6 @@
     "2025-02",
     "2025-03",
     "2025-04",
-    "2025-06",
-    "MUTATED"
+    "2025-06"
   ]
 }

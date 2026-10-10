@@ -4,6 +4,7 @@ Visualization Service
 Provides data aggregation and transformation functions for visualizations.
 This service acts as a layer between the raw data and visualization endpoints.
 """
+import copy
 from typing import Dict, List, Optional, Any
 from datetime import datetime, date
 from sqlalchemy.orm import Session
@@ -49,12 +50,12 @@ def _get_from_cache(cache_key: str) -> Optional[Dict[str, Any]]:
     """Get data from cache if available and not expired."""
     if cache_key in _cache and _cache_expiry.get(cache_key, 0) > datetime.now().timestamp():
         logger.debug(f"Using cached data for key: {cache_key}")
-        return _cache[cache_key]
+        return copy.deepcopy(_cache[cache_key])  # callers may modify what they get
     return None
 
 def _store_in_cache(cache_key: str, data: Dict[str, Any], ttl: int = DEFAULT_CACHE_SECONDS) -> None:
     """Store data in cache with expiration."""
-    _cache[cache_key] = data
+    _cache[cache_key] = copy.deepcopy(data)
     _cache_expiry[cache_key] = datetime.now().timestamp() + ttl
     logger.debug(f"Stored data in cache with key: {cache_key}, expires in {ttl}s")
 
@@ -84,7 +85,8 @@ def _format_time_period(report_date: date, interval: str) -> str:
     if interval == 'day':
         return report_date.strftime('%Y-%m-%d')
     elif interval == 'week':
-        return f"{report_date.year}-W{report_date.isocalendar()[1]}"
+        iso_year, iso_week, _ = report_date.isocalendar()  # the ISO year: 2024-12-30 is in 2025-W1
+        return f"{iso_year}-W{iso_week}"
     elif interval == 'month':
         return report_date.strftime('%Y-%m')
     elif interval == 'quarter':
@@ -129,47 +131,13 @@ def _group_by_time_interval(query, interval: str, date_column_name: str):
         Query with appropriate grouping applied
     """
     date_column = getattr(Report, date_column_name)
-    
-    if interval == 'day':
-        # Group by day
-        return query.group_by(
-            func.date_trunc('day', date_column)
-        ).values(
-            func.date_trunc('day', date_column),
-            func.avg(EmployeeAnalysis.sentiment_score)
-        )
-    elif interval == 'week':
-        # Group by week
-        return query.group_by(
-            func.date_trunc('week', date_column)
-        ).values(
-            func.date_trunc('week', date_column),
-            func.avg(EmployeeAnalysis.sentiment_score)
-        )
-    elif interval == 'month':
-        # Group by month
-        return query.group_by(
-            func.date_trunc('month', date_column)
-        ).values(
-            func.date_trunc('month', date_column),
-            func.avg(EmployeeAnalysis.sentiment_score)
-        )
-    elif interval == 'quarter':
-        # Group by quarter
-        return query.group_by(
-            func.date_trunc('quarter', date_column)
-        ).values(
-            func.date_trunc('quarter', date_column),
-            func.avg(EmployeeAnalysis.sentiment_score)
-        )
-    else:  # year
-        # Group by year
-        return query.group_by(
-            func.date_trunc('year', date_column)
-        ).values(
-            func.date_trunc('year', date_column),
-            func.avg(EmployeeAnalysis.sentiment_score)
-        )
+    unit = interval if interval in ('day', 'week', 'month', 'quarter') else 'year'
+    period = func.date_trunc(unit, date_column)
+    # Ordered by period, so the trend reads chronologically
+    return query.group_by(period).order_by(period).values(
+        period,
+        func.avg(EmployeeAnalysis.sentiment_score)
+    )
 
 def _build_trend_response(labels: List[str], data: List[float], dataset_label: str) -> Dict[str, Any]:
     """Build a standardized trend response object."""
@@ -716,8 +684,8 @@ def get_impact_score_trends(
     time_periods = []
     impact_values = []
     
-    # Sort periods chronologically
-    for period in sorted(results_by_period.keys()):
+    # Sort periods chronologically ("2025-W10" after "2025-W2")
+    for period in _sort_time_periods(list(results_by_period.keys()), interval):
         scores = results_by_period[period]
         avg_impact = round(sum(scores) / len(scores), 2) if scores else 0
         
@@ -738,7 +706,9 @@ def get_sentiment_heatmap(
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
     interval: str = "month",
-    cache_ttl: int = DEFAULT_CACHE_SECONDS
+    cache_ttl: int = DEFAULT_CACHE_SECONDS,
+    employee_id: Optional[int] = None,
+    department: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Generate a heatmap of sentiment scores across time and another dimension (department or employee).
@@ -750,13 +720,15 @@ def get_sentiment_heatmap(
         end_date: Optional end date for filtering
         interval: Time interval for x-axis
         cache_ttl: Cache time-to-live
+        employee_id: Optional employee filter
+        department: Optional department (wing) filter
         
     Returns:
         Heatmap data with x_labels (time periods), y_labels (departments/employees),
         and cells with x,y coordinates and values
     """
     # Generate cache key
-    cache_key = f"sentiment_heatmap_{dimension}_{start_date}_{end_date}_{interval}"
+    cache_key = f"sentiment_heatmap_{dimension}_{start_date}_{end_date}_{interval}_{employee_id}_{department}"
     
     # Check cache first
     cached_data = _get_from_cache(cache_key)
@@ -782,12 +754,9 @@ def get_sentiment_heatmap(
         Employee, Report.employee_id == Employee.id
     )
     
-    # Apply date filters
-    if start_date:
-        query = query.filter(Report.report_date >= start_date)
-    
-    if end_date:
-        query = query.filter(Report.report_date <= end_date)
+    # Apply filters; a fixed row order keeps the output stable
+    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
+    query = query.order_by(Report.report_date, Employee.id)
     
     # Collect data organized by time period and dimension
     data_points = {}
@@ -871,7 +840,9 @@ def get_impact_score_heatmap(
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
     interval: str = "month",
-    cache_ttl: int = DEFAULT_CACHE_SECONDS
+    cache_ttl: int = DEFAULT_CACHE_SECONDS,
+    employee_id: Optional[int] = None,
+    department: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Generate a heatmap of impact scores across time and another dimension (department or employee).
@@ -883,13 +854,15 @@ def get_impact_score_heatmap(
         end_date: Optional end date for filtering
         interval: Time interval for x-axis
         cache_ttl: Cache time-to-live
+        employee_id: Optional employee filter
+        department: Optional department (wing) filter
         
     Returns:
         Heatmap data with x_labels (time periods), y_labels (departments/employees),
         and cells with x,y coordinates and values
     """
     # Generate cache key
-    cache_key = f"impact_heatmap_{dimension}_{start_date}_{end_date}_{interval}"
+    cache_key = f"impact_heatmap_{dimension}_{start_date}_{end_date}_{interval}_{employee_id}_{department}"
     
     # Check cache first
     cached_data = _get_from_cache(cache_key)
@@ -915,12 +888,9 @@ def get_impact_score_heatmap(
         Employee, Report.employee_id == Employee.id
     ).filter(EmployeeAnalysis.achievements_json.isnot(None))
     
-    # Apply date filters
-    if start_date:
-        query = query.filter(Report.report_date >= start_date)
-    
-    if end_date:
-        query = query.filter(Report.report_date <= end_date)
+    # Apply filters; a fixed row order keeps the output stable
+    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
+    query = query.order_by(Report.report_date, Employee.id)
     
     # Collect data organized by time period and dimension
     data_points = {}

@@ -310,6 +310,8 @@ def read_sentiment_heatmap(
     start_date: Optional[date] = Query(None, description="Start date for analysis (YYYY-MM-DD)"),
     end_date: Optional[date] = Query(None, description="End date for analysis (YYYY-MM-DD)"),
     interval: str = Query("month", description="Time interval for x-axis ('day', 'week', 'month', 'quarter', 'year')"),
+    employee_id: Optional[int] = Query(None, description="Filter by employee ID"),
+    department: Optional[str] = Query(None, description="Filter by department (wing)"),
     db: Session = Depends(get_db)
 ):
     """
@@ -339,7 +341,9 @@ def read_sentiment_heatmap(
             dimension=dimension,
             start_date=start_date,
             end_date=end_date,
-            interval=interval
+            interval=interval,
+            employee_id=employee_id,
+            department=department
         )
 
         # Check if data was returned
@@ -361,6 +365,8 @@ def read_impact_heatmap(
     start_date: Optional[date] = Query(None, description="Start date for analysis (YYYY-MM-DD)"),
     end_date: Optional[date] = Query(None, description="End date for analysis (YYYY-MM-DD)"),
     interval: str = Query("month", description="Time interval for x-axis ('day', 'week', 'month', 'quarter', 'year')"),
+    employee_id: Optional[int] = Query(None, description="Filter by employee ID"),
+    department: Optional[str] = Query(None, description="Filter by department (wing)"),
     db: Session = Depends(get_db)
 ):
     """
@@ -390,7 +396,9 @@ def read_impact_heatmap(
             dimension=dimension,
             start_date=start_date,
             end_date=end_date,
-            interval=interval
+            interval=interval,
+            employee_id=employee_id,
+            department=department
         )
 
         # Check if data was returned

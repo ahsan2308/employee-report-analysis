@@ -1,6 +1,6 @@
 {
   "performance_stability": "medium",
-  "quality_consistency_trend": "improving",
+  "quality_consistency_trend": "declining",
   "risk_levels": {
     "high": 1,
     "low": 1,
@@ -8,5 +8,5 @@
   },
   "risk_trend": "decreasing",
   "sentiment_trend": "stable",
-  "task_reliability_trend": "improving"
+  "task_reliability_trend": "declining"
 }

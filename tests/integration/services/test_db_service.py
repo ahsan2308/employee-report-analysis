@@ -78,14 +78,11 @@ def test_get_complete_reports_by_ids(reports_seed, snapshot):
     snapshot("get_complete_reports_by_ids", normalize(cases))
 
 
-def test_get_complete_reports_by_ids_order_follows_set_iteration(reports_seed):
-    """Output order is set-iteration order (hash dependent), not input/date order.
-
-    Only the membership is stable; the snapshot above sorts it.
-    """
-    ids = [str(uid(n)) for n in (1, 2, 3, 4, 6)]
+def test_get_complete_reports_by_ids_keeps_input_order(reports_seed):
+    """Reports come back in the given (relevance) order, duplicates dropped; it used to be set order."""
+    ids = [str(uid(n)) for n in (6, 2, 4, 2, 1, 3)]
     result = db_service.get_complete_reports_by_ids(ids)
-    assert [r["report_id"] for r in result] == list(set(ids))
+    assert [r["report_id"] for r in result] == [str(uid(n)) for n in (6, 2, 4, 1, 3)]
 
 
 def test_get_reports_for_vector_results(reports_seed, snapshot):

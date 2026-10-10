@@ -125,16 +125,17 @@ def test_rating_trends_empty(db_session, snapshot, name):
     snapshot(f"{name}_trends_empty", normalize(RATING_TRENDS[name](db_session, interval="week")))
 
 
-def test_impact_trends_week_labels_sorted_alphabetically(viz):
-    """Impact trends sort periods with plain sorted(): '2025-W10' precedes '2025-W9'."""
+def test_impact_trends_week_labels_sorted_chronologically(viz):
+    """'2025-W9' comes before '2025-W10' (they used to be sorted as text)."""
     labels = vs.get_impact_score_trends(viz, interval="week")["labels"]
-    assert labels.index("2025-W10") < labels.index("2025-W9")
+    assert labels.index("2025-W9") < labels.index("2025-W10")
 
 
-def test_week_label_uses_calendar_year_not_iso_year(viz):
-    """2024-12-30 is ISO 2025-W1 but is labelled '2024-W1' and sorts first."""
+def test_week_label_uses_iso_year(viz):
+    """2024-12-30 is in ISO week 2025-W1 (it used to be labelled '2024-W1')."""
     labels = vs.get_risk_level_trends(viz, interval="week")["labels"]
-    assert labels[0] == "2024-W1"
+    assert labels[0] == "2025-W1"
+    assert not any(label.startswith("2024-") for label in labels)
 
 
 def test_extract_impact_score(snapshot):
@@ -207,7 +208,7 @@ def test_cache_behaviour(viz, snapshot):
     second = vs.get_risk_level_trends(viz, interval="month")
     hit_is_same_object = second is first
 
-    # Callers mutating the returned dict mutate the cached entry.
+    # Callers get a copy: mutating it leaves the cached entry alone.
     second["labels"].append("MUTATED")
     third = vs.get_risk_level_trends(viz, interval="month")
 

@@ -13,7 +13,7 @@
     "avg_sentiment": 0.5,
     "challenge_count": 0,
     "monthly_summaries": [],
-    "sentiment_trend": "improving"
+    "sentiment_trend": "stable"
   },
   "impact_zero": {
     "achievement_count": 1,
@@ -37,7 +37,7 @@
     "avg_sentiment": 0.0,
     "challenge_count": 0,
     "monthly_summaries": [],
-    "sentiment_trend": "improving"
+    "sentiment_trend": "stable"
   },
   "rounding": {
     "achievement_count": 4,
@@ -45,7 +45,7 @@
     "avg_sentiment": 0.5,
     "challenge_count": 0,
     "monthly_summaries": [],
-    "sentiment_trend": "improving"
+    "sentiment_trend": "stable"
   },
   "zero_reports_means_no_weighted_sentiment": {
     "achievement_count": 0,
@@ -53,6 +53,6 @@
     "avg_sentiment": 0.0,
     "challenge_count": 0,
     "monthly_summaries": [],
-    "sentiment_trend": "improving"
+    "sentiment_trend": "declining"
   }
 }
