@@ -5,8 +5,9 @@
  * including CSV import operations.
  */
 
-// Base URL for API endpoints - ensure this always points to localhost
-const API_BASE_URL = 'http://127.0.0.1:8000';
+// Base URL for API endpoints. Defaults to the local API; a deployment can set
+// window.API_BASE_URL in a script loaded before this one to point elsewhere.
+const API_BASE_URL = window.API_BASE_URL || 'http://127.0.0.1:8000';
 
 // Generic error handler for fetch operations
 function handleErrors(response) {

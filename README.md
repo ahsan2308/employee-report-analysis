@@ -499,6 +499,7 @@ Older import paths (for example `app.database`, `app.model_host`, `app.services.
      python -m http.server 8080
      ```
      - Then navigate to `http://localhost:8080` in your browser
+     - The frontend calls the API at `http://127.0.0.1:8000`. To use another address, set `window.API_BASE_URL` in a script loaded before `js/api.js`.
 
 ---
 
