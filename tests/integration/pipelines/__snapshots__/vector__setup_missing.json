@@ -13,12 +13,6 @@
       "is_query": false
     },
     {
-      "call": "vs.delete_collection",
-      "collection_name": "employee_reports",
-      "existed": false,
-      "points_lost": 0
-    },
-    {
       "call": "vs.setup_collection",
       "collection_name": "employee_reports",
       "vector_size": 4

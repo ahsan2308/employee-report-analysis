@@ -126,10 +126,8 @@ def test_add_report_mapping_insert_fails_for_unknown_report(reports, ext, snapsh
     _snap(snapshot, "vector__add_mapping_fk_violation", reports, ext, outcome)
 
 
-@pytest.mark.known_bug("B7")
 def test_add_report_when_embeddings_fail(reports, ext, snapshot):
-    """Embedding provider fails: the size probe falls back to 1024, the 4-dim collection is deleted and recreated,
-    and a single-chunk report is upserted with an empty vector."""
+    """Embedding provider fails: setup refuses to touch the collection, so nothing is upserted (B7 fixed)."""
     ext.embedder.fail = True
     outcome = vss.add_report_to_vector_store(report_id=str(R1), employee_id=EMP_ID, report_date="2025-03-07",
                                              report_text="Short report.")
@@ -147,18 +145,29 @@ def test_setup_collection_missing(ext, snapshot):
     _snap_calls(snapshot, "vector__setup_missing", ext, vss.setup_collection())
 
 
-@pytest.mark.known_bug("B7")
-def test_setup_collection_deletes_on_failed_embedding_probe(ext, snapshot):
+def test_setup_collection_keeps_collection_when_embedding_probe_fails(ext, snapshot):
     ext.vector_store.points["existing-point"] = {"vector": [0.1] * 4, "payload": {"report_id": "x"}}
     ext.embedder.fail = True
-    _snap_calls(snapshot, "vector__setup_probe_fails_deletes_collection", ext, vss.setup_collection())
+    _snap_calls(snapshot, "vector__setup_probe_fails_keeps_collection", ext, vss.setup_collection())
 
 
-@pytest.mark.known_bug("B7")
-def test_setup_collection_deletes_on_dimension_mismatch(ext, snapshot):
+def test_setup_collection_missing_and_embedding_probe_fails(ext, snapshot):
+    ext.vector_store.collections.clear()
+    ext.embedder.fail = True
+    _snap_calls(snapshot, "vector__setup_missing_probe_fails", ext, vss.setup_collection())
+
+
+def test_setup_collection_keeps_collection_qdrant_cannot_describe(ext, monkeypatch, snapshot):
+    """The provider returns {} for any error, so an existing collection can look missing."""
+    ext.vector_store.points["existing-point"] = {"vector": [0.1] * 4, "payload": {"report_id": "x"}}
+    monkeypatch.setattr(ext.vector_store, "get_collection_info", lambda collection_name: {})
+    _snap_calls(snapshot, "vector__setup_undescribed_keeps_collection", ext, vss.setup_collection())
+
+
+def test_setup_collection_refuses_dimension_mismatch(ext, snapshot):
     ext.vector_store.collections[COLLECTION] = 8
     ext.vector_store.points["existing-point"] = {"vector": [0.1] * 8, "payload": {"report_id": "x"}}
-    _snap_calls(snapshot, "vector__setup_dimension_mismatch", ext, vss.setup_collection())
+    _snap_calls(snapshot, "vector__setup_dimension_mismatch_keeps_collection", ext, vss.setup_collection())
 
 
 def _snap_calls(snapshot, name, ext, outcome):

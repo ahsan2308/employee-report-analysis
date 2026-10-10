@@ -1,0 +1,16 @@
+{
+  "collections": {},
+  "external_calls": [
+    {
+      "call": "vs.get_collection_info",
+      "collection_name": "employee_reports"
+    },
+    {
+      "call": "embed",
+      "input": "Test text",
+      "is_query": false
+    }
+  ],
+  "outcome": false,
+  "points_left": 0
+}

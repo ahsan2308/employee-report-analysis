@@ -66,46 +66,56 @@ def get_embedding_size() -> int:
         logger.warning("Error occurred, falling back to default size 1024 for bge-m3")
         return 1024
 
+def _probe_embedding_size() -> Optional[int]:
+    """Embedding size from a live probe, or None when the embedding service did not answer."""
+    try:
+        sample_embedding = get_embedding("Test text")
+    except Exception as e:
+        logger.error(f"Error detecting embedding size: {str(e)}")
+        return None
+    if not sample_embedding:
+        logger.error("Empty embedding returned when detecting embedding size")
+        return None
+    return len(sample_embedding)
+
 def setup_collection() -> bool:
-    """Ensure the vector collection exists with correct settings."""
+    """Ensure the vector collection exists with correct settings.
+
+    Never deletes an existing collection. A dimension mismatch, or an embedding
+    service that cannot be reached, is reported and returns False so callers stop
+    instead of losing stored vectors. Recreating the collection is an operator decision.
+    """
     try:
         vector_store = get_vector_store()
-        
-        # Check if collection already exists
+
+        collection_info = {}
         try:
-            collection_info = vector_store.get_collection_info(COLLECTION_NAME)
-            current_dimension = collection_info.get('dimension', 0)
-            logger.info(f"Found existing collection '{COLLECTION_NAME}' with dimension {current_dimension}")
-            
-            # Get the expected dimension for current model
-            embedding_size = get_embedding_size()
-            
-            # If dimensions don't match, delete and recreate
-            if current_dimension != embedding_size:
-                logger.warning(f"Collection dimension mismatch: found {current_dimension}, expected {embedding_size}")
-                logger.info(f"Recreating collection '{COLLECTION_NAME}' with correct dimension {embedding_size}")
-                
-                # Additional logging for debugging
-                logger.debug(f"Current collection info: {collection_info}")
-                
-                # Delete the collection using the new method
-                if not vector_store.delete_collection(COLLECTION_NAME):
-                    logger.error(f"Failed to delete collection '{COLLECTION_NAME}'")
-                    return False
-                
-                # Create new collection with correct dimensions
-                logger.info(f"Creating new collection '{COLLECTION_NAME}' with dimension {embedding_size}")
-                return vector_store.setup_collection(COLLECTION_NAME, embedding_size)
-            
-            return True  # Collection exists with correct dimensions
-            
+            collection_info = vector_store.get_collection_info(COLLECTION_NAME) or {}
         except Exception as e:
-            # Collection likely doesn't exist, create it
             logger.info(f"Collection '{COLLECTION_NAME}' not found or error checking: {e}")
-            embedding_size = get_embedding_size()
-            logger.info(f"Creating new collection '{COLLECTION_NAME}' with dimension {embedding_size}")
+        current_dimension = collection_info.get('dimension')
+
+        embedding_size = _probe_embedding_size()
+        if embedding_size is None:
+            logger.error(f"Embedding service unavailable; leaving collection '{COLLECTION_NAME}' untouched")
+            return False
+
+        if not current_dimension:
+            # Missing, or Qdrant could not describe it (the provider returns {} on any error).
+            # The provider's setup_collection only creates the collection when it is missing.
+            logger.info(f"Ensuring collection '{COLLECTION_NAME}' exists with dimension {embedding_size}")
             return vector_store.setup_collection(COLLECTION_NAME, embedding_size)
-            
+
+        logger.info(f"Found existing collection '{COLLECTION_NAME}' with dimension {current_dimension}")
+        if current_dimension != embedding_size:
+            logger.error(
+                f"Collection '{COLLECTION_NAME}' has dimension {current_dimension} but the embedding model "
+                f"produces {embedding_size}. Leaving it untouched; recreate it deliberately if the model changed."
+            )
+            return False
+
+        return True  # Collection exists with correct dimensions
+
     except Exception as e:
         logger.error(f"Error setting up vector collection: {e}")
         return False
