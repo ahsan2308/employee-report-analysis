@@ -18,7 +18,6 @@ test asserted the correct behaviour (it flips red once the bug is fixed).
 | B4 | The vision descriptions dict has 6 duplicate keys; later entries silently replace earlier ones | `app/services/additional_services.py:43` | `golden/analysis/test_golden_additional_services.py` |
 | B5 | Quarterly defaults are typos (`"stble"`, `"mdium"`) that can reach prompts; leftover debug `print()`s | `app/services/quarterly_analysis_db_service.py:49-73,118` | `golden/analysis/test_golden_quarterly_analysis_db_service.py`, `unit/legacy/test_quarterly_analysis_db_service.py` (strict xfail) |
 | B6 | LLM providers swallow errors and return `""`/`None`, so retries never fire and empty or default analyses are stored as COMPLETED | `app/model_host/ollama.py:66`, `app/model_host/vllm.py:124` | `integration/pipelines/test_analysis_tasks.py` |
-| B7 | `setup_collection` can delete the Qdrant collection when the embedding probe fails or the vector size differs | `app/services/vector_store_service.py:57-98` | `integration/pipelines/test_vector_store_service.py` |
 | B8 | `ConfigProvider.get(key, section=…)` reads the env var named by the bare key, so `HOST`, `PORT`, `MODEL`, `MODE`, `TYPE`, `ENABLED` override Redis, Qdrant and LLM settings | `app/core/config_provider.py:59` | `contract/test_config_contract.py` |
 | B9 | `hasattr(end, …)` should test `week_end`; a string `week_end` raises AttributeError | `app/services/additional_services.py:1146` | `golden/analysis/test_golden_additional_services.py` |
 | B10 | Chart annotation options are configured but the annotation plugin is never loaded | `frontend/js/visualizations.js` | not automated (frontend) |
@@ -28,6 +27,12 @@ test asserted the correct behaviour (it flips red once the bug is fixed).
 | B14 | `ConfigProvider` converts env values `"1"`/`"0"` to booleans, so `PORT=1` becomes `True` | `app/core/config_provider.py` (`_convert_value`) | `contract/test_config_contract.py` |
 | B15 | Every quarterly prompt build writes `generated_quarterly_prompt.txt` into the working directory and prints to stdout ("TODO: REMOVE") | `app/prompts/structured_prompts.py:3132-3140` | `golden/prompts/test_quarterly_prompt.py`, `integration/pipelines/test_analysis_tasks.py` |
 | B16 | `alembic upgrade head` cannot build an empty database: the first revision references `employee_reports.reports`, which no migration creates | `migrations/versions/65a702f08ade_*.py` | `integration/test_migrations.py` |
+
+## Fixed
+
+| ID | Bug | Fix |
+| --- | --- | --- |
+| B7 | `setup_collection` deleted the Qdrant collection when the embedding probe failed, the vector size differed, or Qdrant could not describe the collection | It never deletes now: a mismatch or an unreachable embedding service returns False and leaves the collection untouched (`integration/pipelines/test_vector_store_service.py`) |
 
 ## Other observations
 

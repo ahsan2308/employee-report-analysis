@@ -4,19 +4,9 @@
   },
   "external_calls": [
     {
-      "call": "vs.get_collection_info",
-      "collection_name": "employee_reports"
-    },
-    {
       "call": "embed",
       "input": "Test text",
       "is_query": false
-    },
-    {
-      "call": "vs.delete_collection",
-      "collection_name": "employee_reports",
-      "existed": true,
-      "points_lost": 1
     },
     {
       "call": "vs.setup_collection",
@@ -25,5 +15,5 @@
     }
   ],
   "outcome": true,
-  "points_left": 0
+  "points_left": 1
 }
