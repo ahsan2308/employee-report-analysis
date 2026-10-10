@@ -1,0 +1,14 @@
+{
+  "tasks": [
+    "app.tasks.analysis_tasks.analyze_monthly_reports_task",
+    "app.tasks.analysis_tasks.analyze_quarterly_reports_task",
+    "app.tasks.analysis_tasks.analyze_report_task",
+    "csv_import.process",
+    "sync.employee_reports",
+    "sync.full",
+    "sync.incremental",
+    "sync.job_descriptions",
+    "sync.supervisor_feedback",
+    "sync.vision_data"
+  ]
+}

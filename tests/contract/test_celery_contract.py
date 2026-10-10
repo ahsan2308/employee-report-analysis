@@ -48,3 +48,8 @@ def test_route_resolution_per_task(celery_app, snapshot):
         name: router.route({}, name).get("queue").name if router.route({}, name).get("queue") else None
         for name in sorted(celery_app.tasks) if not name.startswith("celery.")
     })
+
+
+def test_worker_entry_point_registers_every_task(run_probe, snapshot):
+    """`celery -A app.worker.celery_app worker` must register all tasks without app.worker.worker."""
+    snapshot("worker_entry_point_tasks", run_probe("worker_tasks", {}))
