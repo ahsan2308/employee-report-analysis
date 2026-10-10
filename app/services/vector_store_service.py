@@ -10,8 +10,8 @@ from app.services.embedding_service import get_embedding, get_embeddings
 
 from app.core.logger import logger
 from app.vector_store import get_vector_store
-from app.database import get_database
-from app.models.base import schema_name
+from app.db.database import get_database
+from app.db.base import schema_name
 from app.core.config_provider import get_config_provider
 from sqlalchemy.sql import text
 

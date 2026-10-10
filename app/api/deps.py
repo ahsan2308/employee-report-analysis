@@ -1,5 +1,5 @@
 """Shared FastAPI dependencies."""
-from app.database import get_database
+from app.db.database import get_database
 
 
 def get_db():

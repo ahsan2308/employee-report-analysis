@@ -2,7 +2,7 @@ from typing import List, Dict, Optional, Any, Tuple
 from uuid import UUID
 from datetime import date, timedelta
 import calendar
-from app.database import get_database
+from app.db.database import get_database
 from app.models.db_models import Report, EmployeeAnalysis, Employee, MonthlyAnalysis, QuarterlyAnalysis, EmployeeJobDescription  # NEW
 from app.models.vision_data_models import EmployeeVisionData
 from app.core.logger import logger

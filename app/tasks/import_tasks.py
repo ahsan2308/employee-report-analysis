@@ -11,7 +11,7 @@ from datetime import datetime
 
 from app.core.logger import logger
 from app.worker.celery_app import celery_app  # noqa: F401  (Celery app must exist before @shared_task binds)
-from app.database import get_database
+from app.db.database import get_database
 from app.models.import_models import CSVImportJob, ImportStatus, ImportError
 from app.services.csv_import_service import get_csv_import_service
 from app.schemas.csv_import_schema import CSVImportOptions

@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from app.worker.celery_app import celery_app
-from app.database import get_database
+from app.db.database import get_database
 from app.models.task_models import BackgroundTask, TaskStatus, TaskType
 from app.models.db_models import Report, Employee, EmployeeAnalysis
 from app.services.vector_store_service import search_reports

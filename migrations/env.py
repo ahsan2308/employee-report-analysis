@@ -13,7 +13,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Import models so Alembic can detect changes
-from app.models.base import Base
+from app.db.base import Base
 from app.models.db_models import Employee, Report, EmployeeAnalysis, QdrantMapping, QuarterlyAnalysis, MonthlyAnalysis, EmployeeJobDescription, SupervisorFeedbackForm, SupervisorFeedbackMetricDefinition, SupervisorFeedbackResponse  # noqa: F401
 from app.models.task_models import BackgroundTask  # noqa: F401  
 
