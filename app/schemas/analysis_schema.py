@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
-from datetime import datetime, date
-from uuid import UUID
+from datetime import date
 
 class Achievement(BaseModel):
     """Schema for achievement in analysis."""

@@ -5,13 +5,13 @@ Endpoints for triggering and monitoring SQL Server to PostgreSQL synchronization
 """
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime, timedelta
 from uuid import UUID
 import time
 import os
 
-from app.database import get_database
+from app.api.deps import get_db
 from app.models.sync_models import SyncHistory, SyncStatus, SyncType
 from app.schemas.sync_schema import (
     SyncTriggerResponse,
@@ -26,27 +26,12 @@ from app.schemas.sync_schema import (
     ConnectionTestResponse,
     SyncProgressMetrics
 )
-from app.tasks.sync_tasks import (
-    sync_employee_reports_task,
-    sync_vision_data_task,
-    full_sync_task
-)
 from app.database.sqlserver_connector import create_sqlserver_connector
 from app.core.logger import logger
 from app.worker.celery_app import celery_app 
 
 # Initialize Router
 router = APIRouter(prefix="/sync", tags=["SQL Server Sync"])
-
-
-# Dependency to get database session
-def get_db():
-    db_instance = get_database()
-    session = db_instance.create_session()
-    try:
-        yield session
-    finally:
-        session.close()
 
 
 def _check_and_clear_stale_syncs(db: Session, sync_type: str, timeout_minutes: int = 60):

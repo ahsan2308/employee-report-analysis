@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict, Any, Union, Optional
+from typing import List, Union, Optional
 
 class TrendMetadata(BaseModel):
     """Metadata associated with a trend dataset."""

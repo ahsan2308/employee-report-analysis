@@ -4,7 +4,7 @@ Database models for SQL Server to PostgreSQL sync tracking.
 These models track sync operations, store metadata about what was synced,
 and provide a history of all sync jobs.
 """
-from sqlalchemy import Column, Integer, String, DateTime, Text, Enum as SQLEnum, Index, CheckConstraint
+from sqlalchemy import Column, Integer, String, DateTime, Text, Index, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.sql import func
 import uuid

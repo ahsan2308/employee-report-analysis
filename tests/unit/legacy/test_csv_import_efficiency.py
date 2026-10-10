@@ -9,18 +9,15 @@ This test suite focuses on validating the efficiency improvements:
 """
 import pytest
 import os
-import io
-import pandas as pd
 import tempfile
-from datetime import datetime, date
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 from sqlalchemy.orm import Session
-from app.services.csv_import_service import CSVImportService, get_csv_import_service
+from app.services.csv_import_service import get_csv_import_service
 from app.services.csv.csv_reader import PandasCSVReader
 from app.services.csv.row_processor import RowProcessor
 from app.services.csv.error_handler import ImportErrorHandler
-from app.schemas.csv_import_schema import CSVImportOptions, CombinedCSVRow
+from app.schemas.csv_import_schema import CSVImportOptions
 from app.models.import_models import CSVImportJob, ImportStatus
 
 # Sample CSV data for testing

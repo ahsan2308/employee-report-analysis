@@ -3,12 +3,11 @@ Celery tasks for asynchronous report analysis.
 """
 import uuid
 from datetime import datetime, timedelta
-from sqlalchemy.orm import Session
 
 from app.worker.celery_app import celery_app
 from app.database import get_database
 from app.models.task_models import BackgroundTask, TaskStatus, TaskType
-from app.models.db_models import Report, Employee, EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
+from app.models.db_models import Report, Employee, EmployeeAnalysis
 from app.services.vector_store_service import search_reports
 from app.services.db_service import get_reports_for_vector_results, get_employee_vision_data, get_recent_employee_reports
 from app.services.db_service import get_monthly_analysis_by_params, store_monthly_analysis
@@ -36,7 +35,7 @@ MAX_CONTENT_ITEM_LENGTH_WEEKLY = config.get("max_content_item_length_weekly", 30
 MAX_CONTENT_ITEM_LENGTH_MONTHLY = config.get("max_content_item_length_monthly", 250, section="vector_db.search")
 MAX_CONTENT_ITEM_LENGTH_QUARTERLY = config.get("max_content_item_length_quarterly", 200, section="vector_db.search")
 
-@celery_app.task(bind=True)
+@celery_app.task(bind=True, name="app.tasks.analysis_tasks.analyze_report_task")
 def analyze_report_task(self, task_id: str):
     """
     Celery task to analyze a report asynchronously.
@@ -293,7 +292,7 @@ def analyze_report_task(self, task_id: str):
         # Re-raise the exception for Celery to handle
         raise
 
-@celery_app.task(bind=True)
+@celery_app.task(bind=True, name="app.tasks.analysis_tasks.analyze_monthly_reports_task")
 def analyze_monthly_reports_task(self, task_id: str):
     """
     Celery task to analyze an employee's monthly performance asynchronously.
@@ -657,7 +656,7 @@ def analyze_monthly_reports_task(self, task_id: str):
         # Re-raise the exception for Celery to handle
         raise
 
-@celery_app.task(bind=True)
+@celery_app.task(bind=True, name="app.tasks.analysis_tasks.analyze_quarterly_reports_task")
 def analyze_quarterly_reports_task(self, task_id: str):
     """
     Celery task to analyze an employee's quarterly performance asynchronously.

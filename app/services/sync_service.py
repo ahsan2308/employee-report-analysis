@@ -4,8 +4,7 @@ Sync Service
 Main orchestrator for SQL Server to PostgreSQL data synchronization.
 Coordinates SQL Server queries, data transformation, and processing through existing CSV import pipeline.
 """
-from typing import Dict, Any, Optional, List
-from sqlalchemy.orm import Session
+from typing import Optional
 from contextlib import contextmanager
 import os
 import pandas as pd

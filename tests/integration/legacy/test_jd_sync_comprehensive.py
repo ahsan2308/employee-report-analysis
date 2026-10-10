@@ -30,9 +30,8 @@ Usage:
 
 import pytest
 from datetime import date, datetime, timedelta
-from sqlalchemy.orm import Session
 from typing import Dict, Any, List, Generator
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock
 import time
 import pandas as pd
 

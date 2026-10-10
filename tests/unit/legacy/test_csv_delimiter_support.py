@@ -10,7 +10,6 @@ import sys
 import os
 import tempfile
 import io
-from typing import List, Dict, Any
 
 # Add the parent directory to the path to enable imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

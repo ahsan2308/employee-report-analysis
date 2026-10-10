@@ -111,12 +111,27 @@ def probe_imports() -> dict:
     return outcomes
 
 
+def probe_worker_tasks() -> dict:
+    """Tasks a worker started with `celery -A app.worker.celery_app` registers.
+
+    The worker imports only the -A module, then runs the loader's default
+    module import (where autodiscovery happens) before consuming.
+    """
+    importlib.import_module("app.worker.celery_app")
+    app_ = sys.modules["app.worker.celery_app"].celery_app  # app.worker shadows the submodule name
+    app_.loader.import_default_modules()
+    return {"tasks": sorted(name for name in app_.tasks if not name.startswith("celery."))}
+
+
+PROBES = {"config": probe_config, "imports": probe_imports, "worker_tasks": probe_worker_tasks}
+
+
 if __name__ == "__main__":
     mode = sys.argv[1]
     real_stdout = sys.stdout
     sys.stdout = io.StringIO()  # import-time prints must not corrupt the JSON
     try:
-        data = probe_config() if mode == "config" else probe_imports()
+        data = PROBES[mode]()
     except Exception:
         sys.stdout = real_stdout
         traceback.print_exc(file=sys.stderr)

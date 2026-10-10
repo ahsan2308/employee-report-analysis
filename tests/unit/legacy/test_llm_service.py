@@ -7,7 +7,7 @@ import json
 import time
 import unittest
 import pytest
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any
 from unittest.mock import patch, MagicMock
 
 # Add the project root to the path so we can import the app modules

@@ -4,7 +4,7 @@ Job Description Processor
 Handles the transformation and processing of Job Description CSV rows into database operations.
 Supports both manual CSV imports and SQL Server sync operations.
 """
-from typing import Dict, Any, Tuple, List, Optional, Set
+from typing import Dict, Any, Tuple, List, Set
 import pandas as pd
 from sqlalchemy.orm import Session
 from pydantic import ValidationError
@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from app.base.base_csv_processor import BaseCSVProcessor
 from app.schemas.csv_import_schema import JobDescriptionCSVRow
 from app.models.db_models import Employee, EmployeeJobDescription
-from app.services.csv.error_handler import ImportErrorHandler, ErrorCategory
+from app.services.csv.error_handler import ImportErrorHandler
 from app.core.logger import logger
 
 

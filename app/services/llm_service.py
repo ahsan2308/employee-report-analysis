@@ -1,7 +1,7 @@
 """
 High-level LLM service for text generation and inference operations.
 """
-from typing import Dict, List, Any, Optional, Type, Union
+from typing import Dict, List, Any, Optional, Type
 import time
 import json
 import re

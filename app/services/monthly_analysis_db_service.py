@@ -4,8 +4,7 @@ Monthly Analysis DB Service
 Provides functionality for aggregating and analyzing monthly employee data.
 This service acts as a layer between the database and analysis tasks.
 """
-from typing import List, Dict, Optional, Any
-from datetime import date
+from typing import Dict, Any
 
 from app.core.logger import logger
 from app.services.db_service import (

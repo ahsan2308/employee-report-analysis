@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from uuid import UUID
 
-from app.database import get_database
+from app.api.deps import get_db
 from app.schemas.task_schema import TaskStatusResponse, TaskResultResponse 
 from app.services.task_service import get_task_status, get_task_result
 from app.models.task_models import TaskStatus
@@ -11,14 +11,6 @@ from app.core.logger import logger
 # Initialize router
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
-# Dependency to get database session
-def get_db():
-    db_instance = get_database()  
-    session = db_instance.create_session()
-    try:
-        yield session
-    finally:
-        session.close()
 
 @router.get("/{task_id}", response_model=TaskStatusResponse)
 def get_task_status_endpoint(task_id: UUID, db: Session = Depends(get_db)):

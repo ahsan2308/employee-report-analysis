@@ -1,10 +1,9 @@
 import unittest
 import pytest
-from unittest.mock import patch, MagicMock
-from datetime import date, datetime, timedelta
+from unittest.mock import patch
+from datetime import date
 import sys
 import os
-import json
 
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

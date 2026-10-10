@@ -19,6 +19,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y unixodbc
       - name: Install dependencies
         run: pip install -r requirements.txt -r requirements-dev.txt
+      - name: Lint (unused imports, undefined names)
+        run: ruff check .
       - name: Run tests (integration tests skip without a database)
         run: python -m pytest
 

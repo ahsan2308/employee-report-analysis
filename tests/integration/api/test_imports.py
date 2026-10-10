@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from app.models.import_models import CSVImportJob, ImportError
+from app.models.import_models import CSVImportJob
 from tests.integration.api.seed import add_import_error, add_import_job, dump_rows, fixed_uuid
 
 CSV_BODY = b"Name,Wing,Position\nAlice,Engineering,Engineer\n"

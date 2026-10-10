@@ -1,7 +1,6 @@
 from typing import Dict, Any, List, Union, Optional, Sequence
 import numpy as np
 import ollama
-import os
 
 from app.base.base_embedding import EmbeddingProvider
 from app.core.logger import logger

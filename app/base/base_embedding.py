@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List, Union, Optional, Sequence
+from typing import Dict, Any, List, Union, Sequence
 import numpy as np
 
 class EmbeddingProvider(ABC):

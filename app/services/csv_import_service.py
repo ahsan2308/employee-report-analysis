@@ -9,15 +9,13 @@ import traceback
 from contextlib import contextmanager
 import pandas as pd
 from sqlalchemy.orm import Session
-from sqlalchemy import event
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.logger import logger
 from app.database import get_database
 from app.services.csv.csv_reader import PandasCSVReader
 from app.services.csv.row_processor import RowProcessor
-from app.services.csv.error_handler import ImportErrorHandler, ErrorCategory
-from app.services.vector_store_service import add_report_to_vector_store
+from app.services.csv.error_handler import ImportErrorHandler
 from app.models.import_models import CSVImportJob, ImportStatus, ImportError
 from app.schemas.csv_import_schema import CSVImportOptions, CSVImportJobResponse
 

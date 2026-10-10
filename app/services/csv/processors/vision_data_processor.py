@@ -3,7 +3,7 @@ Vision Data Processor
 
 Handles the transformation and processing of Vision system data CSV rows into database operations.
 """
-from typing import Dict, Any, Tuple, List, Optional, Set, Union
+from typing import Dict, Any, Tuple, List, Set, Union
 import pandas as pd
 import json
 from sqlalchemy.orm import Session
@@ -13,7 +13,7 @@ from app.base.base_csv_processor import BaseCSVProcessor
 from app.schemas.csv_import_schema import VisionDataCSVRow
 from app.models.db_models import Employee
 from app.models.vision_data_models import EmployeeVisionData
-from app.services.csv.error_handler import ImportErrorHandler, ErrorCategory
+from app.services.csv.error_handler import ImportErrorHandler
 from app.core.logger import logger
 
 

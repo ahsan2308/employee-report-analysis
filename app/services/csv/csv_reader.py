@@ -1,7 +1,7 @@
 """
 CSV Reader Component with pandas for efficient processing.
 """
-from typing import List, Dict, Any, Generator, Optional, BinaryIO, TextIO, Union, Tuple
+from typing import List, Dict, Any, Generator, Optional, BinaryIO, Union
 import pandas as pd
 import io
 from abc import ABC, abstractmethod

@@ -15,7 +15,6 @@ from app.models.db_models import (
     EmployeeAnalysis,
     EmployeeJobDescription,
     MonthlyAnalysis,
-    QdrantMapping,
     QuarterlyAnalysis,
     Report,
     SupervisorFeedbackForm,

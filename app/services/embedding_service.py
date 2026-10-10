@@ -3,7 +3,7 @@ Embedding service for generating text embeddings using various providers.
 This is the new modular implementation that replaces app.core.embeddings.
 """
 
-from typing import List, Optional, Union
+from typing import List
 import os
 from app.model_host import get_embedding_provider
 from app.core.logger import logger

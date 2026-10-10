@@ -4,14 +4,14 @@ Row Processor Component
 This module provides a compatibility layer for the existing code,
 delegating to the appropriate specialized processor via the factory.
 """
-from typing import Dict, Any, Tuple, List, Optional
+from typing import Dict, Any, Tuple
 import pandas as pd
 from sqlalchemy.orm import Session
 import traceback
 from pydantic import ValidationError
 
 from app.base.base_csv_processor import BaseCSVProcessor
-from app.services.csv.error_handler import ImportErrorHandler, ErrorCategory
+from app.services.csv.error_handler import ImportErrorHandler
 from app.services.csv.processors.processor_factory import ProcessorFactory
 from app.core.logger import logger
 

@@ -4,9 +4,7 @@ Quarterly Analysis DB Service
 Provides functionality for aggregating and analyzing quarterly employee data.
 This service acts as a layer between the database and analysis tasks.
 """
-from typing import List, Dict, Optional, Any
-from datetime import date, datetime
-import calendar
+from typing import Dict, Any
 from collections import Counter
 
 from app.core.logger import logger

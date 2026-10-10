@@ -3,7 +3,7 @@ Employee Report Processor
 
 Handles the transformation and processing of employee report CSV rows into database operations.
 """
-from typing import Dict, Any, Tuple, List, Optional, Set
+from typing import Dict, Any, Tuple, List
 import pandas as pd
 from sqlalchemy.orm import Session
 from pydantic import ValidationError
@@ -11,7 +11,7 @@ from pydantic import ValidationError
 from app.base.base_csv_processor import BaseCSVProcessor
 from app.schemas.csv_import_schema import CombinedCSVRow
 from app.models.db_models import Employee, Report
-from app.services.csv.error_handler import ImportErrorHandler, ErrorCategory
+from app.services.csv.error_handler import ImportErrorHandler
 from app.services.vector_store_service import add_report_to_vector_store
 from app.core.logger import logger
 

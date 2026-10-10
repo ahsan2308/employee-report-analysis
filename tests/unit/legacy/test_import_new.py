@@ -15,15 +15,12 @@ import sys
 import os
 import tempfile
 import io
-from unittest.mock import Mock, patch, MagicMock
-from datetime import datetime
 
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.services.csv.csv_reader import PandasCSVReader
 from app.schemas.csv_import_schema import CSVImportOptions
-from app.services.csv_import_service import CSVImportService
 
 
 class TestRunner:

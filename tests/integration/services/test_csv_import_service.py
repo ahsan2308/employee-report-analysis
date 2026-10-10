@@ -7,7 +7,7 @@ from pydantic import BaseModel, ValidationError
 from app.models.import_models import CSVImportJob, ImportError, ImportStatus
 from app.schemas.csv_import_schema import CSVImportOptions
 from app.services.csv.error_handler import ErrorCategory, ImportErrorHandler
-from app.services.csv_import_service import CSVImportService, get_csv_import_service
+from app.services.csv_import_service import get_csv_import_service
 from tests.integration.services.seed import (
     dump_rows,
     fmt_dt,

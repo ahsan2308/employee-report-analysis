@@ -9,3 +9,10 @@ markers = [
     "sqlserver: needs a SQL Server ODBC driver or a reachable SQL Server; deselected by default",
     "known_bug(id): characterizes a catalogued bug (see tests/KNOWN_BUGS.md); kept as-is until its fix is approved",
 ]
+
+[tool.ruff]
+extend-exclude = ["scripts/manual", "migrations/versions"]
+
+[tool.ruff.lint]
+# Deliberately narrow: unused imports and undefined names only. No reformatting.
+select = ["F401", "F821"]
