@@ -4,7 +4,7 @@ Sync Service
 Main orchestrator for SQL Server to PostgreSQL data synchronization.
 Coordinates SQL Server queries, data transformation, and processing through existing CSV import pipeline.
 """
-from typing import Optional
+from typing import Any, Callable, Dict, NamedTuple, Optional
 from contextlib import contextmanager
 import os
 import pandas as pd
@@ -18,6 +18,70 @@ from app.services.csv.error_handler import ImportErrorHandler
 from app.models.sync_models import SyncHistory, SyncType, SyncStatus
 from app.core.logger import logger
 from app.db.database import get_database
+
+
+class _SyncSpec(NamedTuple):
+    """What differs between the sync_* methods."""
+    sync_type: SyncType
+    label: str
+    table_name_method: str
+    process_batches_method: str
+    max_modified_date_attribute: str  # set by the batch processor
+    order_by: Callable[[str], str]  # timestamp column -> ORDER BY
+    status_metrics: Callable[[Dict[str, Any]], Dict[str, Any]]  # processor metrics -> sync status metrics
+
+
+_EMPLOYEE_REPORTS = _SyncSpec(
+    sync_type=SyncType.EMPLOYEE_REPORTS,
+    label="employee reports",
+    table_name_method="_get_employee_reports_table_name",
+    process_batches_method="_process_employee_report_batches_bulk",
+    max_modified_date_attribute="_max_modified_date",
+    order_by=lambda timestamp_col: timestamp_col,
+    status_metrics=lambda m: {
+        "records_created": m.get('employees_created', 0) + m.get('reports_created', 0),
+        "records_updated": m.get('employees_updated', 0) + m.get('reports_updated', 0),
+    },
+)
+_VISION_DATA = _SyncSpec(
+    sync_type=SyncType.VISION_DATA,
+    label="vision data",
+    table_name_method="_get_vision_data_table_name",
+    process_batches_method="_process_vision_data_batches_bulk",
+    max_modified_date_attribute="_max_modified_date_vision",
+    order_by=lambda timestamp_col: timestamp_col,
+    status_metrics=lambda m: {
+        "records_created": m.get('vision_records_created', 0),
+        "records_updated": m.get('vision_records_updated', 0),
+    },
+)
+_JOB_DESCRIPTIONS = _SyncSpec(
+    sync_type=SyncType.JOB_DESCRIPTIONS,
+    label="job descriptions",
+    table_name_method="_get_job_descriptions_table_name",
+    process_batches_method="_process_job_description_batches_bulk",
+    max_modified_date_attribute="_max_modified_date_jd",
+    order_by=lambda timestamp_col: timestamp_col,
+    status_metrics=lambda m: {
+        "records_created": m.get('jd_records_created', 0),
+        "records_updated": m.get('jd_records_updated', 0),
+    },
+)
+_SUPERVISOR_FEEDBACK = _SyncSpec(
+    sync_type=SyncType.SUPERVISOR_FEEDBACK,
+    label="supervisor feedback",
+    table_name_method="_get_supervisor_feedback_table_name",
+    process_batches_method="_process_supervisor_feedback_batches_bulk",
+    max_modified_date_attribute="_max_modified_date_sf",
+    # Rows of one form must stay in one batch, so order by form first
+    order_by=lambda timestamp_col: 'RO_Form_ID, ' + timestamp_col,
+    status_metrics=lambda m: {
+        "forms_created": m.get('forms_created', 0),
+        "forms_updated": m.get('forms_updated', 0),
+        "responses_created": m.get('responses_created', 0),
+        "metric_definitions_created": m.get('metric_definitions_created', 0),
+    },
+)
 
 
 class SyncService:
@@ -153,29 +217,20 @@ class SyncService:
             ]
             self.sync_tracker.save_sync_errors(sync_id, errors, session=session)
 
-    def sync_employee_reports(self, is_full_sync: bool = False, existing_sync_id: Optional[str] = None) -> SyncHistory:
+    def _run_sync(self, spec: "_SyncSpec", is_full_sync: bool, existing_sync_id: Optional[str]) -> SyncHistory:
         """
-        Sync employee reports from SQL Server to PostgreSQL.
-        
+        Sync one table from SQL Server to PostgreSQL (shared by the sync_* methods).
+
         Algorithm:
-        1. Create sync job
+        1. Create sync job (or use the one the API endpoint created)
         2. Determine sync mode (full vs incremental)
         3. Query SQL Server (with timestamp filter for incremental)
-        4. Transform each row (datetime → string)
-        5. Pass to RowProcessor → EmployeeReportProcessor (existing validation/DB logic)
-        6. Track progress and errors
-        7. Update sync status (COMPLETED/FAILED/PARTIAL)
-        
-        Args:
-            is_full_sync: If True, sync all records. If False, incremental sync.
-            existing_sync_id: Optional sync_id if already created by API endpoint
-            
-        Returns:
-            SyncHistory record with sync results
+        4. Process the batches in bulk through the type's processor
+        5. Track progress and errors
+        6. Update sync status (COMPLETED/FAILED/PARTIAL)
         """
-        # Dynamically get the employee reports table name
-        employee_reports_table = self._get_employee_reports_table_name()
-        logger.info(f"Using table '{employee_reports_table}' for employee reports sync")
+        table_name = getattr(self, spec.table_name_method)()
+        logger.info(f"Using table '{table_name}' for {spec.label} sync")
         
         with self._sync_session_context() as session:
             sync_job = None
@@ -194,19 +249,19 @@ class SyncService:
                 else:
                     # Create new sync job (backward compatibility for Celery Beat)
                     sync_job = self.sync_tracker.create_sync_job(
-                        sync_type=SyncType.EMPLOYEE_REPORTS,
+                        sync_type=spec.sync_type,
                         is_full_sync=is_full_sync,
-                        session=session 
+                        session=session
                     )
                 
                 # Step 2: Determine sync mode
                 if is_full_sync:
                     last_sync_timestamp = None
-                    logger.info(f"Starting FULL sync for employee reports (sync_id: {sync_job.sync_id})")
+                    logger.info(f"Starting FULL sync for {spec.label} (sync_id: {sync_job.sync_id})")
                 else:
                     last_sync_timestamp = self.sync_tracker.get_last_successful_sync(
-                        SyncType.EMPLOYEE_REPORTS,
-                        session=session 
+                        spec.sync_type,
+                        session=session
                     )
                     if last_sync_timestamp is None:
                         logger.info("No previous sync found. Performing full sync.")
@@ -218,44 +273,41 @@ class SyncService:
                 self.sync_tracker.update_sync_status(
                     sync_job.sync_id, 
                     SyncStatus.RUNNING,
-                    session=session 
+                    session=session
                 )
                 
                 # Get the actual timestamp column from the table schema
-                schema = self.sqlserver_connector.get_table_schema(employee_reports_table)
+                schema = self.sqlserver_connector.get_table_schema(table_name)
                 timestamp_col = self._find_timestamp_column(schema)
                 
                 if not timestamp_col:
-                    raise ValueError(f"No valid timestamp column found in {employee_reports_table} table")
+                    raise ValueError(f"No valid timestamp column found in {table_name} table")
                 
-                logger.info(f"Using timestamp column '{timestamp_col}' for {employee_reports_table} sync")
+                logger.info(f"Using timestamp column '{timestamp_col}' for {table_name} sync")
                 
                 # Step 4: Query SQL Server using detected column
+                order_by = spec.order_by(timestamp_col)
                 if is_full_sync:
                     batches = self.sqlserver_connector.get_all_records(
-                        table_name=employee_reports_table,
+                        table_name=table_name,
                         batch_size=1000,
-                        order_by=timestamp_col
+                        order_by=order_by
                     )
                 else:
                     batches = self.sqlserver_connector.get_records_since(
-                        table_name=employee_reports_table,
+                        table_name=table_name,
                         timestamp_column=timestamp_col,
                         since_timestamp=last_sync_timestamp,
                         batch_size=1000,
-                        order_by=timestamp_col
+                        order_by=order_by
                     )
                 
                 # Step 5: Create processors
                 error_handler = ImportErrorHandler()
                 row_processor = RowProcessor(session, error_handler)
                 
-                # Track maximum LastModifiedDate for incremental sync
-                max_modified_date = None
-                
-                
                 # Process batches using bulk operations
-                successful, total = self._process_employee_report_batches_bulk(
+                successful, total = getattr(self, spec.process_batches_method)(
                     batches=batches,
                     sync_id=sync_job.sync_id,
                     row_processor=row_processor,
@@ -263,13 +315,13 @@ class SyncService:
                     timestamp_column=timestamp_col
                 )
                 
-                # Retrieve max_modified_date from instance variable set during processing
-                max_modified_date = getattr(self, '_max_modified_date', None)
+                # The newest source timestamp seen, set by the batch processor (for incremental sync)
+                max_modified_date = getattr(self, spec.max_modified_date_attribute, None)
                 
-                # Step 7: Save errors if any
+                # Step 6: Save errors if any
                 self._save_collected_errors(sync_job.sync_id, error_handler, session)
                 
-                # Step 8: Determine final status
+                # Step 7: Determine final status
                 if error_handler.get_error_count() > 0 and successful == 0:
                     final_status = SyncStatus.FAILED
                 elif error_handler.get_error_count() > 0:
@@ -277,34 +329,27 @@ class SyncService:
                 else:
                     final_status = SyncStatus.COMPLETED
                 
-                # Step 9: Get processor metrics
-                processor_metrics = row_processor.get_metrics()
-                
-                # Step 10: Update final status with metrics
+                # Step 8: Update final status with metrics
+                processor_metrics = row_processor.get_metrics().get('metrics', {})
                 self.sync_tracker.update_sync_status(
                     sync_id=sync_job.sync_id,
                     status=final_status,
                     metrics={
                         "records_queried": total,
                         "records_synced": successful,
-                        "records_created": processor_metrics.get('metrics', {}).get('employees_created', 0) + 
-                                         processor_metrics.get('metrics', {}).get('reports_created', 0),
-                        "records_updated": processor_metrics.get('metrics', {}).get('employees_updated', 0) + 
-                                         processor_metrics.get('metrics', {}).get('reports_updated', 0),
+                        **spec.status_metrics(processor_metrics),
                         "records_skipped": total - successful,
                         "error_count": error_handler.get_error_count(),
-                        "metrics": processor_metrics.get('metrics', {}),
-                        "last_sync_timestamp": max_modified_date  # ← CRITICAL for incremental sync!
+                        "metrics": processor_metrics,
+                        "last_sync_timestamp": max_modified_date
                     },
-                    session=session 
+                    session=session
                 )
-                
-                # logger.info(f"🔍 DEBUG: Sent last_sync_timestamp to tracker: {max_modified_date}")
                 
                 # Explicitly flush to ensure changes are written
                 session.flush()
                 
-                logger.info(f"Employee reports sync completed: {successful}/{total} records synced")
+                logger.info(f"{spec.label.capitalize()} sync completed: {successful}/{total} records synced")
                 
                 # Refresh AFTER flush to get the committed state
                 session.refresh(sync_job)
@@ -315,7 +360,7 @@ class SyncService:
                 return sync_job
                 
             except Exception as e:
-                logger.error(f"Employee reports sync failed: {str(e)}", exc_info=True)
+                logger.error(f"{spec.label.capitalize()} sync failed: {str(e)}", exc_info=True)
                 
                 # Ensure sync_job exists before marking as failed
                 if sync_job:
@@ -325,7 +370,7 @@ class SyncService:
                     self.sync_tracker.mark_sync_failed(
                         sync_job.sync_id, 
                         str(e),
-                        session=session 
+                        session=session
                     )
                     
                     # Flush and refresh even on failure
@@ -338,6 +383,19 @@ class SyncService:
                 else:
                     # If sync_job was never created (very early failure), then raise
                     raise
+
+    def sync_employee_reports(self, is_full_sync: bool = False, existing_sync_id: Optional[str] = None) -> SyncHistory:
+        """
+        Sync employee reports from SQL Server to PostgreSQL.
+        
+        Args:
+            is_full_sync: If True, sync all records. If False, incremental sync.
+            existing_sync_id: Optional sync_id if already created by API endpoint
+            
+        Returns:
+            SyncHistory record with sync results
+        """
+        return self._run_sync(_EMPLOYEE_REPORTS, is_full_sync, existing_sync_id)
     
     def sync_vision_data(self, is_full_sync: bool = False, existing_sync_id: Optional[str] = None) -> SyncHistory:
         """
@@ -350,166 +408,7 @@ class SyncService:
         Returns:
             SyncHistory record with sync results
         """
-        # Dynamically get the vision data table name
-        vision_data_table = self._get_vision_data_table_name()
-        logger.info(f"Using table '{vision_data_table}' for vision data sync")
-        
-        with self._sync_session_context() as session:
-            sync_job = None
-            error_handler = None
-            try:
-                # Step 1: Create or use existing sync job
-                if existing_sync_id:
-                    # Use existing sync job created by API endpoint
-                    logger.info(f"Using existing sync job: {existing_sync_id}")
-                    sync_job = session.query(SyncHistory).filter(
-                        SyncHistory.sync_id == existing_sync_id
-                    ).first()
-                    
-                    if not sync_job:
-                        raise ValueError(f"Sync job {existing_sync_id} not found")
-                else:
-                    # Create new sync job (backward compatibility for Celery Beat)
-                    sync_job = self.sync_tracker.create_sync_job(
-                        sync_type=SyncType.VISION_DATA,
-                        is_full_sync=is_full_sync,
-                        session=session 
-                    )
-                
-                # Step 2: Determine sync mode
-                if is_full_sync:
-                    last_sync_timestamp = None
-                    logger.info(f"Starting FULL sync for vision data (sync_id: {sync_job.sync_id})")
-                else:
-                    last_sync_timestamp = self.sync_tracker.get_last_successful_sync(
-                        SyncType.VISION_DATA,
-                        session=session 
-                    )
-                    if last_sync_timestamp is None:
-                        logger.info("No previous sync found. Performing full sync.")
-                        is_full_sync = True
-                    else:
-                        logger.info(f"Starting INCREMENTAL sync from {last_sync_timestamp}")
-                
-                # Step 3: Update status to RUNNING
-                self.sync_tracker.update_sync_status(
-                    sync_job.sync_id, 
-                    SyncStatus.RUNNING,
-                    session=session 
-                )
-                
-                # Get the actual timestamp column from the table schema
-                schema = self.sqlserver_connector.get_table_schema(vision_data_table)
-                timestamp_col = self._find_timestamp_column(schema)
-                
-                if not timestamp_col:
-                    raise ValueError(f"No valid timestamp column found in {vision_data_table} table")
-                
-                logger.info(f"Using timestamp column '{timestamp_col}' for {vision_data_table} sync")
-                
-                # Step 4: Query SQL Server using detected column
-                if is_full_sync:
-                    batches = self.sqlserver_connector.get_all_records(
-                        table_name=vision_data_table,
-                        batch_size=1000,
-                        order_by=timestamp_col
-                    )
-                else:
-                    batches = self.sqlserver_connector.get_records_since(
-                        table_name=vision_data_table,
-                        timestamp_column=timestamp_col,
-                        since_timestamp=last_sync_timestamp,
-                        batch_size=1000,
-                        order_by=timestamp_col
-                    )
-                
-                # Create processors with SESSION
-                error_handler = ImportErrorHandler()
-                row_processor = RowProcessor(session, error_handler)
-                
-                # Track maximum ModifiedDate for incremental sync
-                max_modified_date = None
-                
-                # Process batches using bulk operations
-                successful, total = self._process_vision_data_batches_bulk(
-                    batches=batches,
-                    sync_id=sync_job.sync_id,
-                    row_processor=row_processor,
-                    error_handler=error_handler,
-                    timestamp_column=timestamp_col 
-                )
-                
-                # Retrieve max_modified_date from instance variable set during processing
-                max_modified_date = getattr(self, '_max_modified_date_vision', None)
-                
-                # Step 7: Save errors if any
-                self._save_collected_errors(sync_job.sync_id, error_handler, session)
-                    
-                # Step 8: Determine final status
-                if error_handler.get_error_count() > 0 and successful == 0:
-                    final_status = SyncStatus.FAILED
-                elif error_handler.get_error_count() > 0:
-                    final_status = SyncStatus.PARTIAL
-                else:
-                    final_status = SyncStatus.COMPLETED
-                
-                # Step 9: Get processor metrics
-                processor_metrics = row_processor.get_metrics()
-                
-                # Step 10: Update final status with metrics
-                self.sync_tracker.update_sync_status(
-                    sync_id=sync_job.sync_id,
-                    status=final_status,
-                    metrics={
-                        "records_queried": total,
-                        "records_synced": successful,
-                        "records_created": processor_metrics.get('metrics', {}).get('vision_records_created', 0),
-                        "records_updated": processor_metrics.get('metrics', {}).get('vision_records_updated', 0),
-                        "records_skipped": total - successful,
-                        "error_count": error_handler.get_error_count(),
-                        "metrics": processor_metrics.get('metrics', {}),
-                        "last_sync_timestamp": max_modified_date  # ← CRITICAL for incremental sync!
-                    },
-                    session=session 
-                )
-                
-                # Explicitly flush to ensure changes are written
-                session.flush()
-                
-                logger.info(f"Vision data sync completed: {successful}/{total} records synced")
-                
-                # Refresh AFTER flush to get the committed state
-                session.refresh(sync_job)
-                
-                # Expunge so the object can be safely accessed after session closes
-                session.expunge(sync_job)
-
-                return sync_job
-                
-            except Exception as e:
-                logger.error(f"Vision data sync failed: {str(e)}", exc_info=True)
-                
-                # Ensure sync_job exists before marking as failed
-                if sync_job:
-                    # Keep the row errors collected before the failure (e.g. the ones that triggered an abort)
-                    if error_handler is not None:
-                        self._save_collected_errors(sync_job.sync_id, error_handler, session)
-                    self.sync_tracker.mark_sync_failed(
-                        sync_job.sync_id, 
-                        str(e),
-                        session=session 
-                    )
-                    
-                    # Flush and refresh even on failure
-                    session.flush()
-                    session.refresh(sync_job)
-                    session.expunge(sync_job)
-                    
-                    # Return the FAILED sync_job so caller can inspect it
-                    return sync_job
-                else:
-                    # If sync_job was never created (very early failure), then raise
-                    raise
+        return self._run_sync(_VISION_DATA, is_full_sync, existing_sync_id)
 
     def sync_job_descriptions(self, is_full_sync: bool = False, existing_sync_id: Optional[str] = None) -> SyncHistory:
         """
@@ -522,148 +421,7 @@ class SyncService:
         Returns:
             SyncHistory record with sync results
         """
-        # Dynamically get the job descriptions table name
-        jd_table = self._get_job_descriptions_table_name()
-        logger.info(f"Using table '{jd_table}' for job descriptions sync")
-        
-        with self._sync_session_context() as session:
-            sync_job = None
-            error_handler = None
-            try:
-                # Step 1: Create or use existing sync job
-                if existing_sync_id:
-                    logger.info(f"Using existing sync job: {existing_sync_id}")
-                    sync_job = session.query(SyncHistory).filter(
-                        SyncHistory.sync_id == existing_sync_id
-                    ).first()
-                    
-                    if not sync_job:
-                        raise ValueError(f"Sync job {existing_sync_id} not found")
-                else:
-                    sync_job = self.sync_tracker.create_sync_job(
-                        sync_type=SyncType.JOB_DESCRIPTIONS,
-                        is_full_sync=is_full_sync,
-                        session=session
-                    )
-                
-                # Step 2: Determine sync mode
-                if is_full_sync:
-                    last_sync_timestamp = None
-                    logger.info(f"Starting FULL sync for job descriptions (sync_id: {sync_job.sync_id})")
-                else:
-                    last_sync_timestamp = self.sync_tracker.get_last_successful_sync(
-                        SyncType.JOB_DESCRIPTIONS,
-                        session=session
-                    )
-                    if last_sync_timestamp is None:
-                        logger.info("No previous sync found. Performing full sync.")
-                        is_full_sync = True
-                    else:
-                        logger.info(f"Starting INCREMENTAL sync from {last_sync_timestamp}")
-                
-                # Step 3: Update status to RUNNING
-                self.sync_tracker.update_sync_status(
-                    sync_job.sync_id, 
-                    SyncStatus.RUNNING,
-                    session=session
-                )
-                
-                # Get the actual timestamp column from the table schema
-                schema = self.sqlserver_connector.get_table_schema(jd_table)
-                timestamp_col = self._find_timestamp_column(schema)
-                
-                if not timestamp_col:
-                    raise ValueError(f"No valid timestamp column found in {jd_table} table")
-                
-                logger.info(f"Using timestamp column '{timestamp_col}' for {jd_table} sync")
-                
-                # Step 4: Query SQL Server
-                if is_full_sync:
-                    batches = self.sqlserver_connector.get_all_records(
-                        table_name=jd_table,
-                        batch_size=1000,
-                        order_by=timestamp_col
-                    )
-                else:
-                    batches = self.sqlserver_connector.get_records_since(
-                        table_name=jd_table,
-                        timestamp_column=timestamp_col,
-                        since_timestamp=last_sync_timestamp,
-                        batch_size=1000,
-                        order_by=timestamp_col
-                    )
-                
-                # Step 5: Create processors
-                error_handler = ImportErrorHandler()
-                row_processor = RowProcessor(session, error_handler)
-                
-                # Step 6: Process batches using bulk operations
-                successful, total = self._process_job_description_batches_bulk(
-                    batches=batches,
-                    sync_id=sync_job.sync_id,
-                    row_processor=row_processor,
-                    error_handler=error_handler,
-                    timestamp_column=timestamp_col
-                )
-                
-                # Retrieve max_modified_date from instance variable
-                max_modified_date = getattr(self, '_max_modified_date_jd', None)
-                
-                # Step 7: Save errors if any
-                self._save_collected_errors(sync_job.sync_id, error_handler, session)
-                
-                # Step 8: Determine final status
-                if error_handler.get_error_count() > 0 and successful == 0:
-                    final_status = SyncStatus.FAILED
-                elif error_handler.get_error_count() > 0:
-                    final_status = SyncStatus.PARTIAL
-                else:
-                    final_status = SyncStatus.COMPLETED
-                
-                # Step 9: Get processor metrics
-                processor_metrics = row_processor.get_metrics()
-                
-                # Step 10: Update final status with metrics
-                self.sync_tracker.update_sync_status(
-                    sync_id=sync_job.sync_id,
-                    status=final_status,
-                    metrics={
-                        "records_queried": total,
-                        "records_synced": successful,
-                        "records_created": processor_metrics.get('metrics', {}).get('jd_records_created', 0),
-                        "records_updated": processor_metrics.get('metrics', {}).get('jd_records_updated', 0),
-                        "records_skipped": total - successful,
-                        "error_count": error_handler.get_error_count(),
-                        "metrics": processor_metrics.get('metrics', {}),
-                        "last_sync_timestamp": max_modified_date
-                    },
-                    session=session
-                )
-                
-                session.flush()
-                logger.info(f"Job descriptions sync completed: {successful}/{total} records synced")
-                session.refresh(sync_job)
-                session.expunge(sync_job)
-                return sync_job
-                
-            except Exception as e:
-                logger.error(f"Job descriptions sync failed: {str(e)}", exc_info=True)
-                
-                if sync_job:
-                    # Keep the row errors collected before the failure (e.g. the ones that triggered an abort)
-                    if error_handler is not None:
-                        self._save_collected_errors(sync_job.sync_id, error_handler, session)
-                    self.sync_tracker.mark_sync_failed(
-                        sync_job.sync_id, 
-                        str(e),
-                        session=session
-                    )
-                    session.flush()
-                    session.refresh(sync_job)
-                    session.expunge(sync_job)
-                    return sync_job
-                else:
-                    raise
+        return self._run_sync(_JOB_DESCRIPTIONS, is_full_sync, existing_sync_id)
 
     def sync_supervisor_feedback(self, is_full_sync: bool = False, existing_sync_id: Optional[str] = None) -> SyncHistory:
         """
@@ -676,150 +434,7 @@ class SyncService:
         Returns:
             SyncHistory record with sync results
         """
-        # Dynamically get the supervisor feedback table name
-        sf_table = self._get_supervisor_feedback_table_name()
-        logger.info(f"Using table '{sf_table}' for supervisor feedback sync")
-        
-        with self._sync_session_context() as session:
-            sync_job = None
-            error_handler = None
-            try:
-                # Step 1: Create or use existing sync job
-                if existing_sync_id:
-                    logger.info(f"Using existing sync job: {existing_sync_id}")
-                    sync_job = session.query(SyncHistory).filter(
-                        SyncHistory.sync_id == existing_sync_id
-                    ).first()
-                    
-                    if not sync_job:
-                        raise ValueError(f"Sync job {existing_sync_id} not found")
-                else:
-                    sync_job = self.sync_tracker.create_sync_job(
-                        sync_type=SyncType.SUPERVISOR_FEEDBACK,
-                        is_full_sync=is_full_sync,
-                        session=session
-                    )
-                
-                # Step 2: Determine sync mode
-                if is_full_sync:
-                    last_sync_timestamp = None
-                    logger.info(f"Starting FULL sync for supervisor feedback (sync_id: {sync_job.sync_id})")
-                else:
-                    last_sync_timestamp = self.sync_tracker.get_last_successful_sync(
-                        SyncType.SUPERVISOR_FEEDBACK,
-                        session=session
-                    )
-                    if last_sync_timestamp is None:
-                        logger.info("No previous sync found. Performing full sync.")
-                        is_full_sync = True
-                    else:
-                        logger.info(f"Starting INCREMENTAL sync from {last_sync_timestamp}")
-                
-                # Step 3: Update status to RUNNING
-                self.sync_tracker.update_sync_status(
-                    sync_job.sync_id, 
-                    SyncStatus.RUNNING,
-                    session=session
-                )
-                
-                # Get the actual timestamp column from the table schema
-                schema = self.sqlserver_connector.get_table_schema(sf_table)
-                timestamp_col = self._find_timestamp_column(schema)
-                
-                if not timestamp_col:
-                    raise ValueError(f"No valid timestamp column found in {sf_table} table")
-                
-                logger.info(f"Using timestamp column '{timestamp_col}' for {sf_table} sync")
-                
-                # Step 4: Query SQL Server with ordering by RO_Form_ID to prevent form splitting
-                if is_full_sync:
-                    batches = self.sqlserver_connector.get_all_records(
-                        table_name=sf_table,
-                        batch_size=1000,
-                        order_by='RO_Form_ID, ' + timestamp_col  # Critical: order by form ID first
-                    )
-                else:
-                    batches = self.sqlserver_connector.get_records_since(
-                        table_name=sf_table,
-                        timestamp_column=timestamp_col,
-                        since_timestamp=last_sync_timestamp,
-                        batch_size=1000,
-                        order_by='RO_Form_ID, ' + timestamp_col  # Critical: order by form ID first
-                    )
-                
-                # Step 5: Create processors
-                error_handler = ImportErrorHandler()
-                row_processor = RowProcessor(session, error_handler)
-                
-                # Step 6: Process batches using bulk operations
-                successful, total = self._process_supervisor_feedback_batches_bulk(
-                    batches=batches,
-                    sync_id=sync_job.sync_id,
-                    row_processor=row_processor,
-                    error_handler=error_handler,
-                    timestamp_column=timestamp_col
-                )
-                
-                # Retrieve max_modified_date from instance variable
-                max_modified_date = getattr(self, '_max_modified_date_sf', None)
-                
-                # Step 7: Save errors if any
-                self._save_collected_errors(sync_job.sync_id, error_handler, session)
-                
-                # Step 8: Determine final status
-                if error_handler.get_error_count() > 0 and successful == 0:
-                    final_status = SyncStatus.FAILED
-                elif error_handler.get_error_count() > 0:
-                    final_status = SyncStatus.PARTIAL
-                else:
-                    final_status = SyncStatus.COMPLETED
-                
-                # Step 9: Get processor metrics
-                processor_metrics = row_processor.get_metrics()
-                
-                # Step 10: Update final status with metrics
-                self.sync_tracker.update_sync_status(
-                    sync_id=sync_job.sync_id,
-                    status=final_status,
-                    metrics={
-                        "records_queried": total,
-                        "records_synced": successful,
-                        "forms_created": processor_metrics.get('metrics', {}).get('forms_created', 0),
-                        "forms_updated": processor_metrics.get('metrics', {}).get('forms_updated', 0),
-                        "responses_created": processor_metrics.get('metrics', {}).get('responses_created', 0),
-                        "metric_definitions_created": processor_metrics.get('metrics', {}).get('metric_definitions_created', 0),
-                        "records_skipped": total - successful,
-                        "error_count": error_handler.get_error_count(),
-                        "metrics": processor_metrics.get('metrics', {}),
-                        "last_sync_timestamp": max_modified_date
-                    },
-                    session=session
-                )
-                
-                session.flush()
-                logger.info(f"Supervisor feedback sync completed: {successful}/{total} records synced")
-                session.refresh(sync_job)
-                session.expunge(sync_job)
-                return sync_job
-                
-            except Exception as e:
-                logger.error(f"Supervisor feedback sync failed: {str(e)}", exc_info=True)
-                
-                if sync_job:
-                    # Keep the row errors collected before the failure (e.g. the ones that triggered an abort)
-                    if error_handler is not None:
-                        self._save_collected_errors(sync_job.sync_id, error_handler, session)
-                    self.sync_tracker.mark_sync_failed(
-                        sync_job.sync_id, 
-                        str(e),
-                        session=session
-                    )
-                    session.flush()
-                    session.refresh(sync_job)
-                    session.expunge(sync_job)
-                    return sync_job
-                else:
-                    raise
+        return self._run_sync(_SUPERVISOR_FEEDBACK, is_full_sync, existing_sync_id)
 
     def _find_timestamp_column(self, schema: dict) -> Optional[str]:
         """
