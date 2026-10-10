@@ -1,6 +1,6 @@
 {
   "returned": {
-    "job_1_error_count_fixed": {
+    "job_1_error_count": {
       "completed_at": null,
       "csv_type": "employee_report",
       "error_count": 2,
@@ -18,7 +18,7 @@
       "successful_rows": 1,
       "total_rows": 3
     },
-    "job_2_error_count_fixed": {
+    "job_2_error_count": {
       "completed_at": null,
       "csv_type": null,
       "error_count": 1,
@@ -56,7 +56,7 @@
     {
       "completed_at": null,
       "csv_type": "employee_report",
-      "error_count": 2,
+      "error_count": 5,
       "filename": "file1.csv",
       "job_id": "00000000-0000-0000-0000-000000000001",
       "metrics_json": {
@@ -73,7 +73,7 @@
     {
       "completed_at": null,
       "csv_type": null,
-      "error_count": 1,
+      "error_count": 0,
       "filename": "file2.csv",
       "job_id": "00000000-0000-0000-0000-000000000002",
       "metrics_json": null,

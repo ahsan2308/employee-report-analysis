@@ -44,7 +44,7 @@ def get_task_status_endpoint(task_id: UUID, db: Session = Depends(get_db)):
         raise
     except Exception as e:
         logger.error(f"Error getting task status: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error retrieving task: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error retrieving task")
 
 @router.get("/{task_id}/result", response_model=TaskResultResponse)
 def get_task_result_endpoint(task_id: UUID, db: Session = Depends(get_db)):
@@ -68,4 +68,4 @@ def get_task_result_endpoint(task_id: UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=422, detail=str(ve))
     except Exception as e:
         logger.error(f"Error getting task result: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error retrieving task result: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error retrieving task result")

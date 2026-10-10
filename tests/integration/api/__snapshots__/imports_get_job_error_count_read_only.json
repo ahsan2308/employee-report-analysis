@@ -19,7 +19,7 @@
     {
       "completed_at": null,
       "csv_type": "employee_report",
-      "error_count": 2,
+      "error_count": 5,
       "filename": "reports.csv",
       "job_id": "<uuid:1>",
       "metrics_json": null,

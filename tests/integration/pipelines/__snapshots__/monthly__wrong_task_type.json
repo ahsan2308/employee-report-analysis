@@ -3,16 +3,16 @@
     "background_tasks": [
       {
         "celery_task_id": null,
-        "completed_at": null,
+        "completed_at": "<timestamp>",
         "created_at": "<timestamp>",
         "employee_id": 101,
-        "error_message": null,
+        "error_message": "Incorrect task type REPORT_ANALYSIS for a monthly analysis",
         "month": 3,
         "quarter": null,
         "report_id": null,
         "result_data": null,
         "started_at": null,
-        "status": "pending",
+        "status": "failed",
         "task_id": "00000000-0000-4000-9000-000000000002",
         "task_type": "REPORT_ANALYSIS",
         "year": 2025

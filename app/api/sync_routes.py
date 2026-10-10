@@ -63,6 +63,13 @@ def _check_and_clear_stale_syncs(db: Session, sync_type: str, timeout_minutes: i
         logger.info(f"Cleared {len(stale_syncs)} stale {sync_type} syncs")
 
 
+def _fail_undispatched_syncs(db: Session, sync_tracker, sync_ids, dispatch_error: Exception) -> None:
+    """Mark sync rows FAILED when their Celery task could not be queued."""
+    for sync_id in sync_ids:
+        sync_tracker.mark_sync_failed(sync_id, f"Could not queue the sync task: {dispatch_error}", session=db)
+    db.commit()
+
+
 def _trigger_sync(db: Session, is_full_sync: bool, sync_type: SyncType, task_name: str, label: str):
     """Shared body of the four single-type trigger endpoints."""
     logger.info(f"Received request to trigger {label} sync (is_full_sync={is_full_sync})")
@@ -101,13 +108,18 @@ def _trigger_sync(db: Session, is_full_sync: bool, sync_type: SyncType, task_nam
         real_sync_id = sync_job.sync_id
         
         # Trigger Celery task using registered task name
-        task = celery_app.send_task(
-            task_name,
-            kwargs={
-                'is_full_sync': is_full_sync,
-                'sync_id': str(real_sync_id)
-            }
-        )
+        try:
+            task = celery_app.send_task(
+                task_name,
+                kwargs={
+                    'is_full_sync': is_full_sync,
+                    'sync_id': str(real_sync_id)
+                }
+            )
+        except Exception as dispatch_error:
+            # Without this the PENDING row would block new triggers until it goes stale
+            _fail_undispatched_syncs(db, sync_tracker, [real_sync_id], dispatch_error)
+            raise
         
         # Return REAL sync_id (no placeholder!)
         return SyncTriggerResponse(
@@ -124,7 +136,7 @@ def _trigger_sync(db: Session, is_full_sync: bool, sync_type: SyncType, task_nam
         raise
     except Exception as e:
         logger.error(f"Error triggering {label} sync: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to trigger sync: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to trigger sync")
 
 
 # ============================================================================
@@ -268,15 +280,21 @@ def trigger_full_sync(db: Session = Depends(get_db)):
         sf_sync_id = sf_sync_job.sync_id
         
         # Trigger full sync task with ALL THREE sync_ids
-        task = celery_app.send_task(
-            'sync.full',
-            kwargs={
-                'employee_sync_id': str(employee_sync_id),
-                'vision_sync_id': str(vision_sync_id),
-                'jd_sync_id': str(jd_sync_id),
-                'sf_sync_id': str(sf_sync_id)
-            }
-        )
+        try:
+            task = celery_app.send_task(
+                'sync.full',
+                kwargs={
+                    'employee_sync_id': str(employee_sync_id),
+                    'vision_sync_id': str(vision_sync_id),
+                    'jd_sync_id': str(jd_sync_id),
+                    'sf_sync_id': str(sf_sync_id)
+                }
+            )
+        except Exception as dispatch_error:
+            _fail_undispatched_syncs(
+                db, sync_tracker, [employee_sync_id, vision_sync_id, jd_sync_id, sf_sync_id], dispatch_error
+            )
+            raise
         
         # Return ALL FOUR sync_ids
         return FullSyncTriggerResponse(
@@ -295,7 +313,7 @@ def trigger_full_sync(db: Session = Depends(get_db)):
         raise
     except Exception as e:
         logger.error(f"Error triggering full sync: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to trigger full sync: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to trigger full sync")
 
 
 # ============================================================================
@@ -363,7 +381,7 @@ def get_sync_status(
         raise
     except Exception as e:
         logger.error(f"Error retrieving sync status: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error retrieving sync status: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error retrieving sync status")
 
 
 @router.get("/last-successful/{sync_type}", response_model=LastSyncResponse)
@@ -420,7 +438,7 @@ def get_last_successful_sync(
         raise
     except Exception as e:
         logger.error(f"Error retrieving last successful sync: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error retrieving last sync: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error retrieving last sync")
 
 
 # ============================================================================
@@ -538,7 +556,7 @@ def list_sync_history(
         raise
     except Exception as e:
         logger.error(f"Error listing sync history: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error listing history: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error listing history")
 
 
 @router.get("/{sync_id}/errors", response_model=SyncErrorsResponse)
@@ -595,7 +613,7 @@ def get_sync_errors(
         raise
     except Exception as e:
         logger.error(f"Error retrieving sync errors: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error retrieving errors: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error retrieving errors")
 
 
 # ============================================================================
@@ -651,7 +669,7 @@ def get_sync_configuration():
         
     except Exception as e:
         logger.error(f"Error retrieving sync configuration: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error retrieving configuration: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error retrieving configuration")
 
 
 @router.get("/test-connection", response_model=ConnectionTestResponse)

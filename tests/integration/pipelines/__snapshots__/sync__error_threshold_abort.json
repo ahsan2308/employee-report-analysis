@@ -14,7 +14,7 @@
   "outcomes": [
     {
       "return": {
-        "error_count": 0,
+        "error_count": 20,
         "metrics": {
           "vision_records_created": 0,
           "vision_records_updated": 0
@@ -31,8 +31,131 @@
   "sync_history": [
     {
       "completed_at": "<timestamp>",
-      "error_count": 0,
-      "error_details": null,
+      "error_count": 20,
+      "error_details": {
+        "errors": [
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 191
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 192
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 193
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 194
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 195
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 196
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 197
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 198
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 199
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 200
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 201
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 202
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 203
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 204
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 205
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 206
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 207
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 208
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 209
+          },
+          {
+            "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+            "field_name": "Employee_ID",
+            "row_data": null,
+            "row_number": 210
+          }
+        ]
+      },
       "error_message": "Sync aborted: Error threshold exceeded: 9.5% > 5.0%",
       "last_sync_timestamp": null,
       "records_created": 0,

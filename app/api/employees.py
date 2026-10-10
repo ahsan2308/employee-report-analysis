@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.models.db_models import Employee
 from app.schemas.employee_schema import EmployeeCreate 
+from app.core.logger import logger
 
 # Initialize Router
 router = APIRouter(prefix="/employees", tags=["Employees"])
@@ -19,7 +20,8 @@ def create_employee(employee: EmployeeCreate, db: Session = Depends(get_db)):
         return {"message": "Employee added successfully", "employee": new_employee}
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Error creating employee: {str(e)}")
+        logger.error(f"Error creating employee: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error creating employee")
 
 # Get all employees 
 @router.get("/")

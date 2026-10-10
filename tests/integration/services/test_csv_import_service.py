@@ -58,8 +58,8 @@ def test_get_import_job(service, db_session, database, snapshot):
     make_import_error(s, uid(2), 1)
     s.commit()
     out = {
-        "job_1_error_count_fixed": service.get_import_job(str(uid(1))),
-        "job_2_error_count_fixed": service.get_import_job(str(uid(2))),
+        "job_1_error_count": service.get_import_job(str(uid(1))),
+        "job_2_error_count": service.get_import_job(str(uid(2))),
         "job_3_nulls": service.get_import_job(uid(3)),
         "missing": service.get_import_job(str(uid(99))),
     }

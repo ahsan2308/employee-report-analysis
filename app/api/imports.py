@@ -117,20 +117,25 @@ async def upload_csv_file(
         file_content = await file.read()
         
         # Queue the task to process the file using Celery, passing csv_type
-        task = process_csv_import.delay(
-            job_id=str(job.job_id),
-            file_content=file_content,
-            filename=file.filename,
-            options=options.model_dump(),
-            csv_type=csv_type
-        )
+        try:
+            process_csv_import.delay(
+                job_id=str(job.job_id),
+                file_content=file_content,
+                filename=file.filename,
+                options=options.model_dump(),
+                csv_type=csv_type
+            )
+        except Exception as dispatch_error:
+            # Without this the job would stay PENDING forever
+            import_service.mark_job_failed(str(job.job_id), f"Could not queue the import task: {dispatch_error}")
+            raise
         
         # Return job info
         return job
         
     except Exception as e:
         logger.error(f"Error processing CSV upload: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error processing upload: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error processing upload")
 
 @router.get("/{job_id}", response_model=CSVImportJobResponse)
 def get_import_job(job_id: str, db: Session = Depends(get_db)):
@@ -152,7 +157,7 @@ def get_import_job(job_id: str, db: Session = Depends(get_db)):
         raise he
     except Exception as e:
         logger.error(f"Error retrieving import job: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error retrieving import job: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error retrieving import job")
 
 @router.get("/{job_id}/errors", response_model=ImportErrorsResponse)
 def get_import_errors(
@@ -187,7 +192,7 @@ def get_import_errors(
         raise he
     except Exception as e:
         logger.error(f"Error retrieving import errors: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error retrieving import errors: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error retrieving import errors")
 
 @router.get("/", response_model=List[CSVImportJobResponse])
 def list_import_jobs(
@@ -264,4 +269,4 @@ def list_import_jobs(
         raise he
     except Exception as e:
         logger.error(f"Error listing import jobs: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error listing import jobs: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error listing import jobs")

@@ -1,13 +1,13 @@
 {
   "body": {
-    "detail": "Failed to trigger sync: broker unreachable"
+    "detail": "Failed to trigger sync"
   },
   "db": [
     {
-      "completed_at": null,
+      "completed_at": "<timestamp>",
       "error_count": 0,
       "error_details": null,
-      "error_message": null,
+      "error_message": "Could not queue the sync task: broker unreachable",
       "last_sync_timestamp": null,
       "records_created": 0,
       "records_queried": 0,
@@ -15,7 +15,7 @@
       "records_synced": 0,
       "records_updated": 0,
       "started_at": "<timestamp>",
-      "status": "pending",
+      "status": "failed",
       "sync_id": "<uuid:1>",
       "sync_metadata": null,
       "sync_options": {

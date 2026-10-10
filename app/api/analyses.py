@@ -51,7 +51,7 @@ def analyze_report(report_id: str, db: Session = Depends(get_db)):
         raise he
     except Exception as e:
         logger.error(f"Error submitting analysis task: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error submitting analysis: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error submitting analysis")
 
 # Get analysis by report ID
 @router.get("/results/{report_id}", response_model=AnalysisResponse)
@@ -92,7 +92,7 @@ def get_analysis_by_report(report_id: str, db: Session = Depends(get_db)):
         raise
     except Exception as e:
         logger.error(f"Error retrieving analysis: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 # Get all analyses for an employee
 @router.get("/employee/{employee_id}")
@@ -130,7 +130,7 @@ def get_employee_analyses(employee_id: int, db: Session = Depends(get_db)):
         raise
     except Exception as e:
         logger.error(f"Error retrieving employee analyses: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 # Get detailed analysis by ID
 @router.get("/{analysis_id}", response_model=AnalysisResponse)
@@ -166,7 +166,7 @@ def get_analysis_by_id(analysis_id: int, db: Session = Depends(get_db)):
         raise
     except Exception as e:
         logger.error(f"Error retrieving analysis: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 # Monthly Analysis Endpoints
 @router.post("/monthly/analyze", response_model=TaskStatusResponse)
@@ -203,7 +203,7 @@ def analyze_monthly_reports(
         raise he
     except Exception as e:
         logger.error(f"Error submitting monthly analysis task: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error submitting analysis: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error submitting analysis")
 
 @router.get("/monthly/{analysis_id}", response_model=MonthlyAnalysisResponse)
 def get_monthly_analysis(analysis_id: int, db: Session = Depends(get_db)):
@@ -231,7 +231,7 @@ def get_monthly_analysis(analysis_id: int, db: Session = Depends(get_db)):
         raise
     except Exception as e:
         logger.error(f"Error retrieving monthly analysis: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get("/monthly/employee/{employee_id}", response_model=List[MonthlyAnalysisSummary])
 def get_employee_monthly_analyses(employee_id: int, db: Session = Depends(get_db)):
@@ -268,7 +268,7 @@ def get_employee_monthly_analyses(employee_id: int, db: Session = Depends(get_db
         raise
     except Exception as e:
         logger.error(f"Error retrieving employee monthly analyses: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get("/monthly/employee/{employee_id}/{year}/{month}", response_model=MonthlyAnalysisResponse)
 def get_employee_monthly_analysis_by_period(
@@ -301,7 +301,7 @@ def get_employee_monthly_analysis_by_period(
         raise
     except Exception as e:
         logger.error(f"Error retrieving monthly analysis by period: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 # Quarterly Analysis Endpoints
 @router.post("/quarterly/analyze", response_model=TaskStatusResponse)
@@ -338,7 +338,7 @@ def analyze_quarterly_reports(
         raise he
     except Exception as e:
         logger.error(f"Error submitting quarterly analysis task: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error submitting analysis: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error submitting analysis")
 
 @router.get("/quarterly/{analysis_id}", response_model=QuarterlyAnalysisResponse)
 def get_quarterly_analysis(
@@ -369,7 +369,7 @@ def get_quarterly_analysis(
         raise
     except Exception as e:
         logger.error(f"Error retrieving quarterly analysis: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get("/quarterly/employee/{employee_id}/{year}/{quarter}", response_model=QuarterlyAnalysisResponse)
 def get_employee_quarterly_analysis_by_period(
@@ -402,6 +402,6 @@ def get_employee_quarterly_analysis_by_period(
         raise
     except Exception as e:
         logger.error(f"Error retrieving quarterly analysis by period: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 

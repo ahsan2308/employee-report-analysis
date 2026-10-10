@@ -112,12 +112,12 @@ def sync_employee_reports_task(self, is_full_sync: bool = False, sync_id: Option
         sync_type = sync_job.sync_type
         error_count = sync_job.error_count or 0
         
-        # Access JSONB field immediately - THIS is where all metrics are stored
+        # Processor-specific metrics are stored in the sync_metadata JSONB field
         sync_metadata = sync_job.sync_metadata or {}
         
-        # Extract top-level metrics from sync_metadata
-        records_queried = sync_metadata.get('records_queried', 0)
-        records_synced = sync_metadata.get('records_synced', 0)
+        # Row counts are columns on the sync job
+        records_queried = sync_job.records_queried or 0
+        records_synced = sync_job.records_synced or 0
         
         # Extract the nested "metrics" key which contains processor-specific metrics
         processor_metrics = sync_metadata.get('metrics', {})
@@ -193,12 +193,12 @@ def sync_vision_data_task(self, is_full_sync: bool = False, sync_id: Optional[st
         sync_type = sync_job.sync_type
         error_count = sync_job.error_count or 0
         
-        # Access JSONB field immediately - THIS is where all metrics are stored
+        # Processor-specific metrics are stored in the sync_metadata JSONB field
         sync_metadata = sync_job.sync_metadata or {}
         
-        # Extract top-level metrics from sync_metadata
-        records_queried = sync_metadata.get('records_queried', 0)
-        records_synced = sync_metadata.get('records_synced', 0)
+        # Row counts are columns on the sync job
+        records_queried = sync_job.records_queried or 0
+        records_synced = sync_job.records_synced or 0
         
         # Extract the nested "metrics" key which contains processor-specific metrics
         processor_metrics = sync_metadata.get('metrics', {})
@@ -269,12 +269,12 @@ def sync_job_descriptions_task(self, is_full_sync: bool = False, sync_id: Option
         sync_type = sync_job.sync_type
         error_count = sync_job.error_count or 0
         
-        # Access JSONB field immediately - THIS is where all metrics are stored
+        # Processor-specific metrics are stored in the sync_metadata JSONB field
         sync_metadata = sync_job.sync_metadata or {}
         
-        # Extract top-level metrics from sync_metadata
-        records_queried = sync_metadata.get('records_queried', 0)
-        records_synced = sync_metadata.get('records_synced', 0)
+        # Row counts are columns on the sync job
+        records_queried = sync_job.records_queried or 0
+        records_synced = sync_job.records_synced or 0
         
         # Extract the nested "metrics" key which contains processor-specific metrics
         processor_metrics = sync_metadata.get('metrics', {})
@@ -346,12 +346,12 @@ def sync_supervisor_feedback_task(self, is_full_sync: bool = False, sync_id: Opt
         sync_type = sync_job.sync_type
         error_count = sync_job.error_count or 0
         
-        # Access JSONB field immediately - THIS is where all metrics are stored
+        # Processor-specific metrics are stored in the sync_metadata JSONB field
         sync_metadata = sync_job.sync_metadata or {}
         
-        # Extract top-level metrics from sync_metadata
-        records_queried = sync_metadata.get('records_queried', 0)
-        records_synced = sync_metadata.get('records_synced', 0)
+        # Row counts are columns on the sync job
+        records_queried = sync_job.records_queried or 0
+        records_synced = sync_job.records_synced or 0
         
         # Extract the nested "metrics" key which contains processor-specific metrics
         processor_metrics = sync_metadata.get('metrics', {})

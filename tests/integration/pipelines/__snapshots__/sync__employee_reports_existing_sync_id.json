@@ -78,8 +78,8 @@
           "reports_created": 0,
           "reports_updated": 0
         },
-        "records_queried": 0,
-        "records_synced": 0,
+        "records_queried": 4,
+        "records_synced": 3,
         "status": "partial",
         "sync_id": "<uuid:1>",
         "sync_type": "employee_reports"
