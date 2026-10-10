@@ -7,14 +7,12 @@ This service acts as a layer between the database and analysis tasks.
 from typing import Dict, Any
 
 from app.core.logger import logger
-from app.services.db_service import (
-    get_month_date_range, 
-    get_reports_for_month, 
-    get_analyses_for_month,
-    get_employee_info
-)
+from app.domain.periods import get_month_date_range
+from app.repositories.reports import get_reports_for_month
+from app.repositories.analyses import get_analyses_for_month
+from app.repositories.employees import get_employee_info
 
-from app.services.db_service import get_employee_job_descriptions_for_period
+from app.repositories.job_descriptions import get_employee_job_descriptions_for_period
 from app.services.additional_services import map_reports_to_jds
 
 def get_monthly_data_for_analysis(employee_id: int, year: int, month: int) -> Dict[str, Any]:

@@ -9,10 +9,11 @@ from app.db.database import get_database
 from app.models.task_models import BackgroundTask, TaskStatus, TaskType
 from app.models.db_models import Report, Employee, EmployeeAnalysis
 from app.services.vector_store_service import search_reports
-from app.services.db_service import get_reports_for_vector_results, get_employee_vision_data, get_recent_employee_reports
-from app.services.db_service import get_monthly_analysis_by_params, store_monthly_analysis
-from app.services.db_service import get_quarterly_analysis_by_params, store_quarterly_analysis
-from app.services.db_service import get_employee_job_descriptions_for_period
+from app.repositories.reports import get_reports_for_vector_results, get_recent_employee_reports
+from app.repositories.vision_data import get_employee_vision_data
+from app.repositories.analyses import get_monthly_analysis_by_params, store_monthly_analysis
+from app.repositories.analyses import get_quarterly_analysis_by_params, store_quarterly_analysis
+from app.repositories.job_descriptions import get_employee_job_descriptions_for_period
 from app.services.additional_services import format_job_descriptions_for_weekly_prompt, format_job_descriptions_for_monthly_prompt, format_job_descriptions_for_quarterly_prompt
 from app.services.monthly_analysis_db_service import get_monthly_data_for_analysis
 from app.services.quarterly_analysis_db_service import get_quarterly_data_for_analysis
@@ -21,7 +22,7 @@ from app.services.additional_services import filter_vision_data, format_vision_d
 from app.services.additional_services import format_vision_data_for_monthly_analysis_prompt, format_vision_data_for_quarterly_analysis_prompt
 from app.core.logger import logger
 from app.core.config_provider import get_config_provider
-from app.services.db_service import get_employee_vision_data_for_month, get_employee_vision_data_for_quarter
+from app.repositories.vision_data import get_employee_vision_data_for_month, get_employee_vision_data_for_quarter
 
 # Get configuration
 config = get_config_provider()

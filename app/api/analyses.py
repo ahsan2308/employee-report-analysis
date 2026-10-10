@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.models.db_models import EmployeeAnalysis, Report, Employee, MonthlyAnalysis, QuarterlyAnalysis
 from app.schemas.analysis_schema import AnalysisResponse, MonthlyAnalysisResponse, MonthlyAnalysisSummary, QuarterlyAnalysisResponse
-from app.services.db_service import get_monthly_analysis_by_params, get_quarterly_analysis_by_params
+from app.repositories.analyses import get_monthly_analysis_by_params, get_quarterly_analysis_by_params
 from app.core.logger import logger
 from uuid import UUID
 from typing import List
