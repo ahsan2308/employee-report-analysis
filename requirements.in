@@ -1,0 +1,30 @@
+# Direct dependencies. requirements.txt pins the full set and is generated from
+# this file (keeping existing pins unless a package is named for upgrade):
+#   uv pip compile requirements.in -o requirements.txt --universal --python-version 3.12
+alembic
+celery
+chardet
+fastapi
+flower
+h2
+httptools
+numpy
+ollama
+packaging
+pandas
+psutil
+psycopg2-binary
+pydantic
+pyodbc
+python-dotenv
+python-multipart
+PyYAML
+qdrant-client
+redis
+redis-cli
+requests
+SQLAlchemy
+uvicorn
+watchfiles
+websockets
+pywin32; sys_platform == "win32"

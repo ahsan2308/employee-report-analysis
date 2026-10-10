@@ -1,5 +1,5 @@
 """The HTTP contract: every route, parameter and response model as FastAPI publishes it."""
-from fastapi.routing import APIRoute
+from fastapi.routing import APIRoute, iter_route_contexts
 
 
 def test_openapi_schema(api_app, snapshot):
@@ -8,8 +8,9 @@ def test_openapi_schema(api_app, snapshot):
 
 def test_route_table(api_app, snapshot):
     routes = []
-    for route in api_app.routes:
-        if isinstance(route, APIRoute):
+    # FastAPI keeps included routers unflattened; iterate the effective routes it serves.
+    for route in iter_route_contexts(api_app.routes):
+        if isinstance(route.original_route, APIRoute):
             routes.append({
                 "path": route.path,
                 "methods": sorted(route.methods),

@@ -12,11 +12,11 @@ def check_qdrant_version():
         tuple: (meets_requirements, version_string)
     """
     try:
-        import pkg_resources
+        from importlib.metadata import version as installed_version
         from packaging import version
         
         # Get the installed version
-        qdrant_version = pkg_resources.get_distribution("qdrant-client").version
+        qdrant_version = installed_version("qdrant-client")
         
         # Parse version string to check if it meets requirements
         v = version.parse(qdrant_version)
