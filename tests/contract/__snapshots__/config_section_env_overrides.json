@@ -35,16 +35,16 @@
   },
   "app.models.base": {},
   "app.services.embedding_service": {
-    "DEFAULT_MODEL": "other-embed",
+    "DEFAULT_MODEL": "bge-m3",
     "EMBEDDING_PROVIDER": "ollama"
   },
   "app.services.llm_service": {
-    "DEFAULT_MODEL": "collides-model",
+    "DEFAULT_MODEL": "other-model",
     "LLM_PROVIDER": "ollama"
   },
   "app.services.vector_store_service": {
     "COLLECTION_NAME": "other_collection",
-    "VECTOR_BATCH_MAX_RETRIES": 3,
+    "VECTOR_BATCH_MAX_RETRIES": 1,
     "VECTOR_BATCH_MODE": false,
     "VECTOR_EMBEDDING_BATCH_SIZE": 50,
     "VECTOR_UPSERT_BATCH_SIZE": 100
@@ -56,18 +56,18 @@
     "MAX_CONTENT_ITEM_LENGTH_MONTHLY": 250,
     "MAX_CONTENT_ITEM_LENGTH_QUARTERLY": 200,
     "MAX_CONTENT_ITEM_LENGTH_WEEKLY": 300,
-    "VECTOR_SEARCH_HNSW_EF": 128
+    "VECTOR_SEARCH_HNSW_EF": 64
   },
   "app.vector_store": {
-    "VECTOR_STORE_HOST": "collides-host",
-    "VECTOR_STORE_MODE": "server",
-    "VECTOR_STORE_PATH": "/elsewhere",
-    "VECTOR_STORE_PORT": true,
+    "VECTOR_STORE_HOST": "localhost",
+    "VECTOR_STORE_MODE": "local",
+    "VECTOR_STORE_PATH": "./qdrant_data",
+    "VECTOR_STORE_PORT": 0,
     "VECTOR_STORE_TYPE": "qdrant"
   },
   "app.worker.celery_app": {
     "IS_WINDOWS": false,
-    "REDIS_HOST": "collides-host",
+    "REDIS_HOST": "localhost",
     "SYNC_ENABLED": true
   },
   "celery": {
@@ -106,18 +106,18 @@
       "url": "postgresql://myuser:mypassword@localhost:5432/employee_reports",
       "user": "myuser"
     },
-    "llm:model": "collides-model",
+    "llm:model": "other-model",
     "no.such.section:missing_key": "fallback",
-    "redis:host": "collides-host",
-    "redis:port": true,
-    "vector_db.batch_processing.retry:max_attempts": 3,
+    "redis:host": "localhost",
+    "redis:port": 6379,
+    "vector_db.batch_processing.retry:max_attempts": 1,
     "vector_db.batch_processing:enabled": false,
-    "vector_db.search:hnsw_ef": 128,
+    "vector_db.search:hnsw_ef": 64,
     "vector_db:collection_name": "other_collection",
-    "vector_db:host": "collides-host",
+    "vector_db:host": "localhost",
     "vector_db:missing_key": "fallback",
-    "vector_db:mode": "server",
-    "vector_db:port": true,
+    "vector_db:mode": "local",
+    "vector_db:port": 0,
     "vector_db:type": "qdrant"
   },
   "get_database": {

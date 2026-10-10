@@ -6,7 +6,7 @@ import uuid
 from pathlib import Path
 
 import pytest
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.engine import make_url
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -39,12 +39,44 @@ def run(args, env):
     return subprocess.run(args, cwd=REPO_ROOT, env=env, capture_output=True, text=True, timeout=300)
 
 
-@pytest.mark.known_bug("B16")
-def test_upgrade_from_empty_database_fails_at_first_revision(scratch_database):
+def _tables(env):
+    url = make_url(os.environ["TEST_DATABASE_URL"]).set(database=env["DB_NAME"])
+    engine = create_engine(url)
+    try:
+        return set(inspect(engine).get_table_names(schema="employee_reports"))
+    finally:
+        engine.dispose()
+
+
+def test_upgrade_head_builds_an_empty_database(scratch_database):
+    """B16 fixed: the history cannot be replayed from nothing, so `upgrade head` builds the current schema."""
     result = run([sys.executable, "-m", "alembic", "upgrade", "head"], scratch_database)
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert "Empty database: creating the current schema and stamping head" in result.stdout
+
+    heads = run([sys.executable, "-m", "alembic", "heads"], scratch_database)
+    current = run([sys.executable, "-m", "alembic", "current"], scratch_database)
+    assert heads.stdout.split()[0] in current.stdout
+
+    check = run([sys.executable, "-m", "alembic", "check"], scratch_database)
+    assert check.returncode == 0, check.stderr[-2000:]
+
+    again = run([sys.executable, "-m", "alembic", "upgrade", "head"], scratch_database)
+    assert again.returncode == 0, again.stderr[-2000:]
+    assert "Empty database" not in again.stdout
+
+
+def test_stamp_head_on_an_empty_database_creates_no_tables(scratch_database):
+    result = run([sys.executable, "-m", "alembic", "stamp", "head"], scratch_database)
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert _tables(scratch_database) == {"alembic_version"}
+
+
+def test_upgrade_to_an_older_revision_still_replays_history(scratch_database):
+    """Only `upgrade head` builds from scratch; other targets run the revisions (which need the base tables)."""
+    result = run([sys.executable, "-m", "alembic", "upgrade", "65a702f08ade"], scratch_database)
     assert result.returncode != 0
     assert 'relation "employee_reports.reports" does not exist' in result.stderr
-    assert "-> 65a702f08ade" in result.stderr
 
 
 def test_models_match_migration_head(scratch_database):

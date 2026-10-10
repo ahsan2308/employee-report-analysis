@@ -4,7 +4,9 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from sqlalchemy import text  # Add this import for text function
 
-from alembic import context
+from alembic import context, util
+from alembic.script import ScriptDirectory
+from sqlalchemy import inspect
 
 import os
 import sys
@@ -96,7 +98,29 @@ def run_migrations_online() -> None:
         )
         
         with context.begin_transaction():
-            context.run_migrations()
+            if _is_upgrade_to_head_of_empty_database(connection):
+                # The revision history cannot be replayed on an empty database (it
+                # assumes tables created outside migrations), so build the current
+                # schema directly and record it as head. This is Alembic's
+                # "building an up to date database from scratch" recipe.
+                print("Empty database: creating the current schema and stamping head")
+                target_metadata.create_all(bind=connection)
+                context.get_context().stamp(ScriptDirectory.from_config(config), "heads")
+            else:
+                context.run_migrations()
+
+
+def _is_upgrade_to_head_of_empty_database(connection) -> bool:
+    """True for `alembic upgrade head` against a database with no tables and no version."""
+    migration_context = context.get_context()
+    command = getattr(migration_context.opts.get("fn"), "__name__", None)
+    if command != "upgrade" or migration_context.get_current_heads():
+        return False
+    script = ScriptDirectory.from_config(config)
+    if set(util.to_tuple(context.get_revision_argument())) != set(script.get_heads()):
+        return False
+    tables = set(inspect(connection).get_table_names(schema=schema_name)) - {"alembic_version"}
+    return not tables
 
 if context.is_offline_mode():
     run_migrations_offline()

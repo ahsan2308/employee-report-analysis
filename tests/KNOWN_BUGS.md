@@ -10,13 +10,7 @@ test asserted the correct behaviour (it flips red once the bug is fixed).
 
 ## Catalogue
 
-| ID | Bug | Where | Characterized in |
-| --- | --- | --- | --- |
-| B8 | `ConfigProvider.get(key, section=…)` reads the env var named by the bare key, so `HOST`, `PORT`, `MODEL`, `MODE`, `TYPE`, `ENABLED` override Redis, Qdrant and LLM settings | `app/core/config_provider.py:59` | `contract/test_config_contract.py` |
-| B10 | Chart annotation options are configured but the annotation plugin is never loaded | `frontend/js/visualizations.js` | not automated (frontend) |
-| B12 | The shared Qdrant client is disconnected by any `with vector_store:` exit, so concurrent searches can lose it | `app/vector_store/qdrant_provider.py:167` | not automated (concurrency) |
-| B14 | `ConfigProvider` converts env values `"1"`/`"0"` to booleans, so `PORT=1` becomes `True` | `app/core/config_provider.py` (`_convert_value`) | `contract/test_config_contract.py` |
-| B16 | `alembic upgrade head` cannot build an empty database: the first revision references `employee_reports.reports`, which no migration creates | `migrations/versions/65a702f08ade_*.py` | `integration/test_migrations.py` |
+None open. New defects found by the characterization suite get the next ID (B17).
 
 ## Fixed
 
@@ -29,10 +23,15 @@ test asserted the correct behaviour (it flips red once the bug is fixed).
 | B5 | Quarterly defaults were typos (`"stble"`, `"mdium"`) that reached prompts; leftover debug `print()`s | `"stable"`/`"medium"`; the prints are gone (`golden/analysis/test_golden_quarterly_analysis_db_service.py`, `unit/legacy/test_quarterly_analysis_db_service.py`) |
 | B6 | LLM providers swallowed errors and returned `""`/`None`, so retries never fired and empty or default analyses were stored as COMPLETED | Providers raise on transport and HTTP errors; `generate_text` retries them and raises the last one; an answer without usable JSON is an error. The weekly task now checks for it like the monthly and quarterly ones, so the run is FAILED and nothing is stored (`integration/pipelines/test_analysis_tasks.py`, `golden/prompts/test_llm_service.py`, `unit/test_llm_provider_errors.py`) |
 | B7 | `setup_collection` deleted the Qdrant collection when the embedding probe failed, the vector size differed, or Qdrant could not describe the collection | It never deletes now: a mismatch or an unreachable embedding service returns False and leaves the collection untouched (`integration/pipelines/test_vector_store_service.py`) |
+| B8 | `ConfigProvider.get(key, section=…)` read the env var named by the bare key, so `HOST`, `PORT`, `MODEL`, `MODE`, `TYPE`, `ENABLED` overrode Redis, Qdrant and LLM settings | With a section, the env var is the section path and key: `REDIS_HOST`, `VECTOR_DB_COLLECTION_NAME`, `VECTOR_DB_BATCH_PROCESSING_ENABLED`, `LLM_MODEL` (`ConfigProvider.env_var_name`); without one it is the key (`contract/test_config_contract.py`) |
 | B9 | `hasattr(end, …)` tested the group end instead of `week_end`; a string `week_end` raised AttributeError | The check uses `week_end` (`golden/analysis/test_golden_additional_services.py`) |
+| B10 | Chart annotation options were configured but the annotation plugin was never loaded | `visualizations.html` loads `chartjs-plugin-annotation` 3.0.1, the release for Chart.js 4 (the vendored 1.4.0 targeted Chart.js 3); the average lines render (checked in headless Chromium) |
 | B11 | Celery `task_time_limit=300` hard-killed long LLM runs, leaving the BackgroundTask RUNNING forever | The hard limit is 30 minutes. A soft limit (default: 60 s earlier, `task_soft_time_limit` / `CELERY_TASK_SOFT_TIME_LIMIT`) raises inside the task, which marks the run FAILED. A task killed anyway is replaced as stale (B1) (`integration/pipelines/test_analysis_tasks.py`, `contract/test_config_contract.py`) |
+| B12 | The shared Qdrant client was disconnected by any `with vector_store:` exit, so concurrent searches could lose it | Open `with` blocks are counted; the client is closed when the last one exits (`unit/test_qdrant_connection_sharing.py`) |
 | B13 | Full prompts, which contain report text, were logged at INFO (and report text at DEBUG) | Only prompt lengths are logged; similar-report data and formatted vision data are no longer logged (`golden/prompts/test_llm_service.py`) |
+| B14 | `ConfigProvider` converted env values `"1"`/`"0"` to booleans, so `PORT=1` became `True` | Only `true`/`false`/`yes`/`no` become booleans; `"1"`/`"0"` are numbers (`contract/test_config_contract.py`) |
 | B15 | Every quarterly prompt build wrote `generated_quarterly_prompt.txt` into the working directory and printed to stdout | Removed, with the commented-out weekly and monthly equivalents (`golden/prompts/test_quarterly_prompt.py`, `integration/pipelines/test_analysis_tasks.py`) |
+| B16 | `alembic upgrade head` could not build an empty database: the history assumes tables created outside migrations (and creates `sync_history` twice) | On an empty database, `upgrade head` creates the current schema and stamps head (Alembic's "from scratch" recipe, in `migrations/env.py`); databases with a version keep running the revisions (`integration/test_migrations.py`) |
 
 ## Other observations
 
