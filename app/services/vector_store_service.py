@@ -10,20 +10,14 @@ from app.services.embedding_service import get_embedding, get_embeddings
 
 from app.core.logger import logger
 from app.vector_store import get_vector_store
-from app.database import get_database
-from app.models.base import schema_name
-from app.core.config_provider import get_config_provider
+from app.db.database import get_database
+from app.db.base import schema_name
 from sqlalchemy.sql import text
 
-# Get configuration
-config = get_config_provider()
-COLLECTION_NAME = config.get("collection_name", "employee_reports", section="vector_db")
+from app.core.settings import COLLECTION_NAME
 
 # Get batch processing configuration using the config provider pattern
-VECTOR_BATCH_MODE = config.get("enabled", True, section="vector_db.batch_processing")
-VECTOR_EMBEDDING_BATCH_SIZE = config.get("embedding_batch_size", 256, section="vector_db.batch_processing")
-VECTOR_UPSERT_BATCH_SIZE = config.get("upsert_batch_size", 1000, section="vector_db.batch_processing")
-VECTOR_BATCH_MAX_RETRIES = config.get("max_attempts", 3, section="vector_db.batch_processing.retry")
+from app.core.settings import VECTOR_BATCH_MAX_RETRIES, VECTOR_BATCH_MODE, VECTOR_EMBEDDING_BATCH_SIZE, VECTOR_UPSERT_BATCH_SIZE  # noqa: F401  (module attributes kept for compatibility)
 
 def chunk_text(text: str, max_chunk_size: int = 500) -> List[str]:
     """

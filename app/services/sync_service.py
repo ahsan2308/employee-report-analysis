@@ -17,7 +17,7 @@ from app.services.csv.row_processor import RowProcessor
 from app.services.csv.error_handler import ImportErrorHandler
 from app.models.sync_models import SyncHistory, SyncType, SyncStatus
 from app.core.logger import logger
-from app.database import get_database
+from app.db.database import get_database
 
 
 class SyncService:

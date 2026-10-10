@@ -8,14 +8,11 @@ from typing import Dict, Any
 from collections import Counter
 
 from app.core.logger import logger
-from app.services.db_service import (
-    get_quarter_date_range,
-    get_monthly_analyses_for_quarter,
-    get_weekly_analyses_for_quarter,
-    get_employee_info
-)
+from app.domain.periods import get_quarter_date_range
+from app.repositories.analyses import get_monthly_analyses_for_quarter, get_weekly_analyses_for_quarter
+from app.repositories.employees import get_employee_info
 
-from app.services.db_service import get_employee_job_descriptions_for_period
+from app.repositories.job_descriptions import get_employee_job_descriptions_for_period
 from app.services.additional_services import map_reports_to_jds
 
 def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -> Dict[str, Any]:

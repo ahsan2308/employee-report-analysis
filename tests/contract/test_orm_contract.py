@@ -51,3 +51,8 @@ def test_model_registry(snapshot):
         f"{mapper.class_.__module__}.{mapper.class_.__name__} -> {mapper.local_table.fullname}"
         for mapper in Base.registry.mappers
     ))
+
+
+def test_database_import_registers_every_model(run_probe, snapshot):
+    """get_database().create_tables() in a standalone script must create every table."""
+    snapshot("tables_after_database_import", run_probe("tables_after_database_import", {}))

@@ -13,7 +13,7 @@ from app.models.task_models import BackgroundTask, TaskStatus, TaskType
 from app.models.db_models import Employee, Report, EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
 from app.tasks.analysis_tasks import analyze_report_task
 from app.core.logger import logger
-from app.services.db_service import get_monthly_analysis_by_params, get_quarterly_analysis_by_params
+from app.repositories.analyses import get_monthly_analysis_by_params, get_quarterly_analysis_by_params
 
 def find_active_task_for_report(db: Session, report_id: UUID) -> Optional[BackgroundTask]:
     """

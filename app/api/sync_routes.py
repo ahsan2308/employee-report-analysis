@@ -95,7 +95,7 @@ def trigger_employee_reports_sync(
         
         # Create SyncHistory record HERE in the API endpoint
         from app.services.sync.sync_tracker import SyncTracker
-        from app.database import get_database
+        from app.db.database import get_database
         
         db_instance = get_database()
         sync_tracker = SyncTracker(db_instance)
@@ -170,7 +170,7 @@ def trigger_vision_data_sync(
         
         # Create SyncHistory record HERE in the API endpoint
         from app.services.sync.sync_tracker import SyncTracker
-        from app.database import get_database
+        from app.db.database import get_database
         
         db_instance = get_database()
         sync_tracker = SyncTracker(db_instance)
@@ -245,7 +245,7 @@ def trigger_job_descriptions_sync(
         
         # Create SyncHistory record HERE in the API endpoint
         from app.services.sync.sync_tracker import SyncTracker
-        from app.database import get_database
+        from app.db.database import get_database
         
         db_instance = get_database()
         sync_tracker = SyncTracker(db_instance)
@@ -320,7 +320,7 @@ def trigger_supervisor_feedback_sync(
         
         # Create SyncHistory record HERE in the API endpoint
         from app.services.sync.sync_tracker import SyncTracker
-        from app.database import get_database
+        from app.db.database import get_database
         
         db_instance = get_database()
         sync_tracker = SyncTracker(db_instance)
@@ -399,7 +399,7 @@ def trigger_full_sync(db: Session = Depends(get_db)):
         
         # Create SyncHistory records for ALL THREE sync types
         from app.services.sync.sync_tracker import SyncTracker
-        from app.database import get_database
+        from app.db.database import get_database
         
         db_instance = get_database()
         sync_tracker = SyncTracker(db_instance)

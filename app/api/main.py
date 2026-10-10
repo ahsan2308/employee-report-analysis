@@ -5,7 +5,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from app.database import get_database
+from app.db.database import get_database
 from app.api.employees import router as employee_router
 from app.api.reports import router as report_router
 from app.api.analyses import router as analyses_router

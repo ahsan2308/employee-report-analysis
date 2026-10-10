@@ -1,0 +1,19 @@
+{
+  "tables": [
+    "public.background_tasks",
+    "public.csv_import_jobs",
+    "public.employee_analyses",
+    "public.employee_job_descriptions",
+    "public.employee_vision_data",
+    "public.employees",
+    "public.import_errors",
+    "public.monthly_analyses",
+    "public.qdrant_mappings",
+    "public.quarterly_analyses",
+    "public.reports",
+    "public.supervisor_feedback_forms",
+    "public.supervisor_feedback_metric_definitions",
+    "public.supervisor_feedback_responses",
+    "public.sync_history"
+  ]
+}

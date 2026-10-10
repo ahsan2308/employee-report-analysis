@@ -8,6 +8,14 @@
     "DB_USER": "u"
   },
   "app.database.postgres_database": {},
+  "app.db.database": {
+    "DB_HOST": "db.internal",
+    "DB_NAME": "reports",
+    "DB_PASSWORD": "p@ss",
+    "DB_PORT": "6543",
+    "DB_TYPE": "postgres",
+    "DB_USER": "u"
+  },
   "app.model_host": {
     "EMBEDDING_PROVIDER": "vllm",
     "EMBEDDING_USE_PREFIX": true,
@@ -26,6 +34,10 @@
     "VLLM_MODEL": "m"
   },
   "app.models.base": {},
+  "app.services.embedding_service": {
+    "DEFAULT_MODEL": "e",
+    "EMBEDDING_PROVIDER": "vllm"
+  },
   "app.services.llm_service": {
     "DEFAULT_MODEL": "m",
     "LLM_PROVIDER": "vllm"

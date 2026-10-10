@@ -28,6 +28,8 @@ CONFIG_MODULES = [
     "app.vector_store",
     "app.services.vector_store_service",
     "app.services.llm_service",
+    "app.services.embedding_service",
+    "app.db.database",
     "app.tasks.analysis_tasks",
     "app.worker.celery_app",
 ]
@@ -123,7 +125,19 @@ def probe_worker_tasks() -> dict:
     return {"tasks": sorted(name for name in app_.tasks if not name.startswith("celery."))}
 
 
-PROBES = {"config": probe_config, "imports": probe_imports, "worker_tasks": probe_worker_tasks}
+def probe_tables_after_database_import() -> dict:
+    """Tables registered when a script imports only the database layer (e.g. to call create_tables())."""
+    database = importlib.import_module("app.database")
+    base = database.get_database().Base  # builds an engine, does not connect
+    return {"tables": sorted(base.metadata.tables)}
+
+
+PROBES = {
+    "config": probe_config,
+    "imports": probe_imports,
+    "worker_tasks": probe_worker_tasks,
+    "tables_after_database_import": probe_tables_after_database_import,
+}
 
 
 if __name__ == "__main__":

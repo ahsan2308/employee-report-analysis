@@ -4,20 +4,10 @@ This is the new modular implementation that replaces app.core.embeddings.
 """
 
 from typing import List
-import os
 from app.model_host import get_embedding_provider
 from app.core.logger import logger
-from app.core.config_provider import get_config_provider
+from app.core.settings import EMBEDDING_PROVIDER, EMBEDDING_DEFAULT_MODEL as DEFAULT_MODEL  # noqa: F401  (module attributes kept for compatibility)
 
-# Get configuration
-config = get_config_provider()
-
-# Prioritize environment variables based on selected provider
-EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "ollama").lower()
-if EMBEDDING_PROVIDER == "vllm":
-    DEFAULT_MODEL = os.getenv("VLLM_EMBEDDING_MODEL") or config.get("embedding_model", "BAAI/bge-m3", section="llm")
-else:
-    DEFAULT_MODEL = os.getenv("OLLAMA_EMBEDDING_MODEL") or config.get("embedding_model", "bge-m3", section="llm")
 
 def get_embedding(text: str, model_name: str = None, is_query: bool = False) -> list:
     """

@@ -8,7 +8,7 @@ from celery import shared_task, Task
 from datetime import datetime
 
 from app.core.logger import logger
-from app.database import get_database
+from app.db.database import get_database
 from app.models.sync_models import SyncHistory, SyncStatus
 from app.services.sync_service import create_sync_service
 

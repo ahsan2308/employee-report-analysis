@@ -1,24 +1,16 @@
-import os
 from typing import Optional
 from app.utils.env_loader import load_env_from_file
 
 from app.base.base_vector_store import BaseVectorStore
 from app.vector_store.qdrant_provider import QdrantProvider
-from app.core.config_provider import get_config_provider
 from app.core.logger import logger  # Import logger for proper debugging
 
 # Load environment variables
 load_env_from_file()
 
-# Get configuration
-config = get_config_provider()
 
 # Get Vector Store settings with priority: env vars > config file > defaults
-VECTOR_STORE_TYPE = os.getenv("VECTOR_STORE_TYPE", config.get("type", "qdrant", section="vector_db")).lower()
-VECTOR_STORE_HOST = os.getenv("VECTOR_STORE_HOST", config.get("host", "localhost", section="vector_db"))
-VECTOR_STORE_PORT = os.getenv("VECTOR_STORE_PORT", config.get("port", "6333", section="vector_db"))
-VECTOR_STORE_PATH = os.getenv("VECTOR_STORE_PATH", config.get("storage_path", "./qdrant_data", section="vector_db"))
-VECTOR_STORE_MODE = os.getenv("VECTOR_STORE_MODE", config.get("mode", "local", section="vector_db"))
+from app.core.settings import VECTOR_STORE_HOST, VECTOR_STORE_MODE, VECTOR_STORE_PATH, VECTOR_STORE_PORT, VECTOR_STORE_TYPE
 
 # Replace print with logger
 logger.info(f"Vector Store Path: {VECTOR_STORE_PATH}")

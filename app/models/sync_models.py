@@ -10,8 +10,8 @@ from sqlalchemy.sql import func
 import uuid
 import enum
 
-from app.models.base import Base
-from app.models.base import schema_name
+from app.db.base import Base
+from app.db.base import schema_name
 
 
 class SyncType(str, enum.Enum):

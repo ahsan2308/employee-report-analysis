@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 from app.utils.env_loader import load_env_from_file
 
@@ -14,29 +13,23 @@ from app.core.logger import logger
 load_env_from_file()
 
 # Provider selection (provider-agnostic)
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()
-EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "ollama").lower()
-EMBEDDING_USE_PREFIX = os.getenv("EMBEDDING_USE_PREFIX", "false").lower() == "true"
-
-# Ollama-specific settings
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
-OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", None)
-
-# Ollama embedding-specific settings
-OLLAMA_EMBEDDING_BASE_URL = os.getenv("OLLAMA_EMBEDDING_BASE_URL", OLLAMA_BASE_URL)
-OLLAMA_EMBEDDING_MODEL = os.getenv("OLLAMA_EMBEDDING_MODEL", "bge-m3")
-OLLAMA_EMBEDDING_API_KEY = os.getenv("OLLAMA_EMBEDDING_API_KEY", OLLAMA_API_KEY)
-
-# vLLM-specific settings
-VLLM_BASE_URL = os.getenv("VLLM_BASE_URL", "http://localhost:8000")
-VLLM_MODEL = os.getenv("VLLM_MODEL", "meta-llama/Meta-Llama-3.1-8B-Instruct")
-VLLM_API_KEY = os.getenv("VLLM_API_KEY", None)
-
-# vLLM embedding-specific settings
-VLLM_EMBEDDING_BASE_URL = os.getenv("VLLM_EMBEDDING_BASE_URL", "http://localhost:8001")
-VLLM_EMBEDDING_MODEL = os.getenv("VLLM_EMBEDDING_MODEL", "BAAI/bge-m3")
-VLLM_EMBEDDING_API_KEY = os.getenv("VLLM_EMBEDDING_API_KEY", VLLM_API_KEY)
+from app.core.settings import (
+    LLM_PROVIDER,
+    EMBEDDING_PROVIDER,
+    EMBEDDING_USE_PREFIX,
+    OLLAMA_BASE_URL,
+    OLLAMA_MODEL,
+    OLLAMA_API_KEY,
+    OLLAMA_EMBEDDING_BASE_URL,
+    OLLAMA_EMBEDDING_MODEL,
+    OLLAMA_EMBEDDING_API_KEY,
+    VLLM_BASE_URL,
+    VLLM_MODEL,
+    VLLM_API_KEY,
+    VLLM_EMBEDDING_BASE_URL,
+    VLLM_EMBEDDING_MODEL,
+    VLLM_EMBEDDING_API_KEY,
+)
 
 def get_llm_provider(provider_type: Optional[str] = None, **kwargs) -> LLMProvider:
     """

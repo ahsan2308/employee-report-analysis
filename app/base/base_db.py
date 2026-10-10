@@ -1,18 +1,2 @@
-from abc import ABC, abstractmethod
-
-class BaseDatabase(ABC):
-    """
-    Abstract base class for database operations.
-    """
-
-    @abstractmethod
-    def connect(self):
-        pass
-
-    @abstractmethod
-    def create_session(self):
-        pass
-
-    @abstractmethod
-    def create_tables(self):
-        pass
+"""Compatibility re-exports; the implementation lives in app.db.base_database."""
+from app.db.base_database import BaseDatabase  # noqa: F401
