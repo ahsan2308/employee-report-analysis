@@ -1,0 +1,192 @@
+{
+  "created": 1,
+  "invalid": {
+    "missing_period": null,
+    "missing_quarter": null,
+    "quarter_7": 4,
+    "quarter_zero": null,
+    "unknown_employee": null
+  },
+  "rows_after_create": [
+    {
+      "achievement_themes_json": {
+        "themes": [
+          "t"
+        ]
+      },
+      "adaptation_effectiveness": "high",
+      "analysis_date": "<timestamp>",
+      "analysis_id": 1,
+      "autonomy_level": "medium",
+      "behavioral_assessment_json": {
+        "b": 1
+      },
+      "challenge_patterns_json": {
+        "recurring": []
+      },
+      "collaboration_effectiveness": "high",
+      "credibility_assessment_json": {
+        "ok": 1
+      },
+      "credibility_rating": "high",
+      "cross_functional_impact_json": {
+        "teams": [
+          "a"
+        ]
+      },
+      "development_focus": "leadership",
+      "employee_id": 1,
+      "forward_planning_json": {
+        "continue": [
+          "c"
+        ]
+      },
+      "full_analysis_json": {
+        "raw": "q"
+      },
+      "learning_agility": "high",
+      "monthly_analysis_ids": [
+        1,
+        2,
+        3
+      ],
+      "organizational_impact": "team",
+      "performance_stability": "medium",
+      "performance_trajectory_json": {
+        "shifts": []
+      },
+      "performance_trend": "improving",
+      "period_end": "2025-03-31",
+      "period_start": "2025-01-01",
+      "quarter": 1,
+      "quarterly_summary": "Q1 summary",
+      "risk_assessment_json": {
+        "factors": []
+      },
+      "risk_level": "low",
+      "risk_trend": "decreasing",
+      "skill_development_json": {
+        "skills": [
+          "x"
+        ]
+      },
+      "stakeholder_count": 4,
+      "strategic_alignment_json": {
+        "aligned": true
+      },
+      "task_completion_reliability": "high",
+      "vision_data_alignment": "medium",
+      "work_quality_consistency": "high",
+      "year": 2025
+    }
+  ],
+  "rows_final": [
+    {
+      "achievement_themes_json": {
+        "themes": [
+          "t"
+        ]
+      },
+      "adaptation_effectiveness": "high",
+      "analysis_date": "<timestamp>",
+      "analysis_id": 1,
+      "autonomy_level": "medium",
+      "behavioral_assessment_json": {
+        "b": 1
+      },
+      "challenge_patterns_json": {
+        "recurring": []
+      },
+      "collaboration_effectiveness": "high",
+      "credibility_assessment_json": {
+        "ok": 1
+      },
+      "credibility_rating": "high",
+      "cross_functional_impact_json": {
+        "teams": [
+          "a"
+        ]
+      },
+      "development_focus": "leadership",
+      "employee_id": 1,
+      "forward_planning_json": {
+        "continue": [
+          "c"
+        ]
+      },
+      "full_analysis_json": {
+        "raw": "q"
+      },
+      "learning_agility": "high",
+      "monthly_analysis_ids": [
+        9
+      ],
+      "organizational_impact": "team",
+      "performance_stability": "medium",
+      "performance_trajectory_json": {
+        "shifts": []
+      },
+      "performance_trend": "improving",
+      "period_end": "2025-03-31",
+      "period_start": "2025-01-01",
+      "quarter": 1,
+      "quarterly_summary": null,
+      "risk_assessment_json": {
+        "factors": []
+      },
+      "risk_level": "high",
+      "risk_trend": "decreasing",
+      "skill_development_json": {
+        "skills": [
+          "x"
+        ]
+      },
+      "stakeholder_count": 4,
+      "strategic_alignment_json": {
+        "aligned": true
+      },
+      "task_completion_reliability": "high",
+      "vision_data_alignment": "medium",
+      "work_quality_consistency": "high",
+      "year": 2025
+    },
+    {
+      "achievement_themes_json": null,
+      "adaptation_effectiveness": null,
+      "analysis_date": "<timestamp>",
+      "analysis_id": 4,
+      "autonomy_level": null,
+      "behavioral_assessment_json": null,
+      "challenge_patterns_json": null,
+      "collaboration_effectiveness": null,
+      "credibility_assessment_json": null,
+      "credibility_rating": null,
+      "cross_functional_impact_json": null,
+      "development_focus": null,
+      "employee_id": 2,
+      "forward_planning_json": null,
+      "full_analysis_json": null,
+      "learning_agility": null,
+      "monthly_analysis_ids": null,
+      "organizational_impact": null,
+      "performance_stability": null,
+      "performance_trajectory_json": null,
+      "performance_trend": null,
+      "period_end": "2025-01-02",
+      "period_start": "2025-01-01",
+      "quarter": 7,
+      "quarterly_summary": null,
+      "risk_assessment_json": null,
+      "risk_level": null,
+      "risk_trend": null,
+      "skill_development_json": null,
+      "stakeholder_count": null,
+      "strategic_alignment_json": null,
+      "task_completion_reliability": null,
+      "vision_data_alignment": null,
+      "work_quality_consistency": null,
+      "year": 2025
+    }
+  ],
+  "updated": 1
+}

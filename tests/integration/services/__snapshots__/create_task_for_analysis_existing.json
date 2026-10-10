@@ -1,0 +1,43 @@
+{
+  "dispatch": [],
+  "returned": {
+    "celery_task_id": "immediate",
+    "completed_at": "<timestamp>",
+    "created_at": "<timestamp>",
+    "employee_id": null,
+    "error_message": null,
+    "month": null,
+    "quarter": null,
+    "report_id": "00000000-0000-0000-0000-000000000001",
+    "result_data": {
+      "analysis_id": 1,
+      "report_id": "00000000-0000-0000-0000-000000000001"
+    },
+    "started_at": "<timestamp>",
+    "status": "completed",
+    "task_id": "<uuid:1>",
+    "task_type": "REPORT_ANALYSIS",
+    "year": null
+  },
+  "rows": [
+    {
+      "celery_task_id": "immediate",
+      "completed_at": "<timestamp>",
+      "created_at": "<timestamp>",
+      "employee_id": null,
+      "error_message": null,
+      "month": null,
+      "quarter": null,
+      "report_id": "00000000-0000-0000-0000-000000000001",
+      "result_data": {
+        "analysis_id": 1,
+        "report_id": "00000000-0000-0000-0000-000000000001"
+      },
+      "started_at": "<timestamp>",
+      "status": "completed",
+      "task_id": "<uuid:1>",
+      "task_type": "REPORT_ANALYSIS",
+      "year": null
+    }
+  ]
+}

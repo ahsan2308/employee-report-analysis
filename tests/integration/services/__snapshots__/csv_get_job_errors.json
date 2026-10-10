@@ -1,0 +1,82 @@
+{
+  "default": [
+    3,
+    [
+      {
+        "error_id": 2,
+        "error_message": "first row",
+        "field_name": null,
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": null,
+        "row_number": 1
+      },
+      {
+        "error_id": 3,
+        "error_message": "middle row",
+        "field_name": "Date",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": {
+          "Date": "bad"
+        },
+        "row_number": 3
+      },
+      {
+        "error_id": 1,
+        "error_message": "late row",
+        "field_name": "Name",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": {
+          "Name": "x"
+        },
+        "row_number": 5
+      }
+    ]
+  ],
+  "page0_error": "DataError",
+  "page1_size2": [
+    3,
+    [
+      {
+        "error_id": 2,
+        "error_message": "first row",
+        "field_name": null,
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": null,
+        "row_number": 1
+      },
+      {
+        "error_id": 3,
+        "error_message": "middle row",
+        "field_name": "Date",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": {
+          "Date": "bad"
+        },
+        "row_number": 3
+      }
+    ]
+  ],
+  "page2_size2": [
+    3,
+    [
+      {
+        "error_id": 1,
+        "error_message": "late row",
+        "field_name": "Name",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": {
+          "Name": "x"
+        },
+        "row_number": 5
+      }
+    ]
+  ],
+  "page3_size2": [
+    3,
+    []
+  ],
+  "unknown_job": [
+    0,
+    []
+  ]
+}

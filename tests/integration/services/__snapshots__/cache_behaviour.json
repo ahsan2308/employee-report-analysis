@@ -1,0 +1,64 @@
+{
+  "cache_after_clear": [],
+  "clear_all_rebinds_module_dict": true,
+  "first_labels_after_mutation": [
+    "2024-12",
+    "2025-01",
+    "2025-02",
+    "2025-03",
+    "2025-04",
+    "2025-06",
+    "MUTATED"
+  ],
+  "fourth_after_expiry": {
+    "datasets": [
+      {
+        "data": [
+          0.8,
+          0.5,
+          0.5,
+          0.2,
+          0.8,
+          0.5,
+          0.8
+        ],
+        "label": "Average Risk Level",
+        "metadata": {
+          "avg": 0.59,
+          "max": 0.8,
+          "min": 0.2
+        }
+      }
+    ],
+    "labels": [
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-06",
+      "2025-09"
+    ]
+  },
+  "hit_is_same_object": true,
+  "keys_after_multi": [
+    "multi_criteria_trends_risk_sentiment_None_None_None_None_quarter",
+    "risk_level_trends_None_None_2025-01-01_None_month",
+    "risk_level_trends_None_None_None_None_month",
+    "risk_level_trends_None_None_None_None_quarter",
+    "sentiment_trends_None_None_None_None_quarter"
+  ],
+  "keys_after_prefix_clear": [
+    "multi_criteria_trends_risk_sentiment_None_None_None_None_quarter",
+    "sentiment_trends_None_None_None_None_quarter"
+  ],
+  "third_labels": [
+    "2024-12",
+    "2025-01",
+    "2025-02",
+    "2025-03",
+    "2025-04",
+    "2025-06",
+    "MUTATED"
+  ]
+}

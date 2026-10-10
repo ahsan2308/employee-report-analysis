@@ -1,0 +1,176 @@
+{
+  "0_weeks": {
+    "current_data": [
+      {
+        "from_date": "2025-03-03",
+        "main_entity": "Meetings",
+        "sub_entities": {
+          "count": 3
+        },
+        "sub_entities_content": {
+          "notes": "n1"
+        },
+        "to_date": "2025-03-07"
+      },
+      {
+        "from_date": "2025-03-03",
+        "main_entity": "Tasks",
+        "sub_entities": {
+          "done": 5
+        },
+        "sub_entities_content": null,
+        "to_date": "2025-03-07"
+      }
+    ],
+    "date_context": {
+      "report_date": "2025-03-07"
+    },
+    "previous_data": []
+  },
+  "1_week": {
+    "current_data": [
+      {
+        "from_date": "2025-03-03",
+        "main_entity": "Meetings",
+        "sub_entities": {
+          "count": 3
+        },
+        "sub_entities_content": {
+          "notes": "n1"
+        },
+        "to_date": "2025-03-07"
+      },
+      {
+        "from_date": "2025-03-03",
+        "main_entity": "Tasks",
+        "sub_entities": {
+          "done": 5
+        },
+        "sub_entities_content": null,
+        "to_date": "2025-03-07"
+      }
+    ],
+    "date_context": {
+      "report_date": "2025-03-07"
+    },
+    "previous_data": [
+      {
+        "from_date": "2025-02-24",
+        "main_entity": "Meetings",
+        "sub_entities": {
+          "count": 2
+        },
+        "sub_entities_content": null,
+        "to_date": "2025-02-28"
+      }
+    ]
+  },
+  "default_4_weeks": {
+    "current_data": [
+      {
+        "from_date": "2025-03-03",
+        "main_entity": "Meetings",
+        "sub_entities": {
+          "count": 3
+        },
+        "sub_entities_content": {
+          "notes": "n1"
+        },
+        "to_date": "2025-03-07"
+      },
+      {
+        "from_date": "2025-03-03",
+        "main_entity": "Tasks",
+        "sub_entities": {
+          "done": 5
+        },
+        "sub_entities_content": null,
+        "to_date": "2025-03-07"
+      }
+    ],
+    "date_context": {
+      "report_date": "2025-03-07"
+    },
+    "previous_data": [
+      {
+        "from_date": "2025-02-03",
+        "main_entity": "Meetings",
+        "sub_entities": {
+          "count": 1
+        },
+        "sub_entities_content": null,
+        "to_date": "2025-02-07"
+      },
+      {
+        "from_date": "2025-02-24",
+        "main_entity": "Meetings",
+        "sub_entities": {
+          "count": 2
+        },
+        "sub_entities_content": null,
+        "to_date": "2025-02-28"
+      }
+    ]
+  },
+  "no_exact_match_date": {
+    "current_data": [],
+    "date_context": {
+      "report_date": "2025-03-08"
+    },
+    "previous_data": [
+      {
+        "from_date": "2025-02-24",
+        "main_entity": "Meetings",
+        "sub_entities": {
+          "count": 2
+        },
+        "sub_entities_content": null,
+        "to_date": "2025-02-28"
+      },
+      {
+        "from_date": "2025-03-03",
+        "main_entity": "Meetings",
+        "sub_entities": {
+          "count": 3
+        },
+        "sub_entities_content": {
+          "notes": "n1"
+        },
+        "to_date": "2025-03-07"
+      },
+      {
+        "from_date": "2025-03-03",
+        "main_entity": "Tasks",
+        "sub_entities": {
+          "done": 5
+        },
+        "sub_entities_content": null,
+        "to_date": "2025-03-07"
+      }
+    ]
+  },
+  "other_employee": {
+    "current_data": [
+      {
+        "from_date": "2025-03-03",
+        "main_entity": "Meetings",
+        "sub_entities": {
+          "count": 4
+        },
+        "sub_entities_content": null,
+        "to_date": "2025-03-07"
+      }
+    ],
+    "date_context": {
+      "report_date": "2025-03-07"
+    },
+    "previous_data": []
+  },
+  "unknown_employee": {
+    "current_data": [],
+    "date_context": {
+      "report_date": "2025-03-07"
+    },
+    "previous_data": []
+  }
+}

@@ -1,0 +1,274 @@
+{
+  "combined": {
+    "datasets": [
+      {
+        "data": [
+          8.0
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 8.0,
+          "max": 8.0,
+          "min": 8.0
+        }
+      }
+    ],
+    "labels": [
+      "2025-01"
+    ]
+  },
+  "date_range_q1": {
+    "datasets": [
+      {
+        "data": [
+          6.75,
+          4.0,
+          10.0
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 6.92,
+          "max": 10.0,
+          "min": 4.0
+        }
+      }
+    ],
+    "labels": [
+      "2025-01",
+      "2025-02",
+      "2025-03"
+    ]
+  },
+  "date_strings": {
+    "datasets": [
+      {
+        "data": [
+          4.0,
+          10.0
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 7.0,
+          "max": 10.0,
+          "min": 4.0
+        }
+      }
+    ],
+    "labels": [
+      "2025-02",
+      "2025-03"
+    ]
+  },
+  "date_unparseable_ignored": {
+    "datasets": [
+      {
+        "data": [
+          8.0,
+          6.75,
+          4.0,
+          10.0,
+          3.0,
+          6.5
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 6.38,
+          "max": 10.0,
+          "min": 3.0
+        }
+      }
+    ],
+    "labels": [
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-06"
+    ]
+  },
+  "datetime_start": {
+    "datasets": [
+      {
+        "data": [
+          3.0,
+          6.5
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 4.75,
+          "max": 6.5,
+          "min": 3.0
+        }
+      }
+    ],
+    "labels": [
+      "2025-04",
+      "2025-06"
+    ]
+  },
+  "department_engineering": {
+    "datasets": [
+      {
+        "data": [
+          8.0,
+          7.33,
+          4.0,
+          3.0
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 5.58,
+          "max": 8.0,
+          "min": 3.0
+        }
+      }
+    ],
+    "labels": [
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-04"
+    ]
+  },
+  "department_unknown": {
+    "datasets": [
+      {
+        "data": [],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 0,
+          "max": 0,
+          "min": 0
+        }
+      }
+    ],
+    "labels": []
+  },
+  "employee_0_falsy_ignored": {
+    "datasets": [
+      {
+        "data": [
+          8.0,
+          6.75,
+          4.0,
+          10.0,
+          3.0,
+          6.5
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 6.38,
+          "max": 10.0,
+          "min": 3.0
+        }
+      }
+    ],
+    "labels": [
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-06"
+    ]
+  },
+  "employee_1": {
+    "datasets": [
+      {
+        "data": [
+          8.0,
+          8.0
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 8.0,
+          "max": 8.0,
+          "min": 8.0
+        }
+      }
+    ],
+    "labels": [
+      "2024-12",
+      "2025-01"
+    ]
+  },
+  "employee_invalid_ignored": {
+    "datasets": [
+      {
+        "data": [
+          8.0,
+          6.75,
+          4.0,
+          10.0,
+          3.0,
+          6.5
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 6.38,
+          "max": 10.0,
+          "min": 3.0
+        }
+      }
+    ],
+    "labels": [
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-06"
+    ]
+  },
+  "employee_str_2": {
+    "datasets": [
+      {
+        "data": [
+          6.0,
+          4.0,
+          3.0
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 4.33,
+          "max": 6.0,
+          "min": 3.0
+        }
+      }
+    ],
+    "labels": [
+      "2025-01",
+      "2025-02",
+      "2025-04"
+    ]
+  },
+  "none": {
+    "datasets": [
+      {
+        "data": [
+          8.0,
+          6.75,
+          4.0,
+          10.0,
+          3.0,
+          6.5
+        ],
+        "label": "Average Impact Score",
+        "metadata": {
+          "avg": 6.38,
+          "max": 10.0,
+          "min": 3.0
+        }
+      }
+    ],
+    "labels": [
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-06"
+    ]
+  }
+}

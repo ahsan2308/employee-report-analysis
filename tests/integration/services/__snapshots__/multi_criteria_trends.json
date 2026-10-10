@@ -1,0 +1,267 @@
+{
+  "all_month": {
+    "datasets": [
+      {
+        "backgroundColor": "rgba(52, 152, 219, 0.2)",
+        "borderColor": "rgba(52, 152, 219, 1)",
+        "data": [
+          0.4,
+          0.5,
+          0.45,
+          0.77,
+          0.1,
+          0.5
+        ],
+        "label": "Sentiment Score",
+        "metadata": {
+          "avg": 0.45,
+          "max": 0.77,
+          "min": 0.1
+        }
+      },
+      {
+        "backgroundColor": "rgba(231, 76, 60, 0.2)",
+        "borderColor": "rgba(231, 76, 60, 1)",
+        "data": [
+          0.8,
+          0.5,
+          0.5,
+          0.2,
+          0.8,
+          0.5
+        ],
+        "label": "Risk Level",
+        "metadata": {
+          "avg": 0.55,
+          "max": 0.8,
+          "min": 0.2
+        }
+      },
+      {
+        "backgroundColor": "rgba(241, 196, 15, 0.2)",
+        "borderColor": "rgba(241, 196, 15, 1)",
+        "data": [
+          0.2,
+          0.6,
+          0.5,
+          0.8,
+          0.2,
+          0.5
+        ],
+        "label": "Credibility Rating",
+        "metadata": {
+          "avg": 0.47,
+          "max": 0.8,
+          "min": 0.2
+        }
+      },
+      {
+        "backgroundColor": "rgba(46, 204, 113, 0.2)",
+        "borderColor": "rgba(46, 204, 113, 1)",
+        "data": [
+          0.5,
+          0.8,
+          0.35,
+          0.7,
+          0.2,
+          0.5
+        ],
+        "label": "Consistency Score",
+        "metadata": {
+          "avg": 0.51,
+          "max": 0.8,
+          "min": 0.2
+        }
+      },
+      {
+        "backgroundColor": "rgba(243, 156, 18, 0.2)",
+        "borderColor": "rgba(243, 156, 18, 1)",
+        "data": [
+          0.2,
+          0.6,
+          0.5,
+          0.8,
+          0.2,
+          0.5
+        ],
+        "label": "Performance Rating",
+        "metadata": {
+          "avg": 0.47,
+          "max": 0.8,
+          "min": 0.2
+        }
+      },
+      {
+        "backgroundColor": "rgba(155, 89, 182, 0.2)",
+        "borderColor": "rgba(155, 89, 182, 1)",
+        "data": [
+          8.0,
+          6.75,
+          4.0,
+          10.0,
+          3.0,
+          6.5
+        ],
+        "label": "Impact Score",
+        "metadata": {
+          "avg": 6.38,
+          "max": 10.0,
+          "min": 3.0
+        }
+      }
+    ],
+    "labels": [
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-06"
+    ]
+  },
+  "department_finance_year": {
+    "datasets": [
+      {
+        "backgroundColor": "rgba(46, 204, 113, 0.2)",
+        "borderColor": "rgba(46, 204, 113, 1)",
+        "data": [
+          0.65
+        ],
+        "label": "Consistency Score",
+        "metadata": {
+          "avg": 0.65,
+          "max": 0.65,
+          "min": 0.65
+        }
+      }
+    ],
+    "labels": [
+      "2025"
+    ]
+  },
+  "duplicate_criteria_quarter": {
+    "datasets": [
+      {
+        "backgroundColor": "rgba(231, 76, 60, 0.2)",
+        "borderColor": "rgba(231, 76, 60, 1)",
+        "data": [
+          0.8,
+          0.41,
+          0.65
+        ],
+        "label": "Risk Level",
+        "metadata": {
+          "avg": 0.62,
+          "max": 0.8,
+          "min": 0.41
+        }
+      }
+    ],
+    "labels": [
+      "2024-Q4",
+      "2025-Q1",
+      "2025-Q2"
+    ]
+  },
+  "employee_3_day": {
+    "datasets": [
+      {
+        "backgroundColor": "rgba(243, 156, 18, 0.2)",
+        "borderColor": "rgba(243, 156, 18, 1)",
+        "data": [
+          0.5,
+          0.8,
+          0.5
+        ],
+        "label": "Performance Rating",
+        "metadata": {
+          "avg": 0.6,
+          "max": 0.8,
+          "min": 0.5
+        }
+      },
+      {
+        "backgroundColor": "rgba(52, 152, 219, 0.2)",
+        "borderColor": "rgba(52, 152, 219, 1)",
+        "data": [
+          0.3,
+          0.8,
+          0.5
+        ],
+        "label": "Sentiment Score",
+        "metadata": {
+          "avg": 0.53,
+          "max": 0.8,
+          "min": 0.3
+        }
+      }
+    ],
+    "labels": [
+      "2025-01-31",
+      "2025-03-03",
+      "2025-06-30"
+    ]
+  },
+  "empty_criteria": {
+    "datasets": [],
+    "labels": []
+  },
+  "only_unknown": {
+    "datasets": [],
+    "labels": []
+  },
+  "risk_impact_unknown_week": {
+    "datasets": [
+      {
+        "backgroundColor": "rgba(155, 89, 182, 0.2)",
+        "borderColor": "rgba(155, 89, 182, 1)",
+        "data": [
+          8.0,
+          7.33,
+          5.0,
+          null,
+          4.0,
+          10.0,
+          3.0,
+          6.5
+        ],
+        "label": "Impact Score",
+        "metadata": {
+          "avg": 6.26,
+          "max": 10.0,
+          "min": 3.0
+        }
+      },
+      {
+        "backgroundColor": "rgba(231, 76, 60, 0.2)",
+        "borderColor": "rgba(231, 76, 60, 1)",
+        "data": [
+          0.8,
+          0.35,
+          0.8,
+          0.2,
+          0.8,
+          0.2,
+          0.5,
+          0.5
+        ],
+        "label": "Risk Level",
+        "metadata": {
+          "avg": 0.52,
+          "max": 0.8,
+          "min": 0.2
+        }
+      }
+    ],
+    "labels": [
+      "2024-W1",
+      "2025-W2",
+      "2025-W5",
+      "2025-W6",
+      "2025-W9",
+      "2025-W10",
+      "2025-W14",
+      "2025-W27"
+    ]
+  }
+}

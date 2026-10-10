@@ -1,0 +1,9 @@
+{
+  "returned": {
+    "missing_employee": null,
+    "missing_period_not_null": null,
+    "month_zero": null,
+    "unknown_employee_fk": null
+  },
+  "rows": []
+}

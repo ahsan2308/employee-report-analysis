@@ -1,0 +1,128 @@
+{
+  "dispatch": [
+    {
+      "args": [
+        "<uuid:1>"
+      ],
+      "kwargs": {},
+      "task": "analyze_quarterly_reports_task"
+    },
+    {
+      "args": [
+        "<uuid:3>"
+      ],
+      "kwargs": {},
+      "task": "analyze_quarterly_reports_task"
+    }
+  ],
+  "existing": {
+    "celery_task_id": "immediate",
+    "completed_at": "<timestamp>",
+    "created_at": "<timestamp>",
+    "employee_id": 2,
+    "error_message": null,
+    "month": null,
+    "quarter": 1,
+    "report_id": null,
+    "result_data": {
+      "analysis_id": 7,
+      "employee_id": 2,
+      "quarter": 1,
+      "year": 2025
+    },
+    "started_at": "<timestamp>",
+    "status": "completed",
+    "task_id": "<uuid:2>",
+    "task_type": "QUARTERLY_ANALYSIS",
+    "year": 2025
+  },
+  "new": {
+    "celery_task_id": "pending",
+    "completed_at": null,
+    "created_at": "<timestamp>",
+    "employee_id": 1,
+    "error_message": null,
+    "month": null,
+    "quarter": 1,
+    "report_id": null,
+    "result_data": null,
+    "started_at": null,
+    "status": "pending",
+    "task_id": "<uuid:1>",
+    "task_type": "QUARTERLY_ANALYSIS",
+    "year": 2025
+  },
+  "odd_quarter": {
+    "celery_task_id": "pending",
+    "completed_at": null,
+    "created_at": "<timestamp>",
+    "employee_id": 2,
+    "error_message": null,
+    "month": null,
+    "quarter": 9,
+    "report_id": null,
+    "result_data": null,
+    "started_at": null,
+    "status": "pending",
+    "task_id": "<uuid:3>",
+    "task_type": "QUARTERLY_ANALYSIS",
+    "year": 2025
+  },
+  "reused_same_task": true,
+  "rows": [
+    {
+      "celery_task_id": "pending",
+      "completed_at": null,
+      "created_at": "<timestamp>",
+      "employee_id": 1,
+      "error_message": null,
+      "month": null,
+      "quarter": 1,
+      "report_id": null,
+      "result_data": null,
+      "started_at": null,
+      "status": "pending",
+      "task_id": "<uuid:1>",
+      "task_type": "QUARTERLY_ANALYSIS",
+      "year": 2025
+    },
+    {
+      "celery_task_id": "immediate",
+      "completed_at": "<timestamp>",
+      "created_at": "<timestamp>",
+      "employee_id": 2,
+      "error_message": null,
+      "month": null,
+      "quarter": 1,
+      "report_id": null,
+      "result_data": {
+        "analysis_id": 7,
+        "employee_id": 2,
+        "quarter": 1,
+        "year": 2025
+      },
+      "started_at": "<timestamp>",
+      "status": "completed",
+      "task_id": "<uuid:2>",
+      "task_type": "QUARTERLY_ANALYSIS",
+      "year": 2025
+    },
+    {
+      "celery_task_id": "pending",
+      "completed_at": null,
+      "created_at": "<timestamp>",
+      "employee_id": 2,
+      "error_message": null,
+      "month": null,
+      "quarter": 9,
+      "report_id": null,
+      "result_data": null,
+      "started_at": null,
+      "status": "pending",
+      "task_id": "<uuid:3>",
+      "task_type": "QUARTERLY_ANALYSIS",
+      "year": 2025
+    }
+  ],
+  "unknown_employee_error": "Employee with ID 99 not found"
+}

@@ -1,0 +1,239 @@
+{
+  "errors": {
+    "task_13": "Task is not complete: pending",
+    "task_14": "Task is not complete: running",
+    "task_99": "Task with ID 00000000-0000-0000-0000-000000000099 not found"
+  },
+  "results": {
+    "task_1": {
+      "result": {
+        "achievements_json": null,
+        "action_items": null,
+        "analysis_id": 1,
+        "challenges_json": null,
+        "credibility_assessment": {
+          "consistency_score": "medium",
+          "exaggeration_flags": [],
+          "explanation": "No credibility assessment was performed for this analysis.",
+          "rating": "medium"
+        },
+        "employee_name": "Alice",
+        "full_analysis_json": {
+          "summary": "analysis of 00000000-0000-0000-0000-000000000001"
+        },
+        "performance_assessment": {
+          "improvement_areas": [],
+          "key_strengths": [],
+          "rating": "medium",
+          "summary": "No performance assessment was performed for this analysis."
+        },
+        "report_id": "00000000-0000-0000-0000-000000000001",
+        "risk_explanation": null,
+        "risk_level": "medium",
+        "sentiment": 0.3,
+        "sentiment_score": 0.3,
+        "topics": null
+      },
+      "status": "completed"
+    },
+    "task_10": {
+      "result": {
+        "analysis_id": 1
+      },
+      "status": "completed"
+    },
+    "task_11": {
+      "result": {
+        "no_analysis_id": true
+      },
+      "status": "completed"
+    },
+    "task_12": {
+      "result": {
+        "x": 1
+      },
+      "status": "completed"
+    },
+    "task_2": {
+      "result": {
+        "achievements_json": [
+          {
+            "a": 1
+          }
+        ],
+        "action_items": [
+          "x"
+        ],
+        "analysis_id": 2,
+        "challenges_json": [
+          {
+            "c": 1
+          }
+        ],
+        "credibility_assessment": {
+          "consistency_score": "high",
+          "exaggeration_flags": [
+            "e"
+          ],
+          "explanation": "ce",
+          "rating": "high"
+        },
+        "employee_name": "Alice",
+        "full_analysis_json": {
+          "summary": "analysis of 00000000-0000-0000-0000-000000000002"
+        },
+        "performance_assessment": {
+          "improvement_areas": [
+            "i"
+          ],
+          "key_strengths": [
+            "s"
+          ],
+          "rating": "high",
+          "summary": "ps"
+        },
+        "report_id": "00000000-0000-0000-0000-000000000002",
+        "risk_explanation": "r",
+        "risk_level": "low",
+        "sentiment": 0.8,
+        "sentiment_score": 0.8,
+        "topics": [
+          "t"
+        ]
+      },
+      "status": "completed"
+    },
+    "task_3": {
+      "result": {
+        "analysis_id": 1,
+        "extra": 1,
+        "report_id": "x"
+      },
+      "status": "completed"
+    },
+    "task_4": {
+      "result": {
+        "analysis_id": 9999
+      },
+      "status": "completed"
+    },
+    "task_5": {
+      "result": null,
+      "status": "completed"
+    },
+    "task_6": {
+      "error_message": "boom",
+      "status": "failed"
+    },
+    "task_7": {
+      "result": {
+        "analysis_id": 1,
+        "consistency_assessment": {
+          "notable_strengths": [
+            "str"
+          ],
+          "notable_weaknesses": null,
+          "performance_stability": null,
+          "task_completion_reliability": null,
+          "work_quality_consistency": null
+        },
+        "employee_id": 1,
+        "employee_name": "Alice",
+        "focus_areas": [
+          {
+            "p": 1
+          }
+        ],
+        "full_analysis_json": {
+          "month": 1
+        },
+        "growth_indicators": {
+          "approach_to_challenges": null,
+          "complexity_of_tasks": null,
+          "confidence_level_change": null,
+          "skill_development_evidence": null
+        },
+        "month": 1,
+        "monthly_achievements": null,
+        "monthly_risk_assessment": {
+          "escalating_risks": [
+            "esc"
+          ],
+          "overall_risk_level": "low",
+          "risk_explanation": null,
+          "risk_mitigation_recommendations": null,
+          "significant_risks": null
+        },
+        "monthly_summary": "summary 2025-1",
+        "period_end": "2025-01-31",
+        "period_start": "2025-01-01",
+        "progress_trends": {
+          "challenge_resolution_progress": null,
+          "performance_trend": "improving",
+          "risk_level_pattern": null,
+          "sentiment_trend": null
+        },
+        "recurring_challenges": null,
+        "strategic_recommendations": null,
+        "year": 2025
+      },
+      "status": "completed"
+    },
+    "task_8": {
+      "result": {
+        "analysis_id": 1,
+        "cached": "kept because no analysis for month 2"
+      },
+      "status": "completed"
+    },
+    "task_9": {
+      "result": {
+        "achievement_themes": null,
+        "adaptation_effectiveness": null,
+        "analysis_date": "<timestamp>",
+        "analysis_id": 1,
+        "autonomy_level": null,
+        "behavioral_assessment": null,
+        "challenge_patterns": null,
+        "collaboration_effectiveness": null,
+        "credibility_assessment": null,
+        "credibility_rating": null,
+        "cross_functional_impact": null,
+        "development_focus": null,
+        "employee_id": 1,
+        "employee_name": "Alice",
+        "forward_planning": {
+          "f": 1
+        },
+        "full_analysis_json": {
+          "quarter": 1
+        },
+        "learning_agility": null,
+        "monthly_analysis_ids": [
+          1
+        ],
+        "organizational_impact": null,
+        "performance_stability": null,
+        "performance_trajectory": null,
+        "performance_trend": "stable",
+        "period_end": "2025-03-31",
+        "period_start": "2025-01-01",
+        "quarter": 1,
+        "quarterly_summary": "Q1 2025",
+        "risk_assessment": null,
+        "risk_level": "medium",
+        "risk_trend": null,
+        "skill_development": null,
+        "stakeholder_count": 2,
+        "strategic_alignment": {
+          "s": 1
+        },
+        "task_completion_reliability": null,
+        "vision_data_alignment": null,
+        "work_quality_consistency": null,
+        "year": 2025
+      },
+      "status": "completed"
+    }
+  }
+}
