@@ -18,6 +18,7 @@ ALIASES = {
     "app.base.base_vector_store": "app.integrations.vector_store.base",
     "app.vector_store.qdrant_provider": "app.integrations.vector_store.qdrant",
     "app.database.sqlserver_connector": "app.integrations.sqlserver.connector",
+    "app.base.base_csv_processor": "app.services.csv.processors.base",
 }
 
 REEXPORTS = {
@@ -30,6 +31,7 @@ REEXPORTS = {
     "app.vector_store": "app.integrations.vector_store",
     "app.services.db_service": None,  # spread over app.repositories.* and app.domain.periods
     "app.services.additional_services": None,  # spread over app.services.analysis.*
+    "app.schemas.csv_import_schema": None,  # row models live in app.services.csv.row_models
 }
 
 

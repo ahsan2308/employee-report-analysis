@@ -7,7 +7,7 @@ based on the CSV file format or explicit type specification.
 from typing import List, Type, Optional, Tuple
 from sqlalchemy.orm import Session
 
-from app.base.base_csv_processor import BaseCSVProcessor
+from app.services.csv.processors.base import BaseCSVProcessor
 from app.services.csv.error_handler import ImportErrorHandler
 from app.core.logger import logger
 
