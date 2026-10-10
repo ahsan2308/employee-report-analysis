@@ -19,9 +19,7 @@ live services live in `scripts/manual/` and are not collected.
 ## Running
 
 ```bash
-# Linux/macOS: pywin32 only ships Windows wheels
-grep -v '^pywin32' requirements.txt > /tmp/requirements-linux.txt
-pip install -r /tmp/requirements-linux.txt -r requirements-dev.txt
+pip install -r requirements.txt -r requirements-dev.txt
 
 python -m pytest                      # integration tests are skipped
 TEST_DATABASE_URL=postgresql://user:pass@localhost:5432/scratch_db python -m pytest

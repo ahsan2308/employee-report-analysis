@@ -18,10 +18,7 @@ jobs:
       - name: Install system libraries
         run: sudo apt-get update && sudo apt-get install -y unixodbc
       - name: Install dependencies
-        # pywin32 only ships Windows wheels, so it is left out on Linux.
-        run: |
-          grep -v '^pywin32' requirements.txt > "$RUNNER_TEMP/requirements-linux.txt"
-          pip install -r "$RUNNER_TEMP/requirements-linux.txt" -r requirements-dev.txt
+        run: pip install -r requirements.txt -r requirements-dev.txt
       - name: Run tests (integration tests skip without a database)
         run: python -m pytest
 
@@ -54,8 +51,18 @@ jobs:
       - name: Install system libraries
         run: sudo apt-get update && sudo apt-get install -y unixodbc
       - name: Install dependencies
-        run: |
-          grep -v '^pywin32' requirements.txt > "$RUNNER_TEMP/requirements-linux.txt"
-          pip install -r "$RUNNER_TEMP/requirements-linux.txt" -r requirements-dev.txt
+        run: pip install -r requirements.txt -r requirements-dev.txt
       - name: Run integration tests
         run: python -m pytest tests/integration
+
+  docker:
+    name: Docker image builds
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t employee-report-analysis .
+      - name: Smoke-test image
+        run: |
+          docker run --rm employee-report-analysis python -c "import pyodbc; drivers = pyodbc.drivers(); print(drivers); assert 'ODBC Driver 17 for SQL Server' in drivers"
+          docker run --rm employee-report-analysis python -c "import app.worker.worker"
