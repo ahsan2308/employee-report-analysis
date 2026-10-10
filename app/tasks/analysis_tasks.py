@@ -353,6 +353,11 @@ def analyze_monthly_reports_task(self, task_id: str):
             # Verify this is a monthly analysis task
             if task.task_type != TaskType.MONTHLY_ANALYSIS.value:
                 logger.error(f"Task {task_id} is not a monthly analysis task")
+                # Record the outcome, or the row would stay PENDING forever
+                task.status = TaskStatus.FAILED.value
+                task.error_message = f"Incorrect task type {task.task_type} for a monthly analysis"
+                task.completed_at = datetime.now()
+                session.commit()
                 return {"error": "Incorrect task type"}
             
             # Update celery_task_id and status
@@ -673,6 +678,11 @@ def analyze_quarterly_reports_task(self, task_id: str):
             # Verify this is a quarterly analysis task
             if task.task_type != TaskType.QUARTERLY_ANALYSIS.value:
                 logger.error(f"Task {task_id} is not a quarterly analysis task")
+                # Record the outcome, or the row would stay PENDING forever
+                task.status = TaskStatus.FAILED.value
+                task.error_message = f"Incorrect task type {task.task_type} for a quarterly analysis"
+                task.completed_at = datetime.now()
+                session.commit()
                 return {"error": "Incorrect task type"}
             
             # Update celery_task_id and status

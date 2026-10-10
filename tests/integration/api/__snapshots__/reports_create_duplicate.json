@@ -1,12 +1,12 @@
 {
   "body": {
-    "detail": "Error creating report: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint \"idx_unique_report\"\nDETAIL:  Key (employee_id, report_date)=(1, 2025-03-10) already exists.\n\n[SQL: INSERT INTO public.reports (report_id, employee_id, report_date, report_text) VALUES (%(report_id)s::UUID, %(employee_id)s, %(report_date)s, %(report_text)s)]\n[parameters: {'report_id': UUID('<uuid:1>'), 'employee_id': 1, 'report_date': datetime.date(2025, 3, 10), 'report_text': 'second'}]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)"
+    "detail": "Error creating report"
   },
   "db": [
     {
       "employee_id": 1,
       "report_date": "2025-03-10",
-      "report_id": "<uuid:2>",
+      "report_id": "<uuid:1>",
       "report_text": "first"
     }
   ],

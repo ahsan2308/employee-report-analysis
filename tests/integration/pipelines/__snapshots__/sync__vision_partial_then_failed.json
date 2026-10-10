@@ -29,8 +29,8 @@
           "vision_records_created": 0,
           "vision_records_updated": 0
         },
-        "records_queried": 0,
-        "records_synced": 0,
+        "records_queried": 3,
+        "records_synced": 2,
         "status": "partial",
         "sync_id": "<uuid:1>",
         "sync_type": "vision_data"
@@ -44,7 +44,7 @@
           "vision_records_created": 0,
           "vision_records_updated": 0
         },
-        "records_queried": 0,
+        "records_queried": 1,
         "records_synced": 0,
         "status": "failed",
         "sync_id": "<uuid:2>",

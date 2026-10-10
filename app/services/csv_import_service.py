@@ -649,6 +649,16 @@ class CSVImportService:
         
         logger.info(f"Saved {len(error_models)} errors for job {job_id}")
 
+    def mark_job_failed(self, job_id: str, message: str) -> None:
+        """Mark a job FAILED with one job-level error (row 0), e.g. when its task could not be queued."""
+        with self._transaction_context() as session:
+            job = session.query(CSVImportJob).filter(CSVImportJob.job_id == job_id).first()
+            if not job:
+                return
+            session.add(ImportError(job_id=job.job_id, row_number=0, error_message=message))
+            session.flush()
+            self._update_job_status(session, job, ImportStatus.FAILED)
+
     def get_import_job(self, job_id: str) -> Dict[str, Any]:
         """
         Get an import job by ID.
@@ -661,12 +671,8 @@ class CSVImportService:
             if not job:
                 return None
             
-            # Verify error count is correct
+            # Report the stored errors; reading a job never writes to it
             actual_error_count = session.query(ImportError).filter(ImportError.job_id == job_id).count()
-            if job.error_count != actual_error_count:
-                logger.info(f"Fixing inconsistent error count for job {job_id}: was {job.error_count}, now {actual_error_count}")
-                job.error_count = actual_error_count
-                session.commit()
             
             # Calculate percent_complete:
             total_rows = job.total_rows or 0
@@ -687,7 +693,7 @@ class CSVImportService:
                 "total_rows": job.total_rows or 0,
                 "processed_rows": job.processed_rows or 0,
                 "successful_rows": job.successful_rows or 0,
-                "error_count": job.error_count or 0,
+                "error_count": actual_error_count,
                 "metrics": job.metrics_json or {},
                 "percent_complete": percent_complete,
                 "estimated_time_remaining": None

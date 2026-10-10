@@ -35,8 +35,8 @@ None open. New defects found by the characterization suite get the next ID (B17)
 
 ## Other observations
 
-Found while writing the characterization tests and snapshotted as-is. These are
-candidates for the bug-fix track; none is fixed.
+Found while writing the characterization tests and snapshotted as-is. Open ones
+are candidates for the bug-fix track; fixed ones are listed at the end.
 
 **Analysis and visualizations**
 - Quarterly `analyze_trend` reports "improving" for almost any series with positive values, including falling ones (`quarterly_analysis_db_service.py:250-271`).
@@ -52,13 +52,15 @@ candidates for the bug-fix track; none is fixed.
 - Row numbers drift after the first chunk (`start_row_number + idx` in all four processors). `processed_rows` stays 0 except for supervisor feedback.
 - A failed vector upsert is reported as a successful import, and re-imports duplicate vectors and `qdrant_mappings` rows (`employee_report_processor.py:405`).
 - Dates without `/` or `-` raise UnboundLocalError instead of a validation error, and date rules differ between the four row models (`csv_import_schema.py:187,611`).
-- `GET /imports/{id}` rewrites `error_count` in the database.
-
-**Sync and API**
-- If Celery dispatch fails, a PENDING sync row is left behind and blocks new triggers with 409 for 60 minutes; import jobs stay PENDING forever (`sync_routes.py:119-135`, `imports.py:121-137`).
-- An aborted sync leaves its rows committed with FAILED status and discards its errors. Single-type sync tasks report 0 records queried and synced (`sync_service.py:944-946`, `sync_tasks.py:119,200,276`).
-- Some 500 responses include raw SQL and parameters (`reports.py:61,111`, `imports.py:146-160`).
-- An analysis task with the wrong task type leaves its BackgroundTask PENDING forever (`analysis_tasks.py:326,690`).
 
 **SQL Server connector**
 - The password is put into the ODBC connection string unescaped. There is a hard-coded default password. Substring blocklists reject harmless names such as "LastUpdated" and hosts containing "sp_" (`sqlserver_connector.py:209,327,855`).
+
+### Fixed observations
+
+**Sync and API**
+- A failed Celery dispatch marks the new sync rows (all four for a full sync) and import jobs FAILED with the reason, instead of leaving PENDING rows that blocked new triggers or never finished (`integration/api/test_sync.py`, `integration/api/test_imports.py`).
+- An aborted sync keeps the row errors it collected (`error_details`, `error_count`). Single-type sync tasks report the real records queried and synced (they read `sync_metadata`, which holds only processor metrics) (`integration/pipelines/test_sync_pipeline.py`). Rows written before an abort stay, as before: the sync timestamp does not advance, so the next run upserts them again.
+- 500 responses carry a fixed message; the exception (SQL, parameters, broker errors) is logged instead of returned (`integration/api/*`).
+- An analysis task with the wrong task type is marked FAILED with the reason (`integration/pipelines/test_analysis_tasks.py`).
+- `GET /imports/{id}` reports the stored error count without writing it back (`integration/api/test_imports.py`, `integration/services/test_csv_import_service.py`).

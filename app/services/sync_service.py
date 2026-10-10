@@ -139,6 +139,20 @@ class SyncService:
         
         raise ValueError(f"No supervisor feedback table found in allowed tables: {allowed_tables}")
     
+    def _save_collected_errors(self, sync_id, error_handler, session) -> None:
+        """Store the row errors an ImportErrorHandler collected, if there are any."""
+        if error_handler.get_error_count() > 0:
+            errors = [
+                {
+                    "row_number": err.row_number,
+                    "field_name": err.field_name,
+                    "error_message": err.error_message,
+                    "row_data": err.row_data
+                }
+                for err in error_handler.errors
+            ]
+            self.sync_tracker.save_sync_errors(sync_id, errors, session=session)
+
     def sync_employee_reports(self, is_full_sync: bool = False, existing_sync_id: Optional[str] = None) -> SyncHistory:
         """
         Sync employee reports from SQL Server to PostgreSQL.
@@ -165,6 +179,7 @@ class SyncService:
         
         with self._sync_session_context() as session:
             sync_job = None
+            error_handler = None
             try:
                 # Step 1: Create or use existing sync job
                 if existing_sync_id:
@@ -252,17 +267,7 @@ class SyncService:
                 max_modified_date = getattr(self, '_max_modified_date', None)
                 
                 # Step 7: Save errors if any
-                if error_handler.get_error_count() > 0:
-                    errors = [
-                        {
-                            "row_number": err.row_number,
-                            "field_name": err.field_name,
-                            "error_message": err.error_message,
-                            "row_data": err.row_data
-                        }
-                        for err in error_handler.errors
-                    ]
-                    self.sync_tracker.save_sync_errors(sync_job.sync_id, errors, session=session)
+                self._save_collected_errors(sync_job.sync_id, error_handler, session)
                 
                 # Step 8: Determine final status
                 if error_handler.get_error_count() > 0 and successful == 0:
@@ -314,6 +319,9 @@ class SyncService:
                 
                 # Ensure sync_job exists before marking as failed
                 if sync_job:
+                    # Keep the row errors collected before the failure (e.g. the ones that triggered an abort)
+                    if error_handler is not None:
+                        self._save_collected_errors(sync_job.sync_id, error_handler, session)
                     self.sync_tracker.mark_sync_failed(
                         sync_job.sync_id, 
                         str(e),
@@ -348,6 +356,7 @@ class SyncService:
         
         with self._sync_session_context() as session:
             sync_job = None
+            error_handler = None
             try:
                 # Step 1: Create or use existing sync job
                 if existing_sync_id:
@@ -434,17 +443,7 @@ class SyncService:
                 max_modified_date = getattr(self, '_max_modified_date_vision', None)
                 
                 # Step 7: Save errors if any
-                if error_handler.get_error_count() > 0:
-                    errors = [
-                        {
-                            "row_number": err.row_number,
-                            "field_name": err.field_name,
-                            "error_message": err.error_message,
-                            "row_data": err.row_data
-                        }
-                        for err in error_handler.errors
-                    ]
-                    self.sync_tracker.save_sync_errors(sync_job.sync_id, errors, session=session)
+                self._save_collected_errors(sync_job.sync_id, error_handler, session)
                     
                 # Step 8: Determine final status
                 if error_handler.get_error_count() > 0 and successful == 0:
@@ -492,6 +491,9 @@ class SyncService:
                 
                 # Ensure sync_job exists before marking as failed
                 if sync_job:
+                    # Keep the row errors collected before the failure (e.g. the ones that triggered an abort)
+                    if error_handler is not None:
+                        self._save_collected_errors(sync_job.sync_id, error_handler, session)
                     self.sync_tracker.mark_sync_failed(
                         sync_job.sync_id, 
                         str(e),
@@ -526,6 +528,7 @@ class SyncService:
         
         with self._sync_session_context() as session:
             sync_job = None
+            error_handler = None
             try:
                 # Step 1: Create or use existing sync job
                 if existing_sync_id:
@@ -607,17 +610,7 @@ class SyncService:
                 max_modified_date = getattr(self, '_max_modified_date_jd', None)
                 
                 # Step 7: Save errors if any
-                if error_handler.get_error_count() > 0:
-                    errors = [
-                        {
-                            "row_number": err.row_number,
-                            "field_name": err.field_name,
-                            "error_message": err.error_message,
-                            "row_data": err.row_data
-                        }
-                        for err in error_handler.errors
-                    ]
-                    self.sync_tracker.save_sync_errors(sync_job.sync_id, errors, session=session)
+                self._save_collected_errors(sync_job.sync_id, error_handler, session)
                 
                 # Step 8: Determine final status
                 if error_handler.get_error_count() > 0 and successful == 0:
@@ -657,6 +650,9 @@ class SyncService:
                 logger.error(f"Job descriptions sync failed: {str(e)}", exc_info=True)
                 
                 if sync_job:
+                    # Keep the row errors collected before the failure (e.g. the ones that triggered an abort)
+                    if error_handler is not None:
+                        self._save_collected_errors(sync_job.sync_id, error_handler, session)
                     self.sync_tracker.mark_sync_failed(
                         sync_job.sync_id, 
                         str(e),
@@ -686,6 +682,7 @@ class SyncService:
         
         with self._sync_session_context() as session:
             sync_job = None
+            error_handler = None
             try:
                 # Step 1: Create or use existing sync job
                 if existing_sync_id:
@@ -767,17 +764,7 @@ class SyncService:
                 max_modified_date = getattr(self, '_max_modified_date_sf', None)
                 
                 # Step 7: Save errors if any
-                if error_handler.get_error_count() > 0:
-                    errors = [
-                        {
-                            "row_number": err.row_number,
-                            "field_name": err.field_name,
-                            "error_message": err.error_message,
-                            "row_data": err.row_data
-                        }
-                        for err in error_handler.errors
-                    ]
-                    self.sync_tracker.save_sync_errors(sync_job.sync_id, errors, session=session)
+                self._save_collected_errors(sync_job.sync_id, error_handler, session)
                 
                 # Step 8: Determine final status
                 if error_handler.get_error_count() > 0 and successful == 0:
@@ -819,6 +806,9 @@ class SyncService:
                 logger.error(f"Supervisor feedback sync failed: {str(e)}", exc_info=True)
                 
                 if sync_job:
+                    # Keep the row errors collected before the failure (e.g. the ones that triggered an abort)
+                    if error_handler is not None:
+                        self._save_collected_errors(sync_job.sync_id, error_handler, session)
                     self.sync_tracker.mark_sync_failed(
                         sync_job.sync_id, 
                         str(e),

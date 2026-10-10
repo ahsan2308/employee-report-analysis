@@ -90,7 +90,7 @@ def test_upload_missing_file_422(api, db_session, snap, dispatch):
     snap("imports_upload_missing_file", resp, db=_jobs(db_session), dispatch=dispatch.calls)
 
 
-def test_upload_dispatch_failure_leaves_pending_job(api, db_session, snap, dispatch):
+def test_upload_dispatch_failure_marks_job_failed(api, db_session, snap, dispatch):
     from unittest import mock
 
     with mock.patch("app.api.imports.process_csv_import") as broken:
@@ -107,11 +107,11 @@ def test_get_job(api, db_session, snap):
     snap("imports_get_job", api.get(f"/imports/{fixed_uuid(1)}"), db=_jobs(db_session))
 
 
-def test_get_job_fixes_inconsistent_error_count(api, db_session, snap):
+def test_get_job_reports_stored_errors_without_writing(api, db_session, snap):
     add_import_job(db_session, job_id=fixed_uuid(1), error_count=5)
     add_import_error(db_session, fixed_uuid(1), 2)
     add_import_error(db_session, fixed_uuid(1), 7)
-    snap("imports_get_job_error_count_fixed", api.get(f"/imports/{fixed_uuid(1)}"), db=_jobs(db_session))
+    snap("imports_get_job_error_count_read_only", api.get(f"/imports/{fixed_uuid(1)}"), db=_jobs(db_session))
 
 
 def test_get_job_not_found_404(api, snap):

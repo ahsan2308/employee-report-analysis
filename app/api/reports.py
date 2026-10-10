@@ -50,9 +50,8 @@ def create_report(report: ReportCreate, db: Session = Depends(get_db)):
         raise he
     except Exception as e:
         db.rollback()
-        error_message = f"Error creating report: {str(e)}"
-        logger.error(error_message)  # Use logger instead of print
-        raise HTTPException(status_code=500, detail=error_message)
+        logger.error(f"Error creating report: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error creating report")
 
 # Submit a weekly report form
 @router.post("/form")
@@ -104,9 +103,8 @@ def submit_report_form(report: ReportForm, db: Session = Depends(get_db)):
         raise he
     except Exception as e:
         db.rollback()
-        error_message = f"Error submitting report: {str(e)}"
-        logger.error(error_message)
-        raise HTTPException(status_code=500, detail=error_message)
+        logger.error(f"Error submitting report: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error submitting report")
 
 # Get reports for an employee
 @router.get("/{employee_id}")

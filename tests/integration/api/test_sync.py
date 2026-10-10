@@ -86,7 +86,7 @@ def test_trigger_get_method_not_allowed(api, snap):
     snap("sync_trigger_get_405", api.get("/sync/trigger/vision_data"))
 
 
-def test_trigger_dispatch_failure_500_leaves_pending_row(api, db_session, snap, dispatch):
+def test_trigger_dispatch_failure_marks_row_failed(api, db_session, snap, dispatch):
     with mock.patch("app.api.sync_routes.celery_app") as broken:
         broken.send_task.side_effect = RuntimeError("broker unreachable")
         resp = api.post("/sync/trigger/vision_data")
@@ -98,6 +98,20 @@ def test_trigger_dispatch_failure_500_leaves_pending_row(api, db_session, snap, 
 def test_trigger_full(api, db_session, snap, dispatch):
     resp = api.post("/sync/trigger/full")
     snap("sync_trigger_full", resp, db=_history(db_session), dispatch=dispatch.calls)
+
+
+def test_trigger_full_dispatch_failure_marks_rows_failed(api, db_session):
+    with mock.patch("app.api.sync_routes.celery_app") as broken:
+        broken.send_task.side_effect = RuntimeError("broker unreachable")
+        resp = api.post("/sync/trigger/full")
+    assert resp.status_code == 500
+    assert resp.json() == {"detail": "Failed to trigger full sync"}
+    rows = db_session.query(SyncHistory).all()
+    assert len(rows) == 4
+    assert {(row.status, row.error_message) for row in rows} == {
+        ("failed", "Could not queue the sync task: broker unreachable")}
+    # The failed rows do not block the next trigger.
+    assert api.post("/sync/trigger/vision_data").status_code == 202
 
 
 def test_trigger_full_ignores_is_full_sync_param(api, db_session, snap, dispatch):
