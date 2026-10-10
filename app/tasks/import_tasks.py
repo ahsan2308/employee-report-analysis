@@ -4,17 +4,16 @@ CSV Import Tasks
 This module contains Celery tasks for processing CSV imports asynchronously.
 """
 import os
-import time
 import tempfile
 from typing import Dict, Any, Optional
 from celery import shared_task, Task
 from datetime import datetime
 
 from app.core.logger import logger
-from app.worker.celery_app import celery_app
+from app.worker.celery_app import celery_app  # noqa: F401  (Celery app must exist before @shared_task binds)
 from app.database import get_database
 from app.models.import_models import CSVImportJob, ImportStatus, ImportError
-from app.services.csv_import_service import get_csv_import_service, CSVImportService
+from app.services.csv_import_service import get_csv_import_service
 from app.schemas.csv_import_schema import CSVImportOptions
 
 class ImportTask(Task):

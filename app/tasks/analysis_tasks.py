@@ -3,12 +3,11 @@ Celery tasks for asynchronous report analysis.
 """
 import uuid
 from datetime import datetime, timedelta
-from sqlalchemy.orm import Session
 
 from app.worker.celery_app import celery_app
 from app.database import get_database
 from app.models.task_models import BackgroundTask, TaskStatus, TaskType
-from app.models.db_models import Report, Employee, EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
+from app.models.db_models import Report, Employee, EmployeeAnalysis
 from app.services.vector_store_service import search_reports
 from app.services.db_service import get_reports_for_vector_results, get_employee_vision_data, get_recent_employee_reports
 from app.services.db_service import get_monthly_analysis_by_params, store_monthly_analysis

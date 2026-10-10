@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from uuid import UUID
 
-from app.database import get_database
 from app.api.deps import get_db
 from app.schemas.task_schema import TaskStatusResponse, TaskResultResponse 
 from app.services.task_service import get_task_status, get_task_result

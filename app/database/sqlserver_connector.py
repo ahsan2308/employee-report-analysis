@@ -6,7 +6,7 @@ Uses pyodbc for connection and implements generator-based batching for
 memory-efficient data retrieval.
 """
 
-from typing import Generator, Dict, Any, List, Optional, Tuple, Set
+from typing import Generator, Dict, Any, List, Optional, Set
 import pyodbc
 import os
 from datetime import datetime

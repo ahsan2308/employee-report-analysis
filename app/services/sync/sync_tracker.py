@@ -12,7 +12,6 @@ import math
 
 from app.models.sync_models import SyncHistory, SyncType, SyncStatus
 from app.core.logger import logger
-from app.database import get_database
 
 
 class SyncTracker:

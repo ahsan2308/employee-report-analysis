@@ -10,13 +10,12 @@ Design:
 - Uses DELETE+INSERT strategy for responses (cleaner than individual upserts)
 - Generates JSONB cache for form-level aggregations
 """
-from typing import Dict, Any, Tuple, List, Optional, Set
+from typing import Dict, Any, Tuple, List, Set
 from datetime import datetime, timezone
 import pandas as pd
 from sqlalchemy.orm import Session
 from sqlalchemy import delete, tuple_
 from pydantic import ValidationError
-import json
 
 from app.base.base_csv_processor import BaseCSVProcessor
 from app.schemas.csv_import_schema import SupervisorFeedbackCSVRow
@@ -26,7 +25,7 @@ from app.models.db_models import (
     SupervisorFeedbackMetricDefinition, 
     SupervisorFeedbackResponse
 )
-from app.services.csv.error_handler import ImportErrorHandler, ErrorCategory
+from app.services.csv.error_handler import ImportErrorHandler
 from app.core.logger import logger
 
 

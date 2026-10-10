@@ -1,17 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List, Optional
-import uuid
-from datetime import datetime
 
-from app.database import get_database
 from app.api.deps import get_db
-from app.models.import_models import CSVImportJob, ImportStatus, ImportError, CSVImportType
+from app.models.import_models import CSVImportJob, ImportStatus, CSVImportType
 from app.schemas.csv_import_schema import (
     CSVImportOptions, 
     CSVImportJobResponse, 
-    ImportErrorsResponse,
-    CSVImportJobCreate
+    ImportErrorsResponse
 )
 from app.services.csv_import_service import get_csv_import_service
 from app.tasks.import_tasks import process_csv_import

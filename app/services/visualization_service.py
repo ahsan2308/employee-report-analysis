@@ -4,16 +4,13 @@ Visualization Service
 Provides data aggregation and transformation functions for visualizations.
 This service acts as a layer between the raw data and visualization endpoints.
 """
-from typing import Dict, List, Optional, Tuple, Any, Union, Callable
-from datetime import datetime, timedelta, date
+from typing import Dict, List, Optional, Any
+from datetime import datetime, date
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc
-import json
-from functools import lru_cache
+from sqlalchemy import func
 import re
 
 from app.models.db_models import Employee, Report, EmployeeAnalysis
-from app.database import get_database
 from app.core.logger import logger
 
 # Simple in-memory cache for expensive calculations

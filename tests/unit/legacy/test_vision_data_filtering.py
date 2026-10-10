@@ -5,7 +5,6 @@ and the remaining data is correctly formatted for inclusion in prompts.
 """
 import sys
 import os
-import json
 from datetime import date, timedelta
 
 # Add the parent directory to path so we can import the app modules

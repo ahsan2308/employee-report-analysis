@@ -3,8 +3,8 @@ Service for managing background tasks.
 Handles task creation, status tracking, and result retrieval.
 """
 import uuid
-from datetime import datetime, timedelta
-from typing import Optional, Dict, Any, Union
+from datetime import datetime
+from typing import Optional, Dict, Any
 from uuid import UUID
 
 from sqlalchemy.orm import Session

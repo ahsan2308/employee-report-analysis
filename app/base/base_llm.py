@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional, Union, Type
 
 try:
-    from pydantic import BaseModel
+    from pydantic import BaseModel  # noqa: F401  (availability check)
     HAS_PYDANTIC = True
 except ImportError:
     HAS_PYDANTIC = False

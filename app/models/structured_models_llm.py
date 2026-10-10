@@ -5,9 +5,8 @@ This module contains all the Pydantic models used for structured data
 generation with LLM services. Import these models when you need to
 define a structured output format for LLM responses.
 """
-from typing import List, Optional, Literal, Dict, Any, Union
+from typing import List, Optional, Literal
 from pydantic import BaseModel, Field
-import uuid
 
 # More detailed models commented out for future use
 class Achievement(BaseModel):

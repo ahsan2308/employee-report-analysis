@@ -13,25 +13,18 @@ Key Testing Strategy:
 
 import pytest
 from datetime import date, datetime
-from sqlalchemy.orm import Session
-from unittest.mock import Mock, MagicMock, patch
-import pandas as pd
-from typing import Dict, Any, List
+from unittest.mock import Mock
 
 import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from app.models.db_models import Employee, EmployeeJobDescription
-from app.models.sync_models import SyncHistory, SyncType, SyncStatus
-from app.schemas.csv_import_schema import JobDescriptionCSVRow
+from app.models.sync_models import SyncType, SyncStatus
 from app.services.sync.transformers import JobDescriptionTransformer
-from app.services.csv.processors.job_description_processor import JobDescriptionProcessor
-from app.services.csv.error_handler import ImportErrorHandler
 from app.services.sync_service import SyncService
 from app.database.sqlserver_connector import SQLServerConnector
 from app.database import get_database
-from app.core.logger import logger
 
 
 # ============================================================================

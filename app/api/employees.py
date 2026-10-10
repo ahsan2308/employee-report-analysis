@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import get_database
 from app.api.deps import get_db
 from app.models.db_models import Employee
 from app.schemas.employee_schema import EmployeeCreate 

@@ -5,13 +5,12 @@ Endpoints for triggering and monitoring SQL Server to PostgreSQL synchronization
 """
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime, timedelta
 from uuid import UUID
 import time
 import os
 
-from app.database import get_database
 from app.api.deps import get_db
 from app.models.sync_models import SyncHistory, SyncStatus, SyncType
 from app.schemas.sync_schema import (
@@ -26,11 +25,6 @@ from app.schemas.sync_schema import (
     SyncConfigResponse,
     ConnectionTestResponse,
     SyncProgressMetrics
-)
-from app.tasks.sync_tasks import (
-    sync_employee_reports_task,
-    sync_vision_data_task,
-    full_sync_task
 )
 from app.database.sqlserver_connector import create_sqlserver_connector
 from app.core.logger import logger

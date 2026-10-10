@@ -1,7 +1,6 @@
-from typing import List, Dict, Optional, Set, Any, Tuple
+from typing import List, Dict, Optional, Any, Tuple
 from uuid import UUID
-from sqlalchemy import text, func, desc
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 import calendar
 from app.database import get_database
 from app.models.db_models import Report, EmployeeAnalysis, Employee, MonthlyAnalysis, QuarterlyAnalysis, EmployeeJobDescription  # NEW
@@ -590,8 +589,6 @@ def get_employee_vision_data_for_month(employee_id: int, year: int, month: int) 
     Returns:
         Dictionary containing a list of week-wise data for the month
     """
-    from datetime import date, timedelta
-    import calendar
 
     db_instance = get_database()
     start_date, end_date = get_month_date_range(year, month)

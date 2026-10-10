@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import get_database
 from app.api.deps import get_db
 from app.models.db_models import Report
 from app.schemas.reports_schema import ReportCreate

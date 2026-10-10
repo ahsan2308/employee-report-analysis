@@ -1,21 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
-from app.database import get_database
 from app.api.deps import get_db
 from app.models.db_models import EmployeeAnalysis, Report, Employee, MonthlyAnalysis, QuarterlyAnalysis
 from app.schemas.analysis_schema import AnalysisResponse, MonthlyAnalysisResponse, MonthlyAnalysisSummary, QuarterlyAnalysisResponse
-from app.services.llm_service import get_llm_service
-from app.services.db_service import get_reports_for_vector_results, get_monthly_analysis_by_params, get_quarterly_analysis_by_params
-from app.services.vector_store_service import search_reports
+from app.services.db_service import get_monthly_analysis_by_params, get_quarterly_analysis_by_params
 from app.core.logger import logger
-import uuid
 from uuid import UUID
-from datetime import datetime
 from typing import List
 
 # Add imports for task handling
-from app.models.task_models import BackgroundTask, TaskStatus, TaskType
-from app.tasks.analysis_tasks import analyze_report_task
+from app.models.task_models import TaskStatus
 from app.schemas.task_schema import TaskStatusResponse
 from app.services.task_service import create_task_for_analysis, create_task_for_monthly_analysis, create_task_for_quarterly_analysis
 

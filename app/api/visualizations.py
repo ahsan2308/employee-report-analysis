@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from typing import Optional, List
 from datetime import date
 
-from app.database import get_database
 from app.api.deps import get_db
 from app.services.visualization_service import (
     get_sentiment_trends, 
