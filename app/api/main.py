@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -14,13 +16,19 @@ from app.api.tasks import router as tasks_router
 from app.api.imports import router as imports_router 
 from app.api.sync_routes import router as sync_router 
 
-# Create all tables (if they don't exist)
-db_instance = get_database()  
-db_instance.create_tables()
+from app.core.logger import logger
 
-print("Database tables created successfully!")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Create all tables (if they don't exist) when the server starts, not on import
+    get_database().create_tables()
+    logger.info("Database tables created successfully!")
+    yield
+
+
 # Initialize FastAPI app
-app = FastAPI(title="Employee Report Analysis API")
+app = FastAPI(title="Employee Report Analysis API", lifespan=lifespan)
 
 # Configure CORS
 app.add_middleware(
