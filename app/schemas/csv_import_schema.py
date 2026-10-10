@@ -1,14 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional, Dict, Any, List, Literal
 from datetime import datetime
-from app.services.csv.row_models import (  # noqa: F401  (re-exported for compatibility)
-    CombinedCSVRow,
-    _top_level_split,
-    _json_list_with_fixes,
-    VisionDataCSVRow,
-    JobDescriptionCSVRow,
-    SupervisorFeedbackCSVRow,
-)
 
 class CSVImportOptions(BaseModel):
     """Options for CSV import process."""

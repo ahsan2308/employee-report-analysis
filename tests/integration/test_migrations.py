@@ -88,7 +88,7 @@ def test_models_match_migration_head(scratch_database):
         connection.execute(text("CREATE SCHEMA employee_reports"))
     engine.dispose()
 
-    create = run([sys.executable, "-c", "from app.database import get_database; get_database().create_tables()"], scratch_database)
+    create = run([sys.executable, "-c", "from app.db.database import get_database; get_database().create_tables()"], scratch_database)
     assert create.returncode == 0, create.stderr[-2000:]
 
     stamp = run([sys.executable, "-m", "alembic", "stamp", "head"], scratch_database)

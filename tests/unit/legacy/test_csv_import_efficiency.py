@@ -106,11 +106,8 @@ class TestUtilityFunctions:
             'Impact': 'High impact'
         }
         
-        # Fix: Patch the correct import path - CombinedCSVRow is imported within the method
-        with patch('app.schemas.csv_import_schema.CombinedCSVRow') as mock_validator:
-            mock_validator.return_value = MagicMock()  # Simulate successful validation
-            result = csv_import_service._validate_row(valid_row, 1, error_handler)
-            assert result is True, "Valid row should validate successfully"
+        result = csv_import_service._validate_row(valid_row, 1, error_handler)
+        assert result is True, "Valid row should validate successfully"
         
         # Invalid row (missing required field)
         invalid_row = {

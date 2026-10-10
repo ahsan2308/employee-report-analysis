@@ -45,9 +45,9 @@ from app.services.sync_service import SyncService
 from app.services.sync.transformers import JobDescriptionTransformer
 from app.services.csv.processors.job_description_processor import JobDescriptionProcessor
 from app.services.csv.error_handler import ImportErrorHandler
-from app.database import get_database
+from app.db.database import get_database
 from app.core.logger import logger
-from app.schemas.csv_import_schema import JobDescriptionCSVRow
+from app.services.csv.row_models import JobDescriptionCSVRow
 
 
 # ============================================================================

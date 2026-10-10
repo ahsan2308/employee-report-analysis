@@ -1,6 +1,6 @@
-"""Characterization of app/services/db_service.py against the real test Postgres.
+"""Characterization of the app.repositories queries (formerly app/services/db_service.py) against the real test Postgres.
 
-Each db_service function opens its own engine/session via get_database(); seeds
+Each query function opens its own engine/session via get_database(); seeds
 are committed through ``db_session`` first so those sessions can see them.
 """
 from datetime import date
@@ -8,7 +8,12 @@ from datetime import date
 import pytest
 
 from app.models.db_models import MonthlyAnalysis, QuarterlyAnalysis
-from app.services import db_service
+from app.domain import periods
+from app.repositories import analyses as analyses_repo
+from app.repositories import employees as employees_repo
+from app.repositories import job_descriptions as jd_repo
+from app.repositories import reports as reports_repo
+from app.repositories import vision_data as vision_repo
 from tests.integration.services.seed import (
     dump_rows,
     make_analysis,
@@ -26,17 +31,17 @@ from tests.integration.services.seed import (
 # ------------------------------------------------------------ pure helpers
 
 def test_month_and_quarter_date_ranges(snapshot):
-    months = {f"{y}-{m}": db_service.get_month_date_range(y, m)
+    months = {f"{y}-{m}": periods.get_month_date_range(y, m)
               for y, m in [(2024, 2), (2025, 2), (2025, 1), (2025, 4), (2025, 12)]}
-    quarters = {f"{y}-Q{q}": db_service.get_quarter_date_range(y, q)
+    quarters = {f"{y}-Q{q}": periods.get_quarter_date_range(y, q)
                 for y in (2024, 2025) for q in (1, 2, 3, 4)}
     errors = {}
     for bad in (0, 5, -1):
         with pytest.raises(ValueError) as exc:
-            db_service.get_quarter_date_range(2025, bad)
+            periods.get_quarter_date_range(2025, bad)
         errors[str(bad)] = str(exc.value)
     with pytest.raises(ValueError) as exc:
-        db_service.get_month_date_range(2025, 13)
+        periods.get_month_date_range(2025, 13)
     errors["month 13"] = str(exc.value)
     snapshot("date_ranges", normalize({"months": months, "quarters": quarters, "errors": errors}))
 
@@ -66,14 +71,14 @@ def _sorted_by_id(reports):
 
 def test_get_complete_reports_by_ids(reports_seed, snapshot):
     cases = {
-        "empty_list": db_service.get_complete_reports_by_ids([]),
-        "duplicates_and_mixed_types": _sorted_by_id(db_service.get_complete_reports_by_ids(
+        "empty_list": reports_repo.get_complete_reports_by_ids([]),
+        "duplicates_and_mixed_types": _sorted_by_id(reports_repo.get_complete_reports_by_ids(
             [str(uid(1)), str(uid(1)), uid(2), str(uid(6))])),
-        "invalid_uuid_string_skipped": _sorted_by_id(db_service.get_complete_reports_by_ids(
+        "invalid_uuid_string_skipped": _sorted_by_id(reports_repo.get_complete_reports_by_ids(
             ["not-a-uuid", str(uid(3))])),
-        "missing_id": db_service.get_complete_reports_by_ids([str(uid(999))]),
-        "empty_text_excluded": db_service.get_complete_reports_by_ids([str(uid(5))]),
-        "uppercase_string": db_service.get_complete_reports_by_ids([str(uid(4)).upper()]),
+        "missing_id": reports_repo.get_complete_reports_by_ids([str(uid(999))]),
+        "empty_text_excluded": reports_repo.get_complete_reports_by_ids([str(uid(5))]),
+        "uppercase_string": reports_repo.get_complete_reports_by_ids([str(uid(4)).upper()]),
     }
     snapshot("get_complete_reports_by_ids", normalize(cases))
 
@@ -81,7 +86,7 @@ def test_get_complete_reports_by_ids(reports_seed, snapshot):
 def test_get_complete_reports_by_ids_keeps_input_order(reports_seed):
     """Reports come back in the given (relevance) order, duplicates dropped; it used to be set order."""
     ids = [str(uid(n)) for n in (6, 2, 4, 2, 1, 3)]
-    result = db_service.get_complete_reports_by_ids(ids)
+    result = reports_repo.get_complete_reports_by_ids(ids)
     assert [r["report_id"] for r in result] == [str(uid(n)) for n in (6, 2, 4, 1, 3)]
 
 
@@ -94,36 +99,36 @@ def test_get_reports_for_vector_results(reports_seed, snapshot):
         {"report_id": str(uid(6))},
     ]
     snapshot("get_reports_for_vector_results", normalize({
-        "results": _sorted_by_id(db_service.get_reports_for_vector_results(results)),
-        "empty": db_service.get_reports_for_vector_results([]),
+        "results": _sorted_by_id(reports_repo.get_reports_for_vector_results(results)),
+        "empty": reports_repo.get_reports_for_vector_results([]),
     }))
 
 
 def test_get_recent_employee_reports(reports_seed, snapshot):
     cur = date(2025, 1, 13)
     cases = {
-        "default": db_service.get_recent_employee_reports(1, cur),
-        "limit_1": db_service.get_recent_employee_reports(1, cur, limit=1),
-        "limit_0_means_unlimited": db_service.get_recent_employee_reports(1, cur, limit=0),
-        "limit_negative_ignored": db_service.get_recent_employee_reports(1, cur, limit=-3),
-        "exclude_existing": db_service.get_recent_employee_reports(1, cur, exclude_report_id=str(uid(1))),
-        "exclude_invalid_uuid_ignored": db_service.get_recent_employee_reports(1, cur, exclude_report_id="bad"),
-        "max_weeks_1": db_service.get_recent_employee_reports(1, cur, max_weeks=1),
-        "max_weeks_0": db_service.get_recent_employee_reports(1, cur, max_weeks=0),
-        "after_month_end": db_service.get_recent_employee_reports(1, date(2025, 2, 10)),
-        "other_employee": db_service.get_recent_employee_reports(2, date(2025, 12, 31)),
-        "unknown_employee": db_service.get_recent_employee_reports(99, cur),
+        "default": reports_repo.get_recent_employee_reports(1, cur),
+        "limit_1": reports_repo.get_recent_employee_reports(1, cur, limit=1),
+        "limit_0_means_unlimited": reports_repo.get_recent_employee_reports(1, cur, limit=0),
+        "limit_negative_ignored": reports_repo.get_recent_employee_reports(1, cur, limit=-3),
+        "exclude_existing": reports_repo.get_recent_employee_reports(1, cur, exclude_report_id=str(uid(1))),
+        "exclude_invalid_uuid_ignored": reports_repo.get_recent_employee_reports(1, cur, exclude_report_id="bad"),
+        "max_weeks_1": reports_repo.get_recent_employee_reports(1, cur, max_weeks=1),
+        "max_weeks_0": reports_repo.get_recent_employee_reports(1, cur, max_weeks=0),
+        "after_month_end": reports_repo.get_recent_employee_reports(1, date(2025, 2, 10)),
+        "other_employee": reports_repo.get_recent_employee_reports(2, date(2025, 12, 31)),
+        "unknown_employee": reports_repo.get_recent_employee_reports(99, cur),
     }
     snapshot("get_recent_employee_reports", normalize(cases))
 
 
 def test_get_reports_for_month(reports_seed, snapshot):
     cases = {
-        "2025-01_emp1": db_service.get_reports_for_month(1, 2025, 1),
-        "2025-02_emp1_empty_text_dropped": db_service.get_reports_for_month(1, 2025, 2),
-        "2024-12_emp1": db_service.get_reports_for_month(1, 2024, 12),
-        "2025-01_emp2": db_service.get_reports_for_month(2, 2025, 1),
-        "2025-03_none": db_service.get_reports_for_month(1, 2025, 3),
+        "2025-01_emp1": reports_repo.get_reports_for_month(1, 2025, 1),
+        "2025-02_emp1_empty_text_dropped": reports_repo.get_reports_for_month(1, 2025, 2),
+        "2024-12_emp1": reports_repo.get_reports_for_month(1, 2024, 12),
+        "2025-01_emp2": reports_repo.get_reports_for_month(2, 2025, 1),
+        "2025-03_none": reports_repo.get_reports_for_month(1, 2025, 3),
     }
     snapshot("get_reports_for_month", normalize(cases))
 
@@ -131,7 +136,7 @@ def test_get_reports_for_month(reports_seed, snapshot):
 def test_get_reports_for_month_invalid_month_raises(reports_seed):
     # get_month_date_range is evaluated before the try block, so it propagates.
     with pytest.raises(ValueError):
-        db_service.get_reports_for_month(1, 2025, 13)
+        reports_repo.get_reports_for_month(1, 2025, 13)
 
 
 # ------------------------------------------------------------ weekly analyses
@@ -170,30 +175,30 @@ def _sort_analyses(rows):
 
 
 def test_get_analyses_for_month(analyses_seed, snapshot):
-    feb = db_service.get_analyses_for_month(1, 2025, 2)
+    feb = analyses_repo.get_analyses_for_month(1, 2025, 2)
     # Rows are ordered by report_date only; ties (two analyses of one report) are unordered.
     assert [str(r["date"]) for r in feb] == sorted(str(r["date"]) for r in feb)
     cases = {
-        "jan": db_service.get_analyses_for_month(1, 2025, 1),
+        "jan": analyses_repo.get_analyses_for_month(1, 2025, 1),
         "feb": _sort_analyses(feb),
-        "mar": db_service.get_analyses_for_month(1, 2025, 3),
-        "no_reports": db_service.get_analyses_for_month(1, 2025, 6),
-        "unknown_employee": db_service.get_analyses_for_month(42, 2025, 2),
-        "emp2_feb": db_service.get_analyses_for_month(2, 2025, 2),
+        "mar": analyses_repo.get_analyses_for_month(1, 2025, 3),
+        "no_reports": analyses_repo.get_analyses_for_month(1, 2025, 6),
+        "unknown_employee": analyses_repo.get_analyses_for_month(42, 2025, 2),
+        "emp2_feb": analyses_repo.get_analyses_for_month(2, 2025, 2),
     }
     snapshot("get_analyses_for_month", normalize(cases))
 
 
 def test_get_weekly_analyses_for_quarter(analyses_seed, snapshot):
-    q1 = db_service.get_weekly_analyses_for_quarter(1, 2025, 1)
+    q1 = analyses_repo.get_weekly_analyses_for_quarter(1, 2025, 1)
     cases = {
         "q1": _sort_analyses(q1),
-        "q2": db_service.get_weekly_analyses_for_quarter(1, 2025, 2),
-        "q3_empty": db_service.get_weekly_analyses_for_quarter(1, 2025, 3),
-        "emp2_q1": db_service.get_weekly_analyses_for_quarter(2, 2025, 1),
+        "q2": analyses_repo.get_weekly_analyses_for_quarter(1, 2025, 2),
+        "q3_empty": analyses_repo.get_weekly_analyses_for_quarter(1, 2025, 3),
+        "emp2_q1": analyses_repo.get_weekly_analyses_for_quarter(2, 2025, 1),
     }
     with pytest.raises(ValueError):
-        db_service.get_weekly_analyses_for_quarter(1, 2025, 5)
+        analyses_repo.get_weekly_analyses_for_quarter(1, 2025, 5)
     snapshot("get_weekly_analyses_for_quarter", normalize(cases))
 
 
@@ -203,8 +208,8 @@ def test_get_employee_info(db_session, snapshot):
     make_employee(db_session, 7, "Grace", "Research", "Lead")
     db_session.commit()
     snapshot("get_employee_info", normalize({
-        "found": db_service.get_employee_info(7),
-        "missing": db_service.get_employee_info(8),
+        "found": employees_repo.get_employee_info(7),
+        "missing": employees_repo.get_employee_info(8),
     }))
 
 
@@ -246,17 +251,17 @@ def _sort_vision(result):
 
 def test_get_employee_vision_data(vision_seed, snapshot):
     report_date = date(2025, 3, 7)
-    raw = db_service.get_employee_vision_data(1, report_date)
+    raw = vision_repo.get_employee_vision_data(1, report_date)
     # previous_data is ordered by to_date desc.
     assert [r["to_date"] for r in raw["previous_data"]] == sorted(
         (r["to_date"] for r in raw["previous_data"]), reverse=True)
     cases = {
         "default_4_weeks": _sort_vision(raw),
-        "1_week": _sort_vision(db_service.get_employee_vision_data(1, report_date, num_previous_weeks=1)),
-        "0_weeks": _sort_vision(db_service.get_employee_vision_data(1, report_date, num_previous_weeks=0)),
-        "no_exact_match_date": _sort_vision(db_service.get_employee_vision_data(1, date(2025, 3, 8))),
-        "other_employee": _sort_vision(db_service.get_employee_vision_data(2, report_date)),
-        "unknown_employee": db_service.get_employee_vision_data(99, report_date),
+        "1_week": _sort_vision(vision_repo.get_employee_vision_data(1, report_date, num_previous_weeks=1)),
+        "0_weeks": _sort_vision(vision_repo.get_employee_vision_data(1, report_date, num_previous_weeks=0)),
+        "no_exact_match_date": _sort_vision(vision_repo.get_employee_vision_data(1, date(2025, 3, 8))),
+        "other_employee": _sort_vision(vision_repo.get_employee_vision_data(2, report_date)),
+        "unknown_employee": vision_repo.get_employee_vision_data(99, report_date),
     }
     snapshot("get_employee_vision_data", normalize(cases))
 
@@ -269,20 +274,20 @@ def _sort_month(result):
 
 def test_get_employee_vision_data_for_month(vision_seed, snapshot):
     cases = {
-        "2025-01": _sort_month(db_service.get_employee_vision_data_for_month(1, 2025, 1)),
-        "2025-02": _sort_month(db_service.get_employee_vision_data_for_month(1, 2025, 2)),
-        "2025-03": _sort_month(db_service.get_employee_vision_data_for_month(1, 2025, 3)),
-        "2025-04_empty": db_service.get_employee_vision_data_for_month(1, 2025, 4),
-        "2025-12_iso_week_1_first": _sort_month(db_service.get_employee_vision_data_for_month(1, 2025, 12)),
-        "2027-01_iso_week_53_last": _sort_month(db_service.get_employee_vision_data_for_month(1, 2027, 1)),
-        "emp2_2025-03": _sort_month(db_service.get_employee_vision_data_for_month(2, 2025, 3)),
+        "2025-01": _sort_month(vision_repo.get_employee_vision_data_for_month(1, 2025, 1)),
+        "2025-02": _sort_month(vision_repo.get_employee_vision_data_for_month(1, 2025, 2)),
+        "2025-03": _sort_month(vision_repo.get_employee_vision_data_for_month(1, 2025, 3)),
+        "2025-04_empty": vision_repo.get_employee_vision_data_for_month(1, 2025, 4),
+        "2025-12_iso_week_1_first": _sort_month(vision_repo.get_employee_vision_data_for_month(1, 2025, 12)),
+        "2027-01_iso_week_53_last": _sort_month(vision_repo.get_employee_vision_data_for_month(1, 2027, 1)),
+        "emp2_2025-03": _sort_month(vision_repo.get_employee_vision_data_for_month(2, 2025, 3)),
     }
     snapshot("get_employee_vision_data_for_month", normalize(cases))
 
 
 def test_get_employee_vision_data_for_quarter(vision_seed, snapshot):
     def q(emp, year, quarter):
-        result = db_service.get_employee_vision_data_for_quarter(emp, year, quarter)
+        result = vision_repo.get_employee_vision_data_for_quarter(emp, year, quarter)
         for month in result["months_data"]:
             _sort_month(month)
         return result
@@ -294,7 +299,7 @@ def test_get_employee_vision_data_for_quarter(vision_seed, snapshot):
         "emp2_2025-Q1": q(2, 2025, 1),
     }
     with pytest.raises(ValueError):
-        db_service.get_employee_vision_data_for_quarter(1, 2025, 0)
+        vision_repo.get_employee_vision_data_for_quarter(1, 2025, 0)
     snapshot("get_employee_vision_data_for_quarter", normalize(cases))
 
 
@@ -352,8 +357,8 @@ def _monthly_rows(database):
 
 
 def test_store_monthly_analysis_create(employees, database, snapshot):
-    returned = db_service.store_monthly_analysis(dict(FULL_MONTHLY))
-    minimal = db_service.store_monthly_analysis(
+    returned = analyses_repo.store_monthly_analysis(dict(FULL_MONTHLY))
+    minimal = analyses_repo.store_monthly_analysis(
         {"employee_id": 2, "year": 2025, "month": 3,
          "period_start": date(2025, 3, 1), "period_end": date(2025, 3, 31)})
     snapshot("store_monthly_analysis_create", normalize({
@@ -363,8 +368,8 @@ def test_store_monthly_analysis_create(employees, database, snapshot):
 
 
 def test_store_monthly_analysis_update_and_aliases(employees, database, snapshot):
-    first = db_service.store_monthly_analysis(dict(FULL_MONTHLY))
-    second = db_service.store_monthly_analysis({
+    first = analyses_repo.store_monthly_analysis(dict(FULL_MONTHLY))
+    second = analyses_repo.store_monthly_analysis({
         "employee_id": 1, "year": 2025, "month": 2,
         "avg_sentiment_score": 0.9,
         "key_achievements": [{"achievement": "via alias"}],   # -> monthly_achievements
@@ -380,8 +385,8 @@ def test_store_monthly_analysis_update_and_aliases(employees, database, snapshot
 
 def test_store_monthly_analysis_update_overwrites_primary_key(employees, database, snapshot):
     """On update every key with a matching attribute is set, including analysis_id."""
-    first = db_service.store_monthly_analysis(dict(FULL_MONTHLY))
-    second = db_service.store_monthly_analysis(
+    first = analyses_repo.store_monthly_analysis(dict(FULL_MONTHLY))
+    second = analyses_repo.store_monthly_analysis(
         {"employee_id": 1, "year": 2025, "month": 2, "analysis_id": 77})
     snapshot("store_monthly_analysis_pk_overwrite", normalize({
         "returned_ids": [first, second],
@@ -391,11 +396,11 @@ def test_store_monthly_analysis_update_overwrites_primary_key(employees, databas
 
 def test_store_monthly_analysis_invalid_inputs(employees, database, snapshot):
     cases = {
-        "missing_employee": db_service.store_monthly_analysis({"year": 2025, "month": 1}),
-        "month_zero": db_service.store_monthly_analysis({"employee_id": 1, "year": 2025, "month": 0}),
-        "missing_period_not_null": db_service.store_monthly_analysis(
+        "missing_employee": analyses_repo.store_monthly_analysis({"year": 2025, "month": 1}),
+        "month_zero": analyses_repo.store_monthly_analysis({"employee_id": 1, "year": 2025, "month": 0}),
+        "missing_period_not_null": analyses_repo.store_monthly_analysis(
             {"employee_id": 1, "year": 2025, "month": 1}),
-        "unknown_employee_fk": db_service.store_monthly_analysis(
+        "unknown_employee_fk": analyses_repo.store_monthly_analysis(
             {"employee_id": 99, "year": 2025, "month": 1,
              "period_start": date(2025, 1, 1), "period_end": date(2025, 1, 31)}),
     }
@@ -409,9 +414,9 @@ def test_get_monthly_analysis_by_params(employees, snapshot):
                  monthly_achievements=[{"a": 1}])
     employees.commit()
     snapshot("get_monthly_analysis_by_params", normalize({
-        "found": db_service.get_monthly_analysis_by_params(1, 2025, 1),
-        "other_month": db_service.get_monthly_analysis_by_params(1, 2025, 2),
-        "other_employee": db_service.get_monthly_analysis_by_params(2, 2025, 1),
+        "found": analyses_repo.get_monthly_analysis_by_params(1, 2025, 1),
+        "other_month": analyses_repo.get_monthly_analysis_by_params(1, 2025, 2),
+        "other_employee": analyses_repo.get_monthly_analysis_by_params(2, 2025, 1),
     }))
 
 
@@ -425,13 +430,13 @@ def test_get_monthly_analyses_for_quarter(employees, snapshot):
     make_monthly(employees, 2, 2025, 2, avg_sentiment_score=0.9)   # other employee
     employees.commit()
     cases = {
-        "q1": db_service.get_monthly_analyses_for_quarter(1, 2025, 1),
-        "q2": db_service.get_monthly_analyses_for_quarter(1, 2025, 2),
-        "q3_empty": db_service.get_monthly_analyses_for_quarter(1, 2025, 3),
-        "emp2_q1": db_service.get_monthly_analyses_for_quarter(2, 2025, 1),
+        "q1": analyses_repo.get_monthly_analyses_for_quarter(1, 2025, 1),
+        "q2": analyses_repo.get_monthly_analyses_for_quarter(1, 2025, 2),
+        "q3_empty": analyses_repo.get_monthly_analyses_for_quarter(1, 2025, 3),
+        "emp2_q1": analyses_repo.get_monthly_analyses_for_quarter(2, 2025, 1),
     }
     with pytest.raises(ValueError):
-        db_service.get_monthly_analyses_for_quarter(1, 2025, 9)
+        analyses_repo.get_monthly_analyses_for_quarter(1, 2025, 9)
     snapshot("get_monthly_analyses_for_quarter", normalize(cases))
 
 
@@ -476,9 +481,9 @@ FULL_QUARTERLY = {
 
 
 def test_store_quarterly_analysis_create_update_invalid(employees, database, snapshot):
-    created = db_service.store_quarterly_analysis(dict(FULL_QUARTERLY))
+    created = analyses_repo.store_quarterly_analysis(dict(FULL_QUARTERLY))
     rows_after_create = dump_rows(database, QuarterlyAnalysis)
-    updated = db_service.store_quarterly_analysis({
+    updated = analyses_repo.store_quarterly_analysis({
         "employee_id": 1, "year": 2025, "quarter": 1,
         "analysis_id": 999,           # skipped on update
         "risk_level": "high",
@@ -487,14 +492,14 @@ def test_store_quarterly_analysis_create_update_invalid(employees, database, sna
         "bogus": "x",
     })
     invalid = {
-        "missing_quarter": db_service.store_quarterly_analysis({"employee_id": 1, "year": 2025}),
-        "quarter_zero": db_service.store_quarterly_analysis({"employee_id": 1, "year": 2025, "quarter": 0}),
-        "missing_period": db_service.store_quarterly_analysis({"employee_id": 2, "year": 2025, "quarter": 2}),
-        "unknown_employee": db_service.store_quarterly_analysis({
+        "missing_quarter": analyses_repo.store_quarterly_analysis({"employee_id": 1, "year": 2025}),
+        "quarter_zero": analyses_repo.store_quarterly_analysis({"employee_id": 1, "year": 2025, "quarter": 0}),
+        "missing_period": analyses_repo.store_quarterly_analysis({"employee_id": 2, "year": 2025, "quarter": 2}),
+        "unknown_employee": analyses_repo.store_quarterly_analysis({
             "employee_id": 99, "year": 2025, "quarter": 2,
             "period_start": date(2025, 4, 1), "period_end": date(2025, 6, 30)}),
         # Out-of-range quarter is not validated on store.
-        "quarter_7": db_service.store_quarterly_analysis({
+        "quarter_7": analyses_repo.store_quarterly_analysis({
             "employee_id": 2, "year": 2025, "quarter": 7,
             "period_start": date(2025, 1, 1), "period_end": date(2025, 1, 2)}),
     }
@@ -512,9 +517,9 @@ def test_get_quarterly_analysis_by_params(employees, snapshot):
                    stakeholder_count=3, forward_planning_json={"start": ["s"]})
     employees.commit()
     snapshot("get_quarterly_analysis_by_params", normalize({
-        "found": db_service.get_quarterly_analysis_by_params(1, 2025, 2),
-        "other_quarter": db_service.get_quarterly_analysis_by_params(1, 2025, 1),
-        "other_employee": db_service.get_quarterly_analysis_by_params(2, 2025, 2),
+        "found": analyses_repo.get_quarterly_analysis_by_params(1, 2025, 2),
+        "other_quarter": analyses_repo.get_quarterly_analysis_by_params(1, 2025, 1),
+        "other_employee": analyses_repo.get_quarterly_analysis_by_params(2, 2025, 2),
     }))
 
 
@@ -536,15 +541,15 @@ def test_get_employee_job_descriptions_for_period(employees, snapshot):
     s.commit()
 
     q1 = (date(2025, 1, 1), date(2025, 3, 31))
-    result = db_service.get_employee_job_descriptions_for_period(1, *q1)
+    result = jd_repo.get_employee_job_descriptions_for_period(1, *q1)
     assert [jd["assigned_date"] for jd in result] == sorted(jd["assigned_date"] for jd in result)
     snapshot("get_employee_job_descriptions_for_period", normalize({
         "q1_2025": sorted(result, key=lambda jd: (str(jd["assigned_date"]), jd["jd_id"])),
         "single_day": sorted(
-            db_service.get_employee_job_descriptions_for_period(1, date(2025, 2, 15), date(2025, 2, 15)),
+            jd_repo.get_employee_job_descriptions_for_period(1, date(2025, 2, 15), date(2025, 2, 15)),
             key=lambda jd: (str(jd["assigned_date"]), jd["jd_id"])),
         "inverted_period": sorted(
-            db_service.get_employee_job_descriptions_for_period(1, date(2025, 3, 31), date(2025, 1, 1)),
+            jd_repo.get_employee_job_descriptions_for_period(1, date(2025, 3, 31), date(2025, 1, 1)),
             key=lambda jd: (str(jd["assigned_date"]), jd["jd_id"])),
-        "unknown_employee": db_service.get_employee_job_descriptions_for_period(99, *q1),
+        "unknown_employee": jd_repo.get_employee_job_descriptions_for_period(99, *q1),
     }))

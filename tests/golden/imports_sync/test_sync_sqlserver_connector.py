@@ -9,8 +9,8 @@ from unittest.mock import MagicMock
 import pyodbc as real_pyodbc
 import pytest
 
-from app.database import sqlserver_connector as mod
-from app.database.sqlserver_connector import SQLServerConnector, create_sqlserver_connector
+from app.integrations.sqlserver import connector as mod
+from app.integrations.sqlserver.connector import SQLServerConnector, create_sqlserver_connector
 from tests.golden.imports_sync.helpers import outcome, tag
 
 ENV_KEYS = [

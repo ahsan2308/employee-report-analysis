@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 from pydantic import BaseModel, ValidationError
 
-from app.schemas.csv_import_schema import CombinedCSVRow
+from app.services.csv.row_models import CombinedCSVRow
 from app.services.csv.error_handler import ErrorCategory, ImportErrorHandler
 from tests.golden.imports_sync.helpers import handler_errors, outcome, tag
 

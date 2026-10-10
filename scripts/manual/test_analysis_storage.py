@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 from app.models.db_models import Employee, Report, EmployeeAnalysis
 from app.services.llm_service import get_llm_service
-from app.database import get_database
+from app.db.database import get_database
 from app.core.logger import logger
 
 def create_test_employee() -> Employee:

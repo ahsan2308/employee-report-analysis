@@ -119,7 +119,7 @@ def make_vision(session, n: int, employee_id: int, from_date: date, to_date: dat
 
 
 def make_monthly(session, employee_id: int, year: int, month: int, **fields) -> MonthlyAnalysis:
-    from app.services.db_service import get_month_date_range
+    from app.domain.periods import get_month_date_range
 
     start, end = get_month_date_range(year, month)
     values = dict(
@@ -142,7 +142,7 @@ def make_monthly(session, employee_id: int, year: int, month: int, **fields) -> 
 
 
 def make_quarterly(session, employee_id: int, year: int, quarter: int, **fields) -> QuarterlyAnalysis:
-    from app.services.db_service import get_quarter_date_range
+    from app.domain.periods import get_quarter_date_range
 
     start, end = get_quarter_date_range(year, quarter)
     values = dict(

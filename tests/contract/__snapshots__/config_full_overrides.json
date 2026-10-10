@@ -1,13 +1,7 @@
 {
-  "app.database": {
-    "DB_HOST": "db.internal",
-    "DB_NAME": "reports",
-    "DB_PASSWORD": "p@ss",
-    "DB_PORT": "6543",
-    "DB_TYPE": "postgres",
-    "DB_USER": "u"
+  "app.db.base": {
+    "SCHEMA_NAME": "employee_reports"
   },
-  "app.database.postgres_database": {},
   "app.db.database": {
     "DB_HOST": "db.internal",
     "DB_NAME": "reports",
@@ -16,7 +10,10 @@
     "DB_TYPE": "postgres",
     "DB_USER": "u"
   },
-  "app.model_host": {
+  "app.db.postgres": {
+    "SCHEMA_NAME": "employee_reports"
+  },
+  "app.integrations.providers": {
     "EMBEDDING_PROVIDER": "vllm",
     "EMBEDDING_USE_PREFIX": true,
     "LLM_PROVIDER": "vllm",
@@ -33,7 +30,13 @@
     "VLLM_EMBEDDING_MODEL": "e",
     "VLLM_MODEL": "m"
   },
-  "app.models.base": {},
+  "app.integrations.vector_store": {
+    "VECTOR_STORE_HOST": "qdrant",
+    "VECTOR_STORE_MODE": "server",
+    "VECTOR_STORE_PATH": "/qdrant/storage",
+    "VECTOR_STORE_PORT": "6334",
+    "VECTOR_STORE_TYPE": "qdrant"
+  },
   "app.services.embedding_service": {
     "DEFAULT_MODEL": "e",
     "EMBEDDING_PROVIDER": "vllm"
@@ -57,13 +60,6 @@
     "MAX_CONTENT_ITEM_LENGTH_QUARTERLY": 200,
     "MAX_CONTENT_ITEM_LENGTH_WEEKLY": 300,
     "VECTOR_SEARCH_HNSW_EF": 128
-  },
-  "app.vector_store": {
-    "VECTOR_STORE_HOST": "qdrant",
-    "VECTOR_STORE_MODE": "server",
-    "VECTOR_STORE_PATH": "/qdrant/storage",
-    "VECTOR_STORE_PORT": "6334",
-    "VECTOR_STORE_TYPE": "qdrant"
   },
   "app.worker.celery_app": {
     "IS_WINDOWS": false,

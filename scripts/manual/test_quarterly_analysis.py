@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 # Import application modules
 from app.services.quarterly_analysis_db_service import get_quarterly_data_for_analysis
-from app.services.db_service import get_employee_info
+from app.repositories.employees import get_employee_info
 from app.core.logger import logger
 
 def test_quarterly_analysis(employee_id: int, year: int = 2025, quarter: int = 2):

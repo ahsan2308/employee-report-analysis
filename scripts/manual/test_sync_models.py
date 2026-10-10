@@ -9,7 +9,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from datetime import datetime
-from app.database import get_database
+from app.db.database import get_database
 from app.models.sync_models import SyncHistory, SyncType, SyncStatus
 
 

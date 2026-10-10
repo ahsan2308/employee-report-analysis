@@ -33,7 +33,7 @@ from app.services.csv.processors.employee_report_processor import EmployeeReport
 from app.services.csv.processors.vision_data_processor import VisionDataProcessor
 from app.services.csv.processors.job_description_processor import JobDescriptionProcessor
 from app.services.csv.error_handler import ImportErrorHandler
-from app.database import get_database
+from app.db.database import get_database
 
 
 class Colors:

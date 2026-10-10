@@ -19,10 +19,10 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 # Import required modules
 from app.core.config_provider import get_config_provider
-from app.vector_store import get_vector_store
+from app.integrations.vector_store import get_vector_store
 from app.services.vector_store_service import add_report_to_vector_store
-from app.database import get_database
-from app.models.base import schema_name
+from app.db.database import get_database
+from app.db.base import schema_name
 from app.models.db_models import Report, Employee
 from sqlalchemy.sql import text
 from sqlalchemy import insert

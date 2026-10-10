@@ -5,7 +5,7 @@ from sqlalchemy import text
 
 def truncate_all_tables(database) -> None:
     import app.models  # noqa: F401  (registers every model on Base.metadata)
-    from app.models.base import Base
+    from app.db.base import Base
 
     tables = ", ".join(
         f'"{table.schema}"."{table.name}"' if table.schema else f'"{table.name}"'
@@ -17,7 +17,7 @@ def truncate_all_tables(database) -> None:
 
 @pytest.fixture(scope="session")
 def database():
-    from app.database import get_database
+    from app.db.database import get_database
 
     db = get_database()
     db.create_tables()

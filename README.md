@@ -106,7 +106,7 @@ tests/                # Characterization suite (see tests/README.md)
 scripts/manual/       # Manual scripts that need live services (not run by pytest)
 ```
 
-Older import paths (for example `app.database`, `app.model_host`, `app.services.db_service`) still work and re-export the code from its new location.
+The pre-restructuring import paths (for example `app.database`, `app.model_host`, `app.services.db_service`) have been removed; [CHANGELOG.md](CHANGELOG.md) lists where each module moved.
 
 ---
 

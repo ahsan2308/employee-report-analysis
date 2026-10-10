@@ -23,8 +23,8 @@ from app.models.db_models import Employee, EmployeeJobDescription
 from app.models.sync_models import SyncType, SyncStatus
 from app.services.sync.transformers import JobDescriptionTransformer
 from app.services.sync_service import SyncService
-from app.database.sqlserver_connector import SQLServerConnector
-from app.database import get_database
+from app.integrations.sqlserver.connector import SQLServerConnector
+from app.db.database import get_database
 
 
 # ============================================================================

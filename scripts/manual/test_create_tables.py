@@ -4,7 +4,7 @@ from sqlalchemy import inspect
 
 # Add the project root to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from app.database import get_database
+from app.db.database import get_database
 from app.utils.env_loader import load_env_from_file
 
 # Important: Import all model classes so SQLAlchemy knows about them

@@ -1,4 +1,4 @@
-"""Golden-master tests for app/services/additional_services.py.
+"""Golden-master tests for app.services.analysis (vision_formatting, jd_mapping, jd_formatting; formerly app/services/additional_services.py).
 
 These lock in today's behaviour (including bugs) of the vision-data filters,
 prompt formatters and the report -> job-description mapper.
@@ -8,7 +8,9 @@ from datetime import date, datetime
 
 import pytest
 
-from app.services import additional_services as svc
+from app.services.analysis import jd_formatting
+from app.services.analysis import jd_mapping
+from app.services.analysis import vision_formatting
 from tests.golden.analysis.fixtures import (
     DEFAULT_DESCRIPTION_KEYS,
     content_entries,
@@ -49,7 +51,7 @@ def test_truncate_content_value_table(snapshot):
     ]
     snapshot(
         "truncate_content_value_table",
-        {name: outcome(svc._truncate_content_value, value, **kw) for name, value, kw in cases},
+        {name: outcome(vision_formatting._truncate_content_value, value, **kw) for name, value, kw in cases},
     )
 
 
@@ -58,7 +60,7 @@ def test_truncate_content_value_table(snapshot):
 def test_default_descriptions_effective_mapping(snapshot):
     """An entity missing from the catalog gets the flat view (a repeated name takes its later entry)."""
     vision = {"current_data": [vision_item("All", {key: 1 for key in DEFAULT_DESCRIPTION_KEYS})]}
-    filtered = svc.filter_vision_data(vision)
+    filtered = vision_formatting.filter_vision_data(vision)
     subs = filtered["current_data"][0]["sub_entities"]
     snapshot("default_descriptions", {key: subs[key]["description"] for key in DEFAULT_DESCRIPTION_KEYS})
 
@@ -68,7 +70,7 @@ def test_default_descriptions_follow_the_main_entity():
     names = ["Groups", "Labels", "Lookup", "Special Reports", "Attachments", "Notings"]
     vision = {"current_data": [vision_item(entity, {name: 1 for name in names})
                                for entity in ("Persons", "Organizations", "Correspondence", "Events", "Nadra")]}
-    filtered = svc.filter_vision_data(vision)
+    filtered = vision_formatting.filter_vision_data(vision)
     described = {item["main_entity"]: {name: sub["description"] for name, sub in item["sub_entities"].items()}
                  for item in filtered["current_data"]}
     assert described["Persons"]["Groups"] == "Persons marked with specific groups (muli-level labeling)"
@@ -85,85 +87,85 @@ def test_default_descriptions_follow_the_main_entity():
 
 def test_filter_vision_data_empty_inputs(snapshot):
     snapshot("filter_vision_data_empty_inputs", {
-        "none": outcome(svc.filter_vision_data, None),
-        "empty_dict": outcome(svc.filter_vision_data, {}),
-        "only_date_context": outcome(svc.filter_vision_data, {"date_context": {"a": 1}}),
-        "unknown_shape": outcome(svc.filter_vision_data, {"foo": [1, 2]}),
-        "current_key_only_empty": outcome(svc.filter_vision_data, {"current_data": []}),
-        "previous_key_only": outcome(svc.filter_vision_data, {"previous_data": [
+        "none": outcome(vision_formatting.filter_vision_data, None),
+        "empty_dict": outcome(vision_formatting.filter_vision_data, {}),
+        "only_date_context": outcome(vision_formatting.filter_vision_data, {"date_context": {"a": 1}}),
+        "unknown_shape": outcome(vision_formatting.filter_vision_data, {"foo": [1, 2]}),
+        "current_key_only_empty": outcome(vision_formatting.filter_vision_data, {"current_data": []}),
+        "previous_key_only": outcome(vision_formatting.filter_vision_data, {"previous_data": [
             vision_item("Tasks", {"Tasks": 2})]}),
-        "weeks_data_empty": outcome(svc.filter_vision_data, {"weeks_data": []}),
-        "months_data_empty": outcome(svc.filter_vision_data, {"months_data": []}),
+        "weeks_data_empty": outcome(vision_formatting.filter_vision_data, {"weeks_data": []}),
+        "months_data_empty": outcome(vision_formatting.filter_vision_data, {"months_data": []}),
     })
 
 
 def test_filter_vision_data_weekly_default_descriptions(snapshot):
     raw = raw_weekly_vision()
     before = copy.deepcopy(raw)
-    result = svc.filter_vision_data(raw)
+    result = vision_formatting.filter_vision_data(raw)
     snapshot("filter_weekly_default", result)
     snapshot("filter_weekly_input_mutated", {"input_unchanged": raw == before})
 
 
 def test_filter_vision_data_weekly_custom_descriptions(snapshot):
     custom = {"Persons": "custom persons", "Tasks": "custom tasks"}
-    snapshot("filter_weekly_custom", svc.filter_vision_data(raw_weekly_vision(), custom))
+    snapshot("filter_weekly_custom", vision_formatting.filter_vision_data(raw_weekly_vision(), custom))
 
 
 def test_filter_vision_data_weekly_wins_over_other_shapes(snapshot):
     raw = raw_weekly_vision()
     raw["weeks_data"] = raw_monthly_vision()["weeks_data"]
     raw["months_data"] = raw_quarterly_vision()["months_data"]
-    snapshot("filter_mixed_shapes", svc.filter_vision_data(raw))
+    snapshot("filter_mixed_shapes", vision_formatting.filter_vision_data(raw))
 
 
 def test_filter_vision_data_monthly(snapshot):
-    snapshot("filter_monthly_default", svc.filter_vision_data(raw_monthly_vision()))
-    snapshot("filter_monthly_custom", svc.filter_vision_data(raw_monthly_vision(), {"Persons": "P!"}))
+    snapshot("filter_monthly_default", vision_formatting.filter_vision_data(raw_monthly_vision()))
+    snapshot("filter_monthly_custom", vision_formatting.filter_vision_data(raw_monthly_vision(), {"Persons": "P!"}))
 
 
 def test_filter_vision_data_quarterly(snapshot):
-    snapshot("filter_quarterly_default", svc.filter_vision_data(raw_quarterly_vision()))
+    snapshot("filter_quarterly_default", vision_formatting.filter_vision_data(raw_quarterly_vision()))
     # Custom descriptions are NOT propagated into the per-month recursion.
-    snapshot("filter_quarterly_custom", svc.filter_vision_data(raw_quarterly_vision(), {"Events": "E!"}))
+    snapshot("filter_quarterly_custom", vision_formatting.filter_vision_data(raw_quarterly_vision(), {"Events": "E!"}))
 
 
 def test_filter_vision_data_missing_sub_entities_raises(snapshot):
     weird = {"current_data": [{"main_entity": "X", "sub_entities": [("a", 1)]}]}
-    snapshot("filter_sub_entities_not_dict", outcome(svc.filter_vision_data, weird))
+    snapshot("filter_sub_entities_not_dict", outcome(vision_formatting.filter_vision_data, weird))
 
 
 # --------------------------------------------------------------------------- weekly prompt
 
 def test_weekly_prompt_empty(snapshot):
     snapshot("weekly_prompt_empty", {
-        "none": outcome(svc.format_vision_data_for_weekly_analysis_prompt, None),
-        "empty": outcome(svc.format_vision_data_for_weekly_analysis_prompt, {}),
-        "empty_lists": outcome(svc.format_vision_data_for_weekly_analysis_prompt,
+        "none": outcome(vision_formatting.format_vision_data_for_weekly_analysis_prompt, None),
+        "empty": outcome(vision_formatting.format_vision_data_for_weekly_analysis_prompt, {}),
+        "empty_lists": outcome(vision_formatting.format_vision_data_for_weekly_analysis_prompt,
                                {"current_data": [], "previous_data": []}),
-        "monthly_shape": outcome(svc.format_vision_data_for_weekly_analysis_prompt,
-                                 svc.filter_vision_data(raw_monthly_vision())),
+        "monthly_shape": outcome(vision_formatting.format_vision_data_for_weekly_analysis_prompt,
+                                 vision_formatting.filter_vision_data(raw_monthly_vision())),
     })
 
 
 def test_weekly_prompt_default_limits(snapshot):
-    filtered = svc.filter_vision_data(raw_weekly_vision())
-    snapshot("weekly_prompt_default", svc.format_vision_data_for_weekly_analysis_prompt(filtered))
+    filtered = vision_formatting.filter_vision_data(raw_weekly_vision())
+    snapshot("weekly_prompt_default", vision_formatting.format_vision_data_for_weekly_analysis_prompt(filtered))
 
 
 def test_weekly_prompt_custom_limits(snapshot):
-    filtered = svc.filter_vision_data(raw_weekly_vision())
+    filtered = vision_formatting.filter_vision_data(raw_weekly_vision())
     snapshot("weekly_prompt_limits_2_10",
-             svc.format_vision_data_for_weekly_analysis_prompt(filtered, 2, 10))
+             vision_formatting.format_vision_data_for_weekly_analysis_prompt(filtered, 2, 10))
     snapshot("weekly_prompt_limits_0_0",
-             svc.format_vision_data_for_weekly_analysis_prompt(filtered, 0, 0))
+             vision_formatting.format_vision_data_for_weekly_analysis_prompt(filtered, 0, 0))
 
 
 def test_weekly_prompt_current_only_and_previous_only(snapshot):
-    filtered = svc.filter_vision_data(raw_weekly_vision())
-    snapshot("weekly_prompt_current_only", svc.format_vision_data_for_weekly_analysis_prompt(
+    filtered = vision_formatting.filter_vision_data(raw_weekly_vision())
+    snapshot("weekly_prompt_current_only", vision_formatting.format_vision_data_for_weekly_analysis_prompt(
         {"current_data": filtered["current_data"]}))
-    snapshot("weekly_prompt_previous_only", svc.format_vision_data_for_weekly_analysis_prompt(
+    snapshot("weekly_prompt_previous_only", vision_formatting.format_vision_data_for_weekly_analysis_prompt(
         {"previous_data": filtered["previous_data"], "current_data": []}))
 
 
@@ -174,52 +176,52 @@ def test_weekly_prompt_item_limit_boundary(snapshot):
                          "Numbers": {"value": 6, "description": "e"}},
         "sub_entities_content": {"Persons": content_entries(5), "Numbers": content_entries(6)},
     }]}
-    snapshot("weekly_prompt_item_limit_boundary", svc.format_vision_data_for_weekly_analysis_prompt(data))
+    snapshot("weekly_prompt_item_limit_boundary", vision_formatting.format_vision_data_for_weekly_analysis_prompt(data))
 
 
 def test_weekly_prompt_unfiltered_item_raises(snapshot):
     data = {"current_data": [vision_item("Persons", {"Persons": 3})]}
-    snapshot("weekly_prompt_unfiltered", outcome(svc.format_vision_data_for_weekly_analysis_prompt, data))
+    snapshot("weekly_prompt_unfiltered", outcome(vision_formatting.format_vision_data_for_weekly_analysis_prompt, data))
 
 
 # --------------------------------------------------------------------------- monthly prompt
 
 def test_monthly_prompt_empty(snapshot):
     snapshot("monthly_prompt_empty", {
-        "none": outcome(svc.format_vision_data_for_monthly_analysis_prompt, None),
-        "empty": outcome(svc.format_vision_data_for_monthly_analysis_prompt, {}),
-        "weeks_empty": outcome(svc.format_vision_data_for_monthly_analysis_prompt, {"weeks_data": []}),
-        "week_without_activities": outcome(svc.format_vision_data_for_monthly_analysis_prompt,
+        "none": outcome(vision_formatting.format_vision_data_for_monthly_analysis_prompt, None),
+        "empty": outcome(vision_formatting.format_vision_data_for_monthly_analysis_prompt, {}),
+        "weeks_empty": outcome(vision_formatting.format_vision_data_for_monthly_analysis_prompt, {"weeks_data": []}),
+        "week_without_activities": outcome(vision_formatting.format_vision_data_for_monthly_analysis_prompt,
                                            {"weeks_data": [{"week_number": 1, "activities": []}]}),
-        "weekly_shape": outcome(svc.format_vision_data_for_monthly_analysis_prompt,
-                                svc.filter_vision_data(raw_weekly_vision())),
+        "weekly_shape": outcome(vision_formatting.format_vision_data_for_monthly_analysis_prompt,
+                                vision_formatting.filter_vision_data(raw_weekly_vision())),
     })
 
 
 def test_monthly_prompt_default_and_custom_limits(snapshot):
-    filtered = svc.filter_vision_data(raw_monthly_vision())
-    snapshot("monthly_prompt_default", svc.format_vision_data_for_monthly_analysis_prompt(filtered))
+    filtered = vision_formatting.filter_vision_data(raw_monthly_vision())
+    snapshot("monthly_prompt_default", vision_formatting.format_vision_data_for_monthly_analysis_prompt(filtered))
     snapshot("monthly_prompt_limits_1_12",
-             svc.format_vision_data_for_monthly_analysis_prompt(filtered, 1, 12))
+             vision_formatting.format_vision_data_for_monthly_analysis_prompt(filtered, 1, 12))
 
 
 # --------------------------------------------------------------------------- quarterly prompt
 
 def test_quarterly_prompt_empty(snapshot):
     snapshot("quarterly_prompt_empty", {
-        "none": outcome(svc.format_vision_data_for_quarterly_analysis_prompt, None),
-        "empty": outcome(svc.format_vision_data_for_quarterly_analysis_prompt, {}),
-        "months_empty": outcome(svc.format_vision_data_for_quarterly_analysis_prompt, {"months_data": []}),
-        "missing_date_context": outcome(svc.format_vision_data_for_quarterly_analysis_prompt,
+        "none": outcome(vision_formatting.format_vision_data_for_quarterly_analysis_prompt, None),
+        "empty": outcome(vision_formatting.format_vision_data_for_quarterly_analysis_prompt, {}),
+        "months_empty": outcome(vision_formatting.format_vision_data_for_quarterly_analysis_prompt, {"months_data": []}),
+        "missing_date_context": outcome(vision_formatting.format_vision_data_for_quarterly_analysis_prompt,
                                         {"months_data": [{"weeks_data": []}]}),
     })
 
 
 def test_quarterly_prompt_filtered(snapshot):
-    filtered = svc.filter_vision_data(raw_quarterly_vision())
-    snapshot("quarterly_prompt_filtered_default", svc.format_vision_data_for_quarterly_analysis_prompt(filtered))
+    filtered = vision_formatting.filter_vision_data(raw_quarterly_vision())
+    snapshot("quarterly_prompt_filtered_default", vision_formatting.format_vision_data_for_quarterly_analysis_prompt(filtered))
     snapshot("quarterly_prompt_filtered_limits_3_15",
-             svc.format_vision_data_for_quarterly_analysis_prompt(filtered, 3, 15))
+             vision_formatting.format_vision_data_for_quarterly_analysis_prompt(filtered, 3, 15))
 
 
 def test_quarterly_prompt_months_without_weeks(snapshot):
@@ -233,7 +235,7 @@ def test_quarterly_prompt_months_without_weeks(snapshot):
             {"month_name": "december", "weeks_data": [{"week_number": 5, "activities": []}]},
         ],
     }
-    snapshot("quarterly_prompt_months_without_weeks", svc.format_vision_data_for_quarterly_analysis_prompt(data))
+    snapshot("quarterly_prompt_months_without_weeks", vision_formatting.format_vision_data_for_quarterly_analysis_prompt(data))
 
 
 def test_quarterly_prompt_missing_main_entity(snapshot):
@@ -243,7 +245,7 @@ def test_quarterly_prompt_missing_main_entity(snapshot):
             {"sub_entities": {}}, {"main_entity": "Orgs", "sub_entities": {}}]}]}],
     }
     snapshot("quarterly_prompt_missing_main_entity",
-             outcome(svc.format_vision_data_for_quarterly_analysis_prompt, data))
+             outcome(vision_formatting.format_vision_data_for_quarterly_analysis_prompt, data))
 
 
 # --------------------------------------------------------------------------- map_reports_to_jds
@@ -256,10 +258,10 @@ JANUARY_REPORTS = [report(date(2025, 1, d)) for d in (5, 12, 19, 26)]
 
 def test_map_reports_to_jds_empty_inputs(snapshot):
     snapshot("map_empty_inputs", {
-        "no_reports": outcome(svc.map_reports_to_jds, [], [JD_A]),
-        "none_reports": outcome(svc.map_reports_to_jds, None, [JD_A]),
-        "no_jds": outcome(svc.map_reports_to_jds, JANUARY_REPORTS[:2], []),
-        "none_jds": outcome(svc.map_reports_to_jds, JANUARY_REPORTS[:1], None),
+        "no_reports": outcome(jd_mapping.map_reports_to_jds, [], [JD_A]),
+        "none_reports": outcome(jd_mapping.map_reports_to_jds, None, [JD_A]),
+        "no_jds": outcome(jd_mapping.map_reports_to_jds, JANUARY_REPORTS[:2], []),
+        "none_jds": outcome(jd_mapping.map_reports_to_jds, JANUARY_REPORTS[:1], None),
     })
 
 
@@ -274,13 +276,13 @@ def test_map_reports_to_jds_empty_inputs(snapshot):
     ("jd_missing_effective_period", [{"jd_id": "JD_X", "job_description": "x"}]),
 ])
 def test_map_reports_to_jds_scenarios(snapshot, name, jds):
-    snapshot(f"map_{name}", outcome(svc.map_reports_to_jds, JANUARY_REPORTS, jds))
+    snapshot(f"map_{name}", outcome(jd_mapping.map_reports_to_jds, JANUARY_REPORTS, jds))
 
 
 def test_map_reports_to_jds_week_overlap_boundaries(snapshot):
     jds = [jd("JD_EDGE", "edge", date(2025, 1, 10), date(2025, 1, 10))]
     reports = [report(date(2025, 1, d)) for d in (9, 10, 16, 17)]
-    snapshot("map_overlap_boundaries", svc.map_reports_to_jds(reports, jds))
+    snapshot("map_overlap_boundaries", jd_mapping.map_reports_to_jds(reports, jds))
 
 
 def test_map_reports_to_jds_date_variants(snapshot):
@@ -293,22 +295,22 @@ def test_map_reports_to_jds_date_variants(snapshot):
         {"text": "before jd", "date": date(2024, 12, 1), "report_id": "r-early"},
         {"text": "no report id", "date": date(2025, 1, 26)},
     ]
-    snapshot("map_date_variants", outcome(svc.map_reports_to_jds, reports, [JD_FULL]))
+    snapshot("map_date_variants", outcome(jd_mapping.map_reports_to_jds, reports, [JD_FULL]))
 
 
 def test_map_reports_to_jds_input_not_mutated(snapshot):
     reports = copy.deepcopy(JANUARY_REPORTS)
-    svc.map_reports_to_jds(reports, [JD_FULL])
+    jd_mapping.map_reports_to_jds(reports, [JD_FULL])
     snapshot("map_input_not_mutated", {"unchanged": reports == JANUARY_REPORTS})
 
 
 def test_map_reports_to_jds_error_paths(snapshot):
     snapshot("map_error_paths", {
-        "report_id_none": outcome(svc.map_reports_to_jds,
+        "report_id_none": outcome(jd_mapping.map_reports_to_jds,
                                   [{"date": date(2025, 1, 5), "report_id": None}], [JD_FULL]),
-        "datetime_object_date": outcome(svc.map_reports_to_jds,
+        "datetime_object_date": outcome(jd_mapping.map_reports_to_jds,
                                         [{"date": datetime(2025, 1, 5, 9, 0), "report_id": "r"}], [JD_FULL]),
-        "jd_without_jd_id": outcome(svc.map_reports_to_jds, [report(date(2025, 1, 5))],
+        "jd_without_jd_id": outcome(jd_mapping.map_reports_to_jds, [report(date(2025, 1, 5))],
                                     [{"job_description": "x", "effective_during_period": {
                                         "start": date(2025, 1, 1), "end": date(2025, 1, 31)}}]),
     })
@@ -321,27 +323,27 @@ def test_weekly_jd_prompt(snapshot):
     jd_new = jd("J2", "New role text", date(2025, 1, 1), date(2025, 1, 31), assigned=date(2024, 8, 15))
     jd_third = jd("J3", "Third role", date(2025, 1, 1), date(2025, 1, 31), assigned=date(2024, 1, 1))
     snapshot("weekly_jd_prompt_cases", {
-        "none": outcome(svc.format_job_descriptions_for_weekly_prompt, None),
-        "empty": outcome(svc.format_job_descriptions_for_weekly_prompt, []),
-        "single_with_none_assigned": outcome(svc.format_job_descriptions_for_weekly_prompt,
+        "none": outcome(jd_formatting.format_job_descriptions_for_weekly_prompt, None),
+        "empty": outcome(jd_formatting.format_job_descriptions_for_weekly_prompt, []),
+        "single_with_none_assigned": outcome(jd_formatting.format_job_descriptions_for_weekly_prompt,
                                              [{"jd_id": "x", "assigned_date": None}]),
-        "single_missing_keys": outcome(svc.format_job_descriptions_for_weekly_prompt, [{}]),
-        "single_string_assigned": outcome(svc.format_job_descriptions_for_weekly_prompt,
+        "single_missing_keys": outcome(jd_formatting.format_job_descriptions_for_weekly_prompt, [{}]),
+        "single_string_assigned": outcome(jd_formatting.format_job_descriptions_for_weekly_prompt,
                                           [{"assigned_date": "2024-02-29", "job_description": "S"}]),
-        "multiple_with_none_assigned": outcome(svc.format_job_descriptions_for_weekly_prompt,
+        "multiple_with_none_assigned": outcome(jd_formatting.format_job_descriptions_for_weekly_prompt,
                                                [jd_old, {"assigned_date": None, "job_description": "n"}]),
     })
-    snapshot("weekly_jd_prompt_single", svc.format_job_descriptions_for_weekly_prompt([jd_old]))
-    snapshot("weekly_jd_prompt_multiple", svc.format_job_descriptions_for_weekly_prompt([jd_new, jd_old, jd_third]))
+    snapshot("weekly_jd_prompt_single", jd_formatting.format_job_descriptions_for_weekly_prompt([jd_old]))
+    snapshot("weekly_jd_prompt_multiple", jd_formatting.format_job_descriptions_for_weekly_prompt([jd_new, jd_old, jd_third]))
 
 
 # --------------------------------------------------------------------------- monthly JD prompt
 
 def test_monthly_jd_prompt_empty(snapshot):
     snapshot("monthly_jd_prompt_empty", {
-        "none": outcome(svc.format_job_descriptions_for_monthly_prompt, None),
-        "empty": outcome(svc.format_job_descriptions_for_monthly_prompt, {}),
-        "no_groups": outcome(svc.format_job_descriptions_for_monthly_prompt,
+        "none": outcome(jd_formatting.format_job_descriptions_for_monthly_prompt, None),
+        "empty": outcome(jd_formatting.format_job_descriptions_for_monthly_prompt, {}),
+        "no_groups": outcome(jd_formatting.format_job_descriptions_for_monthly_prompt,
                              {"jd_groups": [], "unmapped_reports": JANUARY_REPORTS}),
     })
 
@@ -358,8 +360,8 @@ def test_monthly_jd_prompt_empty(snapshot):
     ("complex_concurrent_and_single", JANUARY_REPORTS, [JD_FULL, JD_B]),
 ])
 def test_monthly_jd_prompt_from_mapping(snapshot, name, reports, jds):
-    mapping = svc.map_reports_to_jds(reports, jds)
-    snapshot(f"monthly_jd_prompt_{name}", svc.format_job_descriptions_for_monthly_prompt(mapping))
+    mapping = jd_mapping.map_reports_to_jds(reports, jds)
+    snapshot(f"monthly_jd_prompt_{name}", jd_formatting.format_job_descriptions_for_monthly_prompt(mapping))
 
 
 def test_monthly_jd_prompt_handmade_groups(snapshot):
@@ -384,11 +386,11 @@ def test_monthly_jd_prompt_handmade_groups(snapshot):
         "unmapped_reports": [{"date": None}],
     }
     snapshot("monthly_jd_prompt_handmade", {
-        "transition": outcome(svc.format_job_descriptions_for_monthly_prompt, transition),
-        "complex": outcome(svc.format_job_descriptions_for_monthly_prompt, complex_case),
-        "single_group_no_texts": outcome(svc.format_job_descriptions_for_monthly_prompt,
+        "transition": outcome(jd_formatting.format_job_descriptions_for_monthly_prompt, transition),
+        "complex": outcome(jd_formatting.format_job_descriptions_for_monthly_prompt, complex_case),
+        "single_group_no_texts": outcome(jd_formatting.format_job_descriptions_for_monthly_prompt,
                                          {"jd_groups": [{"jd_ids": ["A"], "jd_texts": []}]}),
-        "single_group_no_ids": outcome(svc.format_job_descriptions_for_monthly_prompt,
+        "single_group_no_ids": outcome(jd_formatting.format_job_descriptions_for_monthly_prompt,
                                        {"jd_groups": [{"jd_texts": ["t1", "t2"]}]}),
     })
 
@@ -400,9 +402,9 @@ Q1_WEEKLY = [report(date(2025, m, d)) for m, d in ((1, 12), (1, 26), (2, 9), (2,
 
 def test_quarterly_jd_prompt_empty(snapshot):
     snapshot("quarterly_jd_prompt_empty", {
-        "none": outcome(svc.format_job_descriptions_for_quarterly_prompt, None),
-        "empty": outcome(svc.format_job_descriptions_for_quarterly_prompt, {}),
-        "no_groups": outcome(svc.format_job_descriptions_for_quarterly_prompt, {"jd_groups": []}),
+        "none": outcome(jd_formatting.format_job_descriptions_for_quarterly_prompt, None),
+        "empty": outcome(jd_formatting.format_job_descriptions_for_quarterly_prompt, {}),
+        "no_groups": outcome(jd_formatting.format_job_descriptions_for_quarterly_prompt, {"jd_groups": []}),
     })
 
 
@@ -420,22 +422,22 @@ def test_quarterly_jd_prompt_empty(snapshot):
     ("unmapped_ignored", Q1_WEEKLY, [jd("L", "Late role", date(2025, 3, 1), date(2025, 3, 31))]),
 ])
 def test_quarterly_jd_prompt_from_mapping(snapshot, name, reports, jds):
-    mapping = svc.map_reports_to_jds(reports, jds)
-    snapshot(f"quarterly_jd_prompt_{name}", svc.format_job_descriptions_for_quarterly_prompt(mapping))
+    mapping = jd_mapping.map_reports_to_jds(reports, jds)
+    snapshot(f"quarterly_jd_prompt_{name}", jd_formatting.format_job_descriptions_for_quarterly_prompt(mapping))
 
 
 def test_quarterly_jd_prompt_handmade_groups(snapshot):
     snapshot("quarterly_jd_prompt_handmade", {
-        "single_start_none": outcome(svc.format_job_descriptions_for_quarterly_prompt, {"jd_groups": [
+        "single_start_none": outcome(jd_formatting.format_job_descriptions_for_quarterly_prompt, {"jd_groups": [
             {"jd_ids": ["A"], "jd_texts": ["A"], "effective_dates": {"start": None, "end": None}}]}),
-        "single_start_string": outcome(svc.format_job_descriptions_for_quarterly_prompt, {"jd_groups": [
+        "single_start_string": outcome(jd_formatting.format_job_descriptions_for_quarterly_prompt, {"jd_groups": [
             {"jd_ids": ["A"], "jd_texts": ["A"], "effective_dates": {"start": "2025-07-01", "end": "x"},
              "reports": [{}, {}]}]}),
-        "multi_phase_empty_texts": outcome(svc.format_job_descriptions_for_quarterly_prompt, {"jd_groups": [
+        "multi_phase_empty_texts": outcome(jd_formatting.format_job_descriptions_for_quarterly_prompt, {"jd_groups": [
             {"jd_texts": ["A"], "effective_dates": {}, "reports": []},
             {"jd_texts": [], "effective_dates": {}, "reports": []}]}),
         "multi_phase_reports_without_week_range": outcome(
-            svc.format_job_descriptions_for_quarterly_prompt, {"jd_groups": [
+            jd_formatting.format_job_descriptions_for_quarterly_prompt, {"jd_groups": [
                 {"jd_texts": ["A"], "effective_dates": {"start": date(2025, 4, 1), "end": date(2025, 4, 30)},
                  "reports": [{"date": date(2025, 4, 6)}]},
                 {"jd_texts": ["B"], "effective_dates": {"start": date(2025, 5, 1), "end": date(2025, 6, 30)},
@@ -451,7 +453,7 @@ def test_quarterly_jd_prompt_week_end_formatting(snapshot):
         {"jd_texts": ["B"], "effective_dates": {"start": date(2025, 2, 1), "end": date(2025, 3, 31)},
          "reports": [{"week_start_date": datetime(2025, 2, 3, 0, 0), "week_end_date": datetime(2025, 2, 9, 0, 0)}]},
     ]}
-    snapshot("quarterly_jd_prompt_week_end", svc.format_job_descriptions_for_quarterly_prompt(groups))
+    snapshot("quarterly_jd_prompt_week_end", jd_formatting.format_job_descriptions_for_quarterly_prompt(groups))
     # Group end is a date but week_end is a string: the string is used as is.
     string_week_end = {"jd_groups": [
         {"jd_texts": ["A"], "effective_dates": {"start": date(2025, 1, 1), "end": date(2025, 1, 31)},
@@ -459,15 +461,15 @@ def test_quarterly_jd_prompt_week_end_formatting(snapshot):
         {"jd_texts": ["B"], "effective_dates": {}, "reports": []},
     ]}
     snapshot("quarterly_jd_prompt_string_week_end",
-             outcome(svc.format_job_descriptions_for_quarterly_prompt, string_week_end))
+             outcome(jd_formatting.format_job_descriptions_for_quarterly_prompt, string_week_end))
 
 
 def test_unmapped_reports_section(snapshot):
-    snapshot("unmapped_reports_section", svc._format_unmapped_reports_section([
+    snapshot("unmapped_reports_section", jd_formatting._format_unmapped_reports_section([
         {"date": date(2025, 1, 5)},
         {"week_start_date": date(2024, 12, 30), "week_end_date": date(2025, 1, 5)},
         {"week_start_date": date(2024, 12, 30)},
         {"date": "2025-01-01"},
         {},
     ]))
-    snapshot("unmapped_reports_section_empty", svc._format_unmapped_reports_section([]))
+    snapshot("unmapped_reports_section_empty", jd_formatting._format_unmapped_reports_section([]))

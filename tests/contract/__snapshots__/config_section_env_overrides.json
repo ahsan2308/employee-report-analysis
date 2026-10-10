@@ -1,13 +1,7 @@
 {
-  "app.database": {
-    "DB_HOST": "localhost",
-    "DB_NAME": "employee_reports",
-    "DB_PASSWORD": "mypassword",
-    "DB_PORT": "5432",
-    "DB_TYPE": "postgres",
-    "DB_USER": "myuser"
+  "app.db.base": {
+    "SCHEMA_NAME": "public"
   },
-  "app.database.postgres_database": {},
   "app.db.database": {
     "DB_HOST": "localhost",
     "DB_NAME": "employee_reports",
@@ -16,7 +10,10 @@
     "DB_TYPE": "postgres",
     "DB_USER": "myuser"
   },
-  "app.model_host": {
+  "app.db.postgres": {
+    "SCHEMA_NAME": "public"
+  },
+  "app.integrations.providers": {
     "EMBEDDING_PROVIDER": "ollama",
     "EMBEDDING_USE_PREFIX": false,
     "LLM_PROVIDER": "ollama",
@@ -33,7 +30,13 @@
     "VLLM_EMBEDDING_MODEL": "BAAI/bge-m3",
     "VLLM_MODEL": "meta-llama/Meta-Llama-3.1-8B-Instruct"
   },
-  "app.models.base": {},
+  "app.integrations.vector_store": {
+    "VECTOR_STORE_HOST": "localhost",
+    "VECTOR_STORE_MODE": "local",
+    "VECTOR_STORE_PATH": "./qdrant_data",
+    "VECTOR_STORE_PORT": 0,
+    "VECTOR_STORE_TYPE": "qdrant"
+  },
   "app.services.embedding_service": {
     "DEFAULT_MODEL": "bge-m3",
     "EMBEDDING_PROVIDER": "ollama"
@@ -57,13 +60,6 @@
     "MAX_CONTENT_ITEM_LENGTH_QUARTERLY": 200,
     "MAX_CONTENT_ITEM_LENGTH_WEEKLY": 300,
     "VECTOR_SEARCH_HNSW_EF": 64
-  },
-  "app.vector_store": {
-    "VECTOR_STORE_HOST": "localhost",
-    "VECTOR_STORE_MODE": "local",
-    "VECTOR_STORE_PATH": "./qdrant_data",
-    "VECTOR_STORE_PORT": 0,
-    "VECTOR_STORE_TYPE": "qdrant"
   },
   "app.worker.celery_app": {
     "IS_WINDOWS": false,

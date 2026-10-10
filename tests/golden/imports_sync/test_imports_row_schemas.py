@@ -10,18 +10,20 @@ from decimal import Decimal
 
 import pytest
 
-from app.schemas.csv_import_schema import (
+from app.services.csv.row_models import (
     CombinedCSVRow,
-    CSVImportJobCreate,
-    CSVImportJobResponse,
-    CSVImportOptions,
-    ImportErrorResponse,
-    ImportErrorsResponse,
     JobDescriptionCSVRow,
     SupervisorFeedbackCSVRow,
     VisionDataCSVRow,
     _json_list_with_fixes,
     _top_level_split,
+)
+from app.schemas.csv_import_schema import (
+    CSVImportJobCreate,
+    CSVImportJobResponse,
+    CSVImportOptions,
+    ImportErrorResponse,
+    ImportErrorsResponse,
 )
 from tests.golden.imports_sync.helpers import model_outcome, outcome
 
