@@ -3,14 +3,14 @@ from sqlalchemy.orm import sessionmaker
 from app.db.base_database import BaseDatabase
 from app.db.base import Base
 import app.models  # noqa: F401  (registers every model on Base.metadata, so create_tables() creates them all)
-import os
 from app.utils.env_loader import load_env_from_file
+from app.core.settings import SCHEMA_NAME
 
 # Load environment variables from specific .env file
 load_env_from_file()
 
 # Get the schema name from the .env file
-schema_name = os.getenv("SCHEMA_NAME", "public")
+schema_name = SCHEMA_NAME
 
 
 class MSSQLDatabase(BaseDatabase):

@@ -18,6 +18,7 @@
   "app.core": "ok",
   "app.core.config_provider": "ok",
   "app.core.logger": "ok",
+  "app.core.settings": "ok",
   "app.database": "ok",
   "app.database.mssql_database": "ok",
   "app.database.postgres_database": "ok",

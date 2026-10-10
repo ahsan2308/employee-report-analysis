@@ -1,14 +1,7 @@
-import os
 from app.db.postgres import PostgresDatabase
 from app.db.mssql import MSSQLDatabase
 
-# Load environment variables
-DB_TYPE = os.getenv("DB_TYPE", "postgres").lower()  # Default to PostgreSQL
-DB_USER = os.getenv("DB_USER", "myuser")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "mypassword")
-DB_HOST = os.getenv("DB_HOST", "localhost")  # Use 'db' if running in Docker
-DB_PORT = os.getenv("DB_PORT", "5432")  # Default PostgreSQL port
-DB_NAME = os.getenv("DB_NAME", "employee_reports")
+from app.core.settings import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_TYPE, DB_USER
 from app.db.base import schema_name
 
 def get_database():

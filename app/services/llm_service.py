@@ -5,21 +5,14 @@ from typing import Dict, List, Any, Optional, Type
 import time
 import json
 import re
-import os
 
 from app.model_host import get_llm_provider
 from app.core.logger import logger
-from app.core.config_provider import get_config_provider
 from app.models.structured_models_llm import EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
 from app.prompts.structured_prompts import StructuredPrompts
 
-config = get_config_provider()
 # Prioritize environment variables based on selected provider
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()
-if LLM_PROVIDER == "vllm":
-    DEFAULT_MODEL = os.getenv("VLLM_MODEL") or config.get("model", "meta-llama/Meta-Llama-3.1-8B-Instruct", section="llm")
-else:
-    DEFAULT_MODEL = os.getenv("OLLAMA_MODEL") or config.get("model", "llama3.1:8b", section="llm")
+from app.core.settings import LLM_PROVIDER, LLM_DEFAULT_MODEL as DEFAULT_MODEL  # noqa: F401  (module attributes kept for compatibility)
 
 class LLMService:
     """Service for interacting with LLM models for text generation and inference."""
