@@ -1,6 +1,6 @@
 {
   "body": {
-    "detail": "Internal server error: 404: Employee not found"
+    "detail": "Employee not found"
   },
-  "status": 500
+  "status": 404
 }

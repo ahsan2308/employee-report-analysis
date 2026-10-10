@@ -1,11 +1,13 @@
 """Characterization of the /analyses router (Celery dispatch patched in conftest)."""
-from datetime import date
+from datetime import date, timedelta
 from unittest import mock
 
 import pytest
 
 from app.models.task_models import BackgroundTask
+from app.services import task_service
 from tests.integration.api.seed import (
+    FIXED_NOW,
     add_analysis,
     add_monthly,
     add_quarterly,
@@ -17,6 +19,13 @@ from tests.integration.api.seed import (
 )
 
 REPORT_ID = fixed_uuid(10)
+
+
+@pytest.fixture(autouse=True)
+def clock():
+    """Pin the task service's clock shortly after the seeded tasks were created, so they are in flight."""
+    with mock.patch.object(task_service, "_now", return_value=FIXED_NOW + timedelta(minutes=30)):
+        yield
 
 
 def _tasks(db):
@@ -51,12 +60,19 @@ def test_analyze_active_task_with_analysis_is_reused(api, db_session, snap, disp
     snap("analyses_analyze_active_task_reused", resp, db=_tasks(db_session), dispatch=dispatch.calls)
 
 
-@pytest.mark.known_bug("B1")
-def test_analyze_in_flight_task_without_analysis_is_marked_failed(api, db_session, snap, dispatch):
+def test_analyze_in_flight_task_is_reused(api, db_session, snap, dispatch):
     _seed_report(db_session)
     add_task(db_session, task_id=fixed_uuid(1), report_id=REPORT_ID, status="running")
     resp = api.post(f"/analyses/analyze/{REPORT_ID}")
-    snap("analyses_analyze_in_flight_marked_failed", resp, db=_tasks(db_session), dispatch=dispatch.calls)
+    snap("analyses_analyze_in_flight_reused", resp, db=_tasks(db_session), dispatch=dispatch.calls)
+
+
+def test_analyze_stale_task_is_replaced(api, db_session, snap, dispatch):
+    _seed_report(db_session)
+    add_task(db_session, task_id=fixed_uuid(1), report_id=REPORT_ID, status="running",
+             created_at=FIXED_NOW - timedelta(hours=3), started_at=FIXED_NOW - timedelta(hours=3))
+    resp = api.post(f"/analyses/analyze/{REPORT_ID}")
+    snap("analyses_analyze_stale_replaced", resp, db=_tasks(db_session), dispatch=dispatch.calls)
 
 
 def test_analyze_unknown_report_404(api, db_session, snap, dispatch):
@@ -93,8 +109,7 @@ def test_results_by_report_defaults(api, db_session, snap):
     snap("analyses_results_by_report_defaults", api.get(f"/analyses/results/{REPORT_ID}"))
 
 
-@pytest.mark.known_bug("B3")
-def test_results_by_report_missing_analysis_500(api, db_session, snap):
+def test_results_by_report_missing_analysis_404(api, db_session, snap):
     _seed_report(db_session)
     snap("analyses_results_by_report_missing", api.get(f"/analyses/results/{REPORT_ID}"))
 
@@ -117,8 +132,7 @@ def test_employee_analyses_empty(api, db_session, snap):
     snap("analyses_employee_list_empty", api.get("/analyses/employee/2"))
 
 
-@pytest.mark.known_bug("B3")
-def test_employee_analyses_unknown_employee_500(api, snap):
+def test_employee_analyses_unknown_employee_404(api, snap):
     snap("analyses_employee_list_unknown", api.get("/analyses/employee/9"))
 
 
@@ -133,8 +147,7 @@ def test_analysis_by_id(api, db_session, snap):
     snap("analyses_by_id", api.get(f"/analyses/{analysis.analysis_id}"))
 
 
-@pytest.mark.known_bug("B3")
-def test_analysis_by_id_missing_500(api, snap):
+def test_analysis_by_id_missing_404(api, snap):
     snap("analyses_by_id_missing", api.get("/analyses/12345"))
 
 
@@ -170,13 +183,12 @@ def test_monthly_analyze_active_task_with_analysis_reused(api, db_session, snap,
     snap("analyses_monthly_analyze_active_reused", resp, db=_tasks(db_session), dispatch=dispatch.calls)
 
 
-@pytest.mark.known_bug("B1")
-def test_monthly_analyze_in_flight_without_analysis_marked_failed(api, db_session, snap, dispatch):
+def test_monthly_analyze_in_flight_reused(api, db_session, snap, dispatch):
     seed_employees(db_session)
     add_task(db_session, task_id=fixed_uuid(1), task_type="MONTHLY_ANALYSIS", employee_id=1, year=2025, month=2,
              status="running")
     resp = api.post("/analyses/monthly/analyze", params={"employee_id": 1, "year": 2025, "month": 2})
-    snap("analyses_monthly_analyze_in_flight_failed", resp, db=_tasks(db_session), dispatch=dispatch.calls)
+    snap("analyses_monthly_analyze_in_flight_reused", resp, db=_tasks(db_session), dispatch=dispatch.calls)
 
 
 def test_monthly_analyze_unknown_employee_404(api, db_session, snap, dispatch):
@@ -224,8 +236,7 @@ def test_monthly_by_id_minimal_row_fails_validation(api, db_session, snap):
     snap("analyses_monthly_by_id_minimal", api.get(f"/analyses/monthly/{monthly.analysis_id}"))
 
 
-@pytest.mark.known_bug("B3")
-def test_monthly_by_id_missing_500(api, snap):
+def test_monthly_by_id_missing_404(api, snap):
     snap("analyses_monthly_by_id_missing", api.get("/analyses/monthly/77"))
 
 
@@ -249,8 +260,7 @@ def test_monthly_for_employee_empty(api, db_session, snap):
     snap("analyses_monthly_for_employee_empty", api.get("/analyses/monthly/employee/3"))
 
 
-@pytest.mark.known_bug("B3")
-def test_monthly_for_employee_unknown_500(api, snap):
+def test_monthly_for_employee_unknown_404(api, snap):
     snap("analyses_monthly_for_employee_unknown", api.get("/analyses/monthly/employee/9"))
 
 
@@ -262,14 +272,12 @@ def test_monthly_by_period(api, db_session, snap):
     snap("analyses_monthly_by_period", api.get("/analyses/monthly/employee/1/2025/2"))
 
 
-@pytest.mark.known_bug("B3")
-def test_monthly_by_period_missing_500(api, db_session, snap):
+def test_monthly_by_period_missing_404(api, db_session, snap):
     seed_employees(db_session)
     snap("analyses_monthly_by_period_missing", api.get("/analyses/monthly/employee/1/2025/3"))
 
 
-@pytest.mark.known_bug("B3")
-def test_monthly_by_period_unknown_employee_500(api, snap):
+def test_monthly_by_period_unknown_employee_404(api, snap):
     snap("analyses_monthly_by_period_unknown_employee", api.get("/analyses/monthly/employee/9/2025/3"))
 
 
@@ -301,12 +309,11 @@ def test_quarterly_analyze_active_task_with_analysis_reused(api, db_session, sna
     snap("analyses_quarterly_analyze_active_reused", resp, db=_tasks(db_session), dispatch=dispatch.calls)
 
 
-@pytest.mark.known_bug("B1")
-def test_quarterly_analyze_in_flight_without_analysis_marked_failed(api, db_session, snap, dispatch):
+def test_quarterly_analyze_in_flight_reused(api, db_session, snap, dispatch):
     seed_employees(db_session)
     add_task(db_session, task_id=fixed_uuid(1), task_type="QUARTERLY_ANALYSIS", employee_id=1, year=2025, quarter=1)
     resp = api.post("/analyses/quarterly/analyze", params={"employee_id": 1, "year": 2025, "quarter": 1})
-    snap("analyses_quarterly_analyze_in_flight_failed", resp, db=_tasks(db_session), dispatch=dispatch.calls)
+    snap("analyses_quarterly_analyze_in_flight_reused", resp, db=_tasks(db_session), dispatch=dispatch.calls)
 
 
 def test_quarterly_analyze_unknown_employee_404(api, db_session, snap, dispatch):
@@ -346,8 +353,7 @@ def test_quarterly_by_id_minimal_row_fails_validation(api, db_session, snap):
     snap("analyses_quarterly_by_id_minimal", api.get(f"/analyses/quarterly/{quarterly.analysis_id}"))
 
 
-@pytest.mark.known_bug("B3")
-def test_quarterly_by_id_missing_500(api, snap):
+def test_quarterly_by_id_missing_404(api, snap):
     snap("analyses_quarterly_by_id_missing", api.get("/analyses/quarterly/77"))
 
 
@@ -359,14 +365,12 @@ def test_quarterly_by_period(api, db_session, snap):
     snap("analyses_quarterly_by_period", api.get("/analyses/quarterly/employee/1/2025/1"))
 
 
-@pytest.mark.known_bug("B3")
-def test_quarterly_by_period_missing_500(api, db_session, snap):
+def test_quarterly_by_period_missing_404(api, db_session, snap):
     seed_employees(db_session)
     snap("analyses_quarterly_by_period_missing", api.get("/analyses/quarterly/employee/1/2025/2"))
 
 
-@pytest.mark.known_bug("B3")
-def test_quarterly_by_period_unknown_employee_500(api, snap):
+def test_quarterly_by_period_unknown_employee_404(api, snap):
     snap("analyses_quarterly_by_period_unknown_employee", api.get("/analyses/quarterly/employee/9/2025/2"))
 
 

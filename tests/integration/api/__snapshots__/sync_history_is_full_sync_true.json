@@ -1,6 +1,37 @@
 {
   "body": {
-    "detail": "Error listing history: 'PGDialect_psycopg2' object has no attribute 'BOOLEAN'"
+    "items": [
+      {
+        "completed_at": "<timestamp>",
+        "duration_seconds": 33.0,
+        "error_count": 10,
+        "is_full_sync": true,
+        "last_sync_timestamp": "<timestamp>",
+        "records_queried": 200,
+        "records_synced": 190,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "sync_id": "<uuid:1>",
+        "sync_type": "vision_data"
+      },
+      {
+        "completed_at": "<timestamp>",
+        "duration_seconds": 32.0,
+        "error_count": 5,
+        "is_full_sync": true,
+        "last_sync_timestamp": null,
+        "records_queried": 5,
+        "records_synced": 0,
+        "started_at": "<timestamp>",
+        "status": "failed",
+        "sync_id": "<uuid:2>",
+        "sync_type": "employee_reports"
+      }
+    ],
+    "page": 1,
+    "page_size": 20,
+    "pages": 1,
+    "total": 2
   },
-  "status": 500
+  "status": 200
 }

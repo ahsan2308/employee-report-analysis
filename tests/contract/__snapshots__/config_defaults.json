@@ -88,7 +88,8 @@
       "result_serializer": "json",
       "task_ignore_result": false,
       "task_serializer": "json",
-      "task_time_limit": 300,
+      "task_soft_time_limit": 1740,
+      "task_time_limit": 1800,
       "task_track_started": true,
       "worker_concurrency": 2
     },

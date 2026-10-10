@@ -222,16 +222,31 @@ def test_history_filters_and_pagination(api, db_session, snapshot):
     snapshot("sync_history_filters", scrub(results))
 
 
-@pytest.mark.known_bug("B2")
 @pytest.mark.parametrize("flag", ["true", "false"])
-def test_history_is_full_sync_filter_500(api, db_session, snap, flag):
+def test_history_is_full_sync_filter(api, db_session, snap, flag):
     seed_sync_history(db_session)
     snap(f"sync_history_is_full_sync_{flag}", api.get("/sync/history", params={"is_full_sync": flag}))
 
 
-@pytest.mark.known_bug("B2")
+def test_history_is_full_sync_filter_treats_missing_flag_as_incremental(api, db_session):
+    add_sync(db_session, sync_type="vision_data", status="completed", sync_id=fixed_uuid(201),
+             started_at=datetime(2025, 2, 1, 8, 0, 0), sync_options=None)
+    add_sync(db_session, sync_type="vision_data", status="completed", sync_id=fixed_uuid(202),
+             started_at=datetime(2025, 2, 2, 8, 0, 0), sync_options={})
+    add_sync(db_session, sync_type="vision_data", status="completed", sync_id=fixed_uuid(203),
+             started_at=datetime(2025, 2, 3, 8, 0, 0), sync_options={"is_full_sync": True})
+
+    def ids(flag):
+        resp = api.get("/sync/history", params={"is_full_sync": flag})
+        assert resp.status_code == 200
+        return sorted(item["sync_id"] for item in resp.json()["items"])
+
+    assert ids("false") == [str(fixed_uuid(201)), str(fixed_uuid(202))]
+    assert ids("true") == [str(fixed_uuid(203))]
+
+
 @pytest.mark.parametrize("sort_by", ["nope", "__table__"])
-def test_history_unvalidated_sort_by_500(api, db_session, snap, sort_by):
+def test_history_invalid_sort_by_400(api, db_session, snap, sort_by):
     seed_sync_history(db_session)
     snap(f"sync_history_sort_by_{sort_by.strip('_')}", api.get("/sync/history", params={"sort_by": sort_by}))
 

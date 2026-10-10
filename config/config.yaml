@@ -50,7 +50,8 @@ celery:
   accept_content: [json]
   result_serializer: json
   task_track_started: true
-  task_time_limit: 300  # 5 minutes max per task
+  task_time_limit: 1800  # Hard limit: the worker process is killed after 30 minutes
+  task_soft_time_limit: 1740  # Raised inside the task first, so it can record the failure
   worker_concurrency: 2  # Start with lower concurrency for LLM tasks
   task_ignore_result: false  # Store task results in backend
   result_expires: 86400  # Results expire after 1 day (in seconds)

@@ -2,6 +2,8 @@
 Celery tasks for asynchronous report analysis.
 """
 import uuid
+
+from celery.exceptions import SoftTimeLimitExceeded
 from datetime import datetime, timedelta
 
 from app.worker.celery_app import celery_app
@@ -300,6 +302,10 @@ def analyze_report_task(self, task_id: str):
             logger.info(f"Analysis task {task_id} completed successfully")
             return result_data
             
+    except SoftTimeLimitExceeded:
+        logger.error(f"Analysis task {task_id} exceeded its time limit")
+        _mark_task_failed_after_error(db, task_id, "Analysis exceeded the time limit")
+        raise
     except Exception as e:
         logger.error(f"Error in analysis task {task_id}: {str(e)}")
         
@@ -616,6 +622,10 @@ def analyze_monthly_reports_task(self, task_id: str):
             
             return {"error": f"Error processing analysis result: {str(e)}"}
             
+    except SoftTimeLimitExceeded:
+        logger.error(f"Analysis task {task_id} exceeded its time limit")
+        _mark_task_failed_after_error(db, task_id, "Analysis exceeded the time limit")
+        raise
     except Exception as e:
         logger.error(f"Error in monthly analysis task {task_id}: {str(e)}")
         
@@ -926,6 +936,10 @@ def analyze_quarterly_reports_task(self, task_id: str):
             
             return {"error": f"Error processing analysis result: {str(e)}"}
             
+    except SoftTimeLimitExceeded:
+        logger.error(f"Analysis task {task_id} exceeded its time limit")
+        _mark_task_failed_after_error(db, task_id, "Analysis exceeded the time limit")
+        raise
     except Exception as e:
         logger.error(f"Error in quarterly analysis task {task_id}: {str(e)}")
         

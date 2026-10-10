@@ -88,6 +88,8 @@ def get_analysis_by_report(report_id: str, db: Session = Depends(get_db)):
         return weekly_analysis_response(analysis, employee)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid report ID format")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error retrieving analysis: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
@@ -124,6 +126,8 @@ def get_employee_analyses(employee_id: int, db: Session = Depends(get_db)):
                 })
             
         return {"employee_id": employee_id, "employee_name": employee.name, "analyses": analyses_list}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error retrieving employee analyses: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
@@ -158,6 +162,8 @@ def get_analysis_by_id(analysis_id: int, db: Session = Depends(get_db)):
             
         # Prepare response with employee name
         return weekly_analysis_response(analysis, employee)
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error retrieving analysis: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
@@ -221,6 +227,8 @@ def get_monthly_analysis(analysis_id: int, db: Session = Depends(get_db)):
         # Prepare structured response
         return monthly_analysis_response(analysis, employee)
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error retrieving monthly analysis: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
@@ -256,6 +264,8 @@ def get_employee_monthly_analyses(employee_id: int, db: Session = Depends(get_db
             } for analysis in analyses
         ]
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error retrieving employee monthly analyses: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
@@ -287,6 +297,8 @@ def get_employee_monthly_analysis_by_period(
         # Return formatted response
         return monthly_analysis_response(analysis, employee)
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error retrieving monthly analysis by period: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
@@ -353,6 +365,8 @@ def get_quarterly_analysis(
         # Prepare structured response
         return quarterly_analysis_response(analysis, employee)
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error retrieving quarterly analysis: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
@@ -384,6 +398,8 @@ def get_employee_quarterly_analysis_by_period(
         # Return formatted response
         return quarterly_analysis_response(analysis, employee)
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error retrieving quarterly analysis by period: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

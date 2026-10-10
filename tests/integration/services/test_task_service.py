@@ -39,6 +39,17 @@ def dispatch():
         yield calls
 
 
+@pytest.fixture(autouse=True)
+def clock():
+    """Pin the service's clock 30 minutes after the seeded tasks were created, so they are in flight."""
+    with mock.patch.object(task_service, "_now", return_value=CLOCK):
+        yield
+
+
+CLOCK = datetime(2025, 1, 1, 9, 30, 0)
+STALE = datetime(2025, 1, 1, 7, 0, 0)  # longer ago than any run may take
+
+
 @pytest.fixture
 def seeded(db_session):
     make_employee(db_session, 1, "Alice", "Engineering", "Dev")
@@ -87,20 +98,31 @@ def test_create_task_for_analysis_reuses_active_task_when_analysis_exists(seeded
         "returned": _task_view(task), "dispatch": dispatch, "rows": _tasks(database)}))
 
 
-@pytest.mark.known_bug("B1")
-def test_create_task_for_analysis_active_task_without_analysis_marked_failed(seeded, database, dispatch, snapshot):
-    """B1: a freshly queued PENDING task is treated as failed because no analysis exists yet."""
+def test_create_task_for_analysis_reuses_in_flight_task(seeded, database, dispatch, snapshot):
+    """A queued task is returned instead of creating and dispatching a duplicate (B1 fixed)."""
     make_task(seeded, 51, report_id=uid(1), status="pending", task_type="REPORT_ANALYSIS")
     seeded.commit()
     task = task_service.create_task_for_analysis(seeded, uid(1), seeded.get(task_service.Employee, 1))
-    assert task.task_id != uid(51)
-    snapshot("B1_create_task_for_analysis", normalize({
+    assert task.task_id == uid(51)
+    assert dispatch == []
+    snapshot("create_task_for_analysis_reuse_in_flight", normalize({
         "returned": _task_view(task), "dispatch": dispatch, "rows": _tasks(database)}))
 
 
-@pytest.mark.known_bug("B1")
-def test_find_active_task_functions_mark_pending_and_running_failed(seeded, database, snapshot):
-    """B1 for all three finders; COMPLETED/FAILED tasks and other scopes are untouched."""
+def test_create_task_for_analysis_replaces_stale_task(seeded, database, dispatch, snapshot):
+    """A task active for longer than any run can take is marked FAILED and a new one is dispatched."""
+    make_task(seeded, 52, report_id=uid(1), status="running", task_type="REPORT_ANALYSIS",
+              created_at=STALE, started_at=STALE)
+    seeded.commit()
+    task = task_service.create_task_for_analysis(seeded, uid(1), seeded.get(task_service.Employee, 1))
+    assert task.task_id != uid(52)
+    assert seeded.get(BackgroundTask, uid(52)).status == "failed"
+    snapshot("create_task_for_analysis_replace_stale", normalize({
+        "returned": _task_view(task), "dispatch": dispatch, "rows": _tasks(database)}))
+
+
+def test_find_active_task_functions(seeded, database, snapshot):
+    """In-flight tasks are returned; stale ones are marked FAILED; COMPLETED tasks and other scopes are untouched."""
     s = seeded
     make_task(s, 60, report_id=uid(1), status="pending", task_type="REPORT_ANALYSIS",
               created_at=datetime(2025, 1, 1, 9, 0, 1))
@@ -115,28 +137,40 @@ def test_find_active_task_functions_mark_pending_and_running_failed(seeded, data
     # month=1 but typed QUARTERLY -> not matched by the monthly finder
     make_task(s, 65, employee_id=1, year=2025, month=1, quarter=2, status="pending",
               task_type="QUARTERLY_ANALYSIS", created_at=datetime(2025, 1, 1, 9, 0, 6))
-    make_monthly(s, 1, 2025, 2)   # analysis exists for month 2 -> task 63 kept
+    # Created long ago, but started recently: still in flight.
+    make_task(s, 66, employee_id=2, year=2025, month=1, status="running", task_type="MONTHLY_ANALYSIS",
+              created_at=STALE, started_at=datetime(2025, 1, 1, 9, 10, 0))
+    make_task(s, 67, employee_id=1, year=2025, month=3, status="running", task_type="MONTHLY_ANALYSIS",
+              created_at=STALE, started_at=STALE)
+    make_task(s, 68, employee_id=1, year=2025, quarter=4, status="pending", task_type="QUARTERLY_ANALYSIS",
+              created_at=STALE)
+    make_monthly(s, 1, 2025, 2)
     s.commit()
 
     results = {
-        "report_1_pending_no_analysis": _task_view(task_service.find_active_task_for_report(s, uid(1))),
+        "report_1_pending": _task_view(task_service.find_active_task_for_report(s, uid(1))),
         "report_2_only_completed": _task_view(task_service.find_active_task_for_report(s, uid(2))),
         "report_unknown": _task_view(task_service.find_active_task_for_report(s, uid(999))),
-        "monthly_2025_1_running_no_analysis": _task_view(
+        "monthly_2025_1_running": _task_view(
             task_service.find_active_task_for_monthly_analysis(s, 1, 2025, 1)),
         "monthly_2025_2_has_analysis": _task_view(
             task_service.find_active_task_for_monthly_analysis(s, 1, 2025, 2)),
-        "quarterly_2025_1_no_analysis": _task_view(
+        "monthly_2025_3_stale": _task_view(
+            task_service.find_active_task_for_monthly_analysis(s, 1, 2025, 3)),
+        "monthly_employee_2_started_recently": _task_view(
+            task_service.find_active_task_for_monthly_analysis(s, 2, 2025, 1)),
+        "quarterly_2025_1_pending": _task_view(
             task_service.find_active_task_for_quarterly_analysis(s, 1, 2025, 1)),
         "quarterly_2025_3_none": _task_view(
             task_service.find_active_task_for_quarterly_analysis(s, 1, 2025, 3)),
+        "quarterly_2025_4_stale": _task_view(
+            task_service.find_active_task_for_quarterly_analysis(s, 1, 2025, 4)),
     }
-    snapshot("B1_find_active_tasks", normalize({"results": results, "rows": _tasks(database)}))
+    snapshot("find_active_tasks", normalize({"results": results, "rows": _tasks(database)}))
 
 
 # ------------------------------------------------------------ monthly / quarterly
 
-@pytest.mark.known_bug("B1")
 def test_create_task_for_monthly_analysis(seeded, database, dispatch, snapshot):
     s = seeded
     new = task_service.create_task_for_monthly_analysis(s, 1, 2025, 3)
@@ -144,13 +178,13 @@ def test_create_task_for_monthly_analysis(seeded, database, dispatch, snapshot):
         s, 2, 2025, 3, existing_analysis={"analysis_id": 42, "other": "ignored"})
     with pytest.raises(ValueError) as exc:
         task_service.create_task_for_monthly_analysis(s, 99, 2025, 3)
-    # A second call while the first is PENDING: B1 marks it failed and creates another.
+    # A second call while the first is PENDING returns it.
     again = task_service.create_task_for_monthly_analysis(s, 1, 2025, 3)
     snapshot("create_task_for_monthly_analysis", normalize({
         "new": _task_view(new),
         "existing": _task_view(existing),
         "unknown_employee_error": str(exc.value),
-        "again_is_new_row": again.task_id != new.task_id,
+        "again_reuses_first": again.task_id == new.task_id,
         "dispatch": dispatch,
         "rows": _tasks(database),
     }))

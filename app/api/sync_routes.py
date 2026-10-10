@@ -4,6 +4,7 @@ Sync API Routes
 Endpoints for triggering and monitoring SQL Server to PostgreSQL synchronization.
 """
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import Optional
 from datetime import datetime, timedelta
@@ -473,11 +474,15 @@ def list_sync_history(
             query = query.filter(SyncHistory.started_at <= end_date)
         
         if is_full_sync is not None:
-            # Filter by sync_options JSONB field
+            # Filter by sync_options JSONB field; a missing flag counts as incremental, as in the response
             query = query.filter(
-                SyncHistory.sync_options['is_full_sync'].astext.cast(db.bind.dialect.BOOLEAN) == is_full_sync
+                func.coalesce(SyncHistory.sync_options['is_full_sync'].as_boolean(), False) == is_full_sync
             )
         
+        sortable = sorted(SyncHistory.__mapper__.columns.keys())
+        if sort_by not in sortable:
+            raise HTTPException(status_code=400, detail=f"Invalid sort_by. Valid fields: {', '.join(sortable)}")
+
         # Count total before pagination
         total = query.count()
         

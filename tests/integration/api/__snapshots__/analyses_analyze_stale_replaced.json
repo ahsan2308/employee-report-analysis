@@ -14,33 +14,33 @@
       "celery_task_id": "celery-seeded",
       "completed_at": "<timestamp>",
       "created_at": "<timestamp>",
-      "employee_id": 1,
-      "error_message": "Task failed to produce monthly analysis",
-      "month": 2,
+      "employee_id": null,
+      "error_message": "Task did not finish; the worker running it was stopped or lost",
+      "month": null,
       "quarter": null,
-      "report_id": null,
+      "report_id": "<uuid:3>",
       "result_data": null,
-      "started_at": null,
+      "started_at": "<timestamp>",
       "status": "failed",
       "task_id": "<uuid:2>",
-      "task_type": "MONTHLY_ANALYSIS",
-      "year": 2025
+      "task_type": "REPORT_ANALYSIS",
+      "year": null
     },
     {
       "celery_task_id": "pending",
       "completed_at": null,
       "created_at": "<timestamp>",
-      "employee_id": 1,
+      "employee_id": null,
       "error_message": null,
-      "month": 2,
+      "month": null,
       "quarter": null,
-      "report_id": null,
+      "report_id": "<uuid:3>",
       "result_data": null,
       "started_at": null,
       "status": "pending",
       "task_id": "<uuid:1>",
-      "task_type": "MONTHLY_ANALYSIS",
-      "year": 2025
+      "task_type": "REPORT_ANALYSIS",
+      "year": null
     }
   ],
   "dispatch": [
@@ -48,7 +48,7 @@
       "args": [
         "<uuid:1>"
       ],
-      "call": "analyze_monthly_reports_task.delay",
+      "call": "analyze_report_task.delay",
       "kwargs": {}
     }
   ],

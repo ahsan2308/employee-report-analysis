@@ -3,47 +3,62 @@ Service for managing background tasks.
 Handles task creation, status tracking, and result retrieval.
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 from uuid import UUID
 
 from sqlalchemy.orm import Session
 
 from app.models.task_models import BackgroundTask, TaskStatus, TaskType
-from app.models.db_models import Employee, Report, EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
+from app.models.db_models import Employee, Report, EmployeeAnalysis
 from app.tasks.analysis_tasks import analyze_report_task
+from app.worker.celery_app import celery_app
 from app.core.logger import logger
 from app.repositories.analyses import get_monthly_analysis_by_params, get_quarterly_analysis_by_params
+
+def _now() -> datetime:
+    return datetime.now()
+
+
+def _stale_after() -> timedelta:
+    """How long a task may stay PENDING/RUNNING before it is presumed dead.
+
+    Twice the Celery hard time limit (at least an hour): a task still active
+    after that was killed or lost, and no worker will ever finish it.
+    """
+    time_limit = celery_app.conf.task_time_limit or 0
+    return timedelta(seconds=max(2 * time_limit, 3600))
+
+
+def _reuse_unless_stale(db: Session, active_task: Optional[BackgroundTask], description: str) -> Optional[BackgroundTask]:
+    """Return the in-flight task so callers reuse it, or mark it FAILED and return None if it is stale."""
+    if active_task is None:
+        return None
+    last_activity = active_task.started_at or active_task.created_at
+    if last_activity is None or _now() - last_activity < _stale_after():
+        return active_task
+    logger.warning(f"Task {active_task.task_id} for {description} has been {active_task.status} since {last_activity}. Marking as failed.")
+    active_task.status = TaskStatus.FAILED.value
+    active_task.error_message = "Task did not finish; the worker running it was stopped or lost"
+    active_task.completed_at = _now()
+    db.commit()
+    return None
+
 
 def find_active_task_for_report(db: Session, report_id: UUID) -> Optional[BackgroundTask]:
     """
     Find any active (PENDING or RUNNING) task for a report.
     Used to prevent duplicate concurrent tasks for the same report.
     
-    Checks if an analysis exists for the report. If an active task exists
-    but no analysis has been created, the task is considered failed.
+    A task that has been active for longer than any run can take is marked
+    FAILED and not returned, so a new one can be created.
     """
     active_task = db.query(BackgroundTask).filter(
         BackgroundTask.report_id == report_id,
         BackgroundTask.status.in_([TaskStatus.PENDING.value, TaskStatus.RUNNING.value])
     ).first()
-    
-    if active_task:
-        # Check if any analysis exists for this report
-        analysis_exists = db.query(EmployeeAnalysis).filter(
-            EmployeeAnalysis.report_id == report_id
-        ).first() is not None
-        
-        if not analysis_exists:
-            # Task has no analysis, mark it as failed
-            logger.warning(f"Found task {active_task.task_id} for report {report_id} with no analysis. Marking as failed.")
-            active_task.status = TaskStatus.FAILED.value
-            active_task.error_message = "Task failed to produce analysis"
-            active_task.completed_at = datetime.now()
-            db.commit()
-            return None  # Return None so a new task will be created
-    
-    return active_task
+
+    return _reuse_unless_stale(db, active_task, f"report {report_id}")
 
 def find_active_task_for_monthly_analysis(db: Session, employee_id: int, year: int, month: int) -> Optional[BackgroundTask]:
     """
@@ -66,25 +81,8 @@ def find_active_task_for_monthly_analysis(db: Session, employee_id: int, year: i
         BackgroundTask.task_type == TaskType.MONTHLY_ANALYSIS.value,
         BackgroundTask.status.in_([TaskStatus.PENDING.value, TaskStatus.RUNNING.value])
     ).first()
-    
-    if active_task:
-        # Check if any monthly analysis exists for these parameters
-        analysis_exists = db.query(MonthlyAnalysis).filter(
-            MonthlyAnalysis.employee_id == employee_id,
-            MonthlyAnalysis.year == year,
-            MonthlyAnalysis.month == month
-        ).first() is not None
-        
-        if not analysis_exists:
-            # If no analysis was created despite having an active task, consider it failed
-            logger.warning(f"Found task {active_task.task_id} for monthly analysis ({employee_id}, {year}-{month}) with no analysis. Marking as failed.")
-            active_task.status = TaskStatus.FAILED.value
-            active_task.error_message = "Task failed to produce monthly analysis"
-            active_task.completed_at = datetime.now()
-            db.commit()
-            return None  # Return None so a new task will be created
-    
-    return active_task
+
+    return _reuse_unless_stale(db, active_task, f"monthly analysis ({employee_id}, {year}-{month})")
 
 def find_active_task_for_quarterly_analysis(db: Session, employee_id: int, year: int, quarter: int) -> Optional[BackgroundTask]:
     """
@@ -107,25 +105,8 @@ def find_active_task_for_quarterly_analysis(db: Session, employee_id: int, year:
         BackgroundTask.task_type == TaskType.QUARTERLY_ANALYSIS.value,
         BackgroundTask.status.in_([TaskStatus.PENDING.value, TaskStatus.RUNNING.value])
     ).first()
-    
-    if active_task:
-        # Check if any quarterly analysis exists for these parameters
-        analysis_exists = db.query(QuarterlyAnalysis).filter(
-            QuarterlyAnalysis.employee_id == employee_id,
-            QuarterlyAnalysis.year == year,
-            QuarterlyAnalysis.quarter == quarter
-        ).first() is not None
-        
-        if not analysis_exists:
-            # If no analysis was created despite having an active task, consider it failed
-            logger.warning(f"Found task {active_task.task_id} for quarterly analysis ({employee_id}, {year}-Q{quarter}) with no analysis. Marking as failed.")
-            active_task.status = TaskStatus.FAILED.value
-            active_task.error_message = "Task failed to produce quarterly analysis"
-            active_task.completed_at = datetime.now()
-            db.commit()
-            return None  # Return None so a new task will be created
-    
-    return active_task
+
+    return _reuse_unless_stale(db, active_task, f"quarterly analysis ({employee_id}, {year}-Q{quarter})")
 
 def create_task_for_analysis(
     db: Session, 
@@ -339,6 +320,10 @@ def create_task_for_quarterly_analysis(
         
     return task
 
+class TaskNotFoundError(ValueError):
+    """No task has the requested ID (a ValueError, as this used to be)."""
+
+
 def get_task_status(db: Session, task_id: UUID) -> Optional[BackgroundTask]:
     """Get a task by ID."""
     return db.query(BackgroundTask).filter(BackgroundTask.task_id == task_id).first()
@@ -355,7 +340,7 @@ def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
     task = get_task_status(db, task_id)
     
     if not task:
-        raise ValueError(f"Task with ID {task_id} not found")
+        raise TaskNotFoundError(f"Task with ID {task_id} not found")
         
     if task.status not in (TaskStatus.COMPLETED.value, TaskStatus.FAILED.value):
         raise ValueError(f"Task is not complete: {task.status}")

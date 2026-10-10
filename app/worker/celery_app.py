@@ -108,7 +108,7 @@ celery_settings = {
     'accept_content': parse_accept_content(),
     'result_serializer': os.getenv('CELERY_RESULT_SERIALIZER') or config.get('result_serializer', 'json', section='celery'),
     'task_track_started': os.getenv('CELERY_TASK_TRACK_STARTED', 'true').lower() == 'true',
-    'task_time_limit': int(os.getenv('CELERY_TASK_TIME_LIMIT') or config.get('task_time_limit', 300, section='celery')),
+    'task_time_limit': int(os.getenv('CELERY_TASK_TIME_LIMIT') or config.get('task_time_limit', 1800, section='celery')),
     'worker_concurrency': int(os.getenv('CELERY_WORKER_CONCURRENCY') or config.get('worker_concurrency', 2, section='celery')),
     
     # task_ignore_result: When True, no results are stored. When False, results are stored in result backend
@@ -120,6 +120,14 @@ celery_settings = {
     # result_expires: Number of seconds after which task results expire (default: 1 day)
     'result_expires': int(os.getenv('CELERY_RESULT_EXPIRES') or config.get('result_expires', 86400, section='celery')),
 }
+
+# The soft limit raises SoftTimeLimitExceeded inside the task, so its error
+# handler can mark the run FAILED before the hard limit kills the process.
+_soft_time_limit = os.getenv('CELERY_TASK_SOFT_TIME_LIMIT') or config.get('task_soft_time_limit', None, section='celery')
+celery_settings['task_soft_time_limit'] = (
+    int(_soft_time_limit) if _soft_time_limit
+    else celery_settings['task_time_limit'] - min(60, celery_settings['task_time_limit'] // 10)
+)
 
 # Windows-specific settings
 if IS_WINDOWS:

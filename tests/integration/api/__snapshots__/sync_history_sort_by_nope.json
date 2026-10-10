@@ -1,6 +1,6 @@
 {
   "body": {
-    "detail": "Error listing history: type object 'SyncHistory' has no attribute 'nope'"
+    "detail": "Invalid sort_by. Valid fields: completed_at, error_count, error_details, error_message, last_sync_timestamp, records_created, records_queried, records_skipped, records_synced, records_updated, started_at, status, sync_id, sync_metadata, sync_options, sync_type"
   },
-  "status": 500
+  "status": 400
 }

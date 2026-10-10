@@ -1,16 +1,9 @@
 {
-  "again_is_new_row": true,
+  "again_reuses_first": true,
   "dispatch": [
     {
       "args": [
         "<uuid:1>"
-      ],
-      "kwargs": {},
-      "task": "analyze_monthly_reports_task"
-    },
-    {
-      "args": [
-        "<uuid:3>"
       ],
       "kwargs": {},
       "task": "analyze_monthly_reports_task"
@@ -39,16 +32,16 @@
   },
   "new": {
     "celery_task_id": "pending",
-    "completed_at": "<timestamp>",
+    "completed_at": null,
     "created_at": "<timestamp>",
     "employee_id": 1,
-    "error_message": "Task failed to produce monthly analysis",
+    "error_message": null,
     "month": 3,
     "quarter": null,
     "report_id": null,
     "result_data": null,
     "started_at": null,
-    "status": "failed",
+    "status": "pending",
     "task_id": "<uuid:1>",
     "task_type": "MONTHLY_ANALYSIS",
     "year": 2025
@@ -56,16 +49,16 @@
   "rows": [
     {
       "celery_task_id": "pending",
-      "completed_at": "<timestamp>",
+      "completed_at": null,
       "created_at": "<timestamp>",
       "employee_id": 1,
-      "error_message": "Task failed to produce monthly analysis",
+      "error_message": null,
       "month": 3,
       "quarter": null,
       "report_id": null,
       "result_data": null,
       "started_at": null,
-      "status": "failed",
+      "status": "pending",
       "task_id": "<uuid:1>",
       "task_type": "MONTHLY_ANALYSIS",
       "year": 2025
@@ -88,22 +81,6 @@
       "started_at": "<timestamp>",
       "status": "completed",
       "task_id": "<uuid:2>",
-      "task_type": "MONTHLY_ANALYSIS",
-      "year": 2025
-    },
-    {
-      "celery_task_id": "pending",
-      "completed_at": null,
-      "created_at": "<timestamp>",
-      "employee_id": 1,
-      "error_message": null,
-      "month": 3,
-      "quarter": null,
-      "report_id": null,
-      "result_data": null,
-      "started_at": null,
-      "status": "pending",
-      "task_id": "<uuid:3>",
       "task_type": "MONTHLY_ANALYSIS",
       "year": 2025
     }

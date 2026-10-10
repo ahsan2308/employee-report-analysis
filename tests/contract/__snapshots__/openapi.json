@@ -4599,7 +4599,7 @@
     },
     "/tasks/{task_id}/result": {
       "get": {
-        "description": "Get the result of a completed task.\n\nThis endpoint will return a 422 error if the task is not yet complete.",
+        "description": "Get the result of a completed task.\n\nThis endpoint returns 404 for an unknown task and 422 if the task is not yet complete.",
         "operationId": "get_task_result_endpoint_tasks__task_id__result_get",
         "parameters": [
           {
