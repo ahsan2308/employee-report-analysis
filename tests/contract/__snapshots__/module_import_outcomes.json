@@ -6,6 +6,7 @@
   "app.api.imports": "ok",
   "app.api.main": "OperationalError: <database connection refused> [prints to stdout at import]",
   "app.api.reports": "ok",
+  "app.api.serializers": "ok",
   "app.api.sync_routes": "ok",
   "app.api.tasks": "ok",
   "app.api.visualizations": "ok",
