@@ -36,7 +36,7 @@ MAX_CONTENT_ITEM_LENGTH_WEEKLY = config.get("max_content_item_length_weekly", 30
 MAX_CONTENT_ITEM_LENGTH_MONTHLY = config.get("max_content_item_length_monthly", 250, section="vector_db.search")
 MAX_CONTENT_ITEM_LENGTH_QUARTERLY = config.get("max_content_item_length_quarterly", 200, section="vector_db.search")
 
-@celery_app.task(bind=True)
+@celery_app.task(bind=True, name="app.tasks.analysis_tasks.analyze_report_task")
 def analyze_report_task(self, task_id: str):
     """
     Celery task to analyze a report asynchronously.
@@ -293,7 +293,7 @@ def analyze_report_task(self, task_id: str):
         # Re-raise the exception for Celery to handle
         raise
 
-@celery_app.task(bind=True)
+@celery_app.task(bind=True, name="app.tasks.analysis_tasks.analyze_monthly_reports_task")
 def analyze_monthly_reports_task(self, task_id: str):
     """
     Celery task to analyze an employee's monthly performance asynchronously.
@@ -657,7 +657,7 @@ def analyze_monthly_reports_task(self, task_id: str):
         # Re-raise the exception for Celery to handle
         raise
 
-@celery_app.task(bind=True)
+@celery_app.task(bind=True, name="app.tasks.analysis_tasks.analyze_quarterly_reports_task")
 def analyze_quarterly_reports_task(self, task_id: str):
     """
     Celery task to analyze an employee's quarterly performance asynchronously.
