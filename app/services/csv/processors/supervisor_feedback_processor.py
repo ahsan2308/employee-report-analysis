@@ -17,8 +17,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import delete, tuple_
 from pydantic import ValidationError
 
-from app.base.base_csv_processor import BaseCSVProcessor
-from app.schemas.csv_import_schema import SupervisorFeedbackCSVRow
+from app.services.csv.processors.base import BaseCSVProcessor
+from app.services.csv.row_models import SupervisorFeedbackCSVRow
 from app.models.db_models import (
     Employee, 
     SupervisorFeedbackForm, 

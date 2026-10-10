@@ -9,8 +9,8 @@ import pandas as pd
 from sqlalchemy.orm import Session
 from pydantic import ValidationError
 
-from app.base.base_csv_processor import BaseCSVProcessor
-from app.schemas.csv_import_schema import JobDescriptionCSVRow
+from app.services.csv.processors.base import BaseCSVProcessor
+from app.services.csv.row_models import JobDescriptionCSVRow
 from app.models.db_models import Employee, EmployeeJobDescription
 from app.services.csv.error_handler import ImportErrorHandler
 from app.core.logger import logger

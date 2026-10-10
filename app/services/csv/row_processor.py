@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 import traceback
 from pydantic import ValidationError
 
-from app.base.base_csv_processor import BaseCSVProcessor
+from app.services.csv.processors.base import BaseCSVProcessor
 from app.services.csv.error_handler import ImportErrorHandler
 from app.services.csv.processors.processor_factory import ProcessorFactory
 from app.core.logger import logger

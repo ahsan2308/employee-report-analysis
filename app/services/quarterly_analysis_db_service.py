@@ -13,7 +13,7 @@ from app.repositories.analyses import get_monthly_analyses_for_quarter, get_week
 from app.repositories.employees import get_employee_info
 
 from app.repositories.job_descriptions import get_employee_job_descriptions_for_period
-from app.services.additional_services import map_reports_to_jds
+from app.services.analysis.jd_mapping import map_reports_to_jds
 
 def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -> Dict[str, Any]:
     """

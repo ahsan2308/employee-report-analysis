@@ -9,7 +9,7 @@ import time
 from app.services.embedding_service import get_embedding, get_embeddings
 
 from app.core.logger import logger
-from app.vector_store import get_vector_store
+from app.integrations.vector_store import get_vector_store
 from app.db.database import get_database
 from app.db.base import schema_name
 from sqlalchemy.sql import text

@@ -6,7 +6,7 @@ import time
 import json
 import re
 
-from app.model_host import get_llm_provider
+from app.integrations.providers import get_llm_provider
 from app.core.logger import logger
 from app.models.structured_models_llm import EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
 from app.prompts.structured_prompts import StructuredPrompts

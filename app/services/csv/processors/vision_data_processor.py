@@ -9,8 +9,8 @@ import json
 from sqlalchemy.orm import Session
 from pydantic import ValidationError
 
-from app.base.base_csv_processor import BaseCSVProcessor
-from app.schemas.csv_import_schema import VisionDataCSVRow
+from app.services.csv.processors.base import BaseCSVProcessor
+from app.services.csv.row_models import VisionDataCSVRow
 from app.models.db_models import Employee
 from app.models.vision_data_models import EmployeeVisionData
 from app.services.csv.error_handler import ImportErrorHandler
@@ -166,7 +166,7 @@ class VisionDataProcessor(BaseCSVProcessor):
             return {}
         
         # Legacy: Parse string format (for backward compatibility)
-        from app.schemas.csv_import_schema import _top_level_split, _json_list_with_fixes
+        from app.services.csv.row_models import _top_level_split, _json_list_with_fixes
         
         parts = _top_level_split(content_data, delimiter=',')
         content_dict = {}

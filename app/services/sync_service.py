@@ -10,7 +10,7 @@ import os
 import pandas as pd
 from datetime import timedelta  # Add to imports at top
 
-from app.database.sqlserver_connector import SQLServerConnector, create_sqlserver_connector
+from app.integrations.sqlserver.connector import SQLServerConnector, create_sqlserver_connector
 from app.services.sync.transformers import EmployeeReportTransformer, VisionDataTransformer, JobDescriptionTransformer, SupervisorFeedbackTransformer
 from app.services.sync.sync_tracker import SyncTracker
 from app.services.csv.row_processor import RowProcessor
