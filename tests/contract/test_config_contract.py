@@ -40,15 +40,27 @@ def test_celery_accept_content_parsing(run_probe, snapshot, request, accept_cont
     snapshot(f"celery_accept_content_{request.node.callspec.id}", result["celery"]["settings"]["accept_content"])
 
 
-@pytest.mark.known_bug("B8")
-def test_bare_key_env_vars_override_yaml_sections(run_probe, snapshot):
-    """ConfigProvider.get('host', section='redis') reads the env var HOST, etc."""
+def test_bare_key_env_vars_do_not_override_yaml_sections(run_probe):
+    """B8 fixed: HOST, PORT, MODEL, ... no longer leak into the redis, vector_db and llm sections."""
     collisions = {
         "HOST": "collides-host", "PORT": "1", "MODEL": "collides-model", "MODE": "server",
         "TYPE": "qdrant", "ENABLED": "false", "COLLECTION_NAME": "other_collection",
         "STORAGE_PATH": "/elsewhere", "EMBEDDING_MODEL": "other-embed",
     }
-    snapshot("config_bare_key_collisions", run_probe("config", collisions))
+    assert run_probe("config", collisions) == run_probe("config", {})
+
+
+def test_section_env_vars_override_yaml_sections(run_probe, snapshot):
+    """get(key, section=...) reads SECTION_KEY; "1"/"0" stay numbers (B14 fixed)."""
+    overrides = {
+        "VECTOR_DB_COLLECTION_NAME": "other_collection",
+        "VECTOR_DB_BATCH_PROCESSING_ENABLED": "false",
+        "VECTOR_DB_BATCH_PROCESSING_RETRY_MAX_ATTEMPTS": "1",
+        "VECTOR_DB_SEARCH_HNSW_EF": "64",
+        "VECTOR_DB_PORT": "0",
+        "LLM_MODEL": "other-model",
+    }
+    snapshot("config_section_env_overrides", run_probe("config", overrides))
 
 
 @pytest.mark.parametrize("db_type", ["mssql", "oracle"])

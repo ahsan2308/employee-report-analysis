@@ -104,7 +104,7 @@
     },
     "llm:model": "llama3.1:8b",
     "no.such.section:missing_key": "fallback",
-    "redis:host": "localhost",
+    "redis:host": "redis",
     "redis:port": 6379,
     "vector_db.batch_processing.retry:max_attempts": 3,
     "vector_db.batch_processing:enabled": true,

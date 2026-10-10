@@ -27,7 +27,8 @@ class QdrantProvider(BaseVectorStore):
         "client": None,
         "host": None,
         "port": None,
-        "path": None
+        "path": None,
+        "users": 0,  # open `with` blocks sharing the client
     }
     
     def __new__(cls, *args, **kwargs):
@@ -158,15 +159,21 @@ class QdrantProvider(BaseVectorStore):
         if not self._conn_state["connected"] or self._conn_state["client"] is None:
             self.connect()
     
-    # Context manager support for automated cleanup
+    # Context manager support for automated cleanup. The client is shared by every
+    # caller, so it is closed only when the last open `with` block exits.
     def __enter__(self):
         """Context manager entry."""
-        self.connect()
+        with self._lock:
+            self.connect()
+            self._conn_state["users"] += 1
         return self
     
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Context manager exit with proper cleanup."""
-        self.disconnect()
+        """Context manager exit: disconnect once no other `with` block is using the client."""
+        with self._lock:
+            self._conn_state["users"] = max(0, self._conn_state["users"] - 1)
+            if self._conn_state["users"] == 0:
+                self.disconnect()
         return False  # Re-raise any exceptions
         
     # Existing methods updated to use connection management

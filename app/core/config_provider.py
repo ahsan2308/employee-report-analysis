@@ -46,6 +46,12 @@ class ConfigProvider:
         1. Environment variable
         2. Config file
         3. Default value
+
+        The environment variable is the section path and key in upper case,
+        joined by underscores: ``get("host", section="redis")`` reads
+        ``REDIS_HOST``, ``get("enabled", section="vector_db.batch_processing")``
+        reads ``VECTOR_DB_BATCH_PROCESSING_ENABLED``. Without a section it is
+        the key alone.
         
         Args:
             key: The configuration key
@@ -56,7 +62,7 @@ class ConfigProvider:
             The configuration value
         """
         # First check for environment variable (convert to upper case with underscores)
-        env_key = key.upper().replace('.', '_')
+        env_key = self.env_var_name(key, section)
         env_value = os.getenv(env_key)
         if env_value is not None:
             return self._convert_value(env_value)
@@ -80,6 +86,12 @@ class ConfigProvider:
         # Finally, return default
         return default
     
+    @staticmethod
+    def env_var_name(key: str, section: Optional[str] = None) -> str:
+        """The environment variable that overrides ``key`` in ``section``."""
+        name = f"{section}.{key}" if section else key
+        return name.upper().replace('.', '_')
+
     def _convert_value(self, value: str) -> Any:
         """
         Convert string values to appropriate types.
@@ -90,10 +102,10 @@ class ConfigProvider:
         Returns:
             Converted value
         """
-        # Handle boolean values
-        if value.lower() in ('true', 'yes', '1'):
+        # Handle boolean values ("1"/"0" stay numbers, so PORT=1 is 1)
+        if value.lower() in ('true', 'yes'):
             return True
-        if value.lower() in ('false', 'no', '0'):
+        if value.lower() in ('false', 'no'):
             return False
         
         # Handle numeric values
