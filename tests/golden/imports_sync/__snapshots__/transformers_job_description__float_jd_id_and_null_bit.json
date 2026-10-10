@@ -1,0 +1,28 @@
+{
+  "key_order": [
+    "Employee_ID",
+    "JD_ID",
+    "Job_Description",
+    "Assigned_Date",
+    "Is_Current",
+    "End_Date"
+  ],
+  "transformed": {
+    "Assigned_Date": "2023-01-01",
+    "Employee_ID": 104,
+    "End_Date": "NULL",
+    "Is_Current": null,
+    "JD_ID": 1004.0,
+    "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+  },
+  "validated": {
+    "ok": {
+      "Assigned_Date": "2023-01-01",
+      "Employee_ID": 104,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1004",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  }
+}

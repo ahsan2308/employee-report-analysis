@@ -1,0 +1,39 @@
+{
+  "commits": 0,
+  "db_added": [],
+  "errors": [
+    {
+      "category": "validation",
+      "error_message": "Field required",
+      "exception": null,
+      "field_name": "Name",
+      "row_data": {
+        " Employee_ID ": "401",
+        " name ": "Kamran",
+        "Designation": "Officer",
+        "Designation.1": "Officer2",
+        "From": "2024-01-01",
+        "Tasks_Completed": "Work",
+        "To": "2024-01-31"
+      },
+      "row_number": 2
+    }
+  ],
+  "metrics": {
+    "employees_created": 0,
+    "employees_updated": 0,
+    "processed_rows": 0,
+    "reports_created": 0,
+    "reports_updated": 0,
+    "successful_rows": 0
+  },
+  "pg_insert_values": [],
+  "result": {
+    "ok": [
+      0,
+      1
+    ]
+  },
+  "rollbacks": 0,
+  "vector_store_calls": []
+}

@@ -1,0 +1,56 @@
+{
+  "key_order": [
+    "Employee_ID",
+    "Name",
+    "Designation",
+    "BPS",
+    "Office_Hierarchy",
+    "From",
+    "To",
+    "Draft",
+    "Tasks_Completed",
+    "Impact",
+    "Challenges",
+    "Support_Required",
+    "Tasks_Planned",
+    "Confidence_Level",
+    "NTR"
+  ],
+  "transformed": {
+    "BPS": "BS-18",
+    "Challenges": null,
+    "Confidence_Level": "4 - Confident",
+    "Designation": "Deputy Director",
+    "Draft": null,
+    "Employee_ID": 101,
+    "From": "2024-03-01",
+    "Impact": "High",
+    "NTR": null,
+    "Name": "Ayesha Khan",
+    "Office_Hierarchy": "Technical>Tech-I",
+    "Support_Required": null,
+    "Tasks_Completed": "Reviewed cases",
+    "Tasks_Planned": "Audit",
+    "To": "2024-03-31"
+  },
+  "validated": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2024-03-01>",
+      "Impact": "High",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-03-31>",
+      "department": "Technical"
+    }
+  }
+}

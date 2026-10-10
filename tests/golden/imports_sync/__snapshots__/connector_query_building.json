@@ -1,0 +1,537 @@
+{
+  "all_records_no_ts": {
+    "connect_timeouts": [
+      30,
+      30
+    ],
+    "result": {
+      "ok": [
+        [
+          {
+            "Employee_ID": 0,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:00>"
+          },
+          {
+            "Employee_ID": 1,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:01>"
+          },
+          {
+            "Employee_ID": 2,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:02>"
+          },
+          {
+            "Employee_ID": 3,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:03>"
+          },
+          {
+            "Employee_ID": 4,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:04>"
+          }
+        ]
+      ]
+    },
+    "sql_log": [
+      {
+        "params": [
+          [
+            "VisionEmployeeData"
+          ]
+        ],
+        "sql": "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? ORDER BY ORDINAL_POSITION"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      },
+      {
+        "params": [],
+        "sql": "SELECT * FROM VisionEmployeeData"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "all_records_order_by": {
+    "connect_timeouts": [
+      30,
+      30
+    ],
+    "result": {
+      "ok": []
+    },
+    "sql_log": [
+      {
+        "params": [
+          [
+            "EmployeeJobDescriptions"
+          ]
+        ],
+        "sql": "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? ORDER BY ORDINAL_POSITION"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      },
+      {
+        "params": [],
+        "sql": "SELECT * FROM EmployeeJobDescriptions ORDER BY Employee_ID"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "all_records_schema_ts": {
+    "connect_timeouts": [
+      30,
+      30
+    ],
+    "result": {
+      "ok": [
+        [
+          {
+            "Employee_ID": 0,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:00>"
+          },
+          {
+            "Employee_ID": 1,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:01>"
+          },
+          {
+            "Employee_ID": 2,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:02>"
+          }
+        ],
+        [
+          {
+            "Employee_ID": 3,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:03>"
+          },
+          {
+            "Employee_ID": 4,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:04>"
+          }
+        ]
+      ]
+    },
+    "sql_log": [
+      {
+        "params": [
+          [
+            "VisionEmployeeData"
+          ]
+        ],
+        "sql": "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? ORDER BY ORDINAL_POSITION"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      },
+      {
+        "params": [],
+        "sql": "SELECT * FROM VisionEmployeeData ORDER BY ModifiedDate"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "execute_created_at_column": {
+    "connect_timeouts": [],
+    "result": {
+      "message": "Query contains prohibited operation: CREATE",
+      "raised": "ValueError"
+    },
+    "sql_log": []
+  },
+  "execute_non_select": {
+    "connect_timeouts": [],
+    "result": {
+      "message": "Only SELECT queries are allowed through execute_query()",
+      "raised": "ValueError"
+    },
+    "sql_log": []
+  },
+  "execute_select": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": [
+        {
+          "Name": "A"
+        },
+        {
+          "Name": "B"
+        }
+      ]
+    },
+    "sql_log": [
+      {
+        "params": [],
+        "sql": "SELECT Name FROM EmployeeReports"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "execute_select_no_fetch": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": []
+    },
+    "sql_log": [
+      {
+        "params": [],
+        "sql": "select 1"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "execute_semicolon_batch": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": [
+        {
+          "x": 1
+        }
+      ]
+    },
+    "sql_log": [
+      {
+        "params": [],
+        "sql": "SELECT 1; SELECT 2"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "execute_where_with_params": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": [
+        {
+          "a": 1
+        }
+      ]
+    },
+    "sql_log": [
+      {
+        "params": [
+          [
+            1
+          ]
+        ],
+        "sql": "SELECT * FROM T WHERE a = ?"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "execute_where_without_params": {
+    "connect_timeouts": [],
+    "result": {
+      "message": "Queries with WHERE clauses must use parameterized queries",
+      "raised": "ValueError"
+    },
+    "sql_log": []
+  },
+  "get_table_schema": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": {
+        "Employee_ID": "int",
+        "LastModifiedDate": "datetime2",
+        "ModifiedDate": "datetime2",
+        "Name": "nvarchar"
+      }
+    },
+    "sql_log": [
+      {
+        "params": [
+          [
+            "EmployeeReports"
+          ]
+        ],
+        "sql": "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? ORDER BY ORDINAL_POSITION"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "get_table_schema_unauthorized": {
+    "connect_timeouts": [],
+    "result": {
+      "message": "Table 'sys.tables' is not authorized. Allowed tables: EmployeeJobDescriptions, EmployeeReports, SupervisorFeedback, VisionEmployeeData",
+      "raised": "ValueError"
+    },
+    "sql_log": []
+  },
+  "max_timestamp": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": "<datetime 2024-05-01T12:30:00.500000>"
+    },
+    "sql_log": [
+      {
+        "params": [],
+        "sql": "SELECT MAX(LastModifiedDate) FROM EmployeeReports"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "max_timestamp_empty": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": null
+    },
+    "sql_log": [
+      {
+        "params": [],
+        "sql": "SELECT MAX(ModifiedDate) FROM EmployeeReports"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "record_count_exec_substring": {
+    "connect_timeouts": [],
+    "result": {
+      "message": "WHERE clause contains prohibited pattern: EXEC",
+      "raised": "ValueError"
+    },
+    "sql_log": []
+  },
+  "record_count_is_null_no_params": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": 3
+    },
+    "sql_log": [
+      {
+        "params": [],
+        "sql": "SELECT COUNT(*) FROM EmployeeReports WHERE NTR IS NULL"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "record_count_no_params_eq": {
+    "connect_timeouts": [],
+    "result": {
+      "message": "WHERE clause must use parameterized queries (? placeholders)",
+      "raised": "ValueError"
+    },
+    "sql_log": []
+  },
+  "record_count_param": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": 1
+    },
+    "sql_log": [
+      {
+        "params": [
+          [
+            5
+          ]
+        ],
+        "sql": "SELECT COUNT(*) FROM EmployeeReports WHERE Employee_ID = ?"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "record_count_plain": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": 42
+    },
+    "sql_log": [
+      {
+        "params": [],
+        "sql": "SELECT COUNT(*) FROM EmployeeReports"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "record_count_update_substring": {
+    "connect_timeouts": [],
+    "result": {
+      "message": "WHERE clause contains prohibited pattern: UPDATE",
+      "raised": "ValueError"
+    },
+    "sql_log": []
+  },
+  "records_since_bad_column": {
+    "connect_timeouts": [],
+    "result": {
+      "message": "Column 'CreatedAt' is not authorized. Allowed columns: LastModifiedDate, ModifiedDate, UpdatedAt",
+      "raised": "ValueError"
+    },
+    "sql_log": []
+  },
+  "records_since_bad_order_by": {
+    "connect_timeouts": [],
+    "result": {
+      "message": "Invalid column name: must contain only alphanumeric characters and underscores",
+      "raised": "ValueError"
+    },
+    "sql_log": []
+  },
+  "records_since_batch_too_big": {
+    "connect_timeouts": [],
+    "result": {
+      "message": "Batch size must be between 1 and 10000",
+      "raised": "ValueError"
+    },
+    "sql_log": []
+  },
+  "records_since_batch_zero": {
+    "connect_timeouts": [],
+    "result": {
+      "message": "Batch size must be between 1 and 10000",
+      "raised": "ValueError"
+    },
+    "sql_log": []
+  },
+  "records_since_custom_order": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": [
+        [
+          {
+            "Employee_ID": 0,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:00>"
+          },
+          {
+            "Employee_ID": 1,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:01>"
+          },
+          {
+            "Employee_ID": 2,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:02>"
+          },
+          {
+            "Employee_ID": 3,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:03>"
+          },
+          {
+            "Employee_ID": 4,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:04>"
+          }
+        ]
+      ]
+    },
+    "sql_log": [
+      {
+        "params": [
+          [
+            "<datetime 2024-05-01T12:30:00.500000>"
+          ]
+        ],
+        "sql": "SELECT * FROM SupervisorFeedback WHERE LastModifiedDate >= ? ORDER BY RO_Form_ID, LastModifiedDate"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  },
+  "records_since_default_order": {
+    "connect_timeouts": [
+      30
+    ],
+    "result": {
+      "ok": [
+        [
+          {
+            "Employee_ID": 0,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:00>"
+          },
+          {
+            "Employee_ID": 1,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:01>"
+          }
+        ],
+        [
+          {
+            "Employee_ID": 2,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:02>"
+          },
+          {
+            "Employee_ID": 3,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:03>"
+          }
+        ],
+        [
+          {
+            "Employee_ID": 4,
+            "LastModifiedDate": "<datetime 2024-05-02T00:00:04>"
+          }
+        ]
+      ]
+    },
+    "sql_log": [
+      {
+        "params": [
+          [
+            "<datetime 2024-05-01T12:30:00.500000>"
+          ]
+        ],
+        "sql": "SELECT * FROM EmployeeReports WHERE LastModifiedDate >= ? ORDER BY LastModifiedDate ASC"
+      },
+      {
+        "closed": true,
+        "timeout_was": 300
+      }
+    ]
+  }
+}

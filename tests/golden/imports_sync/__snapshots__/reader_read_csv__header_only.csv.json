@@ -1,0 +1,54 @@
+{
+  "missing_required": {
+    "employee": [
+      "Impact",
+      "Challenges",
+      "Support_Required",
+      "Tasks_Planned",
+      "Confidence_Level"
+    ],
+    "job_description": [
+      "JD_ID",
+      "Job_Description",
+      "Assigned_Date"
+    ],
+    "supervisor": [
+      "L_RO_Form_Metric_ID",
+      "RO_Form_ID",
+      "Section_ID",
+      "Section",
+      "Metric_ID",
+      "Metric_Title",
+      "Instructions",
+      "Metric_Type",
+      "Possible_Values",
+      "Value"
+    ],
+    "vision": [
+      "From_Date",
+      "To_Date",
+      "Main_Entity",
+      "Sub_Entities",
+      "Sub_Entities_Content"
+    ]
+  },
+  "rows": {
+    "ok": []
+  },
+  "state": {
+    "delimiter_attr": null,
+    "detected_delimiter": ",",
+    "detected_encoding": "ascii",
+    "headers": [
+      "Employee_ID",
+      "Name",
+      "Designation",
+      "From",
+      "To",
+      "Tasks_Completed"
+    ]
+  },
+  "total_rows": {
+    "ok": 0
+  }
+}

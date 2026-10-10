@@ -1,0 +1,68 @@
+{
+  "key_order": [
+    "Employee_ID",
+    "Name",
+    "Designation",
+    "BPS",
+    "Office_Hierarchy",
+    "From",
+    "To",
+    "Draft",
+    "Tasks_Completed",
+    "Impact",
+    "Challenges",
+    "Support_Required",
+    "Tasks_Planned",
+    "Confidence_Level",
+    "NTR"
+  ],
+  "transformed": {
+    "BPS": null,
+    "Challenges": null,
+    "Confidence_Level": null,
+    "Designation": null,
+    "Draft": null,
+    "Employee_ID": null,
+    "From": null,
+    "Impact": null,
+    "NTR": null,
+    "Name": null,
+    "Office_Hierarchy": null,
+    "Support_Required": null,
+    "Tasks_Completed": null,
+    "Tasks_Planned": null,
+    "To": null
+  },
+  "validated": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "Designation"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  }
+}

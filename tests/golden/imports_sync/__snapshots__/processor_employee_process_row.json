@@ -1,0 +1,338 @@
+{
+  "bps_none_in_position": {
+    "commits": 1,
+    "db_added": [
+      {
+        "columns": {
+          "id": 101,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (None)",
+          "wing": "Technical>SOC"
+        },
+        "type": "Employee"
+      },
+      {
+        "columns": {
+          "employee_id": 101,
+          "report_date": "<date 2024-03-31>",
+          "report_text": "Tasks Completed: Reviewed cases\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31"
+        },
+        "type": "Report"
+      }
+    ],
+    "errors": [],
+    "metrics": {
+      "employees_created": 1,
+      "employees_updated": 0,
+      "processed_rows": 0,
+      "reports_created": 1,
+      "reports_updated": 0,
+      "successful_rows": 1
+    },
+    "result": {
+      "ok": true
+    },
+    "vector_store_calls": [
+      {
+        "employee_id": 101,
+        "report_date": "2024-03-31",
+        "report_id": "None",
+        "report_text": "Tasks Completed: Reviewed cases\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31",
+        "session": "<MagicMock <MagicMock spec='Session' id='0x?'>>"
+      }
+    ]
+  },
+  "create_new_employee_and_report": {
+    "commits": 1,
+    "db_added": [
+      {
+        "columns": {
+          "id": 101,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (BS-18)",
+          "wing": "Technical>SOC"
+        },
+        "type": "Employee"
+      },
+      {
+        "columns": {
+          "employee_id": 101,
+          "report_date": "<date 2024-03-31>",
+          "report_text": "Tasks Completed: Reviewed cases\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31"
+        },
+        "type": "Report"
+      }
+    ],
+    "errors": [],
+    "metrics": {
+      "employees_created": 1,
+      "employees_updated": 0,
+      "processed_rows": 0,
+      "reports_created": 1,
+      "reports_updated": 0,
+      "successful_rows": 1
+    },
+    "result": {
+      "ok": true
+    },
+    "vector_store_calls": [
+      {
+        "employee_id": 101,
+        "report_date": "2024-03-31",
+        "report_id": "None",
+        "report_text": "Tasks Completed: Reviewed cases\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31",
+        "session": "<MagicMock <MagicMock spec='Session' id='0x?'>>"
+      }
+    ]
+  },
+  "missing_employee_id": {
+    "commits": 0,
+    "db_added": [],
+    "errors": [
+      {
+        "category": "validation",
+        "error_message": "Missing Employee_ID field",
+        "exception": null,
+        "field_name": null,
+        "row_data": {
+          "BPS": "BS-18",
+          "Challenges": null,
+          "Confidence_Level": "4",
+          "Designation": "Deputy Director",
+          "Draft": null,
+          "Employee_ID": null,
+          "From": "2024-03-01",
+          "Impact": null,
+          "NTR": null,
+          "Name": "Ayesha Khan",
+          "Office_Hierarchy": "Technical>SOC",
+          "Support_Required": null,
+          "Tasks_Completed": "Reviewed cases",
+          "Tasks_Planned": null,
+          "To": "2024-03-31"
+        },
+        "row_number": 5
+      }
+    ],
+    "metrics": {
+      "employees_created": 0,
+      "employees_updated": 0,
+      "processed_rows": 0,
+      "reports_created": 0,
+      "reports_updated": 0,
+      "successful_rows": 0
+    },
+    "result": {
+      "ok": false
+    },
+    "vector_store_calls": []
+  },
+  "ntr_row_no_report": {
+    "commits": 1,
+    "db_added": [
+      {
+        "columns": {
+          "id": 101,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (BS-18)",
+          "wing": "Technical>SOC"
+        },
+        "type": "Employee"
+      }
+    ],
+    "errors": [],
+    "metrics": {
+      "employees_created": 1,
+      "employees_updated": 0,
+      "processed_rows": 0,
+      "reports_created": 0,
+      "reports_updated": 0,
+      "successful_rows": 1
+    },
+    "result": {
+      "ok": true
+    },
+    "vector_store_calls": []
+  },
+  "type_error_dates": {
+    "commits": 0,
+    "db_added": [],
+    "errors": [
+      {
+        "category": "processing",
+        "error_message": "Unexpected error: '>' not supported between instances of 'str' and 'datetime.date'",
+        "exception": "TypeError",
+        "field_name": null,
+        "row_data": {
+          "BPS": "BS-18",
+          "Challenges": null,
+          "Confidence_Level": "4",
+          "Designation": "Deputy Director",
+          "Draft": null,
+          "Employee_ID": "101",
+          "From": "2024/01/01",
+          "Impact": null,
+          "NTR": null,
+          "Name": "Ayesha Khan",
+          "Office_Hierarchy": "Technical>SOC",
+          "Support_Required": null,
+          "Tasks_Completed": "Reviewed cases",
+          "Tasks_Planned": null,
+          "To": "2024-03-31"
+        },
+        "row_number": 5
+      }
+    ],
+    "metrics": {
+      "employees_created": 0,
+      "employees_updated": 0,
+      "processed_rows": 0,
+      "reports_created": 0,
+      "reports_updated": 0,
+      "successful_rows": 0
+    },
+    "result": {
+      "ok": false
+    },
+    "vector_store_calls": []
+  },
+  "unbound_local_dates": {
+    "commits": 0,
+    "db_added": [],
+    "errors": [
+      {
+        "category": "processing",
+        "error_message": "Unexpected error: cannot access local variable 're' where it is not associated with a value",
+        "exception": "UnboundLocalError",
+        "field_name": null,
+        "row_data": {
+          "BPS": "BS-18",
+          "Challenges": null,
+          "Confidence_Level": "4",
+          "Designation": "Deputy Director",
+          "Draft": null,
+          "Employee_ID": "101",
+          "From": "March 2024",
+          "Impact": null,
+          "NTR": null,
+          "Name": "Ayesha Khan",
+          "Office_Hierarchy": "Technical>SOC",
+          "Support_Required": null,
+          "Tasks_Completed": "Reviewed cases",
+          "Tasks_Planned": null,
+          "To": "2024-03-31"
+        },
+        "row_number": 5
+      }
+    ],
+    "metrics": {
+      "employees_created": 0,
+      "employees_updated": 0,
+      "processed_rows": 0,
+      "reports_created": 0,
+      "reports_updated": 0,
+      "successful_rows": 0
+    },
+    "result": {
+      "ok": false
+    },
+    "vector_store_calls": []
+  },
+  "update_existing_employee": {
+    "commits": 1,
+    "db_added": [],
+    "errors": [],
+    "existing_after": {
+      "position": "Deputy Director (BS-18)",
+      "report_id": 77,
+      "report_text": "Tasks Completed: Reviewed cases\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31",
+      "wing": "Technical>SOC"
+    },
+    "metrics": {
+      "employees_created": 0,
+      "employees_updated": 1,
+      "processed_rows": 0,
+      "reports_created": 0,
+      "reports_updated": 1,
+      "successful_rows": 1
+    },
+    "result": {
+      "ok": true
+    },
+    "vector_store_calls": [
+      {
+        "employee_id": 101,
+        "report_date": "2024-03-31",
+        "report_id": "77",
+        "report_text": "Tasks Completed: Reviewed cases\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31",
+        "session": "<MagicMock <MagicMock spec='Session' id='0x?'>>"
+      }
+    ]
+  },
+  "validation_error": {
+    "commits": 0,
+    "db_added": [],
+    "errors": [
+      {
+        "category": "validation",
+        "error_message": "Value error, Name contains invalid characters. Allowed: letters, numbers, spaces, commas, periods, slashes, hyphens, apostrophes, parentheses, and square brackets",
+        "exception": null,
+        "field_name": "Name",
+        "row_data": {
+          "BPS": "X",
+          "Challenges": null,
+          "Confidence_Level": "4",
+          "Designation": "Deputy Director",
+          "Draft": null,
+          "Employee_ID": "101",
+          "From": "2024-03-01",
+          "Impact": null,
+          "NTR": null,
+          "Name": "<bad>",
+          "Office_Hierarchy": "Technical>SOC",
+          "Support_Required": null,
+          "Tasks_Completed": "Reviewed cases",
+          "Tasks_Planned": null,
+          "To": "2024-03-31"
+        },
+        "row_number": 5
+      },
+      {
+        "category": "validation",
+        "error_message": "Value error, BPS should be in format 'BS-XX' or 'TS-XX' where XX is a number (e.g., BS-21)",
+        "exception": null,
+        "field_name": "BPS",
+        "row_data": {
+          "BPS": "X",
+          "Challenges": null,
+          "Confidence_Level": "4",
+          "Designation": "Deputy Director",
+          "Draft": null,
+          "Employee_ID": "101",
+          "From": "2024-03-01",
+          "Impact": null,
+          "NTR": null,
+          "Name": "<bad>",
+          "Office_Hierarchy": "Technical>SOC",
+          "Support_Required": null,
+          "Tasks_Completed": "Reviewed cases",
+          "Tasks_Planned": null,
+          "To": "2024-03-31"
+        },
+        "row_number": 5
+      }
+    ],
+    "metrics": {
+      "employees_created": 0,
+      "employees_updated": 0,
+      "processed_rows": 0,
+      "reports_created": 0,
+      "reports_updated": 0,
+      "successful_rows": 0
+    },
+    "result": {
+      "ok": false
+    },
+    "vector_store_calls": []
+  }
+}

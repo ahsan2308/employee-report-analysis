@@ -1,0 +1,141 @@
+{
+  "defaults_reversed": {
+    "_get_employee_reports_table_name": {
+      "ok": "EmployeeReports"
+    },
+    "_get_job_descriptions_table_name": {
+      "ok": "EmployeeJobDescriptions"
+    },
+    "_get_supervisor_feedback_table_name": {
+      "ok": "SupervisorFeedback"
+    },
+    "_get_vision_data_table_name": {
+      "ok": "VisionEmployeeData"
+    }
+  },
+  "defaults_sorted": {
+    "_get_employee_reports_table_name": {
+      "ok": "EmployeeReports"
+    },
+    "_get_job_descriptions_table_name": {
+      "ok": "EmployeeJobDescriptions"
+    },
+    "_get_supervisor_feedback_table_name": {
+      "ok": "SupervisorFeedback"
+    },
+    "_get_vision_data_table_name": {
+      "ok": "VisionEmployeeData"
+    }
+  },
+  "empty": {
+    "_get_employee_reports_table_name": {
+      "message": "No employee reports table found in allowed tables: []",
+      "raised": "ValueError"
+    },
+    "_get_job_descriptions_table_name": {
+      "message": "No job descriptions table found in allowed tables: []",
+      "raised": "ValueError"
+    },
+    "_get_supervisor_feedback_table_name": {
+      "message": "No supervisor feedback table found in allowed tables: []",
+      "raised": "ValueError"
+    },
+    "_get_vision_data_table_name": {
+      "message": "No vision data table found in allowed tables: []",
+      "raised": "ValueError"
+    }
+  },
+  "feedback_report_first": {
+    "_get_employee_reports_table_name": {
+      "ok": "SupervisorFeedbackReport"
+    },
+    "_get_job_descriptions_table_name": {
+      "ok": "JD_Table"
+    },
+    "_get_supervisor_feedback_table_name": {
+      "ok": "SupervisorFeedbackReport"
+    },
+    "_get_vision_data_table_name": {
+      "ok": "VisionEmployeeData"
+    }
+  },
+  "jd_substring_traps": {
+    "_get_employee_reports_table_name": {
+      "ok": "AdjustedReports"
+    },
+    "_get_job_descriptions_table_name": {
+      "message": "No job descriptions table found in allowed tables: ['AdjustedReports', 'Vision', 'Feedback']",
+      "raised": "ValueError"
+    },
+    "_get_supervisor_feedback_table_name": {
+      "ok": "Feedback"
+    },
+    "_get_vision_data_table_name": {
+      "ok": "Vision"
+    }
+  },
+  "lowercase_schema_qualified": {
+    "_get_employee_reports_table_name": {
+      "ok": "dbo.employeereports"
+    },
+    "_get_job_descriptions_table_name": {
+      "ok": "dbo.jobdescriptions"
+    },
+    "_get_supervisor_feedback_table_name": {
+      "ok": "dbo.supervisorfeedback"
+    },
+    "_get_vision_data_table_name": {
+      "ok": "dbo.visionemployeedata"
+    }
+  },
+  "reporting_word": {
+    "_get_employee_reports_table_name": {
+      "ok": "Reporting_Staging"
+    },
+    "_get_job_descriptions_table_name": {
+      "message": "No job descriptions table found in allowed tables: ['Reporting_Staging', 'EmployeeReports']",
+      "raised": "ValueError"
+    },
+    "_get_supervisor_feedback_table_name": {
+      "message": "No supervisor feedback table found in allowed tables: ['Reporting_Staging', 'EmployeeReports']",
+      "raised": "ValueError"
+    },
+    "_get_vision_data_table_name": {
+      "message": "No vision data table found in allowed tables: ['Reporting_Staging', 'EmployeeReports']",
+      "raised": "ValueError"
+    }
+  },
+  "unrelated": {
+    "_get_employee_reports_table_name": {
+      "message": "No employee reports table found in allowed tables: ['Users', 'Audit']",
+      "raised": "ValueError"
+    },
+    "_get_job_descriptions_table_name": {
+      "message": "No job descriptions table found in allowed tables: ['Users', 'Audit']",
+      "raised": "ValueError"
+    },
+    "_get_supervisor_feedback_table_name": {
+      "message": "No supervisor feedback table found in allowed tables: ['Users', 'Audit']",
+      "raised": "ValueError"
+    },
+    "_get_vision_data_table_name": {
+      "message": "No vision data table found in allowed tables: ['Users', 'Audit']",
+      "raised": "ValueError"
+    }
+  },
+  "vision_job_combo_first": {
+    "_get_employee_reports_table_name": {
+      "ok": "EmployeeReports"
+    },
+    "_get_job_descriptions_table_name": {
+      "ok": "VisionJobData"
+    },
+    "_get_supervisor_feedback_table_name": {
+      "message": "No supervisor feedback table found in allowed tables: ['VisionJobData', 'EmployeeReports']",
+      "raised": "ValueError"
+    },
+    "_get_vision_data_table_name": {
+      "ok": "VisionJobData"
+    }
+  }
+}

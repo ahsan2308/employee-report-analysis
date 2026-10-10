@@ -3,7 +3,7 @@
   "app.api.analyses": "ok",
   "app.api.employees": "ok",
   "app.api.imports": "ok",
-  "app.api.main": "OperationalError: (psycopg2.OperationalError) connection to server at \"localhost\" (127.0.0.1), port 5432 failed: Connection refused [prints to stdout at import]",
+  "app.api.main": "OperationalError: <database connection refused> [prints to stdout at import]",
   "app.api.reports": "ok",
   "app.api.sync_routes": "ok",
   "app.api.tasks": "ok",

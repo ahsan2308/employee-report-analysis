@@ -1,0 +1,268 @@
+{
+  "employee_essential_only": {
+    "can_process": {
+      "EmployeeReportProcessor": true,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "employee_report",
+        "processor": "EmployeeReportProcessor"
+      }
+    }
+  },
+  "employee_full": {
+    "can_process": {
+      "EmployeeReportProcessor": true,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "employee_report",
+        "processor": "EmployeeReportProcessor"
+      }
+    }
+  },
+  "employee_lowercase": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers: employee_id, name, designation, from, to, tasks_completed, impact, challenges, support_required, tasks_planned, confidence_level, bps, office_hierarchy, draft, ntr",
+      "raised": "ValueError"
+    }
+  },
+  "employee_missing_tasks": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers: Name, Designation, From, To",
+      "raised": "ValueError"
+    }
+  },
+  "employee_padded": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers:  Employee_ID ,  Name ,  Designation ,  From ,  To ,  Tasks_Completed ,  Impact ,  Challenges ,  Support_Required ,  Tasks_Planned ,  Confidence_Level ,  BPS ,  Office_Hierarchy ,  Draft ,  NTR ",
+      "raised": "ValueError"
+    }
+  },
+  "empty": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers: ",
+      "raised": "ValueError"
+    }
+  },
+  "everything": {
+    "can_process": {
+      "EmployeeReportProcessor": true,
+      "JobDescriptionProcessor": true,
+      "SupervisorFeedbackProcessor": true,
+      "VisionDataProcessor": true
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "employee_report",
+        "processor": "EmployeeReportProcessor"
+      }
+    }
+  },
+  "job_description_full": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": true,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "job_descriptions",
+        "processor": "JobDescriptionProcessor"
+      }
+    }
+  },
+  "job_description_plus_supervisor": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": true,
+      "SupervisorFeedbackProcessor": true,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "job_descriptions",
+        "processor": "JobDescriptionProcessor"
+      }
+    }
+  },
+  "job_description_required_headers_only": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers: Employee_ID, JD_ID, Job_Description, Assigned_Date",
+      "raised": "ValueError"
+    }
+  },
+  "supervisor": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": true,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "supervisor_feedback",
+        "processor": "SupervisorFeedbackProcessor"
+      }
+    }
+  },
+  "supervisor_lowercase": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": true,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "supervisor_feedback",
+        "processor": "SupervisorFeedbackProcessor"
+      }
+    }
+  },
+  "supervisor_plus_tasks_and_designation": {
+    "can_process": {
+      "EmployeeReportProcessor": true,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": true,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "employee_report",
+        "processor": "EmployeeReportProcessor"
+      }
+    }
+  },
+  "supervisor_uppercase": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": true,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "supervisor_feedback",
+        "processor": "SupervisorFeedbackProcessor"
+      }
+    }
+  },
+  "supervisor_with_optional": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": true,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "supervisor_feedback",
+        "processor": "SupervisorFeedbackProcessor"
+      }
+    }
+  },
+  "unknown": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers: emp_id, full_name, period",
+      "raised": "ValueError"
+    }
+  },
+  "vision": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": true
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "vision_data",
+        "processor": "VisionDataProcessor"
+      }
+    }
+  },
+  "vision_lowercase": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": false
+    },
+    "factory": {
+      "message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers: employee_id, from_date, to_date, main_entity, sub_entities, sub_entities_content",
+      "raised": "ValueError"
+    }
+  },
+  "vision_plus_extra": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": false,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": true
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "vision_data",
+        "processor": "VisionDataProcessor"
+      }
+    }
+  },
+  "vision_plus_job_description": {
+    "can_process": {
+      "EmployeeReportProcessor": false,
+      "JobDescriptionProcessor": true,
+      "SupervisorFeedbackProcessor": false,
+      "VisionDataProcessor": true
+    },
+    "factory": {
+      "ok": {
+        "csv_type": "vision_data",
+        "processor": "VisionDataProcessor"
+      }
+    }
+  }
+}

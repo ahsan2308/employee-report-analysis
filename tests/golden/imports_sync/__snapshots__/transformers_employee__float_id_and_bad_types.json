@@ -1,0 +1,40 @@
+{
+  "key_order": [
+    "Employee_ID",
+    "Name",
+    "Designation",
+    "BPS",
+    "Office_Hierarchy",
+    "From",
+    "To",
+    "Draft",
+    "Tasks_Completed",
+    "Impact",
+    "Challenges",
+    "Support_Required",
+    "Tasks_Planned",
+    "Confidence_Level",
+    "NTR"
+  ],
+  "transformed": {
+    "BPS": null,
+    "Challenges": null,
+    "Confidence_Level": 4.0,
+    "Designation": "Officer",
+    "Draft": null,
+    "Employee_ID": 105.0,
+    "From": "20240101",
+    "Impact": null,
+    "NTR": null,
+    "Name": "Zara",
+    "Office_Hierarchy": null,
+    "Support_Required": null,
+    "Tasks_Completed": "x",
+    "Tasks_Planned": null,
+    "To": "09:00:00"
+  },
+  "validated": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  }
+}

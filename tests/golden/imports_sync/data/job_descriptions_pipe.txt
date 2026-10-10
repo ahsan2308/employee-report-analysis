@@ -1,0 +1,7 @@
+Employee_ID|JD_ID|Job_Description|Assigned_Date|Is_Current|End_Date
+101|1001|Leads the analysis team, prepares monthly performance summaries and coordinates with wings.|2024-01-15|TRUE|
+102|1002.0|Leads the analysis team, prepares monthly performance summaries and coordinates with wings.|01/15/2024|no|2024-06-30
+103|JD-7|Leads the analysis team, prepares monthly performance summaries and coordinates with wings.|15/01/2024|yes|N/A
+104|1004|Short text|2024-01-15|1|null
+105|1005|Leads the analysis team, prepares monthly performance summaries and coordinates with wings.|1965-01-01|maybe|-
+106|1006|Leads the analysis team, prepares monthly performance summaries and coordinates with wings.||0|31-12-2023

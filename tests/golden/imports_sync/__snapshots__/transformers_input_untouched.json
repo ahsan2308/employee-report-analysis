@@ -1,0 +1,7 @@
+{
+  "non_dict_input": {
+    "message": "'NoneType' object has no attribute 'get'",
+    "raised": "AttributeError"
+  },
+  "unchanged": true
+}

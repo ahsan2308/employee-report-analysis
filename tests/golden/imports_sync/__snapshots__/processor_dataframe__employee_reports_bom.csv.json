@@ -1,0 +1,206 @@
+{
+  "commits": 1,
+  "db_added": [
+    {
+      "columns": {
+        "id": 101,
+        "name": "Ayesha Khan",
+        "position": "Deputy Director (BS-18)",
+        "wing": "Technical>Tech-I>SOC"
+      },
+      "type": "Employee"
+    },
+    {
+      "columns": {
+        "id": 102,
+        "name": "Bilal Ahmed, Jr.",
+        "position": "Assistant Director (BS-17)",
+        "wing": "Admin>HR"
+      },
+      "type": "Employee"
+    },
+    {
+      "columns": {
+        "id": 103,
+        "name": "Sara Malik",
+        "position": "Analyst (TS-16)",
+        "wing": "Ops"
+      },
+      "type": "Employee"
+    },
+    {
+      "columns": {
+        "id": 104,
+        "name": "Usman Tariq",
+        "position": "Director (BS-20)",
+        "wing": "Technical>Tech-II"
+      },
+      "type": "Employee"
+    }
+  ],
+  "errors": [
+    {
+      "category": "validation",
+      "error_message": "Input should be a valid string",
+      "exception": null,
+      "field_name": "Name",
+      "row_data": {
+        "BPS": null,
+        "Challenges": null,
+        "Confidence_Level": null,
+        "Designation": null,
+        "Draft": null,
+        "Employee_ID": null,
+        "Extra_Notes": null,
+        "From": null,
+        "Impact": null,
+        "NTR": null,
+        "Name": null,
+        "Office_Hierarchy": null,
+        "Support_Required": null,
+        "Tasks_Completed": null,
+        "Tasks_Planned": null,
+        "To": null
+      },
+      "row_number": 5
+    },
+    {
+      "category": "validation",
+      "error_message": "Input should be a valid string",
+      "exception": null,
+      "field_name": "Designation",
+      "row_data": {
+        "BPS": null,
+        "Challenges": null,
+        "Confidence_Level": null,
+        "Designation": null,
+        "Draft": null,
+        "Employee_ID": null,
+        "Extra_Notes": null,
+        "From": null,
+        "Impact": null,
+        "NTR": null,
+        "Name": null,
+        "Office_Hierarchy": null,
+        "Support_Required": null,
+        "Tasks_Completed": null,
+        "Tasks_Planned": null,
+        "To": null
+      },
+      "row_number": 5
+    },
+    {
+      "category": "validation",
+      "error_message": "Input should be a valid string",
+      "exception": null,
+      "field_name": "From",
+      "row_data": {
+        "BPS": null,
+        "Challenges": null,
+        "Confidence_Level": null,
+        "Designation": null,
+        "Draft": null,
+        "Employee_ID": null,
+        "Extra_Notes": null,
+        "From": null,
+        "Impact": null,
+        "NTR": null,
+        "Name": null,
+        "Office_Hierarchy": null,
+        "Support_Required": null,
+        "Tasks_Completed": null,
+        "Tasks_Planned": null,
+        "To": null
+      },
+      "row_number": 5
+    },
+    {
+      "category": "validation",
+      "error_message": "Input should be a valid string",
+      "exception": null,
+      "field_name": "To",
+      "row_data": {
+        "BPS": null,
+        "Challenges": null,
+        "Confidence_Level": null,
+        "Designation": null,
+        "Draft": null,
+        "Employee_ID": null,
+        "Extra_Notes": null,
+        "From": null,
+        "Impact": null,
+        "NTR": null,
+        "Name": null,
+        "Office_Hierarchy": null,
+        "Support_Required": null,
+        "Tasks_Completed": null,
+        "Tasks_Planned": null,
+        "To": null
+      },
+      "row_number": 5
+    },
+    {
+      "category": "validation",
+      "error_message": "Value error, Invalid confidence level format. Expected number between 1-5, got '9'",
+      "exception": null,
+      "field_name": "Confidence_Level",
+      "row_data": {
+        "BPS": "BS-16",
+        "Challenges": null,
+        "Confidence_Level": "9",
+        "Designation": "Officer",
+        "Draft": null,
+        "Employee_ID": "105",
+        "Extra_Notes": null,
+        "From": "2024/01/05",
+        "Impact": "Low",
+        "NTR": null,
+        "Name": "Zara Iqbal",
+        "Office_Hierarchy": null,
+        "Support_Required": null,
+        "Tasks_Completed": "Filed returns",
+        "Tasks_Planned": null,
+        "To": "2024-31-01"
+      },
+      "row_number": 7
+    }
+  ],
+  "metrics": {
+    "employees_created": 4,
+    "employees_updated": 0,
+    "processed_rows": 0,
+    "reports_created": 3,
+    "reports_updated": 0,
+    "successful_rows": 4
+  },
+  "pg_insert_values": [
+    {
+      "table": "reports",
+      "values": [
+        {
+          "employee_id": 101,
+          "report_date": "<date 2024-03-31>",
+          "report_text": "Tasks Completed: Reviewed 12 cases, closed 9\n\nImpact: Faster turnaround\n\nChallenges: None\n\nSupport Required: N/A\n\nTasks Planned: Audit Q2\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31"
+        },
+        {
+          "employee_id": 102,
+          "report_date": "<date 2024-03-31>",
+          "report_text": "Tasks Completed: Line one\r\nLine two\n\nImpact: High\n\nChallenges: -\n\nSupport Required: null\n\nTasks Planned: Training\n\nConfidence Level: 3\n\nReport Period: 2024-03-01 to 2024-03-31"
+        },
+        {
+          "employee_id": 103,
+          "report_date": "<date 2024-02-28>",
+          "report_text": "Tasks Completed: Built dashboard\n\nImpact: Medium\n\nChallenges: Data \"quality\" issues\n\nSupport Required: N/A\n\nTasks Planned: Iterate\n\nConfidence Level: 5\n\nReport Period: 2024-02-13 to 2024-02-28"
+        }
+      ]
+    }
+  ],
+  "result": {
+    "ok": [
+      4,
+      6
+    ]
+  },
+  "rollbacks": 0,
+  "vector_store_calls": []
+}

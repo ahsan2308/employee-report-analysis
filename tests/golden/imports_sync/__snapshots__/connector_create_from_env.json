@@ -1,0 +1,148 @@
+{
+  "all_defaults": {
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=abc12345;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
+  },
+  "all_defaults_identity": {
+    "database": "EmployeeTestDB",
+    "password_is_default": true,
+    "server": "localhost\\SQLEXPRESS",
+    "username": "test_sync_user"
+  },
+  "encryption_false": {
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=abc12345;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": false
+    }
+  },
+  "encryption_yes": {
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=abc12345;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": false
+    }
+  },
+  "encryption_zero": {
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=abc12345;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": false
+    }
+  },
+  "full": {
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=sql.prod;DATABASE=Prod;UID=reader;PWD=pw;PORT=1444;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": 1444,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
+  },
+  "host_with_sp_": {
+    "message": "Invalid server: contains prohibited pattern 'sp_'",
+    "raised": "ValueError"
+  },
+  "port_empty": {
+    "ok": {
+      "allowed_tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "allowed_timestamp_columns": [
+        "LastModifiedDate",
+        "ModifiedDate",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost\\SQLEXPRESS;DATABASE=EmployeeTestDB;UID=test_sync_user;PWD=abc12345;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
+  },
+  "port_text": {
+    "message": "invalid literal for int() with base 10: 'abc'",
+    "raised": "ValueError"
+  }
+}

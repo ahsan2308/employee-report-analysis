@@ -1,0 +1,137 @@
+{
+  "missing_required": {
+    "employee": [
+      "Tasks_Completed",
+      "Impact",
+      "Challenges",
+      "Support_Required",
+      "Tasks_Planned",
+      "Confidence_Level"
+    ],
+    "job_description": [
+      "JD_ID",
+      "Job_Description",
+      "Assigned_Date"
+    ],
+    "supervisor": [],
+    "vision": [
+      "From_Date",
+      "To_Date",
+      "Main_Entity",
+      "Sub_Entities",
+      "Sub_Entities_Content"
+    ]
+  },
+  "rows": {
+    "ok": [
+      {
+        "BPS": "BS-19",
+        "Designation": "Director",
+        "Employee_ID": "1012",
+        "Executive_Office": "PPHQ",
+        "From": "2024-11-01",
+        "Instructions": "Delivers accurate work",
+        "L_RO_Form_Metric_ID": "74",
+        "Metric_ID": "1",
+        "Metric_Title": "Quality",
+        "Metric_Type": "R",
+        "Name": "Nadeem Arif",
+        "Office_Hierarchy": "PPHQ>CI",
+        "Possible_Values": "Poor,Fair,Good,Excellent",
+        "RO_Form_ID": "15",
+        "Section": "Performance",
+        "Section_ID": "1",
+        "To": "2024-11-30",
+        "Value": "Good"
+      },
+      {
+        "BPS": "BS-19",
+        "Designation": "Director",
+        "Employee_ID": "1012",
+        "Executive_Office": "PPHQ",
+        "From": "2024-11-01",
+        "Instructions": "Free text",
+        "L_RO_Form_Metric_ID": "75",
+        "Metric_ID": "2",
+        "Metric_Title": "Comments",
+        "Metric_Type": "T",
+        "Name": "Nadeem Arif",
+        "Office_Hierarchy": "PPHQ>CI",
+        "Possible_Values": "N/A",
+        "RO_Form_ID": "15",
+        "Section": "Performance",
+        "Section_ID": "1",
+        "To": "2024-11-30",
+        "Value": "Steady performer"
+      },
+      {
+        "BPS": "BS-19",
+        "Designation": "Director",
+        "Employee_ID": "1012",
+        "Executive_Office": "PPHQ",
+        "From": "2024-11-01",
+        "Instructions": null,
+        "L_RO_Form_Metric_ID": "76",
+        "Metric_ID": "3",
+        "Metric_Title": "Teamwork",
+        "Metric_Type": "R",
+        "Name": "Nadeem Arif",
+        "Office_Hierarchy": "PPHQ>CI",
+        "Possible_Values": "Poor,Fair,Good",
+        "RO_Form_ID": "15",
+        "Section": "Behaviour",
+        "Section_ID": "2",
+        "To": "2024-11-30",
+        "Value": "great"
+      },
+      {
+        "BPS": null,
+        "Designation": null,
+        "Employee_ID": "1013",
+        "Executive_Office": null,
+        "From": "11/01/2024",
+        "Instructions": null,
+        "L_RO_Form_Metric_ID": "77",
+        "Metric_ID": "1",
+        "Metric_Title": "Quality",
+        "Metric_Type": "r",
+        "Name": "Rabia Noor",
+        "Office_Hierarchy": null,
+        "Possible_Values": null,
+        "RO_Form_ID": "16",
+        "Section": "Performance",
+        "Section_ID": "0",
+        "To": "11/01/2024",
+        "Value": null
+      }
+    ]
+  },
+  "state": {
+    "delimiter_attr": null,
+    "detected_delimiter": ",",
+    "detected_encoding": "ascii",
+    "headers": [
+      "L_RO_Form_Metric_ID",
+      "RO_Form_ID",
+      "Employee_ID",
+      "Name",
+      "Designation",
+      "BPS",
+      "Office_Hierarchy",
+      "Executive_Office",
+      "From",
+      "To",
+      "Section_ID",
+      "Section",
+      "Metric_ID",
+      "Metric_Title",
+      "Instructions",
+      "Metric_Type",
+      "Possible_Values",
+      "Value"
+    ]
+  },
+  "total_rows": {
+    "ok": 4
+  }
+}

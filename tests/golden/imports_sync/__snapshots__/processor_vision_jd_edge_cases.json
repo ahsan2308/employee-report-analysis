@@ -1,0 +1,138 @@
+{
+  "jd_mixed": {
+    "errors": [
+      {
+        "category": "validation",
+        "error_message": "Value error, JD_ID must be numeric. Received non-numeric string: '1002.0'",
+        "exception": null,
+        "field_name": "JD_ID",
+        "row_data": {
+          "Assigned_Date": "2023-01-01",
+          "Employee_ID": "102",
+          "End_Date": "31-12-2023",
+          "Is_Current": "0",
+          "JD_ID": "1002.0",
+          "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+        },
+        "row_number": 3
+      },
+      {
+        "category": "validation",
+        "error_message": "Employee ID 555 does not exist in the database. Please ensure the employee is created before importing their job description.",
+        "exception": null,
+        "field_name": "Employee_ID",
+        "row_data": {
+          "Assigned_Date": "2023-01-01",
+          "Employee_ID": 555,
+          "End_Date": null,
+          "Is_Current": true,
+          "JD_ID": "1003",
+          "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+        },
+        "row_number": 4
+      }
+    ],
+    "metrics": {
+      "jd_records_created": 1,
+      "jd_records_updated": 0,
+      "processed_rows": 0,
+      "successful_rows": 1
+    },
+    "pg_insert_values": [
+      {
+        "table": "employee_job_descriptions",
+        "values": [
+          {
+            "assigned_date": "2024-01-15",
+            "employee_id": 101,
+            "end_date": null,
+            "is_current": true,
+            "jd_id": "1001",
+            "job_description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+          }
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        1,
+        3
+      ]
+    }
+  },
+  "vision_parse_sub_entities_content": {
+    "blank": {},
+    "dict_passthrough": {
+      "A": [
+        1
+      ]
+    },
+    "legacy_string": {
+      "Cases": [
+        {
+          "a": 1
+        }
+      ],
+      "Tasks": [
+        {
+          "b": 2
+        }
+      ]
+    },
+    "none": {}
+  },
+  "vision_unknown_employee": {
+    "errors": [
+      {
+        "category": "validation",
+        "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
+        "exception": null,
+        "field_name": "Employee_ID",
+        "row_data": {
+          "Employee_ID": 999,
+          "From_Date": "<date 2024-04-01>",
+          "Main_Entity": "Persons",
+          "Sub_Entities": "{\"Persons\": 1}",
+          "Sub_Entities_Content": {},
+          "To_Date": "<date 2024-04-30>"
+        },
+        "row_number": 7
+      }
+    ],
+    "metrics": {
+      "processed_rows": 0,
+      "successful_rows": 1,
+      "vision_records_created": 1,
+      "vision_records_updated": 0
+    },
+    "pg_insert_values": [
+      {
+        "table": "employee_vision_data",
+        "values": [
+          {
+            "employee_id": 101,
+            "from_date": "<date 2024-04-01>",
+            "main_entity": "Persons",
+            "sub_entities": {
+              "Persons": 1
+            },
+            "sub_entities_content": {
+              "Persons": [
+                {
+                  "n": 1
+                }
+              ]
+            },
+            "to_date": "<date 2024-04-30>"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        1,
+        2
+      ]
+    }
+  }
+}

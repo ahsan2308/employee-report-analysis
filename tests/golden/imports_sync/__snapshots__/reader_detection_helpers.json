@@ -1,0 +1,75 @@
+{
+  "__fileobj__": {
+    "delimiter_binary_stream": ";",
+    "delimiter_blank_lines_only": ",",
+    "delimiter_empty_stream": ",",
+    "delimiter_sniffer_fail_manual": ",",
+    "delimiter_space_separated": ",",
+    "delimiter_text_stream": "|",
+    "encoding_ctor_wins": "utf-16",
+    "encoding_missing_path": "utf-8-sig",
+    "encoding_positional_fileobj": "utf-8-sig",
+    "encoding_via_file_obj_kw": "ISO-8859-1",
+    "position_restored": 5
+  },
+  "employee_reports_bom.csv": {
+    "delimiter": ",",
+    "delimiter_with_explicit_utf8": ",",
+    "encoding": "UTF-8-SIG",
+    "encoding_cached_second_call": "UTF-8-SIG"
+  },
+  "employee_reports_cp1252.csv": {
+    "delimiter": ",",
+    "delimiter_with_explicit_utf8": ",",
+    "encoding": "ISO-8859-1",
+    "encoding_cached_second_call": "ISO-8859-1"
+  },
+  "employee_reports_semicolon.csv": {
+    "delimiter": ";",
+    "delimiter_with_explicit_utf8": ";",
+    "encoding": "ascii",
+    "encoding_cached_second_call": "ascii"
+  },
+  "header_only.csv": {
+    "delimiter": ",",
+    "delimiter_with_explicit_utf8": ",",
+    "encoding": "ascii",
+    "encoding_cached_second_call": "ascii"
+  },
+  "job_descriptions_pipe.txt": {
+    "delimiter": "|",
+    "delimiter_with_explicit_utf8": "|",
+    "encoding": "ascii",
+    "encoding_cached_second_call": "ascii"
+  },
+  "messy_headers.csv": {
+    "delimiter": ",",
+    "delimiter_with_explicit_utf8": ",",
+    "encoding": "ascii",
+    "encoding_cached_second_call": "ascii"
+  },
+  "missing_columns.csv": {
+    "delimiter": ",",
+    "delimiter_with_explicit_utf8": ",",
+    "encoding": "ascii",
+    "encoding_cached_second_call": "ascii"
+  },
+  "single_column.csv": {
+    "delimiter": ",",
+    "delimiter_with_explicit_utf8": ",",
+    "encoding": "ascii",
+    "encoding_cached_second_call": "ascii"
+  },
+  "supervisor_feedback.csv": {
+    "delimiter": ",",
+    "delimiter_with_explicit_utf8": ",",
+    "encoding": "ascii",
+    "encoding_cached_second_call": "ascii"
+  },
+  "vision_data.tsv": {
+    "delimiter": "\t",
+    "delimiter_with_explicit_utf8": "\t",
+    "encoding": "ascii",
+    "encoding_cached_second_call": "ascii"
+  }
+}

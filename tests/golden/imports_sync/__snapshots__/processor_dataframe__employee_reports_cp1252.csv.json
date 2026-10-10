@@ -1,0 +1,53 @@
+{
+  "commits": 0,
+  "db_added": [],
+  "errors": [
+    {
+      "category": "validation",
+      "error_message": "Value error, Name contains invalid characters. Allowed: letters, numbers, spaces, commas, periods, slashes, hyphens, apostrophes, parentheses, and square brackets",
+      "exception": null,
+      "field_name": "Name",
+      "row_data": {
+        "Designation": "Analyst",
+        "Employee_ID": "301",
+        "From": "2024-02-01",
+        "Name": "José Muñoz",
+        "Tasks_Completed": "Reviewed café accounts",
+        "To": "2024-02-29"
+      },
+      "row_number": 2
+    },
+    {
+      "category": "validation",
+      "error_message": "Value error, Name contains invalid characters. Allowed: letters, numbers, spaces, commas, periods, slashes, hyphens, apostrophes, parentheses, and square brackets",
+      "exception": null,
+      "field_name": "Name",
+      "row_data": {
+        "Designation": "Officer",
+        "Employee_ID": "302",
+        "From": "2024-02-01",
+        "Name": "Zoë Brontë",
+        "Tasks_Completed": "Résumé screening",
+        "To": "2024-02-29"
+      },
+      "row_number": 3
+    }
+  ],
+  "metrics": {
+    "employees_created": 0,
+    "employees_updated": 0,
+    "processed_rows": 0,
+    "reports_created": 0,
+    "reports_updated": 0,
+    "successful_rows": 0
+  },
+  "pg_insert_values": [],
+  "result": {
+    "ok": [
+      0,
+      2
+    ]
+  },
+  "rollbacks": 0,
+  "vector_store_calls": []
+}

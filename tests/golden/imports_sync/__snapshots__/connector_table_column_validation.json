@@ -1,0 +1,110 @@
+{
+  "after_add_remove": {
+    "ALLOWED_TABLES_is_live_set": true,
+    "ALLOWED_TIMESTAMP_COLUMNS": [
+      "LastModifiedDate",
+      "ModifiedDate",
+      "UpdatedAt"
+    ],
+    "class_default_untouched": [
+      "EmployeeJobDescriptions",
+      "EmployeeReports",
+      "SupervisorFeedback",
+      "VisionEmployeeData"
+    ],
+    "get_allowed_tables": [
+      "EmployeeJobDescriptions",
+      "EmployeeReports",
+      "Extra",
+      "SupervisorFeedback"
+    ],
+    "get_allowed_tables_is_copy": true
+  },
+  "columns": {
+    "bracketed": {
+      "message": "Invalid column name: must contain only alphanumeric characters and underscores",
+      "raised": "ValueError"
+    },
+    "dash_comment": {
+      "message": "Invalid column name: contains prohibited pattern '--'",
+      "raised": "ValueError"
+    },
+    "empty": {
+      "message": "Invalid column name: must contain only alphanumeric characters and underscores",
+      "raised": "ValueError"
+    },
+    "empty_whitelist_set": {
+      "ok": null
+    },
+    "lowercase_drop": {
+      "ok": null
+    },
+    "mixedcase_update": {
+      "ok": null
+    },
+    "multi_column": {
+      "ok": null
+    },
+    "multi_with_direction": {
+      "message": "Invalid column name: must contain only alphanumeric characters and underscores",
+      "raised": "ValueError"
+    },
+    "not_whitelisted": {
+      "message": "Column 'CreatedAt' is not authorized. Allowed columns: LastModifiedDate, ModifiedDate, UpdatedAt",
+      "raised": "ValueError"
+    },
+    "parentheses": {
+      "message": "Invalid column name: contains prohibited pattern '('",
+      "raised": "ValueError"
+    },
+    "plain": {
+      "ok": null
+    },
+    "plain_whitelisted": {
+      "ok": null
+    },
+    "semicolon": {
+      "message": "Invalid column name: contains prohibited pattern ';'",
+      "raised": "ValueError"
+    },
+    "space_in_name": {
+      "message": "Invalid column name: must contain only alphanumeric characters and underscores",
+      "raised": "ValueError"
+    },
+    "trailing_comma": {
+      "message": "Invalid column name: must contain only alphanumeric characters and underscores",
+      "raised": "ValueError"
+    },
+    "unicode_letters": {
+      "ok": null
+    },
+    "uppercase_update": {
+      "message": "Invalid column name: contains prohibited pattern 'UPDATE'",
+      "raised": "ValueError"
+    }
+  },
+  "tables": {
+    "": {
+      "message": "Table '' is not authorized. Allowed tables: EmployeeJobDescriptions, EmployeeReports, SupervisorFeedback, VisionEmployeeData",
+      "raised": "ValueError"
+    },
+    "EmployeeReports": {
+      "ok": null
+    },
+    "EmployeeReports;DROP": {
+      "message": "Table 'EmployeeReports;DROP' is not authorized. Allowed tables: EmployeeJobDescriptions, EmployeeReports, SupervisorFeedback, VisionEmployeeData",
+      "raised": "ValueError"
+    },
+    "Users": {
+      "message": "Table 'Users' is not authorized. Allowed tables: EmployeeJobDescriptions, EmployeeReports, SupervisorFeedback, VisionEmployeeData",
+      "raised": "ValueError"
+    },
+    "VisionEmployeeData": {
+      "ok": null
+    },
+    "employeereports": {
+      "message": "Table 'employeereports' is not authorized. Allowed tables: EmployeeJobDescriptions, EmployeeReports, SupervisorFeedback, VisionEmployeeData",
+      "raised": "ValueError"
+    }
+  }
+}

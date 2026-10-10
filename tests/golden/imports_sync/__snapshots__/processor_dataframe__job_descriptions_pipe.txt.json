@@ -1,0 +1,140 @@
+{
+  "commits": 1,
+  "db_added": [],
+  "errors": [
+    {
+      "category": "validation",
+      "error_message": "Value error, JD_ID must be numeric. Received non-numeric string: '1002.0'",
+      "exception": null,
+      "field_name": "JD_ID",
+      "row_data": {
+        "Assigned_Date": "01/15/2024",
+        "Employee_ID": "102",
+        "End_Date": "2024-06-30",
+        "Is_Current": "no",
+        "JD_ID": "1002.0",
+        "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+      },
+      "row_number": 3
+    },
+    {
+      "category": "validation",
+      "error_message": "Value error, JD_ID must be numeric. Received non-numeric string: 'JD-7'",
+      "exception": null,
+      "field_name": "JD_ID",
+      "row_data": {
+        "Assigned_Date": "15/01/2024",
+        "Employee_ID": "103",
+        "End_Date": "N/A",
+        "Is_Current": "yes",
+        "JD_ID": "JD-7",
+        "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+      },
+      "row_number": 4
+    },
+    {
+      "category": "validation",
+      "error_message": "String should have at least 50 characters",
+      "exception": null,
+      "field_name": "Job_Description",
+      "row_data": {
+        "Assigned_Date": "2024-01-15",
+        "Employee_ID": "104",
+        "End_Date": "null",
+        "Is_Current": "1",
+        "JD_ID": "1004",
+        "Job_Description": "Short text"
+      },
+      "row_number": 5
+    },
+    {
+      "category": "validation",
+      "error_message": "Value error, Assigned_Date appears unreasonably old (1965-01-01). Dates before 1970-01-01 are not accepted.",
+      "exception": null,
+      "field_name": "Assigned_Date",
+      "row_data": {
+        "Assigned_Date": "1965-01-01",
+        "Employee_ID": "105",
+        "End_Date": "-",
+        "Is_Current": "maybe",
+        "JD_ID": "1005",
+        "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+      },
+      "row_number": 6
+    },
+    {
+      "category": "validation",
+      "error_message": "Input should be a valid string",
+      "exception": null,
+      "field_name": "Assigned_Date.constrained-str",
+      "row_data": {
+        "Assigned_Date": null,
+        "Employee_ID": "106",
+        "End_Date": "31-12-2023",
+        "Is_Current": "0",
+        "JD_ID": "1006",
+        "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+      },
+      "row_number": 7
+    },
+    {
+      "category": "validation",
+      "error_message": "Input should be a valid date",
+      "exception": null,
+      "field_name": "Assigned_Date.date",
+      "row_data": {
+        "Assigned_Date": null,
+        "Employee_ID": "106",
+        "End_Date": "31-12-2023",
+        "Is_Current": "0",
+        "JD_ID": "1006",
+        "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+      },
+      "row_number": 7
+    },
+    {
+      "category": "validation",
+      "error_message": "Input should be a valid datetime",
+      "exception": null,
+      "field_name": "Assigned_Date.datetime",
+      "row_data": {
+        "Assigned_Date": null,
+        "Employee_ID": "106",
+        "End_Date": "31-12-2023",
+        "Is_Current": "0",
+        "JD_ID": "1006",
+        "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+      },
+      "row_number": 7
+    }
+  ],
+  "metrics": {
+    "jd_records_created": 1,
+    "jd_records_updated": 0,
+    "processed_rows": 0,
+    "successful_rows": 1
+  },
+  "pg_insert_values": [
+    {
+      "table": "employee_job_descriptions",
+      "values": [
+        {
+          "assigned_date": "2024-01-15",
+          "employee_id": 101,
+          "end_date": null,
+          "is_current": true,
+          "jd_id": "1001",
+          "job_description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+        }
+      ]
+    }
+  ],
+  "result": {
+    "ok": [
+      1,
+      6
+    ]
+  },
+  "rollbacks": 0,
+  "vector_store_calls": []
+}

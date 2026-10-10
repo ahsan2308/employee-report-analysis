@@ -1,0 +1,103 @@
+{
+  "query_error_non_pyodbc": {
+    "connect_timeouts": [
+      7
+    ],
+    "result": {
+      "message": "driver crashed",
+      "raised": "RuntimeError"
+    },
+    "sql_log": [
+      {
+        "params": [
+          [
+            "EmployeeReports"
+          ]
+        ],
+        "sql": "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? ORDER BY ORDINAL_POSITION"
+      },
+      {
+        "closed": true,
+        "timeout_was": 99
+      }
+    ]
+  },
+  "query_error_wrapped": {
+    "connect_timeouts": [
+      7
+    ],
+    "result": {
+      "message": "Failed to get schema for table 'EmployeeReports': ('42S02', 'Invalid object')",
+      "raised": "SQLServerQueryError"
+    },
+    "sql_log": [
+      {
+        "params": [
+          [
+            "EmployeeReports"
+          ]
+        ],
+        "sql": "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? ORDER BY ORDINAL_POSITION"
+      },
+      {
+        "closed": true,
+        "timeout_was": 99
+      }
+    ]
+  },
+  "schema_connect_fails": {
+    "connect_timeouts": [
+      7
+    ],
+    "result": {
+      "message": "Failed to connect to SQL Server: ('IM002', 'no driver')",
+      "raised": "SQLServerConnectionError"
+    },
+    "sql_log": []
+  },
+  "test_connection_connect_fails": {
+    "connect_timeouts": [
+      7
+    ],
+    "result": {
+      "ok": false
+    },
+    "sql_log": []
+  },
+  "test_connection_ok": {
+    "connect_timeouts": [
+      7
+    ],
+    "result": {
+      "ok": true
+    },
+    "sql_log": [
+      {
+        "params": [],
+        "sql": "SELECT 1"
+      },
+      {
+        "closed": true,
+        "timeout_was": 99
+      }
+    ]
+  },
+  "test_connection_wrong_value": {
+    "connect_timeouts": [
+      7
+    ],
+    "result": {
+      "ok": false
+    },
+    "sql_log": [
+      {
+        "params": [],
+        "sql": "SELECT 1"
+      },
+      {
+        "closed": true,
+        "timeout_was": 99
+      }
+    ]
+  }
+}

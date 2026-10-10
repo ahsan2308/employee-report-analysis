@@ -1,0 +1,121 @@
+{
+  "missing_required": {
+    "employee": [],
+    "job_description": [
+      "JD_ID",
+      "Job_Description",
+      "Assigned_Date"
+    ],
+    "supervisor": [
+      "L_RO_Form_Metric_ID",
+      "RO_Form_ID",
+      "Section_ID",
+      "Section",
+      "Metric_ID",
+      "Metric_Title",
+      "Instructions",
+      "Metric_Type",
+      "Possible_Values",
+      "Value"
+    ],
+    "vision": [
+      "From_Date",
+      "To_Date",
+      "Main_Entity",
+      "Sub_Entities",
+      "Sub_Entities_Content"
+    ]
+  },
+  "rows": {
+    "ok": [
+      {
+        "BPS": "BS-16",
+        "Challenges": "Weather",
+        "Confidence_Level": "4",
+        "Designation": "Inspector",
+        "Employee_ID": "201",
+        "From": "2024-05-01",
+        "Impact": "Seized goods",
+        "NTR": null,
+        "Name": "Hamza Rauf",
+        "Office_Hierarchy": "Field>North",
+        "Support_Required": "Vehicles",
+        "Tasks_Completed": "Conducted 4 raids",
+        "Tasks_Planned": "More raids",
+        "To": "2024-05-31"
+      },
+      {
+        "BPS": "BS-11",
+        "Challenges": null,
+        "Confidence_Level": "3 - Moderate",
+        "Designation": "Clerk",
+        "Employee_ID": "202",
+        "From": "  2024-05-01 ",
+        "Impact": null,
+        "NTR": null,
+        "Name": "Nida Saleem",
+        "Office_Hierarchy": "Admin",
+        "Support_Required": null,
+        "Tasks_Completed": "  Filed records  ",
+        "Tasks_Planned": null,
+        "To": "2024-05-31"
+      },
+      {
+        "BPS": "bs-17",
+        "Challenges": null,
+        "Confidence_Level": "1",
+        "Designation": "Superintendent",
+        "Employee_ID": "203",
+        "From": "05/01/2024",
+        "Impact": null,
+        "NTR": null,
+        "Name": "Omar Farooq",
+        "Office_Hierarchy": "Field>South>Port",
+        "Support_Required": null,
+        "Tasks_Completed": "Patrols",
+        "Tasks_Planned": null,
+        "To": "04/01/2024"
+      },
+      {
+        "BPS": "BS-11",
+        "Challenges": null,
+        "Confidence_Level": "2",
+        "Designation": "Clerk",
+        "Employee_ID": "204",
+        "From": "2024-05-01",
+        "Impact": null,
+        "NTR": null,
+        "Name": "  ",
+        "Office_Hierarchy": "Admin",
+        "Support_Required": null,
+        "Tasks_Completed": "Typing",
+        "Tasks_Planned": null,
+        "To": "2024-05-31"
+      }
+    ]
+  },
+  "state": {
+    "delimiter_attr": null,
+    "detected_delimiter": ";",
+    "detected_encoding": "ascii",
+    "headers": [
+      "Employee_ID",
+      "Name",
+      "Designation",
+      "BPS",
+      "Office_Hierarchy",
+      "From",
+      "To",
+      "Tasks_Completed",
+      "Impact",
+      "Challenges",
+      "Support_Required",
+      "Tasks_Planned",
+      "Confidence_Level",
+      "NTR"
+    ]
+  },
+  "total_rows": {
+    "ok": 4
+  }
+}

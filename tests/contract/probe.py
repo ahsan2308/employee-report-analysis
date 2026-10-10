@@ -100,7 +100,10 @@ def probe_imports() -> dict:
                 importlib.import_module(name)
             outcomes[name] = "ok"
         except BaseException as exc:  # noqa: BLE001 - recording the outcome is the point
-            outcomes[name] = f"{type(exc).__name__}: {str(exc).splitlines()[0] if str(exc) else ''}"
+            message = str(exc).splitlines()[0] if str(exc) else ""
+            if "connection to server" in message:
+                message = "<database connection refused>"  # wording depends on host/IPv4/IPv6
+            outcomes[name] = f"{type(exc).__name__}: {message}"
             repo_root = os.path.dirname(os.path.dirname(os.path.abspath(app.__file__)))
             outcomes[name] = outcomes[name].replace(repo_root, "<repo>")
         if captured.getvalue():

@@ -1,0 +1,125 @@
+{
+  "csv_type_mapping": {
+    "": "unknown",
+    "EmployeeReportProcessor": "employee_report",
+    "JobDescriptionProcessor": "job_descriptions",
+    "RowProcessor": "unknown",
+    "SupervisorFeedbackProcessor": "supervisor_feedback",
+    "VisionDataProcessor": "vision_data"
+  },
+  "explicit_empty_string": {
+    "ok": {
+      "csv_type": "vision_data",
+      "processor": "VisionDataProcessor"
+    }
+  },
+  "explicit_matching": {
+    "ok": {
+      "csv_type": "supervisor_feedback",
+      "processor": "SupervisorFeedbackProcessor"
+    }
+  },
+  "explicit_overrides_headers": {
+    "ok": {
+      "csv_type": "vision_data",
+      "processor": "VisionDataProcessor"
+    }
+  },
+  "explicit_unknown_falls_back": {
+    "ok": {
+      "csv_type": "vision_data",
+      "processor": "VisionDataProcessor"
+    }
+  },
+  "explicit_unknown_unmatched_headers": {
+    "message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers: x",
+    "raised": "ValueError"
+  },
+  "explicit_wrong_case": {
+    "ok": {
+      "csv_type": "vision_data",
+      "processor": "VisionDataProcessor"
+    }
+  },
+  "initial_metrics": {
+    "EmployeeReportProcessor": {
+      "employees_created": 0,
+      "employees_updated": 0,
+      "processed_rows": 0,
+      "reports_created": 0,
+      "reports_updated": 0,
+      "successful_rows": 0
+    },
+    "JobDescriptionProcessor": {
+      "jd_records_created": 0,
+      "jd_records_updated": 0,
+      "processed_rows": 0,
+      "successful_rows": 0
+    },
+    "SupervisorFeedbackProcessor": {
+      "forms_created": 0,
+      "forms_updated": 0,
+      "metric_definitions_created": 0,
+      "processed_rows": 0,
+      "responses_created": 0,
+      "successful_rows": 0
+    },
+    "VisionDataProcessor": {
+      "processed_rows": 0,
+      "successful_rows": 0,
+      "vision_records_created": 0,
+      "vision_records_updated": 0
+    }
+  },
+  "registry_order": [
+    "EmployeeReportProcessor",
+    "VisionDataProcessor",
+    "JobDescriptionProcessor",
+    "SupervisorFeedbackProcessor"
+  ],
+  "required_headers": {
+    "EmployeeReportProcessor": [
+      "Employee_ID",
+      "Name",
+      "Designation",
+      "From",
+      "To",
+      "Tasks_Completed",
+      "Impact",
+      "Challenges",
+      "Support_Required",
+      "Tasks_Planned",
+      "Confidence_Level"
+    ],
+    "JobDescriptionProcessor": [
+      "Employee_ID",
+      "JD_ID",
+      "Job_Description",
+      "Assigned_Date"
+    ],
+    "SupervisorFeedbackProcessor": [
+      "L_RO_Form_Metric_ID",
+      "RO_Form_ID",
+      "Employee_ID",
+      "Name",
+      "From",
+      "To",
+      "Section_ID",
+      "Section",
+      "Metric_ID",
+      "Metric_Title",
+      "Instructions",
+      "Metric_Type",
+      "Possible_Values",
+      "Value"
+    ],
+    "VisionDataProcessor": [
+      "Employee_ID",
+      "From_Date",
+      "To_Date",
+      "Main_Entity",
+      "Sub_Entities",
+      "Sub_Entities_Content"
+    ]
+  }
+}

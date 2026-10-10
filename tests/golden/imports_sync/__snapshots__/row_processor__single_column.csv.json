@@ -1,0 +1,36 @@
+{
+  "csv_type": null,
+  "errors": [],
+  "frame": {
+    "columns": [
+      "Name"
+    ],
+    "dtypes": {
+      "Name": "object"
+    },
+    "index": [
+      0,
+      1
+    ],
+    "records": [
+      {
+        "Name": "Ali"
+      },
+      {
+        "Name": "Hina"
+      }
+    ]
+  },
+  "metrics": {
+    "ok": {
+      "csv_type": null,
+      "metrics": {},
+      "processed_rows": 0,
+      "successful_rows": 0
+    }
+  },
+  "result": {
+    "message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers: Name",
+    "raised": "ValueError"
+  }
+}

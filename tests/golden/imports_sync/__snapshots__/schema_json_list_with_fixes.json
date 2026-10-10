@@ -1,0 +1,139 @@
+[
+  {
+    "input": "None",
+    "result": {
+      "ok": null
+    }
+  },
+  {
+    "input": "''",
+    "result": {
+      "ok": null
+    }
+  },
+  {
+    "input": "'[]'",
+    "result": {
+      "ok": []
+    }
+  },
+  {
+    "input": "'[1, 2]'",
+    "result": {
+      "ok": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "input": "'[{\"a\": 1}]'",
+    "result": {
+      "ok": [
+        {
+          "a": 1
+        }
+      ]
+    }
+  },
+  {
+    "input": "'{\"a\": 1}'",
+    "result": {
+      "ok": null
+    }
+  },
+  {
+    "input": "\"[{'a': 'b'}]\"",
+    "result": {
+      "ok": [
+        {
+          "a": "b"
+        }
+      ]
+    }
+  },
+  {
+    "input": "\"[{'a': 'b',}]\"",
+    "result": {
+      "ok": [
+        {
+          "a": "b"
+        }
+      ]
+    }
+  },
+  {
+    "input": "'[{\"a\": 1},]'",
+    "result": {
+      "ok": [
+        {
+          "a": 1
+        }
+      ]
+    }
+  },
+  {
+    "input": "'[{\"name\": \"O\\'Brien\"}]'",
+    "result": {
+      "ok": [
+        {
+          "name": "O'Brien"
+        }
+      ]
+    }
+  },
+  {
+    "input": "\"[{'name': 'O\\\\'Brien'}]\"",
+    "result": {
+      "ok": null
+    }
+  },
+  {
+    "input": "'[\"tab\\there\"]'",
+    "result": {
+      "ok": [
+        "tabhere"
+      ]
+    }
+  },
+  {
+    "input": "'[\"new\\nline\"]'",
+    "result": {
+      "ok": [
+        "newline"
+      ]
+    }
+  },
+  {
+    "input": "'[{a: 1}]'",
+    "result": {
+      "ok": null
+    }
+  },
+  {
+    "input": "'not json'",
+    "result": {
+      "ok": null
+    }
+  },
+  {
+    "input": "'  [1]  '",
+    "result": {
+      "ok": [
+        1
+      ]
+    }
+  },
+  {
+    "input": "'null'",
+    "result": {
+      "ok": null
+    }
+  },
+  {
+    "input": "'\"[1]\"'",
+    "result": {
+      "ok": null
+    }
+  }
+]

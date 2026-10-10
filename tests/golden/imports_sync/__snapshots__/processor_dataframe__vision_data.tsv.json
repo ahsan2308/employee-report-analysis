@@ -1,0 +1,171 @@
+{
+  "commits": 1,
+  "db_added": [],
+  "errors": [
+    {
+      "category": "validation",
+      "error_message": "Value error, Invalid sub-entities format. Expected 'Name:Count, Name:Count, ...' but got 'N/A'",
+      "exception": null,
+      "field_name": "Sub_Entities",
+      "row_data": {
+        "Employee_ID": "103",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Media",
+        "Sub_Entities": "N/A",
+        "Sub_Entities_Content": "N/A",
+        "To_Date": "2024-04-30"
+      },
+      "row_number": 4
+    },
+    {
+      "category": "validation",
+      "error_message": "Value error, Invalid Sub_Entities_Content part: 'N/A'. Expected format 'Key:[...]'",
+      "exception": null,
+      "field_name": "Sub_Entities_Content",
+      "row_data": {
+        "Employee_ID": "103",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Media",
+        "Sub_Entities": "N/A",
+        "Sub_Entities_Content": "N/A",
+        "To_Date": "2024-04-30"
+      },
+      "row_number": 4
+    },
+    {
+      "category": "validation",
+      "error_message": "Input should be a valid string",
+      "exception": null,
+      "field_name": "Sub_Entities",
+      "row_data": {
+        "Employee_ID": "104",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Tasks",
+        "Sub_Entities": null,
+        "Sub_Entities_Content": null,
+        "To_Date": "2024-04-30"
+      },
+      "row_number": 5
+    },
+    {
+      "category": "validation",
+      "error_message": "Input should be a valid string",
+      "exception": null,
+      "field_name": "Sub_Entities_Content",
+      "row_data": {
+        "Employee_ID": "104",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Tasks",
+        "Sub_Entities": null,
+        "Sub_Entities_Content": null,
+        "To_Date": "2024-04-30"
+      },
+      "row_number": 5
+    },
+    {
+      "category": "validation",
+      "error_message": "Input should be a valid integer, unable to parse string as an integer",
+      "exception": null,
+      "field_name": "Employee_ID",
+      "row_data": {
+        "Employee_ID": "abc",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Events",
+        "Sub_Entities": "Events:1",
+        "Sub_Entities_Content": "Events:[1, 2]",
+        "To_Date": "2024-04-30"
+      },
+      "row_number": 7
+    },
+    {
+      "category": "validation",
+      "error_message": "Value error, Each item in list for 'Events' must be a JSON object/dict",
+      "exception": null,
+      "field_name": "Sub_Entities_Content",
+      "row_data": {
+        "Employee_ID": "abc",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Events",
+        "Sub_Entities": "Events:1",
+        "Sub_Entities_Content": "Events:[1, 2]",
+        "To_Date": "2024-04-30"
+      },
+      "row_number": 7
+    }
+  ],
+  "metrics": {
+    "processed_rows": 0,
+    "successful_rows": 3,
+    "vision_records_created": 3,
+    "vision_records_updated": 0
+  },
+  "pg_insert_values": [
+    {
+      "table": "employee_vision_data",
+      "values": [
+        {
+          "employee_id": 101,
+          "from_date": "<date 2024-04-01>",
+          "main_entity": "Activities and Cases",
+          "sub_entities": {
+            "Activities": 1,
+            "Cases": 2
+          },
+          "sub_entities_content": {
+            "Activities": [
+              {
+                "type": "raid"
+              }
+            ],
+            "Cases": [
+              {
+                "id": 1,
+                "title": "Smuggling, port"
+              },
+              {
+                "id": 2
+              }
+            ]
+          },
+          "to_date": "<date 2024-04-30>"
+        },
+        {
+          "employee_id": 102,
+          "from_date": "<date 2024-04-01>",
+          "main_entity": "Persons",
+          "sub_entities": {
+            "Persons": 0
+          },
+          "sub_entities_content": {
+            "Persons": []
+          },
+          "to_date": "<date 2024-04-30>"
+        },
+        {
+          "employee_id": 105,
+          "from_date": "<date 2024-04-01>",
+          "main_entity": "Links",
+          "sub_entities": {
+            "Links": 1
+          },
+          "sub_entities_content": {
+            "Links": [
+              {
+                "url": "x"
+              }
+            ]
+          },
+          "to_date": "<date 2024-04-30>"
+        }
+      ]
+    }
+  ],
+  "result": {
+    "ok": [
+      3,
+      6
+    ]
+  },
+  "rollbacks": 0,
+  "vector_store_calls": []
+}

@@ -1,0 +1,44 @@
+{
+  "csv_type": null,
+  "errors": [],
+  "frame": {
+    "columns": [
+      "emp_id",
+      "full_name",
+      "period"
+    ],
+    "dtypes": {
+      "emp_id": "object",
+      "full_name": "object",
+      "period": "object"
+    },
+    "index": [
+      0,
+      1
+    ],
+    "records": [
+      {
+        "emp_id": "1",
+        "full_name": "Ali",
+        "period": "2024-01"
+      },
+      {
+        "emp_id": "2",
+        "full_name": "Hina",
+        "period": "2024-02"
+      }
+    ]
+  },
+  "metrics": {
+    "ok": {
+      "csv_type": null,
+      "metrics": {},
+      "processed_rows": 0,
+      "successful_rows": 0
+    }
+  },
+  "result": {
+    "message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers: emp_id, full_name, period",
+    "raised": "ValueError"
+  }
+}

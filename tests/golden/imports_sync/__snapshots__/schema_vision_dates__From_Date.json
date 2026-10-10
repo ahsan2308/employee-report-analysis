@@ -1,0 +1,458 @@
+{
+  "compact_no_separator": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "dash_dd_mm_yyyy": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2024-02-13>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "dash_invalid": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Value error, Invalid date format: 31-31-2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "dash_iso_with_time": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Value error, Invalid date format: 2024-03-01 10:30:00. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "dash_mm_dd_yyyy": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2024-03-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "dash_token": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Value error, Invalid date format: -. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "date_obj": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "datetime_obj": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "dd_mm_fallback": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2024-02-13>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "dotted": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "empty": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "future_dash": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Value error, Invalid date format: 01-01-2099. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "future_date_obj": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "future_iso": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Value error, Invalid date format: 2099-01-01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "future_slash": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Value error, Invalid date format: 01/01/2099. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "int": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "iso": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2024-03-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "iso_invalid_month": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Value error, Invalid date format: 2024-13-01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "iso_single_digit_parts": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2024-03-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "iso_slashes_year_first": {
+    "message": "'>' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "iso_t_time": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Value error, Invalid date format: 2024-03-01T10:30:00. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "iso_whitespace": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2024-03-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "mm_dd_unambiguous": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2024-02-13>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "na_token": {
+    "message": "'>' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "none": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "null_token": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "old_date_obj": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "old_iso": {
+    "message": "'>' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "old_slash": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 1965-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "slash_both_invalid": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Value error, Invalid date format: 31/31/2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "slash_feb_30": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Value error, Invalid date format: 02/30/2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "slash_two_digit_year": {
+    "message": "'>' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "spaces_only": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "text_month": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "us_mm_dd_ambiguous": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2024-03-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "us_single_digits": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2024-03-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  }
+}

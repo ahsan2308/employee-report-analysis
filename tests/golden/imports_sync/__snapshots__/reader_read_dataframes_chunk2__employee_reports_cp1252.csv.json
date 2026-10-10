@@ -1,0 +1,59 @@
+{
+  "chunks": {
+    "ok": [
+      {
+        "columns": [
+          "Employee_ID",
+          "Name",
+          "Designation",
+          "From",
+          "To",
+          "Tasks_Completed"
+        ],
+        "dtypes": {
+          "Designation": "object",
+          "Employee_ID": "object",
+          "From": "object",
+          "Name": "object",
+          "Tasks_Completed": "object",
+          "To": "object"
+        },
+        "index": [
+          0,
+          1
+        ],
+        "records": [
+          {
+            "Designation": "Analyst",
+            "Employee_ID": "301",
+            "From": "2024-02-01",
+            "Name": "José Muñoz",
+            "Tasks_Completed": "Reviewed café accounts",
+            "To": "2024-02-29"
+          },
+          {
+            "Designation": "Officer",
+            "Employee_ID": "302",
+            "From": "2024-02-01",
+            "Name": "Zoë Brontë",
+            "Tasks_Completed": "Résumé screening",
+            "To": "2024-02-29"
+          }
+        ]
+      }
+    ]
+  },
+  "state": {
+    "delimiter_attr": null,
+    "detected_delimiter": ",",
+    "detected_encoding": "ISO-8859-1",
+    "headers": [
+      "Employee_ID",
+      "Name",
+      "Designation",
+      "From",
+      "To",
+      "Tasks_Completed"
+    ]
+  }
+}

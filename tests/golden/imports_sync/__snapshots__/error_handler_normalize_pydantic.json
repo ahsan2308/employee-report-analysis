@@ -1,0 +1,68 @@
+[
+  {
+    "category": "validation",
+    "error_message": "Value error, Name contains invalid characters. Allowed: letters, numbers, spaces, commas, periods, slashes, hyphens, apostrophes, parentheses, and square brackets",
+    "exception": null,
+    "field_name": "Name",
+    "row_data": {
+      "raw": true
+    },
+    "row_number": 7
+  },
+  {
+    "category": "validation",
+    "error_message": "String should have at least 2 characters",
+    "exception": null,
+    "field_name": "Designation",
+    "row_data": {
+      "raw": true
+    },
+    "row_number": 7
+  },
+  {
+    "category": "validation",
+    "error_message": "Value error, BPS should be in format 'BS-XX' or 'TS-XX' where XX is a number (e.g., BS-21)",
+    "exception": null,
+    "field_name": "BPS",
+    "row_data": {
+      "raw": true
+    },
+    "row_number": 7
+  },
+  {
+    "category": "validation",
+    "error_message": "Value error, From date (2024-02-01) cannot be after To date (2024-01-01)",
+    "exception": null,
+    "field_name": null,
+    "row_data": {
+      "raw": 2
+    },
+    "row_number": 8
+  },
+  {
+    "category": "validation",
+    "error_message": "Input should be a valid integer, unable to parse string as an integer",
+    "exception": null,
+    "field_name": "a",
+    "row_data": null,
+    "row_number": 9
+  },
+  {
+    "category": "validation",
+    "error_message": "Input should be a valid integer, unable to parse string as an integer",
+    "exception": null,
+    "field_name": "nested.k",
+    "row_data": null,
+    "row_number": 9
+  },
+  {
+    "category": "validation",
+    "error_message": "Validation error: broken validation error",
+    "exception": null,
+    "field_name": null,
+    "row_data": {
+      "r": 1
+    },
+    "row_number": 10
+  }
+]

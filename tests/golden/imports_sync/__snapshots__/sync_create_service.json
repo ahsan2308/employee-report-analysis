@@ -1,0 +1,93 @@
+{
+  "defaults": {
+    "ok": {
+      "db_is_fake": true,
+      "driver": "ODBC Driver 17 for SQL Server",
+      "tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "threshold": 10.0,
+      "tracker": [
+        "tracker",
+        true
+      ]
+    }
+  },
+  "env=''": {
+    "message": "could not convert string to float: ''",
+    "raised": "ValueError"
+  },
+  "env='25'": {
+    "ok": {
+      "db_is_fake": true,
+      "driver": "ODBC Driver 17 for SQL Server",
+      "tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "threshold": 25.0,
+      "tracker": [
+        "tracker",
+        true
+      ]
+    }
+  },
+  "env='abc'": {
+    "message": "could not convert string to float: 'abc'",
+    "raised": "ValueError"
+  },
+  "env_tables": {
+    "ok": {
+      "db_is_fake": true,
+      "driver": "ODBC Driver 17 for SQL Server",
+      "tables": [
+        "VisionX",
+        "dbo.Reports"
+      ],
+      "threshold": 10.0,
+      "tracker": [
+        "tracker",
+        true
+      ]
+    }
+  },
+  "explicit": {
+    "ok": {
+      "db_is_fake": true,
+      "driver": "ODBC Driver 17 for SQL Server",
+      "tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "threshold": 2.5,
+      "tracker": [
+        "tracker",
+        true
+      ]
+    }
+  },
+  "explicit_zero": {
+    "ok": {
+      "db_is_fake": true,
+      "driver": "ODBC Driver 17 for SQL Server",
+      "tables": [
+        "EmployeeJobDescriptions",
+        "EmployeeReports",
+        "SupervisorFeedback",
+        "VisionEmployeeData"
+      ],
+      "threshold": 0,
+      "tracker": [
+        "tracker",
+        true
+      ]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "key_order": [
+    "Employee_ID",
+    "From_Date",
+    "To_Date",
+    "Main_Entity",
+    "Sub_Entities",
+    "Sub_Entities_Content"
+  ],
+  "transformed": {
+    "Employee_ID": 101,
+    "From_Date": "2024-04-01",
+    "Main_Entity": "Activities and Cases",
+    "Sub_Entities": "Cases:2, Activities:1",
+    "Sub_Entities_Content": "Cases:[{\"id\": 1}, {\"id\": 2}], Activities:[{\"t\": \"raid\"}]",
+    "To_Date": "2024-04-30"
+  },
+  "validated": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2024-04-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "t": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-04-30>"
+    }
+  }
+}
