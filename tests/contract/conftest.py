@@ -33,14 +33,7 @@ def run_probe(tmp_path):
 
 @pytest.fixture(scope="session")
 def api_app():
-    """app.api.main imported without a database (its import runs create_tables).
+    """The FastAPI app. Importing it needs no database: tables are created in its lifespan."""
+    import app.api.main
 
-    Only the DDL call is patched: routers bind ``get_database`` at import, so
-    patching that would leak a mock into every later test in the session.
-    """
-    from unittest import mock
-
-    if "app.api.main" not in sys.modules:
-        with mock.patch("app.database.postgres_database.PostgresDatabase.create_tables"):
-            import app.api.main  # noqa: F401
-    return sys.modules["app.api.main"].app
+    return app.api.main.app

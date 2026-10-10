@@ -17,7 +17,8 @@ class MSSQLDatabase(BaseDatabase):
     def __init__(self, db_url, schema_name=schema_name):
         self.db_url = db_url
         self.schema_name = schema_name
-        self.engine = create_engine(self.db_url)
+        # Long-lived (one per process), so check pooled connections before use
+        self.engine = create_engine(self.db_url, pool_pre_ping=True)
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         self.Base = Base 
 
