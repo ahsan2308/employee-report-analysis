@@ -5,7 +5,10 @@
   },
   "empty_string": {
     "num_provider_calls": 1,
-    "result": {}
+    "result": {
+      "error": "The LLM returned no usable JSON",
+      "status": "failed"
+    }
   },
   "extra_text_around_braces": {
     "num_provider_calls": 1,
@@ -45,7 +48,10 @@
   },
   "invalid_json": {
     "num_provider_calls": 1,
-    "result": {}
+    "result": {
+      "error": "The LLM returned no usable JSON",
+      "status": "failed"
+    }
   },
   "json_array": {
     "num_provider_calls": 1,
@@ -57,11 +63,17 @@
   },
   "none": {
     "num_provider_calls": 1,
-    "result": {}
+    "result": {
+      "error": "The LLM returned no usable JSON",
+      "status": "failed"
+    }
   },
   "two_objects": {
     "num_provider_calls": 1,
-    "result": {}
+    "result": {
+      "error": "The LLM returned no usable JSON",
+      "status": "failed"
+    }
   },
   "valid_json": {
     "num_provider_calls": 1,
@@ -75,6 +87,9 @@
   },
   "whitespace": {
     "num_provider_calls": 1,
-    "result": {}
+    "result": {
+      "error": "The LLM returned no usable JSON",
+      "status": "failed"
+    }
   }
 }

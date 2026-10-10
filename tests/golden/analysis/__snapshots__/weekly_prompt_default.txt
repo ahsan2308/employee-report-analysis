@@ -19,12 +19,12 @@ Current Report Period Activity Data:
 - Time Period: 2025-01-06 to 2025-01-12
   Main Activity: Correspondence
   Details:
-    - Number of Labels: 1 (Events marked with specific labels)
-    - Number of Groups: 2 (Events marked with specific groups (muli-level labeling))
-    - Number of Lookup: 1 (A general purpose repository where records are stored for later reference, usually includes generic fields like Name, Description, Reference/Purpose of Entry, etc.)
-    - Number of Special Reports: 1 (Special report attachments uploaded with events)
-    - Number of Attachments: 4 (Attachments uploaded with events)
-    - Number of Notings: 2 (Notings added with NADRA person verification requests)
+    - Number of Labels: 1 ()
+    - Number of Groups: 2 ()
+    - Number of Lookup: 1 ()
+    - Number of Special Reports: 1 ()
+    - Number of Attachments: 4 (Attachments added with correspondence)
+    - Number of Notings: 2 (Notings added with correspondence)
 
 Historical Activity Data:
 

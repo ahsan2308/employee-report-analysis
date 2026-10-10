@@ -77,27 +77,27 @@
       "main_entity": "Correspondence",
       "sub_entities": {
         "Attachments": {
-          "description": "Attachments uploaded with events",
+          "description": "Attachments added with correspondence",
           "value": 4
         },
         "Groups": {
-          "description": "Events marked with specific groups (muli-level labeling)",
+          "description": "",
           "value": 2
         },
         "Labels": {
-          "description": "Events marked with specific labels",
+          "description": "",
           "value": 1
         },
         "Lookup": {
-          "description": "A general purpose repository where records are stored for later reference, usually includes generic fields like Name, Description, Reference/Purpose of Entry, etc.",
+          "description": "",
           "value": 1
         },
         "Notings": {
-          "description": "Notings added with NADRA person verification requests",
+          "description": "Notings added with correspondence",
           "value": 2
         },
         "Special Reports": {
-          "description": "Special report attachments uploaded with events",
+          "description": "",
           "value": 1
         }
       },

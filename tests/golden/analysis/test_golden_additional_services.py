@@ -55,13 +55,32 @@ def test_truncate_content_value_table(snapshot):
 
 # --------------------------------------------------------------------------- filter_vision_data
 
-@pytest.mark.known_bug("B4")
 def test_default_descriptions_effective_mapping(snapshot):
-    """The effective default description of every sub-entity name (later duplicate keys win)."""
+    """An entity missing from the catalog gets the flat view (a repeated name takes its later entry)."""
     vision = {"current_data": [vision_item("All", {key: 1 for key in DEFAULT_DESCRIPTION_KEYS})]}
     filtered = svc.filter_vision_data(vision)
     subs = filtered["current_data"][0]["sub_entities"]
     snapshot("default_descriptions", {key: subs[key]["description"] for key in DEFAULT_DESCRIPTION_KEYS})
+
+
+def test_default_descriptions_follow_the_main_entity():
+    """B4 fixed: a repeated sub-entity name is described within its own entity."""
+    names = ["Groups", "Labels", "Lookup", "Special Reports", "Attachments", "Notings"]
+    vision = {"current_data": [vision_item(entity, {name: 1 for name in names})
+                               for entity in ("Persons", "Organizations", "Correspondence", "Events", "Nadra")]}
+    filtered = svc.filter_vision_data(vision)
+    described = {item["main_entity"]: {name: sub["description"] for name, sub in item["sub_entities"].items()}
+                 for item in filtered["current_data"]}
+    assert described["Persons"]["Groups"] == "Persons marked with specific groups (muli-level labeling)"
+    assert described["Organizations"]["Groups"] == "Long term categorization of an organization (e.g. its type, etc.)"
+    assert described["Events"]["Groups"] == "Events marked with specific groups (muli-level labeling)"
+    assert described["Persons"]["Lookup"] == "Lookup details added with persons (Related to wanted criminals)"
+    assert described["Organizations"]["Attachments"] == "Attachments uploaded with organization Particulars"
+    assert described["Correspondence"]["Attachments"] == "Attachments added with correspondence"
+    assert described["Correspondence"]["Notings"] == "Notings added with correspondence"
+    assert described["Nadra"]["Notings"] == "Notings added with NADRA person verification requests"
+    # A name the entity does not have gets no description, rather than another entity's.
+    assert described["Organizations"]["Labels"] == ""
 
 
 def test_filter_vision_data_empty_inputs(snapshot):
@@ -424,24 +443,23 @@ def test_quarterly_jd_prompt_handmade_groups(snapshot):
     })
 
 
-@pytest.mark.known_bug("B9")
-def test_quarterly_jd_prompt_week_end_uses_group_end_check(snapshot):
-    """Coverage lines check hasattr(end, ...) (group end), not week_end: str() vs isoformat()."""
+def test_quarterly_jd_prompt_week_end_formatting(snapshot):
+    """Coverage lines format week_end by its own type (B9 fixed: it used to check the group end)."""
     groups = {"jd_groups": [
         {"jd_texts": ["A"], "effective_dates": {"start": date(2025, 1, 1), "end": None},
          "reports": [{"week_start_date": datetime(2025, 1, 6, 0, 0), "week_end_date": datetime(2025, 1, 12, 0, 0)}]},
         {"jd_texts": ["B"], "effective_dates": {"start": date(2025, 2, 1), "end": date(2025, 3, 31)},
          "reports": [{"week_start_date": datetime(2025, 2, 3, 0, 0), "week_end_date": datetime(2025, 2, 9, 0, 0)}]},
     ]}
-    snapshot("quarterly_jd_prompt_b9", svc.format_job_descriptions_for_quarterly_prompt(groups))
-    # Group end is a date but week_end is a string: isoformat() is called on the string.
-    crashing = {"jd_groups": [
+    snapshot("quarterly_jd_prompt_week_end", svc.format_job_descriptions_for_quarterly_prompt(groups))
+    # Group end is a date but week_end is a string: the string is used as is.
+    string_week_end = {"jd_groups": [
         {"jd_texts": ["A"], "effective_dates": {"start": date(2025, 1, 1), "end": date(2025, 1, 31)},
          "reports": [{"week_start_date": "2025-01-06", "week_end_date": "2025-01-12"}]},
         {"jd_texts": ["B"], "effective_dates": {}, "reports": []},
     ]}
-    snapshot("quarterly_jd_prompt_b9_string_week_end",
-             outcome(svc.format_job_descriptions_for_quarterly_prompt, crashing))
+    snapshot("quarterly_jd_prompt_string_week_end",
+             outcome(svc.format_job_descriptions_for_quarterly_prompt, string_week_end))
 
 
 def test_unmapped_reports_section(snapshot):

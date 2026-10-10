@@ -1,5 +1,4 @@
 import unittest
-import pytest
 from unittest.mock import patch
 from datetime import date
 import sys
@@ -440,8 +439,6 @@ class TestQuarterlyAnalysisDBService(unittest.TestCase):
         # Return the result for potential further tests
         return result
 
-    @pytest.mark.known_bug("B5")
-    @pytest.mark.xfail(strict=True, reason="KNOWN_BUG B5: default trends are the typos 'stble'/'mdium'")
     def test_edge_cases(self):
         """Test handling of edge cases such as missing data."""
         with patch('app.services.quarterly_analysis_db_service.get_quarter_date_range') as mock_get_date_range, \

@@ -6,7 +6,7 @@ boundaries are faked:
 
 * ``FakeOllamaClient``      replaces ``ollama.Client`` (the HTTP client used by
                             ``OllamaProvider``), so the real provider -- including
-                            its error swallowing (B6) -- stays under test.
+                            its error handling -- stays under test.
 * ``FakeEmbeddingProvider`` replaces the object returned by
                             ``embedding_service.get_embedding_provider``.
 * ``FakeVectorStore``       replaces the Qdrant provider returned by

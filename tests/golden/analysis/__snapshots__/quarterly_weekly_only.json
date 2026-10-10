@@ -147,7 +147,7 @@
       "achievement_impact_avg": 0.0,
       "avg_sentiment": 0.0,
       "challenge_count": 0,
-      "challenge_resolution_trend": "stble",
+      "challenge_resolution_trend": "stable",
       "detailed_topics": [
         {
           "frequency": 3,
@@ -174,17 +174,17 @@
         },
         "rating_trend": "improving"
       },
-      "performance_stability": "mdium",
-      "quality_consistency_trend": "stble",
+      "performance_stability": "medium",
+      "quality_consistency_trend": "stable",
       "recurring_topics": [
         "budget",
         "hiring",
         "travel"
       ],
       "risk_levels": {},
-      "risk_trend": "stble",
-      "sentiment_trend": "stble",
-      "task_reliability_trend": "stble",
+      "risk_trend": "stable",
+      "sentiment_trend": "stable",
+      "task_reliability_trend": "stable",
       "weekly_credibility_data": {
         "avg_credibility_rating": "medium",
         "credibility_trend": "improving",
@@ -321,5 +321,5 @@
     ],
     "year": 2025
   },
-  "stdout": "[{'analysis_id': 'an-2025-01-12', 'report_id': 'rep-2025-01-12', 'date': datetime.date(2025, 1, 12), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': ['budget', 'hiring'], 'achievements': [], 'challenges': [], 'credibility_rating': 'low', 'exaggeration_flags': ['x'], 'performance_rating': 'low'}, {'analysis_id': 'an-2025-01-26', 'report_id': 'rep-2025-01-26', 'date': datetime.date(2025, 1, 26), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': ['budget'], 'achievements': [], 'challenges': [], 'credibility_rating': 'medium', 'exaggeration_flags': [], 'performance_rating': 'medium'}, {'analysis_id': 'an-2025-02-09', 'report_id': 'rep-2025-02-09', 'date': datetime.date(2025, 2, 9), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': ['hiring'], 'achievements': [], 'challenges': [], 'credibility_rating': 'high', 'exaggeration_flags': ['y', 'z'], 'performance_rating': 'medium'}, {'analysis_id': 'an-2025-02-23', 'report_id': 'rep-2025-02-23', 'date': datetime.date(2025, 2, 23), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': ['travel'], 'achievements': [], 'challenges': [], 'credibility_rating': 'weird', 'exaggeration_flags': [], 'performance_rating': 'excellent'}, {'analysis_id': 'an-2025-03-09', 'report_id': 'rep-2025-03-09', 'date': datetime.date(2025, 3, 9), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': ['budget', 'travel'], 'achievements': [], 'challenges': [], 'credibility_rating': 'high', 'exaggeration_flags': [], 'performance_rating': 'high'}, {'analysis_id': 'an-2025-03-23', 'report_id': 'rep-2025-03-23', 'date': datetime.date(2025, 3, 23), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': [], 'achievements': [], 'challenges': [], 'credibility_rating': None, 'exaggeration_flags': None, 'performance_rating': 'high'}]\n[]\n"
+  "stdout": ""
 }

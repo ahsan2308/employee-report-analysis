@@ -53,7 +53,7 @@
       "achievement_impact_avg": 6.0,
       "avg_sentiment": 0.4,
       "challenge_count": 1,
-      "challenge_resolution_trend": "stble",
+      "challenge_resolution_trend": "stable",
       "detailed_topics": [],
       "monthly_progress_trends": [
         {
@@ -73,18 +73,18 @@
       "performance_rating_aggregation": {
         "most_common_rating": null,
         "rating_distribution": {},
-        "rating_trend": "stble"
+        "rating_trend": "stable"
       },
       "performance_stability": "low",
-      "quality_consistency_trend": "stble",
+      "quality_consistency_trend": "stable",
       "recurring_topics": [],
       "risk_levels": {},
-      "risk_trend": "stble",
-      "sentiment_trend": "stble",
-      "task_reliability_trend": "stble",
+      "risk_trend": "stable",
+      "sentiment_trend": "stable",
+      "task_reliability_trend": "stable",
       "weekly_credibility_data": {
         "avg_credibility_rating": null,
-        "credibility_trend": "stble",
+        "credibility_trend": "stable",
         "exaggeration_frequency": 0
       },
       "weekly_performance_ratings": [],
@@ -140,5 +140,5 @@
     "weekly_analyses": [],
     "year": 2025
   },
-  "stdout": "[]\n[{'analysis_id': 1, 'month': 1, 'month_name': 'January', 'year': 2025, 'weekly_report_ids': ['r1', 'r2', 'r3', 'r4'], 'avg_sentiment_score': 0.4, 'progress_trends': {'performance_trend': 'stable', 'sentiment_trend': 'declining', 'risk_level_pattern': 'increasing', 'challenge_resolution_progress': 'unchanged'}, 'monthly_achievements': [{'a': 1}, {'a': 2}], 'recurring_challenges': [{'c': 1}], 'consistency_assessment': {'task_completion_reliability': 'low', 'work_quality_consistency': 'medium', 'performance_stability': 'low'}, 'achievement_impact_avg': 6.0, 'monthly_risk_assessment': {'overall_risk_level': 'high'}, 'monthly_summary': 'January went slowly.'}]\n"
+  "stdout": ""
 }

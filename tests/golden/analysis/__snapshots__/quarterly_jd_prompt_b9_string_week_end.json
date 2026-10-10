@@ -1,4 +1,0 @@
-{
-  "message": "'str' object has no attribute 'isoformat'",
-  "raised": "AttributeError"
-}

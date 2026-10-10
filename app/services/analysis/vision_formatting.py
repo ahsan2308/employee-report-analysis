@@ -1,7 +1,7 @@
 """Filter vision system activity data and format it for analysis prompts."""
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from app.core.logger import logger
-from app.domain.vision_catalog import SUB_ENTITY_DESCRIPTIONS
+from app.domain.vision_catalog import describe_sub_entity
 
 
 def _truncate_content_value(value: Any, max_length: int = 300) -> str:
@@ -34,7 +34,8 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
     
     Args:
         vision_data: The vision data as returned by get_employee_vision_data
-        sub_entity_descriptions: A dictionary mapping sub-entity names to their descriptions
+        sub_entity_descriptions: A dictionary mapping sub-entity names to their descriptions.
+            By default each sub-entity is described within its item's main entity.
         
     Returns:
         Filtered vision data with descriptions added
@@ -42,10 +43,6 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
     if not vision_data:
         return {}
 
-    if not sub_entity_descriptions:
-        # Descriptions for all sub-entities
-        sub_entity_descriptions = dict(SUB_ENTITY_DESCRIPTIONS)
-    
     result = {
         "date_context": vision_data.get("date_context", {}),
         "current_data": [],
@@ -104,13 +101,14 @@ def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dic
 
 
 
-def _process_entity_data(entity_data: List[Dict[str, Any]], sub_entity_descriptions: Dict[str, str]) -> List[Dict[str, Any]]:
+def _process_entity_data(entity_data: List[Dict[str, Any]], sub_entity_descriptions: Optional[Dict[str, str]]) -> List[Dict[str, Any]]:
     """
     Process a list of entity data items, filtering zero values and adding descriptions.
     
     Args:
         entity_data: List of entity data items
-        sub_entity_descriptions: Dictionary mapping sub-entity names to descriptions
+        sub_entity_descriptions: Dictionary mapping sub-entity names to descriptions,
+            or None to use the catalog entry for each item's main entity
         
     Returns:
         Processed entity data list
@@ -130,7 +128,10 @@ def _process_entity_data(entity_data: List[Dict[str, Any]], sub_entity_descripti
             if value != 0:
                 has_non_zero = True
                 # Include sub-entity even if it doesn't have a description
-                description = sub_entity_descriptions.get(sub_entity, "")
+                if sub_entity_descriptions:
+                    description = sub_entity_descriptions.get(sub_entity, "")
+                else:
+                    description = describe_sub_entity(item.get("main_entity"), sub_entity)
                 filtered_sub_entities[sub_entity] = {
                     "value": value,
                     "description": description

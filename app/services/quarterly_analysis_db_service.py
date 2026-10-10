@@ -42,23 +42,23 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
         "period_end": None,
         "metrics": {
             "avg_sentiment": 0.0,
-            "sentiment_trend": "stble",
+            "sentiment_trend": "stable",
             "risk_levels": {},
             "recurring_topics": [],
             "achievement_count": 0,
             "challenge_count": 0,
             "weekly_report_count": 0,
-            "performance_stability": "mdium",
+            "performance_stability": "medium",
             "monthly_progress_trends": [],
-            "task_reliability_trend": "stble",
-            "quality_consistency_trend": "stble",
-            "risk_trend": "stble",
-            "challenge_resolution_trend": "stble",
+            "task_reliability_trend": "stable",
+            "quality_consistency_trend": "stable",
+            "risk_trend": "stable",
+            "challenge_resolution_trend": "stable",
             "monthly_summaries": [],
             "achievement_impact_avg": 0.0,
             "weekly_credibility_data": {
                 "avg_credibility_rating": None,
-                "credibility_trend": "stble",
+                "credibility_trend": "stable",
                 "exaggeration_frequency": 0
             },
             "detailed_topics": [],
@@ -66,7 +66,7 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
             "performance_rating_aggregation": {
                 "most_common_rating": None,
                 "rating_distribution": {},
-                "rating_trend": "stble"
+                "rating_trend": "stable"
             }
         }
     }
@@ -111,11 +111,6 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
         monthly_risk_levels = {}
         total_monthly_reports = 0
         
-        print(weekly_analyses)
-        print(monthly_analyses)
-
-
-
         # Process monthly analyses to extract key metrics
         for monthly_analysis in monthly_analyses:
             month_num = monthly_analysis.get("month", 0)

@@ -96,7 +96,7 @@ This is a mandatory security requirement. Violations could compromise operations
 
     CREDIBILITY ASSESSMENT:
     - Average Credibility Rating: high
-    - Credibility Trend: stble
+    - Credibility Trend: stable
     - Exaggeration Frequency: 0
 
     MONTHLY PROGRESS TRENDS:

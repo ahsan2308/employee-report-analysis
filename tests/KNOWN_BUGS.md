@@ -1,27 +1,21 @@
-# Known bugs (characterized, not fixed)
+# Known bugs
 
-The refactor must not change behaviour, so these defects are **locked in** by the
-characterization suite exactly as they behave today. Each fix is a separate,
-individually approved change that updates the affected snapshots on purpose.
+Open defects are **locked in** by the characterization suite exactly as they
+behave today. Each fix is a separate change that updates the affected snapshots
+on purpose and moves the bug to the Fixed table.
 
-Tests tied to a catalogued bug carry `@pytest.mark.known_bug("Bn")`; find them with
-`grep -rn 'known_bug("B5")' tests`. A strict `xfail` is used only where an existing
+Tests tied to an open bug carry `@pytest.mark.known_bug("Bn")`; find them with
+`grep -rn 'known_bug("B8")' tests`. A strict `xfail` is used only where an existing
 test asserted the correct behaviour (it flips red once the bug is fixed).
 
 ## Catalogue
 
 | ID | Bug | Where | Characterized in |
 | --- | --- | --- | --- |
-| B4 | The vision descriptions dict has 6 duplicate keys; later entries silently replace earlier ones | `app/services/additional_services.py:43` | `golden/analysis/test_golden_additional_services.py` |
-| B5 | Quarterly defaults are typos (`"stble"`, `"mdium"`) that can reach prompts; leftover debug `print()`s | `app/services/quarterly_analysis_db_service.py:49-73,118` | `golden/analysis/test_golden_quarterly_analysis_db_service.py`, `unit/legacy/test_quarterly_analysis_db_service.py` (strict xfail) |
-| B6 | LLM providers swallow errors and return `""`/`None`, so retries never fire and empty or default analyses are stored as COMPLETED | `app/model_host/ollama.py:66`, `app/model_host/vllm.py:124` | `integration/pipelines/test_analysis_tasks.py` |
 | B8 | `ConfigProvider.get(key, section=…)` reads the env var named by the bare key, so `HOST`, `PORT`, `MODEL`, `MODE`, `TYPE`, `ENABLED` override Redis, Qdrant and LLM settings | `app/core/config_provider.py:59` | `contract/test_config_contract.py` |
-| B9 | `hasattr(end, …)` should test `week_end`; a string `week_end` raises AttributeError | `app/services/additional_services.py:1146` | `golden/analysis/test_golden_additional_services.py` |
 | B10 | Chart annotation options are configured but the annotation plugin is never loaded | `frontend/js/visualizations.js` | not automated (frontend) |
 | B12 | The shared Qdrant client is disconnected by any `with vector_store:` exit, so concurrent searches can lose it | `app/vector_store/qdrant_provider.py:167` | not automated (concurrency) |
-| B13 | Full prompts, which contain report text, are logged at INFO | `app/services/llm_service.py:290,364`, `app/tasks/analysis_tasks.py:132,396` | `golden/prompts/test_llm_service.py` |
 | B14 | `ConfigProvider` converts env values `"1"`/`"0"` to booleans, so `PORT=1` becomes `True` | `app/core/config_provider.py` (`_convert_value`) | `contract/test_config_contract.py` |
-| B15 | Every quarterly prompt build writes `generated_quarterly_prompt.txt` into the working directory and prints to stdout ("TODO: REMOVE") | `app/prompts/structured_prompts.py:3132-3140` | `golden/prompts/test_quarterly_prompt.py`, `integration/pipelines/test_analysis_tasks.py` |
 | B16 | `alembic upgrade head` cannot build an empty database: the first revision references `employee_reports.reports`, which no migration creates | `migrations/versions/65a702f08ade_*.py` | `integration/test_migrations.py` |
 
 ## Fixed
@@ -31,8 +25,14 @@ test asserted the correct behaviour (it flips red once the bug is fixed).
 | B1 | The duplicate-task guard marked every PENDING/RUNNING task FAILED when no analysis existed yet, so duplicates were never prevented | An in-flight task is returned and nothing new is dispatched. Only a task active for longer than twice the Celery hard time limit (at least an hour) is marked FAILED and replaced (`integration/services/test_task_service.py`, `integration/api/test_analyses.py`) |
 | B2 | `GET /sync/history?is_full_sync=…` returned 500; an unknown `sort_by` returned 500 | The flag is compared as a JSON boolean, with a missing flag counted as incremental (as the response reports it). An unknown `sort_by` returns 400 listing the valid fields (`integration/api/test_sync.py`) |
 | B3 | 404s were re-raised as 500 by a broad `except Exception` in the analyses and tasks routers; a missing task returned 422 from `/result` | HTTPExceptions pass through. A missing task returns 404 from both task endpoints; `TaskNotFoundError` subclasses `ValueError`, so existing callers still catch it (`integration/api/test_analyses.py`, `integration/api/test_tasks.py`) |
+| B4 | The vision descriptions dict had 6 duplicate keys; later entries silently replaced earlier ones | Descriptions are kept per main entity (`SUB_ENTITY_DESCRIPTIONS_BY_ENTITY`) and looked up by the item's `main_entity`; the flat `SUB_ENTITY_DESCRIPTIONS` is unchanged for entities missing from the catalog and for callers that pass their own mapping (`golden/analysis/test_golden_additional_services.py`) |
+| B5 | Quarterly defaults were typos (`"stble"`, `"mdium"`) that reached prompts; leftover debug `print()`s | `"stable"`/`"medium"`; the prints are gone (`golden/analysis/test_golden_quarterly_analysis_db_service.py`, `unit/legacy/test_quarterly_analysis_db_service.py`) |
+| B6 | LLM providers swallowed errors and returned `""`/`None`, so retries never fired and empty or default analyses were stored as COMPLETED | Providers raise on transport and HTTP errors; `generate_text` retries them and raises the last one; an answer without usable JSON is an error. The weekly task now checks for it like the monthly and quarterly ones, so the run is FAILED and nothing is stored (`integration/pipelines/test_analysis_tasks.py`, `golden/prompts/test_llm_service.py`, `unit/test_llm_provider_errors.py`) |
 | B7 | `setup_collection` deleted the Qdrant collection when the embedding probe failed, the vector size differed, or Qdrant could not describe the collection | It never deletes now: a mismatch or an unreachable embedding service returns False and leaves the collection untouched (`integration/pipelines/test_vector_store_service.py`) |
+| B9 | `hasattr(end, …)` tested the group end instead of `week_end`; a string `week_end` raised AttributeError | The check uses `week_end` (`golden/analysis/test_golden_additional_services.py`) |
 | B11 | Celery `task_time_limit=300` hard-killed long LLM runs, leaving the BackgroundTask RUNNING forever | The hard limit is 30 minutes. A soft limit (default: 60 s earlier, `task_soft_time_limit` / `CELERY_TASK_SOFT_TIME_LIMIT`) raises inside the task, which marks the run FAILED. A task killed anyway is replaced as stale (B1) (`integration/pipelines/test_analysis_tasks.py`, `contract/test_config_contract.py`) |
+| B13 | Full prompts, which contain report text, were logged at INFO (and report text at DEBUG) | Only prompt lengths are logged; similar-report data and formatted vision data are no longer logged (`golden/prompts/test_llm_service.py`) |
+| B15 | Every quarterly prompt build wrote `generated_quarterly_prompt.txt` into the working directory and printed to stdout | Removed, with the commented-out weekly and monthly equivalents (`golden/prompts/test_quarterly_prompt.py`, `integration/pipelines/test_analysis_tasks.py`) |
 
 ## Other observations
 

@@ -2,7 +2,7 @@
 
 Every db_service function is mocked where the module under test looks it up;
 get_quarter_date_range (pure) and map_reports_to_jds (pure) run for real.
-The debug print()s (B5) are captured and snapshotted too.
+Anything printed to stdout is captured and snapshotted too (nothing, since B5 was fixed).
 """
 from datetime import date
 
@@ -90,38 +90,31 @@ Q1_JDS = [jd("JD_A", "Analyst", date(2025, 1, 1), date(2025, 2, 14)),
           jd("JD_B", "Lead", date(2025, 2, 15), date(2025, 3, 31))]
 
 
-@pytest.mark.known_bug("B5")
 def test_typical_quarter(snapshot, capsys):
     snapshot("quarterly_typical", run(capsys, monthly=typical_monthly(), weekly=typical_weekly(), jds=Q1_JDS))
 
 
-@pytest.mark.known_bug("B5")
 def test_employee_not_found(snapshot, capsys):
     snapshot("quarterly_employee_not_found",
              run(capsys, employee=None, monthly=typical_monthly(), weekly=typical_weekly(), jds=Q1_JDS))
 
 
-@pytest.mark.known_bug("B5")
 def test_no_data_at_all(snapshot, capsys):
     snapshot("quarterly_no_data", run(capsys, employee={"id": 42}))
 
 
-@pytest.mark.known_bug("B5")
 def test_monthly_only(snapshot, capsys):
     snapshot("quarterly_monthly_only", run(capsys, monthly=typical_monthly(), quarter=1))
 
 
-@pytest.mark.known_bug("B5")
 def test_weekly_only_with_jds(snapshot, capsys):
     snapshot("quarterly_weekly_only", run(capsys, weekly=typical_weekly(), jds=Q1_JDS))
 
 
-@pytest.mark.known_bug("B5")
 def test_single_month_keeps_defaults(snapshot, capsys):
     snapshot("quarterly_single_month", run(capsys, monthly=typical_monthly()[:1]))
 
 
-@pytest.mark.known_bug("B5")
 @pytest.mark.parametrize("name,levels", [
     ("all_high", ["high", "high", "high"]),
     ("all_low", ["low", "low", "low"]),
@@ -155,7 +148,6 @@ def test_sentiment_trend(snapshot, capsys, name, values):
     snapshot(f"quarterly_{name}", {k: metrics[k] for k in ("avg_sentiment", "sentiment_trend")})
 
 
-@pytest.mark.known_bug("B5")
 def test_progress_trend_aggregation(snapshot, capsys):
     cases = {
         "mixed": [{"performance_trend": "improving", "challenge_resolution_progress": "declined"},
@@ -176,7 +168,6 @@ def test_progress_trend_aggregation(snapshot, capsys):
     snapshot("quarterly_progress_trends", out)
 
 
-@pytest.mark.known_bug("B5")
 def test_impact_and_weighting_edge_cases(snapshot, capsys):
     cases = {
         "impact_avg_none_counts_in_denominator": [
@@ -205,7 +196,6 @@ def test_impact_and_weighting_edge_cases(snapshot, capsys):
     snapshot("quarterly_impact_weighting", out)
 
 
-@pytest.mark.known_bug("B5")
 def test_weekly_metrics_edge_cases(snapshot, capsys):
     cases = {
         "rating_tie_first_wins": [
@@ -250,7 +240,6 @@ def test_weekly_metrics_edge_cases(snapshot, capsys):
     snapshot("quarterly_weekly_metrics", out)
 
 
-@pytest.mark.known_bug("B5")
 def test_weekly_report_id_none_aborts_jd_mapping(snapshot, capsys):
     weekly = [weekly_analysis(date(2025, 1, 12))]
     weekly[0]["report_id"] = None
@@ -258,7 +247,6 @@ def test_weekly_report_id_none_aborts_jd_mapping(snapshot, capsys):
     snapshot("quarterly_report_id_none", {k: v for k, v in out.items() if k != "stdout"})
 
 
-@pytest.mark.known_bug("B5")
 def test_none_collections_abort_partially(snapshot, capsys):
     cases = {
         "monthly_achievements_none": [dict(monthly_analysis(1, summary="s"), monthly_achievements=None)],
@@ -269,7 +257,6 @@ def test_none_collections_abort_partially(snapshot, capsys):
         name: run(capsys, monthly=monthly, jds=Q1_JDS)["result"] for name, monthly in cases.items()})
 
 
-@pytest.mark.known_bug("B5")
 @pytest.mark.parametrize("quarter", [0, 5])
 def test_invalid_quarter(snapshot, capsys, quarter):
     snapshot(f"quarterly_invalid_quarter_{quarter}", run(capsys, quarter=quarter))
