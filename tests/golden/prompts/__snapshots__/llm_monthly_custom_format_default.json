@@ -1,0 +1,74 @@
+{
+  "provider_calls": [
+    {
+      "extra": {},
+      "json_schema": {
+        "properties": {
+          "consistency_assessment": {
+            "type": "object"
+          },
+          "focus_areas": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "growth_indicators": {
+            "type": "object"
+          },
+          "monthly_achievements": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "monthly_risk_assessment": {
+            "type": "object"
+          },
+          "monthly_summary": {
+            "type": "string"
+          },
+          "progress_trends": {
+            "type": "object"
+          },
+          "recurring_challenges": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "strategic_recommendations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "max_tokens": 10000,
+      "method": "generate_structured_output",
+      "num_ctx": 40000,
+      "prompt_starts_with_task_prompt": true,
+      "prompt_suffix_after_task_prompt": "",
+      "temperature": 0
+    },
+    {
+      "extra": {},
+      "max_tokens": 10000,
+      "method": "generate_text",
+      "num_ctx": 40000,
+      "prompt_starts_with_task_prompt": true,
+      "prompt_suffix_after_task_prompt": "\n\n\nIMPORTANT: Your response must be valid JSON data conforming to the schema, not the schema itself. Do not include any explanatory text or code formatting markers like ```json or ```.\n\nFollow this exact format:\n{\n  \"progress_trends\": {\n    \"performance_trend\": \"improving/declining/stable\",\n    \"sentiment_trend\": \"positive/negative/stable\",\n    \"risk_level_pattern\": \"increasing/decreasing/stable\",\n    \"challenge_resolution_progress\": \"improved/declined/unchanged\"\n  },\n  \"monthly_achievements\": [\n    {\n      \"description\": \"Achievement description\",\n      \"impact\": \"Impact rating and reason\"\n    }\n  ],\n  \"recurring_challenges\": [\n    {\n      \"description\": \"Challenge description\",\n      \"severity\": \"low/medium/high\",\n      \"status\": \"addressed/ongoing\"\n    }\n  ],\n  \"consistency_assessment\": {\n    \"task_completion_reliability\": \"high/medium/low\",\n    \"work_quality_consistency\": \"high/medium/low\",\n    \"performance_stability\": \"high/medium/low\",\n    \"notable_strengths\": [\n      \"Strength 1\",\n      \"Strength 2\"\n    ],\n    \"notable_weaknesses\": [\n      \"Weakness 1\",\n      \"Weakness 2\"\n    ]\n  },\n  \"growth_indicators\": {\n    \"complexity_of_tasks\": \"increased/decreased/unchanged\",\n    \"skill_development_evidence\": \"high/medium/low\",\n    \"confidence_level_change\": \"increased/decreased/unchanged\",\n    \"approach_to_challenges\": \"more proactive/more reactive/unchanged\"\n  },\n  \"focus_areas\": [\n    {\n      \"project\": \"Project name\",\n      \"time_investment\": \"high/medium/low\",\n      \"priority_level\": \"high/medium/low\"\n    }\n  ],\n  \"monthly_risk_assessment\": {\n    \"overall_risk_level\": \"low/medium/high\",\n    \"significant_risks\": [\n      \"Risk 1\",\n      \"Risk 2\"\n    ],\n    \"escalating_risks\": [\n      \"Escalating risk 1\"\n    ],\n    \"risk_mitigation_recommendations\": [\n      \"Recommendation 1\",\n      \"Recommendation 2\"\n    ]\n  },\n  \"strategic_recommendations\": [\n    {\n      \"action\": \"Recommended action\",\n      \"priority\": \"high/medium/low\"\n    }\n  ],\n  \"monthly_summary\": \"A concise but comprehensive narrative overview of the employee's performance during the month, highlighting key achievements, challenges, performance trajectory, and overall assessment.\"\n}\n",
+      "temperature": 0
+    }
+  ],
+  "result": {
+    "risk_level": "low",
+    "sentiment": "positive",
+    "topics": [
+      "threat assessment"
+    ]
+  },
+  "sleeps": []
+}

@@ -1,0 +1,174 @@
+{
+  "current_data": [
+    {
+      "from_date": "2025-01-06",
+      "main_entity": "Persons",
+      "sub_entities": {
+        "Persons": {
+          "description": "custom persons",
+          "value": 3
+        },
+        "Pictures": {
+          "description": "",
+          "value": 2
+        },
+        "Unknown Thing": {
+          "description": "",
+          "value": 5
+        }
+      },
+      "sub_entities_content": {
+        "Persons": [
+          {
+            "empty": "",
+            "name": "Name 1",
+            "ref": "R-1"
+          },
+          {
+            "empty": "",
+            "name": "Name 2",
+            "ref": "R-2"
+          },
+          {
+            "empty": "",
+            "name": "Name 3",
+            "ref": "R-3"
+          },
+          {
+            "empty": "",
+            "name": "Name 4",
+            "ref": "R-4"
+          },
+          {
+            "empty": "",
+            "name": "Name 5",
+            "ref": "R-5"
+          },
+          {
+            "empty": "",
+            "name": "Name 6",
+            "ref": "R-6"
+          },
+          {
+            "empty": "",
+            "name": "Name 7",
+            "ref": "R-7"
+          }
+        ],
+        "Pictures": [
+          {
+            "file": "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"
+          },
+          {},
+          {
+            "file": null
+          }
+        ],
+        "Unknown Thing": [
+          {
+            "x": 1
+          }
+        ]
+      },
+      "to_date": "2025-01-12"
+    },
+    {
+      "from_date": "2025-01-06",
+      "main_entity": "Correspondence",
+      "sub_entities": {
+        "Attachments": {
+          "description": "",
+          "value": 4
+        },
+        "Groups": {
+          "description": "",
+          "value": 2
+        },
+        "Labels": {
+          "description": "",
+          "value": 1
+        },
+        "Lookup": {
+          "description": "",
+          "value": 1
+        },
+        "Notings": {
+          "description": "",
+          "value": 2
+        },
+        "Special Reports": {
+          "description": "",
+          "value": 1
+        }
+      },
+      "to_date": "2025-01-12"
+    }
+  ],
+  "date_context": {
+    "num_previous_weeks": 2,
+    "report_date": "2025-01-12"
+  },
+  "months_data": [],
+  "previous_data": [
+    {
+      "from_date": "2024-12-30",
+      "main_entity": "Tasks",
+      "sub_entities": {
+        "Task Updates": {
+          "description": "",
+          "value": -1
+        },
+        "Tasks": {
+          "description": "custom tasks",
+          "value": 1
+        }
+      },
+      "sub_entities_content": {
+        "Tasks": [
+          {
+            "empty": "",
+            "name": "Task 1",
+            "ref": "R-1"
+          },
+          {
+            "empty": "",
+            "name": "Task 2",
+            "ref": "R-2"
+          },
+          {
+            "empty": "",
+            "name": "Task 3",
+            "ref": "R-3"
+          },
+          {
+            "empty": "",
+            "name": "Task 4",
+            "ref": "R-4"
+          },
+          {
+            "empty": "",
+            "name": "Task 5",
+            "ref": "R-5"
+          }
+        ]
+      },
+      "to_date": "2025-01-05"
+    },
+    {
+      "from_date": "2024-12-23",
+      "main_entity": "Events",
+      "sub_entities": {
+        "EOIs": {
+          "description": "",
+          "value": "3"
+        },
+        "Events": {
+          "description": "",
+          "value": null
+        }
+      },
+      "to_date": "2024-12-29"
+    }
+  ],
+  "weeks_data": []
+}

@@ -1,0 +1,63 @@
+{
+  "day": [
+    "2024-12-31",
+    "2025-01-02",
+    "2025-1-3",
+    "2025-01-10"
+  ],
+  "duplicates": [
+    "2024-Q2",
+    "2025-Q1",
+    "2025-Q1"
+  ],
+  "empty": [],
+  "malformed_day": {
+    "message": "not enough values to unpack (expected 3, got 2)",
+    "raised": "ValueError"
+  },
+  "malformed_week": {
+    "message": "not enough values to unpack (expected 2, got 1)",
+    "raised": "ValueError"
+  },
+  "month": [
+    "2024-12",
+    "2025-1",
+    "2025-02",
+    "2025-10"
+  ],
+  "none": [],
+  "quarter": [
+    "2024-Q4",
+    "2025-Q1",
+    "2025-Q3"
+  ],
+  "roundtrip_from_format": [
+    "2020-W53",
+    "2021-W53",
+    "2024-W1",
+    "2024-W1",
+    "2024-W1",
+    "2024-W9",
+    "2025-W1",
+    "2025-W14",
+    "2025-W14",
+    "2025-W40",
+    "2025-W40"
+  ],
+  "unknown_interval_uses_year": [
+    "2019",
+    "2025"
+  ],
+  "week": [
+    "2024-W1",
+    "2024-W52",
+    "2025-W1",
+    "2025-W2",
+    "2025-W10"
+  ],
+  "year": [
+    "2019",
+    "2024",
+    "2025"
+  ]
+}

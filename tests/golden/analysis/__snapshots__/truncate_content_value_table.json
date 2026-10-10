@@ -1,0 +1,41 @@
+{
+  "301": {
+    "returned": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy..."
+  },
+  "dict": {
+    "returned": "{'a': 1}"
+  },
+  "empty_string": {
+    "returned": ""
+  },
+  "exactly_300": {
+    "returned": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  "false": {
+    "returned": "False"
+  },
+  "int_long": {
+    "returned": "99999..."
+  },
+  "list": {
+    "returned": "[1, ..."
+  },
+  "max_negative": {
+    "returned": "abcd..."
+  },
+  "max_zero": {
+    "returned": "..."
+  },
+  "none": {
+    "returned": ""
+  },
+  "short": {
+    "returned": "hello"
+  },
+  "unicode": {
+    "returned": "ééé..."
+  },
+  "zero": {
+    "returned": "0"
+  }
+}

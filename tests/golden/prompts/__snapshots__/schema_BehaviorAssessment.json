@@ -1,0 +1,25 @@
+{
+  "properties": {
+    "evidence": {
+      "description": "Observable example of this behavior",
+      "title": "Evidence",
+      "type": "string"
+    },
+    "rating": {
+      "description": "Rating relative to expectations",
+      "enum": [
+        "below",
+        "meets",
+        "exceeds"
+      ],
+      "title": "Rating",
+      "type": "string"
+    }
+  },
+  "required": [
+    "rating",
+    "evidence"
+  ],
+  "title": "BehaviorAssessment",
+  "type": "object"
+}

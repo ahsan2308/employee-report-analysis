@@ -1,0 +1,3 @@
+{
+  "error": "ValueError: Unsupported database type: oracle"
+}

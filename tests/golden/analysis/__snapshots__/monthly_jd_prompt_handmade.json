@@ -1,0 +1,15 @@
+{
+  "complex": {
+    "returned": "\n## EMPLOYEE JOB DESCRIPTIONS\n\nThe employee's role configuration changed during this month:\n\n### CONCURRENT PERIOD 1: 2025-01-01 to 2025-01-12\nJob Description #1:\nA text\n\nJob Description #2:\nB text\n\nReports from holding both roles:\n- Report dated 2025-01-12\n\n### PERIOD 2: None to None\nReports from this period:\n\n\nANALYSIS GUIDANCE:\n- Evaluate workload management across all roles\n- Assess prioritization and time allocation\n- Consider cumulative expectations from all JDs\n- Identify potential conflicts or synergies between roles\n\n\n## REPORTS WITHOUT JOB DESCRIPTION\n\nThe following reports were submitted before formal JD assignment:\n- Report dated None\n\nANALYSIS GUIDANCE:\n- Evaluate based on general role expectations\n- Note this may indicate onboarding/transition period\n- Focus on observable work quality rather than role alignment\n"
+  },
+  "single_group_no_ids": {
+    "returned": "\n## EMPLOYEE JOB DESCRIPTIONS\n\nThe employee held multiple concurrent roles that remained stable throughout the month.\n\nEffective Period: None to None\n\n\n### Job Description #1:\nt1\n\n\n### Job Description #2:\nt2\n\n\nANALYSIS GUIDANCE:\n- Evaluate workload management across all roles\n- Assess prioritization and time allocation\n- Consider cumulative expectations from all JDs\n- Identify potential conflicts or synergies between roles\n"
+  },
+  "single_group_no_texts": {
+    "message": "list index out of range",
+    "raised": "IndexError"
+  },
+  "transition": {
+    "returned": "\n## EMPLOYEE JOB DESCRIPTIONS AND ROLE TRANSITIONS\n\nThe employee's role changed during this month:\n\n\n### PERIOD 1: None to 2025-01-10\nPrevious Role:\nA text\n\nReports from this period:\n- Report dated 2025-01-05\n- Report dated 2025-01-09\n\n\n### PERIOD 2: 2025-01-11 to None\nCurrent Role:\nNo job description available\n\nReports from this period:\n- Report for week 2025-01-13 to 2025-01-19\n\n\nANALYSIS GUIDANCE:\n- Evaluate each report against the JD applicable during that time period\n- Assess transition effectiveness - how well did the employee adapt?\n- Consider if achievements in Period 1 helped prepare for Period 2\n- Identify knowledge/skill gaps during transition\n- Note performance trajectory across the role change\n\n\n## REPORTS WITHOUT JOB DESCRIPTION\n\nThe following reports were submitted before formal JD assignment:\n- Report dated 2024-12-29\n- Report for week 2024-12-16 to 2024-12-22\n\nANALYSIS GUIDANCE:\n- Evaluate based on general role expectations\n- Note this may indicate onboarding/transition period\n- Focus on observable work quality rather than role alignment\n"
+  }
+}

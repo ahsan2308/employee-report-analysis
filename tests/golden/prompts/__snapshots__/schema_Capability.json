@@ -1,0 +1,36 @@
+{
+  "properties": {
+    "growth": {
+      "description": "How this skill has changed over the quarter",
+      "enum": [
+        "improved",
+        "stable",
+        "declined"
+      ],
+      "title": "Growth",
+      "type": "string"
+    },
+    "proficiency": {
+      "description": "Current proficiency level in this skill",
+      "enum": [
+        "developing",
+        "proficient",
+        "advanced"
+      ],
+      "title": "Proficiency",
+      "type": "string"
+    },
+    "skill": {
+      "description": "Name of the skill or capability",
+      "title": "Skill",
+      "type": "string"
+    }
+  },
+  "required": [
+    "skill",
+    "proficiency",
+    "growth"
+  ],
+  "title": "Capability",
+  "type": "object"
+}

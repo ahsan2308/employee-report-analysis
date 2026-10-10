@@ -1,0 +1,36 @@
+{
+  "properties": {
+    "priority_level": {
+      "description": "Priority level of this focus area",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Priority Level",
+      "type": "string"
+    },
+    "project": {
+      "description": "Project or responsibility name",
+      "title": "Project",
+      "type": "string"
+    },
+    "time_investment": {
+      "description": "Level of time invested in this area",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Time Investment",
+      "type": "string"
+    }
+  },
+  "required": [
+    "project",
+    "time_investment",
+    "priority_level"
+  ],
+  "title": "FocusArea",
+  "type": "object"
+}

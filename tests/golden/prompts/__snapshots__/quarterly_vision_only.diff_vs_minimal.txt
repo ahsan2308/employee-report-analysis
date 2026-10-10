@@ -1,0 +1,56 @@
+--- base
++++ variant
+@@ -109,4 +109,53 @@
+     
+     
++## VISION SYSTEM ACTIVITY DATA (Objective Tracking)
++The following Vision system data provides objective evidence to validate claims and identify patterns across the quarter:
++
++
++Current Report Period Activity Data:
++
++- Time Period: 2026-03-08 to 2026-03-14
++  Main Activity: Report Processing
++  Details:
++    - Number of Reports Reviewed: 42 (field reports reviewed)
++      ---> title: Field report 17, status: validated
++
++
++### Using Vision Data for Quarterly Analysis
++
++**Data Presentation Note:** The Vision data displays detailed content items for each sub-entity with a configured limit per entity. When you see text like "and X more..." at the end of a content list, this indicates additional tracked items beyond those displayed. For validation, calculate totals by adding displayed items plus the "X more" count. Truncated display ≠ incomplete tracking.
++
++**CRITICAL FAIRNESS PRINCIPLE:** Many employees have NO vision tracking data (strategic, liaison, field, administrative roles). This is the NORMAL state. Vision data absence should NOT be mentioned or weighed negatively in your analysis.
++
++**Vision Verification Field Usage in Quarterly Achievement Themes:**
++When assigning the optional `vision_verification` field to achievement themes:
++- Set to "supported": ONLY when vision data consistently confirms this achievement pattern across multiple weeks/months
++- Set to "contradicted": ONLY when vision data consistently conflicts with this claimed achievement pattern (credibility concern)
++- Set to "none": When no vision data exists OR vision data is not applicable to this type of achievement (MOST COMMON CASE)
++
++**DO NOT create summary statements about vision data availability (e.g., "vision data not available for this quarter"). Simply use it when it exists and is relevant.**
++
++**How to Use Vision Data Across the Quarter:**
++
++**1. AGGREGATE VERIFICATION PATTERNS:**
++   Review weekly and monthly analyses to identify patterns:
++   - If multiple achievements across months show `vision_verification: "supported"` → This theme has strong verification, set theme to "supported"
++   - If multiple achievements show `vision_verification: "contradicted"` → This is a significant credibility concern, set theme to "contradicted"
++   - If achievements lack vision_verification fields → Set theme's vision_verification field to "none".
++
++**2. QUARTERLY ACTIVITY PATTERN ANALYSIS:**
++   Across the quarter, assess:
++   - **Workload Trends:** Increasing/decreasing/stable activity volume month-over-month
++   - **Focus Consistency:** Same entities tracked throughout (stable focus) vs. shifting entities (evolving priorities)
++   - **Effort Distribution:** Even spread vs. concentrated bursts (project cycles vs. reactive work)
++   - **Capacity Indicators:** Activity volume relative to role level and JD expectations
++
++**3. APPLICATION TO QUARTERLY CREDIBILITY:**
++   - Achievement themes with `vision_verification: "supported"` → Cite as strengthening credibility and confidence
++   - Achievement themes with `vision_verification: "contradicted"` → Significant credibility concern, discount impact and flag for review
++   - Achievement themes without vision_verification field → Assess on merit using JD alignment, consistency, and specificity across months (STANDARD CASE)
++
++**Vision Data Limitations:** Vision tracking is not applicable for many roles. Only flag clear, repeated contradictions when vision data exists—never penalize absence of vision data.
++
+ ## QUARTERLY CREDIBILITY AGGREGATION FRAMEWORK
+ 

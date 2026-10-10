@@ -1,0 +1,74 @@
+--- base
++++ variant
+@@ -136,6 +136,71 @@
+ ### Weekly Reports (Raw Employee Submissions)
+ 
++REPORT 1 (Unknown Date):
++No content
++
+ 
+ ## WEEKLY ANALYSIS SUMMARIES (AI-Generated from Weekly Reports)
++
++ANALYSIS 1 (Unknown Date):
++Sentiment: neutral
++Risk Level: medium
++Risk Explanation: No explanation provided
++
++Key Achievements:
++- No description (Impact: N/A/10 - No reason provided)
++
++
++Key Challenges:
++- No description (Severity: medium)
++
++
++Topics: None identified
++
++Action Items:
++None provided
++
++Credibility Assessment:
++- Rating: medium
++- Explanation: No explanation provided
++- Consistency Score: medium
++- Exaggeration Flags: None
++
++Performance Assessment:
++- Rating: medium
++- Summary: No summary provided
++- Key Strengths:
++None identified
++- Improvement Areas:
++None identified
++
++ANALYSIS 2 (Unknown Date):
++Sentiment: neutral
++Risk Level: medium
++Risk Explanation: No explanation provided
++
++Key Achievements:
++None reported
++
++Key Challenges:
++None reported
++
++Topics: None identified
++
++Action Items:
++None provided
++
++Credibility Assessment:
++- Rating: medium
++- Explanation: No explanation provided
++- Consistency Score: medium
++- Exaggeration Flags: None
++
++Performance Assessment:
++- Rating: medium
++- Summary: No summary provided
++- Key Strengths:
++None identified
++- Improvement Areas:
++None identified
+ 
+ 

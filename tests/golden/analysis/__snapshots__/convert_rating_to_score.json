@@ -1,0 +1,33 @@
+{
+  "' Medium '": {
+    "returned": 0.5
+  },
+  "''": {
+    "returned": 0.5
+  },
+  "'0.8'": {
+    "returned": 0.5
+  },
+  "'High\\n'": {
+    "returned": 0.8
+  },
+  "'LOW'": {
+    "returned": 0.2
+  },
+  "'high'": {
+    "returned": 0.8
+  },
+  "'low'": {
+    "returned": 0.2
+  },
+  "'very high'": {
+    "returned": 0.5
+  },
+  "None": {
+    "returned": 0.5
+  },
+  "int_3": {
+    "message": "'int' object has no attribute 'lower'",
+    "raised": "AttributeError"
+  }
+}

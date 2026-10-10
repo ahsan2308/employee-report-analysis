@@ -1,0 +1,793 @@
+
+IMPORTANT: Your response must be valid JSON data conforming to the schema, not the schema itself. Do not include any explanatory text or code formatting markers like ```json or ```.
+
+Here's the schema your response should conform to:
+{
+  "$defs": {
+    "AchievementTheme": {
+      "properties": {
+        "theme": {
+          "description": "Name of the achievement theme grouping related accomplishments",
+          "title": "Theme",
+          "type": "string"
+        },
+        "related_achievements": {
+          "description": "List of specific achievements within this theme, including both activities performed and their outcomes. Each achievement should capture what was done and its measurable impact (e.g., 'Developed cross-reference methodology reducing discrepancies by 35%').",
+          "items": {
+            "type": "string"
+          },
+          "title": "Related Achievements",
+          "type": "array"
+        },
+        "impact_score": {
+          "description": "Impact rating from 1 to 10, where 1-3 is individual level, 4-6 is section level, 7-8 is wing level, 9-10 is HQ strategic level",
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Impact Score",
+          "type": "integer"
+        },
+        "impact_reason": {
+          "description": "Brief reason for the impact rating (max 120 characters), explaining which organizational level was impacted and why",
+          "maxLength": 180,
+          "title": "Impact Reason",
+          "type": "string"
+        },
+        "vision_verification": {
+          "default": "none",
+          "description": "If vision data confirms this achievement theme, set to 'supported'. If vision data contradicts it, set to 'contradicted'. If NO vision data appears in your prompt or it does not exist for the specific achievement, set the key to 'none'",
+          "enum": [
+            "supported",
+            "contradicted",
+            "none"
+          ],
+          "title": "Vision Verification",
+          "type": "string"
+        }
+      },
+      "required": [
+        "theme",
+        "related_achievements",
+        "impact_score",
+        "impact_reason"
+      ],
+      "title": "AchievementTheme",
+      "type": "object"
+    },
+    "BehaviorAssessment": {
+      "properties": {
+        "rating": {
+          "description": "Rating relative to expectations",
+          "enum": [
+            "below",
+            "meets",
+            "exceeds"
+          ],
+          "title": "Rating",
+          "type": "string"
+        },
+        "evidence": {
+          "description": "Observable example of this behavior",
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rating",
+        "evidence"
+      ],
+      "title": "BehaviorAssessment",
+      "type": "object"
+    },
+    "BehavioralAssessment": {
+      "properties": {
+        "ownership": {
+          "$ref": "#/$defs/BehaviorAssessment",
+          "description": "Assessment of ownership and accountability"
+        },
+        "collaboration": {
+          "$ref": "#/$defs/BehaviorAssessment",
+          "description": "Assessment of collaboration and teamwork"
+        },
+        "communication": {
+          "$ref": "#/$defs/BehaviorAssessment",
+          "description": "Assessment of communication effectiveness"
+        },
+        "problem_solving": {
+          "$ref": "#/$defs/BehaviorAssessment",
+          "description": "Assessment of problem-solving approach"
+        },
+        "quality_standards": {
+          "$ref": "#/$defs/BehaviorAssessment",
+          "description": "Assessment of quality standards and craft"
+        }
+      },
+      "required": [
+        "ownership",
+        "collaboration",
+        "communication",
+        "problem_solving",
+        "quality_standards"
+      ],
+      "title": "BehavioralAssessment",
+      "type": "object"
+    },
+    "Capability": {
+      "properties": {
+        "skill": {
+          "description": "Name of the skill or capability",
+          "title": "Skill",
+          "type": "string"
+        },
+        "proficiency": {
+          "description": "Current proficiency level in this skill",
+          "enum": [
+            "developing",
+            "proficient",
+            "advanced"
+          ],
+          "title": "Proficiency",
+          "type": "string"
+        },
+        "growth": {
+          "description": "How this skill has changed over the quarter",
+          "enum": [
+            "improved",
+            "stable",
+            "declined"
+          ],
+          "title": "Growth",
+          "type": "string"
+        }
+      },
+      "required": [
+        "skill",
+        "proficiency",
+        "growth"
+      ],
+      "title": "Capability",
+      "type": "object"
+    },
+    "ChallengePatterns": {
+      "properties": {
+        "recurring_challenges": {
+          "description": "Challenges that recurred throughout the quarter",
+          "items": {
+            "$ref": "#/$defs/QuarterlyRecurringChallenge"
+          },
+          "title": "Recurring Challenges",
+          "type": "array"
+        },
+        "adaptation_effectiveness": {
+          "description": "How effectively the employee adapted to challenges",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Adaptation Effectiveness",
+          "type": "string"
+        }
+      },
+      "required": [
+        "recurring_challenges",
+        "adaptation_effectiveness"
+      ],
+      "title": "ChallengePatterns",
+      "type": "object"
+    },
+    "ConsistencyMetrics": {
+      "properties": {
+        "task_completion_reliability": {
+          "description": "Reliability in completing planned tasks",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Task Completion Reliability",
+          "type": "string"
+        },
+        "work_quality_consistency": {
+          "description": "Consistency of work quality throughout the quarter",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Work Quality Consistency",
+          "type": "string"
+        },
+        "performance_stability": {
+          "description": "Stability of performance across the quarter",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Performance Stability",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_completion_reliability",
+        "work_quality_consistency",
+        "performance_stability"
+      ],
+      "title": "ConsistencyMetrics",
+      "type": "object"
+    },
+    "CrossFunctionalImpact": {
+      "properties": {
+        "collaboration_effectiveness": {
+          "description": "Effectiveness of collaboration with other teams/departments across the quarter",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Collaboration Effectiveness",
+          "type": "string"
+        },
+        "stakeholder_impacts": {
+          "description": "Specific collaboration activities with different stakeholders. Each represents a distinct collaboration pattern with its type, impact, and supporting evidence.",
+          "items": {
+            "$ref": "#/$defs/StakeholderImpact"
+          },
+          "title": "Stakeholder Impacts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "collaboration_effectiveness",
+        "stakeholder_impacts"
+      ],
+      "title": "CrossFunctionalImpact",
+      "type": "object"
+    },
+    "ForwardPlanning": {
+      "properties": {
+        "keep_doing": {
+          "description": "Activities the employee should continue (with rationale for value)",
+          "items": {
+            "$ref": "#/$defs/Recommendation"
+          },
+          "title": "Keep Doing",
+          "type": "array"
+        },
+        "improve": {
+          "description": "Areas where the employee should focus on enhancement (with specific actions)",
+          "items": {
+            "$ref": "#/$defs/Recommendation"
+          },
+          "title": "Improve",
+          "type": "array"
+        },
+        "start": {
+          "description": "New initiatives or activities the employee should begin (growth opportunities)",
+          "items": {
+            "$ref": "#/$defs/Recommendation"
+          },
+          "title": "Start",
+          "type": "array"
+        },
+        "stop": {
+          "description": "Activities the employee should discontinue (low value or ineffective, provide alternatives)",
+          "items": {
+            "$ref": "#/$defs/Recommendation"
+          },
+          "title": "Stop",
+          "type": "array"
+        },
+        "support_needed": {
+          "description": "Resources or support required for success (with justification and timeline context)",
+          "items": {
+            "$ref": "#/$defs/Recommendation"
+          },
+          "title": "Support Needed",
+          "type": "array"
+        }
+      },
+      "required": [
+        "keep_doing",
+        "improve",
+        "start",
+        "stop",
+        "support_needed"
+      ],
+      "title": "ForwardPlanning",
+      "type": "object"
+    },
+    "KeyInitiative": {
+      "properties": {
+        "initiative": {
+          "description": "Name of the strategic initiative",
+          "title": "Initiative",
+          "type": "string"
+        },
+        "alignment": {
+          "description": "Level of alignment with organizational priorities",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Alignment",
+          "type": "string"
+        },
+        "outcomes": {
+          "description": "Concrete mission outcomes achieved through this initiative",
+          "title": "Outcomes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "initiative",
+        "alignment",
+        "outcomes"
+      ],
+      "title": "KeyInitiative",
+      "type": "object"
+    },
+    "NotableShift": {
+      "properties": {
+        "month": {
+          "description": "Month when a notable performance shift occurred",
+          "title": "Month",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of what changed in performance",
+          "title": "Description",
+          "type": "string"
+        },
+        "factors": {
+          "description": "Factors that contributed to this change",
+          "title": "Factors",
+          "type": "string"
+        }
+      },
+      "required": [
+        "month",
+        "description",
+        "factors"
+      ],
+      "title": "NotableShift",
+      "type": "object"
+    },
+    "PerformanceTrajectory": {
+      "properties": {
+        "trend": {
+          "description": "Overall trend in employee's performance over the quarter",
+          "enum": [
+            "improving",
+            "stable",
+            "declining",
+            "mixed"
+          ],
+          "title": "Trend",
+          "type": "string"
+        },
+        "consistency": {
+          "$ref": "#/$defs/ConsistencyMetrics",
+          "description": "Metrics related to performance consistency"
+        },
+        "notable_shifts": {
+          "description": "Significant shifts in performance during the quarter",
+          "items": {
+            "$ref": "#/$defs/NotableShift"
+          },
+          "title": "Notable Shifts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "trend",
+        "consistency",
+        "notable_shifts"
+      ],
+      "title": "PerformanceTrajectory",
+      "type": "object"
+    },
+    "QuarterlyCredibilityAssessment": {
+      "properties": {
+        "rating": {
+          "description": "Overall credibility rating of the employee's reporting",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Rating",
+          "type": "string"
+        },
+        "explanation": {
+          "description": "Rationale for the credibility assessment",
+          "title": "Explanation",
+          "type": "string"
+        },
+        "vision_data_alignment": {
+          "anyOf": [
+            {
+              "enum": [
+                "high",
+                "medium",
+                "low",
+                "none"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Alignment between self-reported activities and vision system data. Set to 'high' if vision data strongly validates claims, 'medium' if partially validates, 'low' if contradicts or shows significant discrepancies. If NO vision data exists for this employee, either OMIT this key entirely OR set to 'none' (both are acceptable).",
+          "title": "Vision Data Alignment"
+        },
+        "impact_on_evaluation": {
+          "description": "How credibility concerns affected the overall assessment",
+          "title": "Impact On Evaluation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rating",
+        "explanation",
+        "vision_data_alignment",
+        "impact_on_evaluation"
+      ],
+      "title": "QuarterlyCredibilityAssessment",
+      "type": "object"
+    },
+    "QuarterlyRecurringChallenge": {
+      "properties": {
+        "description": {
+          "description": "Description of a recurring challenge",
+          "title": "Description",
+          "type": "string"
+        },
+        "type": {
+          "description": "Whether the challenge is internal (organizational) or external",
+          "enum": [
+            "internal",
+            "external"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "frequency": {
+          "description": "Pattern of occurrence for this challenge",
+          "enum": [
+            "constant",
+            "intermittent",
+            "decreasing",
+            "increasing"
+          ],
+          "title": "Frequency",
+          "type": "string"
+        },
+        "resolution_status": {
+          "description": "Current status of this challenge",
+          "enum": [
+            "resolved",
+            "ongoing"
+          ],
+          "title": "Resolution Status",
+          "type": "string"
+        },
+        "systemic": {
+          "description": "Whether this is a systemic issue or specific to the employee",
+          "title": "Systemic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "description",
+        "type",
+        "frequency",
+        "resolution_status",
+        "systemic"
+      ],
+      "title": "QuarterlyRecurringChallenge",
+      "type": "object"
+    },
+    "QuarterlyRiskAssessment": {
+      "properties": {
+        "overall_risk_level": {
+          "description": "Overall risk assessment for the quarter",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Overall Risk Level",
+          "type": "string"
+        },
+        "risk_trend": {
+          "description": "Trend in risk level over the quarter",
+          "enum": [
+            "increasing",
+            "stable",
+            "decreasing"
+          ],
+          "title": "Risk Trend",
+          "type": "string"
+        },
+        "key_risk_factors": {
+          "description": "Specific factors contributing to risk",
+          "items": {
+            "type": "string"
+          },
+          "title": "Key Risk Factors",
+          "type": "array"
+        },
+        "mitigation_strategies": {
+          "description": "Recommended strategies to mitigate identified risks",
+          "items": {
+            "type": "string"
+          },
+          "title": "Mitigation Strategies",
+          "type": "array"
+        }
+      },
+      "required": [
+        "overall_risk_level",
+        "risk_trend",
+        "key_risk_factors",
+        "mitigation_strategies"
+      ],
+      "title": "QuarterlyRiskAssessment",
+      "type": "object"
+    },
+    "Recommendation": {
+      "properties": {
+        "action": {
+          "description": "The recommended action in clear, actionable language",
+          "title": "Action",
+          "type": "string"
+        },
+        "priority": {
+          "description": "Priority level: high (immediate intervention needed), medium (address within next quarter), low (desirable improvements)",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Priority",
+          "type": "string"
+        },
+        "ownership": {
+          "description": "Who is responsible for implementing this recommendation: employee (independent action), manager (intervention/approval required), hr (HR resources/training/policy support), cross-team (coordination with other Wings/Sections)",
+          "enum": [
+            "employee",
+            "manager",
+            "hr",
+            "cross-team"
+          ],
+          "title": "Ownership",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "priority",
+        "ownership"
+      ],
+      "title": "Recommendation",
+      "type": "object"
+    },
+    "SkillDevelopment": {
+      "properties": {
+        "key_capabilities": {
+          "description": "Key skills demonstrated or developed during the quarter",
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "title": "Key Capabilities",
+          "type": "array"
+        },
+        "learning_agility": {
+          "description": "Employee's ability to learn and adapt to new information",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Learning Agility",
+          "type": "string"
+        },
+        "autonomy_level": {
+          "description": "Level of independence in executing responsibilities",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Autonomy Level",
+          "type": "string"
+        },
+        "development_focus": {
+          "description": "Recommended skill or capability to develop next",
+          "title": "Development Focus",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key_capabilities",
+        "learning_agility",
+        "autonomy_level",
+        "development_focus"
+      ],
+      "title": "SkillDevelopment",
+      "type": "object"
+    },
+    "StakeholderImpact": {
+      "properties": {
+        "stakeholder": {
+          "description": "Team or department impacted by the employee's work",
+          "title": "Stakeholder",
+          "type": "string"
+        },
+        "collaboration_type": {
+          "description": "Type of collaboration: leading_initiative (coordinating across Wings/Sections), contributing_expertise (specialized knowledge to other teams), mentoring (knowledge transfer/capability building), process_improvement (benefiting multiple units)",
+          "enum": [
+            "Leading Initiative",
+            "Contributing Expertise",
+            "Mentoring",
+            "Process Improvement"
+          ],
+          "title": "Collaboration Type",
+          "type": "string"
+        },
+        "impact": {
+          "description": "Description of the impact on this stakeholder",
+          "title": "Impact",
+          "type": "string"
+        },
+        "evidence": {
+          "description": "Concrete example demonstrating this impact",
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stakeholder",
+        "collaboration_type",
+        "impact",
+        "evidence"
+      ],
+      "title": "StakeholderImpact",
+      "type": "object"
+    },
+    "StrategicAlignment": {
+      "properties": {
+        "organizational_impact": {
+          "description": "Scope of impact the employee's work has had",
+          "enum": [
+            "individual",
+            "cell",
+            "unit",
+            "section",
+            "wing",
+            "hq"
+          ],
+          "title": "Organizational Impact",
+          "type": "string"
+        },
+        "key_initiatives": {
+          "description": "Strategic initiatives the employee has contributed to",
+          "items": {
+            "$ref": "#/$defs/KeyInitiative"
+          },
+          "title": "Key Initiatives",
+          "type": "array"
+        },
+        "role_alignment": {
+          "description": "How well employee's work aligns with job description responsibilities across the quarter",
+          "enum": [
+            "strong",
+            "partial",
+            "weak"
+          ],
+          "title": "Role Alignment",
+          "type": "string"
+        },
+        "role_fit_assessment": {
+          "description": "Detailed assessment of Job Description fit, including stretch contributions beyond role scope and any gaps between role requirements and actual work patterns",
+          "title": "Role Fit Assessment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "organizational_impact",
+        "key_initiatives",
+        "role_alignment",
+        "role_fit_assessment"
+      ],
+      "title": "StrategicAlignment",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "strategic_alignment": {
+      "$ref": "#/$defs/StrategicAlignment",
+      "description": "Assessment of alignment with organizational goals"
+    },
+    "achievement_themes": {
+      "description": "Thematic grouping of achievements across the quarter",
+      "items": {
+        "$ref": "#/$defs/AchievementTheme"
+      },
+      "title": "Achievement Themes",
+      "type": "array"
+    },
+    "performance_trajectory": {
+      "$ref": "#/$defs/PerformanceTrajectory",
+      "description": "Analysis of performance trends over the quarter"
+    },
+    "challenge_patterns": {
+      "$ref": "#/$defs/ChallengePatterns",
+      "description": "Analysis of recurring challenges and adaptation"
+    },
+    "cross_functional_impact": {
+      "$ref": "#/$defs/CrossFunctionalImpact",
+      "description": "Assessment of impact across teams and departments"
+    },
+    "risk_assessment": {
+      "$ref": "#/$defs/QuarterlyRiskAssessment",
+      "description": "Assessment of risks for the next quarter"
+    },
+    "skill_development": {
+      "$ref": "#/$defs/SkillDevelopment",
+      "description": "Evaluation of skills demonstrated and developed"
+    },
+    "behavioral_assessment": {
+      "$ref": "#/$defs/BehavioralAssessment",
+      "description": "Assessment of key workplace behaviors"
+    },
+    "credibility_assessment": {
+      "$ref": "#/$defs/QuarterlyCredibilityAssessment",
+      "description": "Assessment of reporting credibility"
+    },
+    "forward_planning": {
+      "$ref": "#/$defs/ForwardPlanning",
+      "description": "Recommendations for future focus"
+    },
+    "quarterly_summary": {
+      "description": "Executive summary of quarterly performance",
+      "title": "Quarterly Summary",
+      "type": "string"
+    }
+  },
+  "required": [
+    "strategic_alignment",
+    "achievement_themes",
+    "performance_trajectory",
+    "challenge_patterns",
+    "cross_functional_impact",
+    "risk_assessment",
+    "skill_development",
+    "behavioral_assessment",
+    "credibility_assessment",
+    "forward_planning",
+    "quarterly_summary"
+  ],
+  "title": "QuarterlyAnalysis",
+  "type": "object"
+}
+
+Example format of what I'm expecting (with your own values):
+{
+  "strategic_alignment": "example value",
+  "achievement_themes": [
+    "example item"
+  ],
+  "performance_trajectory": "example value",
+  "challenge_patterns": "example value",
+  "cross_functional_impact": "example value",
+  "risk_assessment": "example value",
+  "skill_development": "example value",
+  "behavioral_assessment": "example value",
+  "credibility_assessment": "example value",
+  "forward_planning": "example value",
+  "quarterly_summary": "example value"
+}

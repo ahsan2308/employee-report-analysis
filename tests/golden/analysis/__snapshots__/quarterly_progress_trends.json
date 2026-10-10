@@ -1,0 +1,102 @@
+{
+  "all_declining": {
+    "challenge_resolution_trend": "declining",
+    "monthly_progress_trends": [
+      {
+        "challenge_resolution_progress": "decreased",
+        "month": 1,
+        "performance_trend": "declining",
+        "risk_level_pattern": "stable",
+        "sentiment_trend": "stable"
+      },
+      {
+        "challenge_resolution_progress": "declined",
+        "month": 2,
+        "performance_trend": "declined",
+        "risk_level_pattern": "stable",
+        "sentiment_trend": "stable"
+      }
+    ],
+    "performance_trend": "declining"
+  },
+  "all_improving": {
+    "challenge_resolution_trend": "stable",
+    "monthly_progress_trends": [
+      {
+        "challenge_resolution_progress": "unchanged",
+        "month": 1,
+        "performance_trend": "improved",
+        "risk_level_pattern": "stable",
+        "sentiment_trend": "stable"
+      },
+      {
+        "challenge_resolution_progress": "unchanged",
+        "month": 2,
+        "performance_trend": "increased",
+        "risk_level_pattern": "stable",
+        "sentiment_trend": "stable"
+      }
+    ],
+    "performance_trend": "improving"
+  },
+  "mixed": {
+    "challenge_resolution_trend": "improving",
+    "monthly_progress_trends": [
+      {
+        "challenge_resolution_progress": "declined",
+        "month": 1,
+        "performance_trend": "improving",
+        "risk_level_pattern": "stable",
+        "sentiment_trend": "stable"
+      },
+      {
+        "challenge_resolution_progress": "improved",
+        "month": 2,
+        "performance_trend": "declining",
+        "risk_level_pattern": "stable",
+        "sentiment_trend": "stable"
+      }
+    ],
+    "performance_trend": "declining"
+  },
+  "mixed_and_unknown": {
+    "challenge_resolution_trend": "stable",
+    "monthly_progress_trends": [
+      {
+        "challenge_resolution_progress": "unchanged",
+        "month": 1,
+        "performance_trend": "mixed",
+        "risk_level_pattern": "stable",
+        "sentiment_trend": "stable"
+      },
+      {
+        "challenge_resolution_progress": "unchanged",
+        "month": 2,
+        "performance_trend": "whatever",
+        "risk_level_pattern": "stable",
+        "sentiment_trend": "stable"
+      },
+      {
+        "challenge_resolution_progress": "unchanged",
+        "month": 3,
+        "performance_trend": "improving",
+        "risk_level_pattern": "stable",
+        "sentiment_trend": "stable"
+      }
+    ],
+    "performance_trend": "improving"
+  },
+  "one_empty_progress": {
+    "challenge_resolution_trend": "stble",
+    "monthly_progress_trends": [
+      {
+        "challenge_resolution_progress": "unchanged",
+        "month": 1,
+        "performance_trend": "improving",
+        "risk_level_pattern": "stable",
+        "sentiment_trend": "stable"
+      }
+    ],
+    "performance_trend": "<absent>"
+  }
+}

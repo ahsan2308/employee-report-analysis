@@ -1,0 +1,19 @@
+
+Current Report Period Activity Data:
+
+- Time Period: a to b
+  Main Activity: Persons
+  Details:
+    - Number of Persons: 5 (d)
+      ---> name: Name 1, ref: R-1
+      ---> name: Name 2, ref: R-2
+      ---> name: Name 3, ref: R-3
+      ---> name: Name 4, ref: R-4
+      ---> name: Name 5, ref: R-5
+    - Number of Numbers: 6 (e)
+      ---> name: Name 1, ref: R-1
+      ---> name: Name 2, ref: R-2
+      ---> name: Name 3, ref: R-3
+      ---> name: Name 4, ref: R-4
+      ---> name: Name 5, ref: R-5
+      ---> and 1 more...

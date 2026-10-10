@@ -1,0 +1,13 @@
+{
+  "ops": [
+    [
+      "filter",
+      "public.reports.report_date >= '2025-01-01'"
+    ],
+    [
+      "filter",
+      "public.reports.report_date <= '2025-12-31'"
+    ]
+  ],
+  "same_query": true
+}

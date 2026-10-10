@@ -1,0 +1,15 @@
+{
+  "multi_phase_empty_texts": {
+    "message": "list index out of range",
+    "raised": "IndexError"
+  },
+  "multi_phase_reports_without_week_range": {
+    "returned": "\n## EMPLOYEE JOB DESCRIPTIONS AND CAREER PROGRESSION\n\nThe employee experienced 1 role transition(s) during this quarter:\n\n### ROLE TIMELINE\n\nPHASE 1: 2025-04-01 to 2025-04-30\nJob Description:\nA\n\nWeekly reports from this phase: 1 reports\nCoverage:\n\n---\n\nPHASE 2: 2025-05-01 to 2025-06-30\nJob Description:\nB\n\nWeekly reports from this phase: 1 reports\nCoverage:\n\n\n### STRATEGIC ANALYSIS GUIDANCE\n\n1. ROLE PROGRESSION ASSESSMENT:\n   - Analyze career trajectory across these role changes\n   - Determine if transitions represent promotions, lateral moves, or temporary assignments\n   - Evaluate readiness for each new role based on performance in previous roles\n\n2. TRANSITION IMPACT ANALYSIS:\n   - Assess adaptation effectiveness for each transition\n   - Identify performance dips or spikes coinciding with role changes\n   - Evaluate whether transitions required additional support\n\n3. CUMULATIVE CAPABILITY DEVELOPMENT:\n   - Track skill development across different roles\n   - Identify transferable skills leveraged across positions\n   - Assess breadth of experience gained\n\n4. PERFORMANCE CONSISTENCY:\n   - Compare performance stability across different role contexts\n   - Identify if certain role types align better with employee strengths\n\n5. FUTURE READINESS:\n   - Based on performance across multiple roles, assess readiness for advancement\n   - Identify optimal role type based on demonstrated strengths\n"
+  },
+  "single_start_none": {
+    "returned": "\n## EMPLOYEE JOB DESCRIPTION\n\nRole has remained stable throughout the quarter.\n\nEffective Period: Q1 Unknown (None to None)\n\nJob Description:\nA\n\nTotal weekly reports in this period: 0\n"
+  },
+  "single_start_string": {
+    "returned": "\n## EMPLOYEE JOB DESCRIPTION\n\nRole has remained stable throughout the quarter.\n\nEffective Period: Q1 Unknown (2025-07-01 to x)\n\nJob Description:\nA\n\nTotal weekly reports in this period: 2\n"
+  }
+}

@@ -1,0 +1,57 @@
+# QUARTERLY VISION DATA (2025-Q1)
+Period: 2025-01-01 to 2025-03-31
+
+**Quarter Summary:**
+- Data spans 3 months with 4 total weeks of activity
+- 5 main activity types recorded: Cases, Events, Nadra, PER, Persons
+
+
+## JANUARY ACTIVITY DATA
+
+Week 1 Activity Data (2025-01-06 to 2025-01-12):
+  Main Activity: Events
+  Details:
+    - Number of Events: 1 (Event records created (Incidents, Protests, Strikes, Press conferences, etc.))
+      ---> plain string entry
+      ---> LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL...
+      ---> evt 0
+      ---> evt 1
+      ---> evt 2
+      ---> evt 3
+      ---> evt 4
+      ---> evt 5
+      ---> and 4 more...
+    - Number of Labels: 2 (Events marked with specific labels)
+    - Number of Attachments: 1 (Attachments uploaded with events)
+
+## FEBRUARY ACTIVITY DATA
+
+Week 1 Activity Data (2025-02-03 to 2025-02-09):
+  Main Activity: Persons
+  Details:
+    - Number of Persons: 2 (New Person records created)
+      ---> name: Name 1, ref: R-1
+      ---> name: Name 2, ref: R-2
+      ---> name: Name 3, ref: R-3
+      ---> name: Name 4, ref: R-4
+      ---> name: Name 5, ref: R-5
+      ---> name: Name 6, ref: R-6
+  Main Activity: Nadra
+  Details:
+    - Number of Requests: 10 (NADRA person verification requests added)
+      ---> cnic: LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL..., status: ok
+    - Number of Forwarded: 4 (NADRA person verification requests frowardred to concernd field offices of IB)
+    - Number of Notings: 1 (Notings added with NADRA person verification requests)
+
+Week 4 Activity Data (2025-02-17 to 2025-02-23):
+  Main Activity: PER
+  Details:
+    - Number of Initiated: 1 (PER initiated by HR department and sent to Reporting Officer (RO))
+    - Number of Recieved as CSO1: 2 (PER received by Counter Signing Officer 1 (CSO1) for review)
+
+## UNKNOWN ACTIVITY DATA
+
+Week 9 Activity Data (2025-03-24 to 2025-03-30):
+  Main Activity: Cases
+  Details:
+    - Number of Cases: 1 (FIR details (Police station, FIR number, Location coordinates))

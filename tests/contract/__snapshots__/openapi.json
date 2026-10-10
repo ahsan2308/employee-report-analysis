@@ -1,0 +1,5684 @@
+{
+  "components": {
+    "schemas": {
+      "AchievementTheme": {
+        "description": "Schema for achievement theme grouping.",
+        "properties": {
+          "impact_reason": {
+            "description": "Brief reason for the impact rating",
+            "title": "Impact Reason",
+            "type": "string"
+          },
+          "impact_score": {
+            "description": "Impact rating from 1 to 10",
+            "title": "Impact Score",
+            "type": "integer"
+          },
+          "related_achievements": {
+            "description": "List of specific achievements within this theme",
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Achievements",
+            "type": "array"
+          },
+          "theme": {
+            "description": "Name of the achievement theme grouping related accomplishments",
+            "title": "Theme",
+            "type": "string"
+          },
+          "vision_verification": {
+            "description": "Vision data verification status: supported/contradicted/none",
+            "title": "Vision Verification",
+            "type": "string"
+          }
+        },
+        "required": [
+          "theme",
+          "related_achievements",
+          "impact_score",
+          "impact_reason",
+          "vision_verification"
+        ],
+        "title": "AchievementTheme",
+        "type": "object"
+      },
+      "AnalysisResponse": {
+        "description": "Schema for analysis response. This is the model that is returned by the API.",
+        "properties": {
+          "achievements_json": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Achievements Json"
+          },
+          "action_items": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action Items"
+          },
+          "challenges_json": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Challenges Json"
+          },
+          "credibility_assessment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CredibilityAssessment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "employee_name": {
+            "title": "Employee Name",
+            "type": "string"
+          },
+          "full_analysis_json": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Analysis Json"
+          },
+          "performance_assessment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PerformanceAssessment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "report_id": {
+            "title": "Report Id",
+            "type": "string"
+          },
+          "risk_explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Explanation"
+          },
+          "risk_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Level"
+          },
+          "sentiment": {
+            "title": "Sentiment",
+            "type": "number"
+          },
+          "sentiment_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sentiment Score"
+          },
+          "topics": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topics"
+          }
+        },
+        "required": [
+          "report_id",
+          "employee_name",
+          "sentiment"
+        ],
+        "title": "AnalysisResponse",
+        "type": "object"
+      },
+      "BehaviorAssessment": {
+        "description": "Schema for individual behavior assessment.",
+        "properties": {
+          "evidence": {
+            "description": "Observable example of this behavior",
+            "title": "Evidence",
+            "type": "string"
+          },
+          "rating": {
+            "description": "Rating relative to expectations: below/meets/exceeds",
+            "title": "Rating",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rating",
+          "evidence"
+        ],
+        "title": "BehaviorAssessment",
+        "type": "object"
+      },
+      "BehavioralAssessment": {
+        "description": "Schema for behavioral assessment across key areas.",
+        "properties": {
+          "collaboration": {
+            "$ref": "#/components/schemas/BehaviorAssessment",
+            "description": "Assessment of collaboration and teamwork"
+          },
+          "communication": {
+            "$ref": "#/components/schemas/BehaviorAssessment",
+            "description": "Assessment of communication effectiveness"
+          },
+          "ownership": {
+            "$ref": "#/components/schemas/BehaviorAssessment",
+            "description": "Assessment of ownership and accountability"
+          },
+          "problem_solving": {
+            "$ref": "#/components/schemas/BehaviorAssessment",
+            "description": "Assessment of problem-solving approach"
+          },
+          "quality_standards": {
+            "$ref": "#/components/schemas/BehaviorAssessment",
+            "description": "Assessment of quality standards and craft"
+          }
+        },
+        "required": [
+          "ownership",
+          "collaboration",
+          "communication",
+          "problem_solving",
+          "quality_standards"
+        ],
+        "title": "BehavioralAssessment",
+        "type": "object"
+      },
+      "Body_upload_csv_file_imports_upload_post": {
+        "properties": {
+          "chunk_size": {
+            "default": 1000,
+            "title": "Chunk Size",
+            "type": "integer"
+          },
+          "csv_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional CSV type override (e.g., 'employee_report', 'vision_data')",
+            "title": "Csv Type"
+          },
+          "delimiter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Field delimiter. None means auto-detect.",
+            "title": "Delimiter"
+          },
+          "dry_run": {
+            "default": false,
+            "title": "Dry Run",
+            "type": "boolean"
+          },
+          "encoding": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "File encoding. None means auto-detect.",
+            "title": "Encoding"
+          },
+          "error_threshold_percent": {
+            "default": 10.0,
+            "title": "Error Threshold Percent",
+            "type": "number"
+          },
+          "file": {
+            "format": "binary",
+            "title": "File",
+            "type": "string"
+          },
+          "file_format": {
+            "default": "auto",
+            "description": "File format: csv, txt, tsv, or auto (detect)",
+            "title": "File Format",
+            "type": "string"
+          },
+          "processing_mode": {
+            "default": "bulk",
+            "title": "Processing Mode",
+            "type": "string"
+          },
+          "stop_on_error": {
+            "default": false,
+            "title": "Stop On Error",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_csv_file_imports_upload_post",
+        "type": "object"
+      },
+      "CSVImportJobResponse": {
+        "description": "Schema for CSV import job response.\n\nReturns comprehensive information about an import job,\nincluding progress statistics and status.",
+        "properties": {
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When processing finished",
+            "title": "Completed At"
+          },
+          "csv_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Type of CSV data being imported",
+            "title": "Csv Type"
+          },
+          "error_count": {
+            "description": "Number of rows with errors",
+            "title": "Error Count",
+            "type": "integer"
+          },
+          "estimated_time_remaining": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Estimated time to completion (if available)",
+            "title": "Estimated Time Remaining"
+          },
+          "filename": {
+            "description": "Original filename of the CSV",
+            "title": "Filename",
+            "type": "string"
+          },
+          "job_id": {
+            "description": "Unique identifier for the import job",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "metrics": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Type-specific detailed metrics",
+            "title": "Metrics"
+          },
+          "percent_complete": {
+            "description": "Percentage of processing completed",
+            "title": "Percent Complete",
+            "type": "number"
+          },
+          "processed_rows": {
+            "description": "Number of rows processed so far",
+            "title": "Processed Rows",
+            "type": "integer"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When processing started",
+            "title": "Started At"
+          },
+          "status": {
+            "description": "Current status of the import job",
+            "title": "Status",
+            "type": "string"
+          },
+          "submitted_at": {
+            "description": "When the job was submitted",
+            "format": "date-time",
+            "title": "Submitted At",
+            "type": "string"
+          },
+          "successful_rows": {
+            "description": "Number of rows successfully imported",
+            "title": "Successful Rows",
+            "type": "integer"
+          },
+          "total_rows": {
+            "description": "Total number of rows in the CSV",
+            "title": "Total Rows",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "job_id",
+          "filename",
+          "status",
+          "submitted_at",
+          "total_rows",
+          "processed_rows",
+          "successful_rows",
+          "error_count",
+          "percent_complete"
+        ],
+        "title": "CSVImportJobResponse",
+        "type": "object"
+      },
+      "Capability": {
+        "description": "Schema for skill/capability.",
+        "properties": {
+          "growth": {
+            "description": "How this skill has changed: improved/stable/declined",
+            "title": "Growth",
+            "type": "string"
+          },
+          "proficiency": {
+            "description": "Current proficiency level: developing/proficient/advanced",
+            "title": "Proficiency",
+            "type": "string"
+          },
+          "skill": {
+            "description": "Name of the skill or capability",
+            "title": "Skill",
+            "type": "string"
+          }
+        },
+        "required": [
+          "skill",
+          "proficiency",
+          "growth"
+        ],
+        "title": "Capability",
+        "type": "object"
+      },
+      "ConnectionTestResponse": {
+        "description": "Result of SQL Server connection test.",
+        "example": {
+          "available_tables": [
+            "EmployeeReports",
+            "VisionEmployeeData"
+          ],
+          "connection_time_ms": 45,
+          "database": "EmployeeTestDB",
+          "message": "Successfully connected to SQL Server",
+          "server": "localhost\\SQLEXPRESS",
+          "status": "connected"
+        },
+        "properties": {
+          "available_tables": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Available Tables",
+            "type": "array"
+          },
+          "connection_time_ms": {
+            "title": "Connection Time Ms",
+            "type": "integer"
+          },
+          "database": {
+            "title": "Database",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "server": {
+            "title": "Server",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "server",
+          "database",
+          "available_tables",
+          "connection_time_ms",
+          "message"
+        ],
+        "title": "ConnectionTestResponse",
+        "type": "object"
+      },
+      "ConsistencyAssessment": {
+        "description": "Schema for monthly consistency assessment.",
+        "properties": {
+          "notable_strengths": {
+            "description": "Notable strengths in consistency",
+            "items": {
+              "type": "string"
+            },
+            "title": "Notable Strengths",
+            "type": "array"
+          },
+          "notable_weaknesses": {
+            "description": "Notable weaknesses in consistency",
+            "items": {
+              "type": "string"
+            },
+            "title": "Notable Weaknesses",
+            "type": "array"
+          },
+          "performance_stability": {
+            "description": "Stability of performance across weeks (high, medium, low)",
+            "title": "Performance Stability",
+            "type": "string"
+          },
+          "task_completion_reliability": {
+            "description": "Reliability in completing planned tasks (high, medium, low)",
+            "title": "Task Completion Reliability",
+            "type": "string"
+          },
+          "work_quality_consistency": {
+            "description": "Consistency of work quality (high, medium, low)",
+            "title": "Work Quality Consistency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_completion_reliability",
+          "work_quality_consistency",
+          "performance_stability",
+          "notable_strengths",
+          "notable_weaknesses"
+        ],
+        "title": "ConsistencyAssessment",
+        "type": "object"
+      },
+      "ConsistencyMetrics": {
+        "description": "Schema for consistency metrics.",
+        "properties": {
+          "performance_stability": {
+            "description": "Stability of performance: high/medium/low",
+            "title": "Performance Stability",
+            "type": "string"
+          },
+          "task_completion_reliability": {
+            "description": "Reliability in completing planned tasks: high/medium/low",
+            "title": "Task Completion Reliability",
+            "type": "string"
+          },
+          "work_quality_consistency": {
+            "description": "Consistency of work quality: high/medium/low",
+            "title": "Work Quality Consistency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_completion_reliability",
+          "work_quality_consistency",
+          "performance_stability"
+        ],
+        "title": "ConsistencyMetrics",
+        "type": "object"
+      },
+      "CredibilityAssessment": {
+        "description": "Schema for credibility assessment in analysis.",
+        "properties": {
+          "consistency_score": {
+            "description": "How well the various sections of the report align with each other",
+            "title": "Consistency Score",
+            "type": "string"
+          },
+          "exaggeration_flags": {
+            "description": "Specific claims that appear to be exaggerated",
+            "items": {
+              "type": "string"
+            },
+            "title": "Exaggeration Flags",
+            "type": "array"
+          },
+          "explanation": {
+            "description": "Assessment of the report's credibility, focusing on potential exaggeration",
+            "title": "Explanation",
+            "type": "string"
+          },
+          "rating": {
+            "description": "Overall credibility rating (high/medium/low)",
+            "title": "Rating",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rating",
+          "explanation",
+          "exaggeration_flags",
+          "consistency_score"
+        ],
+        "title": "CredibilityAssessment",
+        "type": "object"
+      },
+      "CrossFunctionalImpact": {
+        "description": "Schema for cross-functional impact assessment.",
+        "properties": {
+          "collaboration_effectiveness": {
+            "description": "Effectiveness of collaboration: high/medium/low",
+            "title": "Collaboration Effectiveness",
+            "type": "string"
+          },
+          "stakeholder_impacts": {
+            "description": "Impact on various stakeholders",
+            "items": {
+              "$ref": "#/components/schemas/StakeholderImpact"
+            },
+            "title": "Stakeholder Impacts",
+            "type": "array"
+          }
+        },
+        "required": [
+          "collaboration_effectiveness",
+          "stakeholder_impacts"
+        ],
+        "title": "CrossFunctionalImpact",
+        "type": "object"
+      },
+      "EmployeeCreate": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "string"
+          },
+          "wing": {
+            "title": "Wing",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "wing",
+          "position"
+        ],
+        "title": "EmployeeCreate",
+        "type": "object"
+      },
+      "FocusArea": {
+        "description": "Schema for focus area.",
+        "properties": {
+          "priority_level": {
+            "description": "Priority level of this focus area: high/medium/low",
+            "title": "Priority Level",
+            "type": "string"
+          },
+          "project": {
+            "description": "Project or responsibility name",
+            "title": "Project",
+            "type": "string"
+          },
+          "time_investment": {
+            "description": "Level of time invested: high/medium/low",
+            "title": "Time Investment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "time_investment",
+          "priority_level"
+        ],
+        "title": "FocusArea",
+        "type": "object"
+      },
+      "ForwardPlanning": {
+        "description": "Schema for forward planning recommendations.",
+        "properties": {
+          "improve": {
+            "description": "Areas where the employee should focus on enhancement",
+            "items": {
+              "$ref": "#/components/schemas/Recommendation"
+            },
+            "title": "Improve",
+            "type": "array"
+          },
+          "keep_doing": {
+            "description": "Activities the employee should continue",
+            "items": {
+              "$ref": "#/components/schemas/Recommendation"
+            },
+            "title": "Keep Doing",
+            "type": "array"
+          },
+          "start": {
+            "description": "New initiatives or activities the employee should begin",
+            "items": {
+              "$ref": "#/components/schemas/Recommendation"
+            },
+            "title": "Start",
+            "type": "array"
+          },
+          "stop": {
+            "description": "Activities the employee should discontinue",
+            "items": {
+              "$ref": "#/components/schemas/Recommendation"
+            },
+            "title": "Stop",
+            "type": "array"
+          },
+          "support_needed": {
+            "description": "Resources or support required for success",
+            "items": {
+              "$ref": "#/components/schemas/Recommendation"
+            },
+            "title": "Support Needed",
+            "type": "array"
+          }
+        },
+        "required": [
+          "keep_doing",
+          "improve",
+          "start",
+          "stop",
+          "support_needed"
+        ],
+        "title": "ForwardPlanning",
+        "type": "object"
+      },
+      "FullSyncTriggerResponse": {
+        "description": "Response when triggering a full sync (both types).",
+        "example": {
+          "employee_reports_sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
+          "job_descriptions_sync_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "message": "Full sync (both types) started successfully",
+          "status": "pending",
+          "supervisor_feedback_sync_id": "f1e2d3c4-b5a6-7890-abcd-ef1234567890",
+          "sync_type": "full",
+          "task_id": "full-sync-task-id",
+          "triggered_at": "2025-11-24T13:13:19Z",
+          "vision_data_sync_id": "0c563781-7366-465d-931d-874b98af6277"
+        },
+        "properties": {
+          "employee_reports_sync_id": {
+            "format": "uuid4",
+            "title": "Employee Reports Sync Id",
+            "type": "string"
+          },
+          "job_descriptions_sync_id": {
+            "format": "uuid4",
+            "title": "Job Descriptions Sync Id",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SyncStatusEnum"
+          },
+          "supervisor_feedback_sync_id": {
+            "format": "uuid4",
+            "title": "Supervisor Feedback Sync Id",
+            "type": "string"
+          },
+          "sync_type": {
+            "default": "full",
+            "title": "Sync Type",
+            "type": "string"
+          },
+          "task_id": {
+            "title": "Task Id",
+            "type": "string"
+          },
+          "triggered_at": {
+            "format": "date-time",
+            "title": "Triggered At",
+            "type": "string"
+          },
+          "vision_data_sync_id": {
+            "format": "uuid4",
+            "title": "Vision Data Sync Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "employee_reports_sync_id",
+          "vision_data_sync_id",
+          "job_descriptions_sync_id",
+          "supervisor_feedback_sync_id",
+          "task_id",
+          "status",
+          "triggered_at",
+          "message"
+        ],
+        "title": "FullSyncTriggerResponse",
+        "type": "object"
+      },
+      "GrowthIndicators": {
+        "description": "Schema for employee growth indicators.",
+        "properties": {
+          "approach_to_challenges": {
+            "description": "Approach to challenges (more proactive, more reactive, unchanged)",
+            "title": "Approach To Challenges",
+            "type": "string"
+          },
+          "complexity_of_tasks": {
+            "description": "Changes in task complexity (increased, decreased, unchanged)",
+            "title": "Complexity Of Tasks",
+            "type": "string"
+          },
+          "confidence_level_change": {
+            "description": "Change in confidence level (increased, decreased, unchanged)",
+            "title": "Confidence Level Change",
+            "type": "string"
+          },
+          "skill_development_evidence": {
+            "description": "Evidence of skill development (high, medium, low)",
+            "title": "Skill Development Evidence",
+            "type": "string"
+          }
+        },
+        "required": [
+          "complexity_of_tasks",
+          "skill_development_evidence",
+          "confidence_level_change",
+          "approach_to_challenges"
+        ],
+        "title": "GrowthIndicators",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HeatmapCell": {
+        "description": "Represents a single cell in a heatmap.",
+        "properties": {
+          "value": {
+            "title": "Value",
+            "type": "number"
+          },
+          "x": {
+            "title": "X",
+            "type": "integer"
+          },
+          "y": {
+            "title": "Y",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "value"
+        ],
+        "title": "HeatmapCell",
+        "type": "object"
+      },
+      "HeatmapMetadata": {
+        "description": "Metadata associated with a heatmap.",
+        "properties": {
+          "avg": {
+            "title": "Avg",
+            "type": "number"
+          },
+          "max": {
+            "title": "Max",
+            "type": "number"
+          },
+          "min": {
+            "title": "Min",
+            "type": "number"
+          }
+        },
+        "required": [
+          "min",
+          "max",
+          "avg"
+        ],
+        "title": "HeatmapMetadata",
+        "type": "object"
+      },
+      "HeatmapResponse": {
+        "description": "Response model for heatmap visualization data.",
+        "properties": {
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/HeatmapCell"
+            },
+            "title": "Cells",
+            "type": "array"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/HeatmapMetadata"
+          },
+          "x_labels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "X Labels",
+            "type": "array"
+          },
+          "y_labels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Y Labels",
+            "type": "array"
+          }
+        },
+        "required": [
+          "x_labels",
+          "y_labels",
+          "cells",
+          "metadata"
+        ],
+        "title": "HeatmapResponse",
+        "type": "object"
+      },
+      "ImportErrorResponse": {
+        "description": "Schema for a single import error.\n\nProvides detailed information about an error encountered\nduring CSV import processing.",
+        "properties": {
+          "error_message": {
+            "description": "Detailed error message",
+            "title": "Error Message",
+            "type": "string"
+          },
+          "field_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Name of the field with the error, or None for row-level errors",
+            "title": "Field Name"
+          },
+          "row_data": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Original data from the row that failed",
+            "title": "Row Data"
+          },
+          "row_number": {
+            "description": "Row number in the CSV file (1-based)",
+            "title": "Row Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "row_number",
+          "error_message"
+        ],
+        "title": "ImportErrorResponse",
+        "type": "object"
+      },
+      "ImportErrorsResponse": {
+        "description": "Schema for paginated list of import errors.\n\nReturns a paginated collection of errors from an import job.",
+        "properties": {
+          "errors": {
+            "description": "List of errors on this page",
+            "items": {
+              "$ref": "#/components/schemas/ImportErrorResponse"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "page": {
+            "description": "Current page number",
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "description": "Number of errors per page",
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Total number of errors",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "page",
+          "page_size",
+          "errors"
+        ],
+        "title": "ImportErrorsResponse",
+        "type": "object"
+      },
+      "KeyInitiative": {
+        "description": "Schema for strategic initiatives.",
+        "properties": {
+          "alignment": {
+            "description": "Level of alignment with organizational priorities: high/medium/low",
+            "title": "Alignment",
+            "type": "string"
+          },
+          "initiative": {
+            "description": "Name of the strategic initiative",
+            "title": "Initiative",
+            "type": "string"
+          },
+          "outcomes": {
+            "description": "Concrete mission outcomes achieved through this initiative",
+            "title": "Outcomes",
+            "type": "string"
+          }
+        },
+        "required": [
+          "initiative",
+          "alignment",
+          "outcomes"
+        ],
+        "title": "KeyInitiative",
+        "type": "object"
+      },
+      "LastSyncResponse": {
+        "description": "Information about the last successful sync.",
+        "example": {
+          "completed_at": "2025-11-24T12:23:59Z",
+          "last_successful_sync_id": "9a41f725-d963-4ea0-8d3c-9d0189d50a4d",
+          "last_sync_timestamp": "2025-11-17T10:53:11Z",
+          "records_synced": 234,
+          "sync_type": "employee_reports"
+        },
+        "properties": {
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "last_successful_sync_id": {
+            "anyOf": [
+              {
+                "format": "uuid4",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Successful Sync Id"
+          },
+          "last_sync_timestamp": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sync Timestamp"
+          },
+          "records_synced": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Records Synced"
+          },
+          "sync_type": {
+            "$ref": "#/components/schemas/SyncTypeEnum"
+          }
+        },
+        "required": [
+          "sync_type"
+        ],
+        "title": "LastSyncResponse",
+        "type": "object"
+      },
+      "MonthlyAchievement": {
+        "description": "Schema for monthly achievement.",
+        "properties": {
+          "description": {
+            "description": "Detailed description of a significant monthly achievement",
+            "title": "Description",
+            "type": "string"
+          },
+          "impact_reason": {
+            "description": "Brief reason for the impact rating",
+            "title": "Impact Reason",
+            "type": "string"
+          },
+          "impact_score": {
+            "description": "Impact rating from 1 to 10",
+            "title": "Impact Score",
+            "type": "integer"
+          },
+          "vision_verification": {
+            "description": "Vision data verification status: supported/contradicted/none",
+            "title": "Vision Verification",
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "impact_score",
+          "impact_reason",
+          "vision_verification"
+        ],
+        "title": "MonthlyAchievement",
+        "type": "object"
+      },
+      "MonthlyAnalysisResponse": {
+        "description": "Schema for monthly analysis response.",
+        "properties": {
+          "analysis_id": {
+            "title": "Analysis Id",
+            "type": "integer"
+          },
+          "avg_sentiment_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Sentiment Score"
+          },
+          "consistency_assessment": {
+            "$ref": "#/components/schemas/ConsistencyAssessment"
+          },
+          "employee_id": {
+            "title": "Employee Id",
+            "type": "integer"
+          },
+          "employee_name": {
+            "title": "Employee Name",
+            "type": "string"
+          },
+          "focus_areas": {
+            "items": {
+              "$ref": "#/components/schemas/FocusArea"
+            },
+            "title": "Focus Areas",
+            "type": "array"
+          },
+          "growth_indicators": {
+            "$ref": "#/components/schemas/GrowthIndicators"
+          },
+          "month": {
+            "title": "Month",
+            "type": "integer"
+          },
+          "monthly_achievements": {
+            "items": {
+              "$ref": "#/components/schemas/MonthlyAchievement"
+            },
+            "title": "Monthly Achievements",
+            "type": "array"
+          },
+          "monthly_risk_assessment": {
+            "$ref": "#/components/schemas/MonthlyRiskAssessment"
+          },
+          "monthly_summary": {
+            "title": "Monthly Summary",
+            "type": "string"
+          },
+          "period_end": {
+            "format": "date",
+            "title": "Period End",
+            "type": "string"
+          },
+          "period_start": {
+            "format": "date",
+            "title": "Period Start",
+            "type": "string"
+          },
+          "progress_trends": {
+            "$ref": "#/components/schemas/ProgressTrends"
+          },
+          "recurring_challenges": {
+            "items": {
+              "$ref": "#/components/schemas/RecurringChallenge"
+            },
+            "title": "Recurring Challenges",
+            "type": "array"
+          },
+          "strategic_recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/StrategicRecommendation"
+            },
+            "title": "Strategic Recommendations",
+            "type": "array"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "analysis_id",
+          "employee_id",
+          "employee_name",
+          "year",
+          "month",
+          "period_start",
+          "period_end",
+          "progress_trends",
+          "monthly_achievements",
+          "recurring_challenges",
+          "consistency_assessment",
+          "growth_indicators",
+          "focus_areas",
+          "monthly_risk_assessment",
+          "strategic_recommendations",
+          "monthly_summary"
+        ],
+        "title": "MonthlyAnalysisResponse",
+        "type": "object"
+      },
+      "MonthlyAnalysisSummary": {
+        "description": "Schema for summarized monthly analysis in list responses.",
+        "properties": {
+          "achievement_count": {
+            "title": "Achievement Count",
+            "type": "integer"
+          },
+          "analysis_id": {
+            "title": "Analysis Id",
+            "type": "integer"
+          },
+          "challenge_count": {
+            "title": "Challenge Count",
+            "type": "integer"
+          },
+          "employee_id": {
+            "title": "Employee Id",
+            "type": "integer"
+          },
+          "month": {
+            "title": "Month",
+            "type": "integer"
+          },
+          "monthly_summary": {
+            "title": "Monthly Summary",
+            "type": "string"
+          },
+          "performance_trend": {
+            "title": "Performance Trend",
+            "type": "string"
+          },
+          "period_end": {
+            "format": "date",
+            "title": "Period End",
+            "type": "string"
+          },
+          "period_start": {
+            "format": "date",
+            "title": "Period Start",
+            "type": "string"
+          },
+          "risk_level": {
+            "title": "Risk Level",
+            "type": "string"
+          },
+          "sentiment_trend": {
+            "title": "Sentiment Trend",
+            "type": "string"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "analysis_id",
+          "employee_id",
+          "year",
+          "month",
+          "period_start",
+          "period_end",
+          "performance_trend",
+          "sentiment_trend",
+          "risk_level",
+          "achievement_count",
+          "challenge_count",
+          "monthly_summary"
+        ],
+        "title": "MonthlyAnalysisSummary",
+        "type": "object"
+      },
+      "MonthlyRiskAssessment": {
+        "description": "Schema for monthly risk assessment.",
+        "properties": {
+          "escalating_risks": {
+            "description": "Risks that are escalating and require attention",
+            "items": {
+              "type": "string"
+            },
+            "title": "Escalating Risks",
+            "type": "array"
+          },
+          "overall_risk_level": {
+            "description": "Overall risk assessment (low, medium, high)",
+            "title": "Overall Risk Level",
+            "type": "string"
+          },
+          "risk_explanation": {
+            "description": "Explanation of risk assessment",
+            "title": "Risk Explanation",
+            "type": "string"
+          },
+          "risk_mitigation_recommendations": {
+            "description": "Recommendations for mitigating identified risks",
+            "items": {
+              "type": "string"
+            },
+            "title": "Risk Mitigation Recommendations",
+            "type": "array"
+          },
+          "significant_risks": {
+            "description": "Most significant risks identified across all weeks",
+            "items": {
+              "type": "string"
+            },
+            "title": "Significant Risks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "overall_risk_level",
+          "risk_explanation",
+          "significant_risks",
+          "escalating_risks",
+          "risk_mitigation_recommendations"
+        ],
+        "title": "MonthlyRiskAssessment",
+        "type": "object"
+      },
+      "NotableShift": {
+        "description": "Schema for notable performance shifts.",
+        "properties": {
+          "description": {
+            "description": "Description of what changed in performance",
+            "title": "Description",
+            "type": "string"
+          },
+          "factors": {
+            "description": "Factors that contributed to this change",
+            "title": "Factors",
+            "type": "string"
+          },
+          "month": {
+            "description": "Month when a notable performance shift occurred",
+            "title": "Month",
+            "type": "string"
+          }
+        },
+        "required": [
+          "month",
+          "description",
+          "factors"
+        ],
+        "title": "NotableShift",
+        "type": "object"
+      },
+      "PerformanceAssessment": {
+        "description": "Schema for performance assessment in analysis.",
+        "properties": {
+          "improvement_areas": {
+            "description": "Specific areas where performance could be enhanced",
+            "items": {
+              "type": "string"
+            },
+            "title": "Improvement Areas",
+            "type": "array"
+          },
+          "key_strengths": {
+            "description": "Notable strengths identified from the report",
+            "items": {
+              "type": "string"
+            },
+            "title": "Key Strengths",
+            "type": "array"
+          },
+          "rating": {
+            "description": "Overall performance rating (high/medium/low)",
+            "title": "Rating",
+            "type": "string"
+          },
+          "summary": {
+            "description": "Brief overall performance assessment summarizing key findings",
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rating",
+          "summary",
+          "key_strengths",
+          "improvement_areas"
+        ],
+        "title": "PerformanceAssessment",
+        "type": "object"
+      },
+      "PerformanceTrajectory": {
+        "description": "Schema for quarterly performance trajectory.",
+        "properties": {
+          "consistency": {
+            "$ref": "#/components/schemas/ConsistencyMetrics",
+            "description": "Metrics for work consistency and reliability"
+          },
+          "notable_shifts": {
+            "description": "Significant shifts in performance during the quarter",
+            "items": {
+              "$ref": "#/components/schemas/NotableShift"
+            },
+            "title": "Notable Shifts",
+            "type": "array"
+          },
+          "trend": {
+            "description": "Overall trend: improving/stable/declining/mixed",
+            "title": "Trend",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trend",
+          "consistency",
+          "notable_shifts"
+        ],
+        "title": "PerformanceTrajectory",
+        "type": "object"
+      },
+      "ProgressTrends": {
+        "description": "Schema for employee progress trends over a month.",
+        "properties": {
+          "challenge_resolution_progress": {
+            "description": "Progress in resolving challenges (improved, declined, unchanged)",
+            "title": "Challenge Resolution Progress",
+            "type": "string"
+          },
+          "performance_trend": {
+            "description": "Performance trend (improving, declining, stable)",
+            "title": "Performance Trend",
+            "type": "string"
+          },
+          "risk_level_pattern": {
+            "description": "Risk level pattern (increasing, decreasing, stable)",
+            "title": "Risk Level Pattern",
+            "type": "string"
+          },
+          "sentiment_trend": {
+            "description": "Trend direction of sentiment (improving, declining, stable)",
+            "title": "Sentiment Trend",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sentiment_trend",
+          "performance_trend",
+          "risk_level_pattern",
+          "challenge_resolution_progress"
+        ],
+        "title": "ProgressTrends",
+        "type": "object"
+      },
+      "QuarterlyAnalysisResponse": {
+        "description": "Schema for quarterly analysis response.",
+        "properties": {
+          "achievement_themes": {
+            "items": {
+              "$ref": "#/components/schemas/AchievementTheme"
+            },
+            "title": "Achievement Themes",
+            "type": "array"
+          },
+          "adaptation_effectiveness": {
+            "title": "Adaptation Effectiveness",
+            "type": "string"
+          },
+          "analysis_id": {
+            "title": "Analysis Id",
+            "type": "integer"
+          },
+          "autonomy_level": {
+            "title": "Autonomy Level",
+            "type": "string"
+          },
+          "behavioral_assessment": {
+            "$ref": "#/components/schemas/BehavioralAssessment"
+          },
+          "challenge_patterns": {
+            "title": "Challenge Patterns",
+            "type": "object"
+          },
+          "collaboration_effectiveness": {
+            "title": "Collaboration Effectiveness",
+            "type": "string"
+          },
+          "credibility_assessment": {
+            "$ref": "#/components/schemas/QuarterlyCredibilityAssessment"
+          },
+          "credibility_rating": {
+            "title": "Credibility Rating",
+            "type": "string"
+          },
+          "cross_functional_impact": {
+            "$ref": "#/components/schemas/CrossFunctionalImpact"
+          },
+          "development_focus": {
+            "title": "Development Focus",
+            "type": "string"
+          },
+          "employee_id": {
+            "title": "Employee Id",
+            "type": "integer"
+          },
+          "employee_name": {
+            "title": "Employee Name",
+            "type": "string"
+          },
+          "forward_planning": {
+            "$ref": "#/components/schemas/ForwardPlanning"
+          },
+          "learning_agility": {
+            "title": "Learning Agility",
+            "type": "string"
+          },
+          "monthly_analysis_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monthly Analysis Ids"
+          },
+          "organizational_impact": {
+            "title": "Organizational Impact",
+            "type": "string"
+          },
+          "performance_stability": {
+            "title": "Performance Stability",
+            "type": "string"
+          },
+          "performance_trajectory": {
+            "$ref": "#/components/schemas/PerformanceTrajectory"
+          },
+          "performance_trend": {
+            "title": "Performance Trend",
+            "type": "string"
+          },
+          "period_end": {
+            "format": "date",
+            "title": "Period End",
+            "type": "string"
+          },
+          "period_start": {
+            "format": "date",
+            "title": "Period Start",
+            "type": "string"
+          },
+          "quarter": {
+            "title": "Quarter",
+            "type": "integer"
+          },
+          "quarterly_summary": {
+            "title": "Quarterly Summary",
+            "type": "string"
+          },
+          "risk_assessment": {
+            "$ref": "#/components/schemas/RiskAssessment"
+          },
+          "risk_level": {
+            "title": "Risk Level",
+            "type": "string"
+          },
+          "risk_trend": {
+            "title": "Risk Trend",
+            "type": "string"
+          },
+          "skill_development": {
+            "$ref": "#/components/schemas/SkillDevelopment"
+          },
+          "stakeholder_count": {
+            "title": "Stakeholder Count",
+            "type": "integer"
+          },
+          "strategic_alignment": {
+            "$ref": "#/components/schemas/StrategicAlignment"
+          },
+          "task_completion_reliability": {
+            "title": "Task Completion Reliability",
+            "type": "string"
+          },
+          "vision_data_alignment": {
+            "title": "Vision Data Alignment",
+            "type": "string"
+          },
+          "work_quality_consistency": {
+            "title": "Work Quality Consistency",
+            "type": "string"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "analysis_id",
+          "employee_id",
+          "employee_name",
+          "year",
+          "quarter",
+          "period_start",
+          "period_end",
+          "organizational_impact",
+          "strategic_alignment",
+          "performance_trend",
+          "task_completion_reliability",
+          "work_quality_consistency",
+          "performance_stability",
+          "achievement_themes",
+          "performance_trajectory",
+          "collaboration_effectiveness",
+          "stakeholder_count",
+          "challenge_patterns",
+          "cross_functional_impact",
+          "adaptation_effectiveness",
+          "risk_level",
+          "risk_trend",
+          "risk_assessment",
+          "learning_agility",
+          "autonomy_level",
+          "development_focus",
+          "skill_development",
+          "behavioral_assessment",
+          "credibility_rating",
+          "vision_data_alignment",
+          "credibility_assessment",
+          "forward_planning",
+          "quarterly_summary"
+        ],
+        "title": "QuarterlyAnalysisResponse",
+        "type": "object"
+      },
+      "QuarterlyCredibilityAssessment": {
+        "description": "Schema for quarterly credibility assessment.",
+        "properties": {
+          "explanation": {
+            "description": "Rationale for the credibility assessment",
+            "title": "Explanation",
+            "type": "string"
+          },
+          "impact_on_evaluation": {
+            "description": "How credibility concerns affected the overall assessment",
+            "title": "Impact On Evaluation",
+            "type": "string"
+          },
+          "rating": {
+            "description": "Overall credibility rating: high/medium/low",
+            "title": "Rating",
+            "type": "string"
+          },
+          "vision_data_alignment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Alignment between self-reported activities and vision data: high/medium/low/none",
+            "title": "Vision Data Alignment"
+          }
+        },
+        "required": [
+          "rating",
+          "explanation",
+          "vision_data_alignment",
+          "impact_on_evaluation"
+        ],
+        "title": "QuarterlyCredibilityAssessment",
+        "type": "object"
+      },
+      "Recommendation": {
+        "description": "Schema for action recommendations.",
+        "properties": {
+          "action": {
+            "description": "The recommended action in clear, actionable language",
+            "title": "Action",
+            "type": "string"
+          },
+          "ownership": {
+            "description": "Who is responsible: employee/manager/hr/cross-team",
+            "title": "Ownership",
+            "type": "string"
+          },
+          "priority": {
+            "description": "Priority level: high/medium/low",
+            "title": "Priority",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "priority",
+          "ownership"
+        ],
+        "title": "Recommendation",
+        "type": "object"
+      },
+      "RecurringChallenge": {
+        "description": "Schema for recurring challenge.",
+        "properties": {
+          "description": {
+            "description": "Detailed description of a challenge that appeared multiple times",
+            "title": "Description",
+            "type": "string"
+          },
+          "severity": {
+            "description": "Overall severity of this recurring challenge: low/medium/high",
+            "title": "Severity",
+            "type": "string"
+          },
+          "status": {
+            "description": "Current status: addressed/ongoing/resolved/worsening",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "severity",
+          "status"
+        ],
+        "title": "RecurringChallenge",
+        "type": "object"
+      },
+      "ReportCreate": {
+        "properties": {
+          "employee_id": {
+            "title": "Employee Id",
+            "type": "integer"
+          },
+          "report_date": {
+            "format": "date",
+            "title": "Report Date",
+            "type": "string"
+          },
+          "report_text": {
+            "title": "Report Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "employee_id",
+          "report_date",
+          "report_text"
+        ],
+        "title": "ReportCreate",
+        "type": "object"
+      },
+      "ReportForm": {
+        "properties": {
+          "challenges_faced": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Challenges Faced"
+          },
+          "confidence_level": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence Level"
+          },
+          "employee_id": {
+            "title": "Employee Id",
+            "type": "integer"
+          },
+          "impact_outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Impact Outcome"
+          },
+          "key_tasks_completed": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key Tasks Completed"
+          },
+          "nothing_to_report_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nothing To Report Reason"
+          },
+          "support_required": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Support Required"
+          },
+          "tasks_planned_next_week": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tasks Planned Next Week"
+          }
+        },
+        "required": [
+          "employee_id"
+        ],
+        "title": "ReportForm",
+        "type": "object"
+      },
+      "RiskAssessment": {
+        "description": "Schema for quarterly risk assessment.",
+        "properties": {
+          "key_risk_factors": {
+            "description": "Specific factors contributing to risk",
+            "items": {
+              "type": "string"
+            },
+            "title": "Key Risk Factors",
+            "type": "array"
+          },
+          "mitigation_strategies": {
+            "description": "Recommended strategies to mitigate identified risks",
+            "items": {
+              "type": "string"
+            },
+            "title": "Mitigation Strategies",
+            "type": "array"
+          },
+          "overall_risk_level": {
+            "description": "Overall risk assessment: low/medium/high",
+            "title": "Overall Risk Level",
+            "type": "string"
+          },
+          "risk_trend": {
+            "description": "Risk trend: increasing/stable/decreasing",
+            "title": "Risk Trend",
+            "type": "string"
+          }
+        },
+        "required": [
+          "overall_risk_level",
+          "risk_trend",
+          "key_risk_factors",
+          "mitigation_strategies"
+        ],
+        "title": "RiskAssessment",
+        "type": "object"
+      },
+      "SkillDevelopment": {
+        "description": "Schema for quarterly skill development assessment.",
+        "properties": {
+          "autonomy_level": {
+            "description": "Level of independence: high/medium/low",
+            "title": "Autonomy Level",
+            "type": "string"
+          },
+          "development_focus": {
+            "description": "Recommended skill to develop next",
+            "title": "Development Focus",
+            "type": "string"
+          },
+          "key_capabilities": {
+            "description": "Key capabilities demonstrated during the quarter",
+            "items": {
+              "$ref": "#/components/schemas/Capability"
+            },
+            "title": "Key Capabilities",
+            "type": "array"
+          },
+          "learning_agility": {
+            "description": "Learning agility: high/medium/low",
+            "title": "Learning Agility",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key_capabilities",
+          "learning_agility",
+          "autonomy_level",
+          "development_focus"
+        ],
+        "title": "SkillDevelopment",
+        "type": "object"
+      },
+      "StakeholderImpact": {
+        "description": "Schema for stakeholder impact.",
+        "properties": {
+          "collaboration_type": {
+            "description": "Type of collaboration: leading_initiative/contributing_expertise/mentoring/process_improvement",
+            "title": "Collaboration Type",
+            "type": "string"
+          },
+          "evidence": {
+            "description": "Concrete example demonstrating this impact",
+            "title": "Evidence",
+            "type": "string"
+          },
+          "impact": {
+            "description": "Description of the impact on this stakeholder",
+            "title": "Impact",
+            "type": "string"
+          },
+          "stakeholder": {
+            "description": "Team or department impacted by the employee's work",
+            "title": "Stakeholder",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stakeholder",
+          "collaboration_type",
+          "impact",
+          "evidence"
+        ],
+        "title": "StakeholderImpact",
+        "type": "object"
+      },
+      "StrategicAlignment": {
+        "description": "Schema for strategic alignment assessment.",
+        "properties": {
+          "key_initiatives": {
+            "description": "Key strategic initiatives the employee contributed to",
+            "items": {
+              "$ref": "#/components/schemas/KeyInitiative"
+            },
+            "title": "Key Initiatives",
+            "type": "array"
+          },
+          "organizational_impact": {
+            "description": "Scope of impact: individual/team/department/organization",
+            "title": "Organizational Impact",
+            "type": "string"
+          },
+          "role_alignment": {
+            "description": "How well employee's work aligns with job description: strong/partial/weak",
+            "title": "Role Alignment",
+            "type": "string"
+          },
+          "role_fit_assessment": {
+            "description": "Detailed assessment of Job Description fit",
+            "title": "Role Fit Assessment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "organizational_impact",
+          "key_initiatives",
+          "role_alignment",
+          "role_fit_assessment"
+        ],
+        "title": "StrategicAlignment",
+        "type": "object"
+      },
+      "StrategicRecommendation": {
+        "description": "Schema for strategic recommendation.",
+        "properties": {
+          "action": {
+            "description": "Specific action to enhance performance or address challenges",
+            "title": "Action",
+            "type": "string"
+          },
+          "priority": {
+            "description": "Priority level: high/medium/low",
+            "title": "Priority",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "priority"
+        ],
+        "title": "StrategicRecommendation",
+        "type": "object"
+      },
+      "SyncConfigResponse": {
+        "description": "Current sync service configuration.",
+        "example": {
+          "allowed_tables": [
+            "EmployeeReports",
+            "VisionEmployeeData"
+          ],
+          "allowed_timestamp_columns": [
+            "LastModifiedDate",
+            "ModifiedDate",
+            "UpdatedAt"
+          ],
+          "sql_server": {
+            "connection_status": "connected",
+            "database": "EmployeeTestDB",
+            "host": "localhost\\SQLEXPRESS"
+          },
+          "sync_enabled": true,
+          "sync_schedule": {
+            "full_sync": {
+              "enabled": false,
+              "schedule": "Manual trigger only"
+            },
+            "incremental_sync": {
+              "enabled": true,
+              "next_run": "2025-11-25T02:00:00Z",
+              "schedule": "Monday 2:00 AM"
+            }
+          },
+          "sync_settings": {
+            "default_chunk_size": 1000,
+            "error_threshold_percent": 10.0,
+            "max_batch_size": 10000
+          }
+        },
+        "properties": {
+          "allowed_tables": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed Tables",
+            "type": "array"
+          },
+          "allowed_timestamp_columns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed Timestamp Columns",
+            "type": "array"
+          },
+          "sql_server": {
+            "title": "Sql Server",
+            "type": "object"
+          },
+          "sync_enabled": {
+            "title": "Sync Enabled",
+            "type": "boolean"
+          },
+          "sync_schedule": {
+            "title": "Sync Schedule",
+            "type": "object"
+          },
+          "sync_settings": {
+            "title": "Sync Settings",
+            "type": "object"
+          }
+        },
+        "required": [
+          "sql_server",
+          "allowed_tables",
+          "allowed_timestamp_columns",
+          "sync_settings",
+          "sync_schedule",
+          "sync_enabled"
+        ],
+        "title": "SyncConfigResponse",
+        "type": "object"
+      },
+      "SyncErrorItem": {
+        "description": "Individual sync error details.",
+        "example": {
+          "error_category": "validation",
+          "error_message": "Employee ID 9999 does not exist in database",
+          "field_name": "Employee_ID",
+          "row_data": {
+            "Employee_ID": 9999,
+            "From": "2025-01-01",
+            "Name": "John Doe"
+          },
+          "row_number": 523
+        },
+        "properties": {
+          "error_category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Category"
+          },
+          "error_message": {
+            "title": "Error Message",
+            "type": "string"
+          },
+          "field_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field Name"
+          },
+          "row_data": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Data"
+          },
+          "row_number": {
+            "title": "Row Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "row_number",
+          "error_message"
+        ],
+        "title": "SyncErrorItem",
+        "type": "object"
+      },
+      "SyncErrorsResponse": {
+        "description": "Paginated list of sync errors.",
+        "example": {
+          "errors": [
+            {
+              "error_category": "validation",
+              "error_message": "Employee ID 9999 does not exist in database",
+              "field_name": "Employee_ID",
+              "row_data": {
+                "Employee_ID": 9999,
+                "From": "2025-01-01",
+                "Name": "John Doe"
+              },
+              "row_number": 523
+            }
+          ],
+          "page": 1,
+          "page_size": 100,
+          "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
+          "total_errors": 45
+        },
+        "properties": {
+          "errors": {
+            "items": {
+              "$ref": "#/components/schemas/SyncErrorItem"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "sync_id": {
+            "format": "uuid4",
+            "title": "Sync Id",
+            "type": "string"
+          },
+          "total_errors": {
+            "title": "Total Errors",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sync_id",
+          "total_errors",
+          "page",
+          "page_size",
+          "errors"
+        ],
+        "title": "SyncErrorsResponse",
+        "type": "object"
+      },
+      "SyncHistoryItem": {
+        "description": "Summary item for sync history list.",
+        "example": {
+          "completed_at": "2025-11-24T13:13:24Z",
+          "duration_seconds": 5.7,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "2025-11-17T10:53:11Z",
+          "records_synced": 4,
+          "started_at": "2025-11-24T13:13:19Z",
+          "status": "completed",
+          "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
+          "sync_type": "employee_reports"
+        },
+        "properties": {
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "error_count": {
+            "default": 0,
+            "title": "Error Count",
+            "type": "integer"
+          },
+          "is_full_sync": {
+            "title": "Is Full Sync",
+            "type": "boolean"
+          },
+          "last_sync_timestamp": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sync Timestamp"
+          },
+          "records_queried": {
+            "default": 0,
+            "title": "Records Queried",
+            "type": "integer"
+          },
+          "records_synced": {
+            "default": 0,
+            "title": "Records Synced",
+            "type": "integer"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SyncStatusEnum"
+          },
+          "sync_id": {
+            "format": "uuid4",
+            "title": "Sync Id",
+            "type": "string"
+          },
+          "sync_type": {
+            "$ref": "#/components/schemas/SyncTypeEnum"
+          }
+        },
+        "required": [
+          "sync_id",
+          "sync_type",
+          "status",
+          "is_full_sync",
+          "started_at"
+        ],
+        "title": "SyncHistoryItem",
+        "type": "object"
+      },
+      "SyncHistoryListResponse": {
+        "description": "Paginated list of sync history.",
+        "example": {
+          "items": [
+            {
+              "completed_at": "2025-11-24T13:13:24Z",
+              "duration_seconds": 5.7,
+              "error_count": 0,
+              "is_full_sync": false,
+              "last_sync_timestamp": "2025-11-17T10:53:11Z",
+              "records_synced": 4,
+              "started_at": "2025-11-24T13:13:19Z",
+              "status": "completed",
+              "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
+              "sync_type": "employee_reports"
+            }
+          ],
+          "page": 1,
+          "page_size": 20,
+          "pages": 8,
+          "total": 150
+        },
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SyncHistoryItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "pages": {
+            "title": "Pages",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "page",
+          "page_size",
+          "pages",
+          "items"
+        ],
+        "title": "SyncHistoryListResponse",
+        "type": "object"
+      },
+      "SyncProgressMetrics": {
+        "description": "Progress metrics for an ongoing or completed sync.",
+        "example": {
+          "error_count": 50,
+          "percent_complete": 95.0,
+          "records_created": 300,
+          "records_queried": 1000,
+          "records_skipped": 50,
+          "records_synced": 950,
+          "records_updated": 650
+        },
+        "properties": {
+          "error_count": {
+            "default": 0,
+            "description": "Number of errors encountered",
+            "title": "Error Count",
+            "type": "integer"
+          },
+          "percent_complete": {
+            "default": 0.0,
+            "description": "Percentage complete (0-100)",
+            "title": "Percent Complete",
+            "type": "number"
+          },
+          "records_created": {
+            "default": 0,
+            "description": "New records created",
+            "title": "Records Created",
+            "type": "integer"
+          },
+          "records_queried": {
+            "default": 0,
+            "description": "Total records found in SQL Server",
+            "title": "Records Queried",
+            "type": "integer"
+          },
+          "records_skipped": {
+            "default": 0,
+            "description": "Records skipped due to errors",
+            "title": "Records Skipped",
+            "type": "integer"
+          },
+          "records_synced": {
+            "default": 0,
+            "description": "Successfully synced to PostgreSQL",
+            "title": "Records Synced",
+            "type": "integer"
+          },
+          "records_updated": {
+            "default": 0,
+            "description": "Existing records updated",
+            "title": "Records Updated",
+            "type": "integer"
+          }
+        },
+        "title": "SyncProgressMetrics",
+        "type": "object"
+      },
+      "SyncStatusEnum": {
+        "description": "Valid sync statuses.",
+        "enum": [
+          "pending",
+          "running",
+          "completed",
+          "failed",
+          "partial"
+        ],
+        "title": "SyncStatusEnum",
+        "type": "string"
+      },
+      "SyncStatusResponse": {
+        "description": "Detailed status of a sync job.",
+        "example": {
+          "completed_at": "2025-11-24T13:13:24Z",
+          "duration_seconds": 5.7,
+          "is_full_sync": false,
+          "last_sync_timestamp": "2025-11-17T10:53:11Z",
+          "metrics": {
+            "employees_created": 0,
+            "employees_updated": 4,
+            "reports_created": 3,
+            "reports_updated": 1
+          },
+          "progress": {
+            "error_count": 0,
+            "percent_complete": 100.0,
+            "records_created": 3,
+            "records_queried": 4,
+            "records_skipped": 0,
+            "records_synced": 4,
+            "records_updated": 1
+          },
+          "started_at": "2025-11-24T13:13:19Z",
+          "status": "completed",
+          "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
+          "sync_type": "employee_reports"
+        },
+        "properties": {
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "is_full_sync": {
+            "title": "Is Full Sync",
+            "type": "boolean"
+          },
+          "last_sync_timestamp": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Timestamp of last successful sync",
+            "title": "Last Sync Timestamp"
+          },
+          "metrics": {
+            "description": "Type-specific metrics",
+            "title": "Metrics",
+            "type": "object"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/SyncProgressMetrics"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SyncStatusEnum"
+          },
+          "sync_id": {
+            "format": "uuid4",
+            "title": "Sync Id",
+            "type": "string"
+          },
+          "sync_type": {
+            "$ref": "#/components/schemas/SyncTypeEnum"
+          }
+        },
+        "required": [
+          "sync_id",
+          "sync_type",
+          "status",
+          "is_full_sync",
+          "started_at",
+          "progress"
+        ],
+        "title": "SyncStatusResponse",
+        "type": "object"
+      },
+      "SyncTriggerResponse": {
+        "description": "Response when triggering a sync operation.",
+        "example": {
+          "is_full_sync": false,
+          "message": "Employee reports sync started successfully",
+          "status": "pending",
+          "sync_id": "c155260e-9177-4b53-bc14-e9f4d0e14cd2",
+          "sync_type": "employee_reports",
+          "task_id": "0030c389-1350-485c-b150-6e6a6e5cd210",
+          "triggered_at": "2025-11-24T13:13:19Z"
+        },
+        "properties": {
+          "is_full_sync": {
+            "title": "Is Full Sync",
+            "type": "boolean"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SyncStatusEnum"
+          },
+          "sync_id": {
+            "format": "uuid4",
+            "title": "Sync Id",
+            "type": "string"
+          },
+          "sync_type": {
+            "$ref": "#/components/schemas/SyncTypeEnum"
+          },
+          "task_id": {
+            "title": "Task Id",
+            "type": "string"
+          },
+          "triggered_at": {
+            "format": "date-time",
+            "title": "Triggered At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sync_id",
+          "task_id",
+          "sync_type",
+          "status",
+          "is_full_sync",
+          "triggered_at",
+          "message"
+        ],
+        "title": "SyncTriggerResponse",
+        "type": "object"
+      },
+      "SyncTypeEnum": {
+        "description": "Valid sync types.",
+        "enum": [
+          "employee_reports",
+          "vision_data",
+          "job_descriptions",
+          "supervisor_feedback"
+        ],
+        "title": "SyncTypeEnum",
+        "type": "string"
+      },
+      "TaskResultResponse": {
+        "description": "Schema for returning task results",
+        "properties": {
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          },
+          "task_id": {
+            "format": "uuid",
+            "title": "Task Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "status"
+        ],
+        "title": "TaskResultResponse",
+        "type": "object"
+      },
+      "TaskStatus": {
+        "description": "Task status enum for API schemas",
+        "enum": [
+          "pending",
+          "running",
+          "completed",
+          "failed"
+        ],
+        "title": "TaskStatus",
+        "type": "string"
+      },
+      "TaskStatusResponse": {
+        "description": "Schema for returning task status information",
+        "properties": {
+          "celery_task_id": {
+            "title": "Celery Task Id",
+            "type": "string"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "duration": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration"
+          },
+          "is_complete": {
+            "title": "Is Complete",
+            "type": "boolean"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          },
+          "task_id": {
+            "format": "uuid",
+            "title": "Task Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "celery_task_id",
+          "status",
+          "created_at",
+          "is_complete"
+        ],
+        "title": "TaskStatusResponse",
+        "type": "object"
+      },
+      "TrendDataset": {
+        "description": "Represents a single dataset within a trend visualization.",
+        "properties": {
+          "backgroundColor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Backgroundcolor"
+          },
+          "borderColor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bordercolor"
+          },
+          "data": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Data",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/TrendMetadata"
+          }
+        },
+        "required": [
+          "label",
+          "data",
+          "metadata"
+        ],
+        "title": "TrendDataset",
+        "type": "object"
+      },
+      "TrendMetadata": {
+        "description": "Metadata associated with a trend dataset.",
+        "properties": {
+          "avg": {
+            "title": "Avg",
+            "type": "number"
+          },
+          "max": {
+            "title": "Max",
+            "type": "number"
+          },
+          "min": {
+            "title": "Min",
+            "type": "number"
+          }
+        },
+        "required": [
+          "min",
+          "max",
+          "avg"
+        ],
+        "title": "TrendMetadata",
+        "type": "object"
+      },
+      "TrendResponse": {
+        "description": "Response model for trend visualization data.\nUsed for both single criterion (like sentiment) and multi-criteria visualizations.",
+        "properties": {
+          "datasets": {
+            "items": {
+              "$ref": "#/components/schemas/TrendDataset"
+            },
+            "title": "Datasets",
+            "type": "array"
+          },
+          "labels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Labels",
+            "type": "array"
+          }
+        },
+        "required": [
+          "labels",
+          "datasets"
+        ],
+        "title": "TrendResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Employee Report Analysis API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "home__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Home"
+      }
+    },
+    "/analyses/analyze/{report_id}": {
+      "post": {
+        "operationId": "analyze_report_analyses_analyze__report_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskStatusResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Analyze Report",
+        "tags": [
+          "Analyses"
+        ]
+      }
+    },
+    "/analyses/employee/{employee_id}": {
+      "get": {
+        "operationId": "get_employee_analyses_analyses_employee__employee_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "employee_id",
+            "required": true,
+            "schema": {
+              "title": "Employee Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Employee Analyses",
+        "tags": [
+          "Analyses"
+        ]
+      }
+    },
+    "/analyses/monthly/analyze": {
+      "post": {
+        "description": "Submit a monthly analysis task for an employee.\n\nThis endpoint initiates asynchronous processing of monthly reports for the given employee.\nThe analysis will include all reports from the specified month and year.",
+        "operationId": "analyze_monthly_reports_analyses_monthly_analyze_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "employee_id",
+            "required": true,
+            "schema": {
+              "title": "Employee Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "maximum": 2100,
+              "minimum": 2000,
+              "title": "Year",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "month",
+            "required": true,
+            "schema": {
+              "maximum": 12,
+              "minimum": 1,
+              "title": "Month",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskStatusResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Analyze Monthly Reports",
+        "tags": [
+          "Analyses"
+        ]
+      }
+    },
+    "/analyses/monthly/employee/{employee_id}": {
+      "get": {
+        "description": "Get all monthly analyses for an employee.",
+        "operationId": "get_employee_monthly_analyses_analyses_monthly_employee__employee_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "employee_id",
+            "required": true,
+            "schema": {
+              "title": "Employee Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MonthlyAnalysisSummary"
+                  },
+                  "title": "Response Get Employee Monthly Analyses Analyses Monthly Employee  Employee Id  Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Employee Monthly Analyses",
+        "tags": [
+          "Analyses"
+        ]
+      }
+    },
+    "/analyses/monthly/employee/{employee_id}/{year}/{month}": {
+      "get": {
+        "description": "Get a specific monthly analysis by employee, year and month.",
+        "operationId": "get_employee_monthly_analysis_by_period_analyses_monthly_employee__employee_id___year___month__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "employee_id",
+            "required": true,
+            "schema": {
+              "title": "Employee Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "title": "Year",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "month",
+            "required": true,
+            "schema": {
+              "title": "Month",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthlyAnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Employee Monthly Analysis By Period",
+        "tags": [
+          "Analyses"
+        ]
+      }
+    },
+    "/analyses/monthly/{analysis_id}": {
+      "get": {
+        "description": "Get a specific monthly analysis by ID.",
+        "operationId": "get_monthly_analysis_analyses_monthly__analysis_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "analysis_id",
+            "required": true,
+            "schema": {
+              "title": "Analysis Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthlyAnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Monthly Analysis",
+        "tags": [
+          "Analyses"
+        ]
+      }
+    },
+    "/analyses/quarterly/analyze": {
+      "post": {
+        "description": "Submit a quarterly analysis task for an employee.\n\nThis endpoint initiates asynchronous processing of quarterly performance for the given employee.\nThe analysis will aggregate data from the three months in the specified quarter.",
+        "operationId": "analyze_quarterly_reports_analyses_quarterly_analyze_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "employee_id",
+            "required": true,
+            "schema": {
+              "title": "Employee Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "maximum": 2100,
+              "minimum": 2000,
+              "title": "Year",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "quarter",
+            "required": true,
+            "schema": {
+              "maximum": 4,
+              "minimum": 1,
+              "title": "Quarter",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskStatusResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Analyze Quarterly Reports",
+        "tags": [
+          "Analyses"
+        ]
+      }
+    },
+    "/analyses/quarterly/employee/{employee_id}/{year}/{quarter}": {
+      "get": {
+        "description": "Get a specific quarterly analysis by employee, year and quarter.",
+        "operationId": "get_employee_quarterly_analysis_by_period_analyses_quarterly_employee__employee_id___year___quarter__get",
+        "parameters": [
+          {
+            "description": "Employee ID",
+            "in": "path",
+            "name": "employee_id",
+            "required": true,
+            "schema": {
+              "description": "Employee ID",
+              "title": "Employee Id",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Year of analysis",
+            "in": "path",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "description": "Year of analysis",
+              "maximum": 2100,
+              "minimum": 2000,
+              "title": "Year",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Quarter (1-4)",
+            "in": "path",
+            "name": "quarter",
+            "required": true,
+            "schema": {
+              "description": "Quarter (1-4)",
+              "maximum": 4,
+              "minimum": 1,
+              "title": "Quarter",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuarterlyAnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Employee Quarterly Analysis By Period",
+        "tags": [
+          "Analyses"
+        ]
+      }
+    },
+    "/analyses/quarterly/{analysis_id}": {
+      "get": {
+        "description": "Get a specific quarterly analysis by ID.",
+        "operationId": "get_quarterly_analysis_analyses_quarterly__analysis_id__get",
+        "parameters": [
+          {
+            "description": "ID of the quarterly analysis to retrieve",
+            "in": "path",
+            "name": "analysis_id",
+            "required": true,
+            "schema": {
+              "description": "ID of the quarterly analysis to retrieve",
+              "title": "Analysis Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuarterlyAnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Quarterly Analysis",
+        "tags": [
+          "Analyses"
+        ]
+      }
+    },
+    "/analyses/results/{report_id}": {
+      "get": {
+        "operationId": "get_analysis_by_report_analyses_results__report_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Analysis By Report",
+        "tags": [
+          "Analyses"
+        ]
+      }
+    },
+    "/analyses/{analysis_id}": {
+      "get": {
+        "operationId": "get_analysis_by_id_analyses__analysis_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "analysis_id",
+            "required": true,
+            "schema": {
+              "title": "Analysis Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Analysis By Id",
+        "tags": [
+          "Analyses"
+        ]
+      }
+    },
+    "/employees/": {
+      "get": {
+        "operationId": "get_all_employees_employees__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get All Employees",
+        "tags": [
+          "Employees"
+        ]
+      },
+      "post": {
+        "operationId": "create_employee_employees__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Employee",
+        "tags": [
+          "Employees"
+        ]
+      }
+    },
+    "/imports/": {
+      "get": {
+        "description": "List all import jobs with optional filtering.",
+        "operationId": "list_import_jobs_imports__get",
+        "parameters": [
+          {
+            "description": "Filter by status",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by status",
+              "title": "Status"
+            }
+          },
+          {
+            "description": "Filter by CSV type",
+            "in": "query",
+            "name": "csv_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by CSV type",
+              "title": "Csv Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 1000,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CSVImportJobResponse"
+                  },
+                  "title": "Response List Import Jobs Imports  Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Import Jobs",
+        "tags": [
+          "CSV Imports"
+        ]
+      }
+    },
+    "/imports/upload": {
+      "post": {
+        "description": "Upload a delimited text file (CSV, TXT, or TSV) for import.\n\nThe file will be processed asynchronously, and a job ID is returned for tracking progress.\n**The delimiter will be automatically detected** from the file content, or you can specify it explicitly.\n\nSupported file types:\n- CSV: Comma-delimited (typically)\n- TXT: Tab-delimited (typically, e.g., Vision Data exports)\n- TSV: Tab-separated values\n\nSupported delimiters (auto-detected or explicit):\n- Comma (,)\n- Tab (\\t)\n- Pipe (|)\n- Semicolon (;)\n- Colon (:)\n- Space ( )\n\nArgs:\n    file: The CSV, TXT, or TSV file to upload\n    dry_run: If True, validate the file without writing to the database\n    stop_on_error: If True, stop processing on the first error\n    error_threshold_percent: Maximum percentage of errors before aborting\n    chunk_size: Number of rows to process in each chunk\n    processing_mode: Either \"row_by_row\" or \"bulk\"\n    file_format: File format hint (csv, txt, tsv, or auto). Auto-detect if not specified.\n    delimiter: Explicit delimiter character. Auto-detect if not specified.\n    encoding: File encoding (e.g., utf-8, windows-1252). Auto-detect if not specified.\n    csv_type: Optional CSV type override to force a specific processor",
+        "operationId": "upload_csv_file_imports_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_csv_file_imports_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CSVImportJobResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Upload Csv File",
+        "tags": [
+          "CSV Imports"
+        ]
+      }
+    },
+    "/imports/{job_id}": {
+      "get": {
+        "description": "Get status and details for a specific import job.",
+        "operationId": "get_import_job_imports__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CSVImportJobResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Import Job",
+        "tags": [
+          "CSV Imports"
+        ]
+      }
+    },
+    "/imports/{job_id}/errors": {
+      "get": {
+        "description": "Get paginated list of errors for a specific import job.",
+        "operationId": "get_import_errors_imports__job_id__errors_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 1000,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportErrorsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Import Errors",
+        "tags": [
+          "CSV Imports"
+        ]
+      }
+    },
+    "/reports/create": {
+      "post": {
+        "operationId": "create_report_reports_create_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Report",
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/reports/form": {
+      "post": {
+        "description": "Submit a weekly report form.",
+        "operationId": "submit_report_form_reports_form_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportForm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Submit Report Form",
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/reports/{employee_id}": {
+      "get": {
+        "description": "Retrieve all reports for a given employee ID.",
+        "operationId": "get_employee_reports_reports__employee_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "employee_id",
+            "required": true,
+            "schema": {
+              "title": "Employee Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Employee Reports",
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/sync/config": {
+      "get": {
+        "description": "Get current sync service configuration.\n\nReturns read-only configuration information including:\n- SQL Server connection details\n- Allowed tables and columns\n- Sync settings\n- Scheduled sync information",
+        "operationId": "get_sync_configuration_sync_config_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncConfigResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Sync Configuration",
+        "tags": [
+          "SQL Server Sync"
+        ]
+      }
+    },
+    "/sync/history": {
+      "get": {
+        "description": "List sync history with optional filtering, sorting, and pagination.\n\nUse this endpoint to view past sync operations and their results.",
+        "operationId": "list_sync_history_sync_history_get",
+        "parameters": [
+          {
+            "description": "Filter by sync type",
+            "in": "query",
+            "name": "sync_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by sync type",
+              "title": "Sync Type"
+            }
+          },
+          {
+            "description": "Filter by status",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by status",
+              "title": "Status"
+            }
+          },
+          {
+            "description": "Filter syncs after this date",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter syncs after this date",
+              "title": "Start Date"
+            }
+          },
+          {
+            "description": "Filter syncs before this date",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter syncs before this date",
+              "title": "End Date"
+            }
+          },
+          {
+            "description": "Filter by sync mode",
+            "in": "query",
+            "name": "is_full_sync",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by sync mode",
+              "title": "Is Full Sync"
+            }
+          },
+          {
+            "description": "Page number",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "description": "Page number",
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Items per page",
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Items per page",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Sort field",
+            "in": "query",
+            "name": "sort_by",
+            "required": false,
+            "schema": {
+              "default": "started_at",
+              "description": "Sort field",
+              "title": "Sort By",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Sort order: 'asc' or 'desc'",
+            "in": "query",
+            "name": "sort_order",
+            "required": false,
+            "schema": {
+              "default": "desc",
+              "description": "Sort order: 'asc' or 'desc'",
+              "title": "Sort Order",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncHistoryListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Sync History",
+        "tags": [
+          "SQL Server Sync"
+        ]
+      }
+    },
+    "/sync/last-successful/{sync_type}": {
+      "get": {
+        "description": "Get information about the last successful sync for a specific type.\n\nReturns the timestamp of the last successful sync, which is used\nby incremental syncs to determine where to start.",
+        "operationId": "get_last_successful_sync_sync_last_successful__sync_type__get",
+        "parameters": [
+          {
+            "description": "Sync type: 'employee_reports', 'vision_data', or 'job_descriptions'",
+            "in": "path",
+            "name": "sync_type",
+            "required": true,
+            "schema": {
+              "description": "Sync type: 'employee_reports', 'vision_data', or 'job_descriptions'",
+              "title": "Sync Type",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LastSyncResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Last Successful Sync",
+        "tags": [
+          "SQL Server Sync"
+        ]
+      }
+    },
+    "/sync/status/{sync_id}": {
+      "get": {
+        "description": "Get the current status and metrics of a specific sync job.\n\nUse this endpoint to poll for progress while a sync is running,\nor to retrieve final results after completion.",
+        "operationId": "get_sync_status_sync_status__sync_id__get",
+        "parameters": [
+          {
+            "description": "Sync job identifier",
+            "in": "path",
+            "name": "sync_id",
+            "required": true,
+            "schema": {
+              "description": "Sync job identifier",
+              "format": "uuid",
+              "title": "Sync Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncStatusResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Sync Status",
+        "tags": [
+          "SQL Server Sync"
+        ]
+      }
+    },
+    "/sync/test-connection": {
+      "get": {
+        "description": "Test SQL Server connectivity without triggering a sync.\n\nUseful for diagnosing connection issues before attempting a sync.",
+        "operationId": "test_sql_server_connection_sync_test_connection_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectionTestResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Test Sql Server Connection",
+        "tags": [
+          "SQL Server Sync"
+        ]
+      }
+    },
+    "/sync/trigger/employee_reports": {
+      "post": {
+        "description": "Trigger employee reports synchronization from SQL Server to PostgreSQL.",
+        "operationId": "trigger_employee_reports_sync_sync_trigger_employee_reports_post",
+        "parameters": [
+          {
+            "description": "If true, perform full sync. If false, incremental sync.",
+            "in": "query",
+            "name": "is_full_sync",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "If true, perform full sync. If false, incremental sync.",
+              "title": "Is Full Sync",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncTriggerResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Trigger Employee Reports Sync",
+        "tags": [
+          "SQL Server Sync"
+        ]
+      }
+    },
+    "/sync/trigger/full": {
+      "post": {
+        "description": "Trigger full synchronization of employee reports, vision data, job descriptions, and supervisor feedback.\n\nThis runs all four sync types sequentially in a single Celery task.\nAll syncs will be in FULL mode (all records, not incremental).",
+        "operationId": "trigger_full_sync_sync_trigger_full_post",
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FullSyncTriggerResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Trigger Full Sync",
+        "tags": [
+          "SQL Server Sync"
+        ]
+      }
+    },
+    "/sync/trigger/job_descriptions": {
+      "post": {
+        "description": "Trigger job descriptions synchronization from SQL Server to PostgreSQL.\n\nThis endpoint queues an asynchronous Celery task and returns immediately.\nUse the returned sync_id to poll for status updates.\n\n- **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)",
+        "operationId": "trigger_job_descriptions_sync_sync_trigger_job_descriptions_post",
+        "parameters": [
+          {
+            "description": "If true, perform full sync. If false, incremental sync.",
+            "in": "query",
+            "name": "is_full_sync",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "If true, perform full sync. If false, incremental sync.",
+              "title": "Is Full Sync",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncTriggerResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Trigger Job Descriptions Sync",
+        "tags": [
+          "SQL Server Sync"
+        ]
+      }
+    },
+    "/sync/trigger/supervisor_feedback": {
+      "post": {
+        "description": "Trigger supervisor feedback synchronization from SQL Server to PostgreSQL.\n\nThis endpoint queues an asynchronous Celery task and returns immediately.\nUse the returned sync_id to poll for status updates.\n\n- **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)",
+        "operationId": "trigger_supervisor_feedback_sync_sync_trigger_supervisor_feedback_post",
+        "parameters": [
+          {
+            "description": "If true, perform full sync. If false, incremental sync.",
+            "in": "query",
+            "name": "is_full_sync",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "If true, perform full sync. If false, incremental sync.",
+              "title": "Is Full Sync",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncTriggerResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Trigger Supervisor Feedback Sync",
+        "tags": [
+          "SQL Server Sync"
+        ]
+      }
+    },
+    "/sync/trigger/vision_data": {
+      "post": {
+        "description": "Trigger vision data synchronization from SQL Server to PostgreSQL.\n\nThis endpoint queues an asynchronous Celery task and returns immediately.\nUse the returned sync_id to poll for status updates.\n\n- **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)",
+        "operationId": "trigger_vision_data_sync_sync_trigger_vision_data_post",
+        "parameters": [
+          {
+            "description": "If true, perform full sync. If false, incremental sync.",
+            "in": "query",
+            "name": "is_full_sync",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "If true, perform full sync. If false, incremental sync.",
+              "title": "Is Full Sync",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncTriggerResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Trigger Vision Data Sync",
+        "tags": [
+          "SQL Server Sync"
+        ]
+      }
+    },
+    "/sync/{sync_id}/errors": {
+      "get": {
+        "description": "Get detailed errors for a specific sync job.\n\nOnly returns data if the sync job encountered errors.\nUseful for debugging failed or partial syncs.",
+        "operationId": "get_sync_errors_sync__sync_id__errors_get",
+        "parameters": [
+          {
+            "description": "Sync job identifier",
+            "in": "path",
+            "name": "sync_id",
+            "required": true,
+            "schema": {
+              "description": "Sync job identifier",
+              "format": "uuid",
+              "title": "Sync Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 1000,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncErrorsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Sync Errors",
+        "tags": [
+          "SQL Server Sync"
+        ]
+      }
+    },
+    "/tasks/{task_id}": {
+      "get": {
+        "description": "Get the current status of a task.\n\nThis endpoint allows polling for status updates as a task progresses.",
+        "operationId": "get_task_status_endpoint_tasks__task_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Task Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskStatusResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Task Status Endpoint",
+        "tags": [
+          "Tasks"
+        ]
+      }
+    },
+    "/tasks/{task_id}/result": {
+      "get": {
+        "description": "Get the result of a completed task.\n\nThis endpoint will return a 422 error if the task is not yet complete.",
+        "operationId": "get_task_result_endpoint_tasks__task_id__result_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Task Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResultResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Task Result Endpoint",
+        "tags": [
+          "Tasks"
+        ]
+      }
+    },
+    "/visualizations/consistency-trends": {
+      "get": {
+        "description": "Retrieve aggregated consistency score trend data for visualization.\nConsistency scores (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.",
+        "operationId": "read_consistency_trends_visualizations_consistency_trends_get",
+        "parameters": [
+          {
+            "description": "Filter by specific employee ID",
+            "in": "query",
+            "name": "employee_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific employee ID",
+              "title": "Employee Id"
+            }
+          },
+          {
+            "description": "Filter by specific department/wing",
+            "in": "query",
+            "name": "department",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific department/wing",
+              "title": "Department"
+            }
+          },
+          {
+            "description": "Start date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date for analysis (YYYY-MM-DD)",
+              "title": "Start Date"
+            }
+          },
+          {
+            "description": "End date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date for analysis (YYYY-MM-DD)",
+              "title": "End Date"
+            }
+          },
+          {
+            "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+            "in": "query",
+            "name": "interval",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+              "title": "Interval",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Consistency Trends",
+        "tags": [
+          "Visualizations"
+        ]
+      }
+    },
+    "/visualizations/credibility-trends": {
+      "get": {
+        "description": "Retrieve aggregated credibility rating trend data for visualization.\nCredibility ratings (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.",
+        "operationId": "read_credibility_trends_visualizations_credibility_trends_get",
+        "parameters": [
+          {
+            "description": "Filter by specific employee ID",
+            "in": "query",
+            "name": "employee_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific employee ID",
+              "title": "Employee Id"
+            }
+          },
+          {
+            "description": "Filter by specific department/wing",
+            "in": "query",
+            "name": "department",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific department/wing",
+              "title": "Department"
+            }
+          },
+          {
+            "description": "Start date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date for analysis (YYYY-MM-DD)",
+              "title": "Start Date"
+            }
+          },
+          {
+            "description": "End date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date for analysis (YYYY-MM-DD)",
+              "title": "End Date"
+            }
+          },
+          {
+            "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+            "in": "query",
+            "name": "interval",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+              "title": "Interval",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Credibility Trends",
+        "tags": [
+          "Visualizations"
+        ]
+      }
+    },
+    "/visualizations/impact-heatmap": {
+      "get": {
+        "description": "Retrieve impact score heatmap data for visualization.",
+        "operationId": "read_impact_heatmap_visualizations_impact_heatmap_get",
+        "parameters": [
+          {
+            "description": "Dimension for y-axis ('department' or 'employee')",
+            "in": "query",
+            "name": "dimension",
+            "required": false,
+            "schema": {
+              "default": "department",
+              "description": "Dimension for y-axis ('department' or 'employee')",
+              "title": "Dimension",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Start date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date for analysis (YYYY-MM-DD)",
+              "title": "Start Date"
+            }
+          },
+          {
+            "description": "End date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date for analysis (YYYY-MM-DD)",
+              "title": "End Date"
+            }
+          },
+          {
+            "description": "Time interval for x-axis ('day', 'week', 'month', 'quarter', 'year')",
+            "in": "query",
+            "name": "interval",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "description": "Time interval for x-axis ('day', 'week', 'month', 'quarter', 'year')",
+              "title": "Interval",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeatmapResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Impact Heatmap",
+        "tags": [
+          "Visualizations"
+        ]
+      }
+    },
+    "/visualizations/impact-trends": {
+      "get": {
+        "description": "Retrieve aggregated impact score trend data for visualization.",
+        "operationId": "read_impact_trends_visualizations_impact_trends_get",
+        "parameters": [
+          {
+            "description": "Filter by specific employee ID",
+            "in": "query",
+            "name": "employee_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific employee ID",
+              "title": "Employee Id"
+            }
+          },
+          {
+            "description": "Filter by specific department/wing",
+            "in": "query",
+            "name": "department",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific department/wing",
+              "title": "Department"
+            }
+          },
+          {
+            "description": "Start date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date for analysis (YYYY-MM-DD)",
+              "title": "Start Date"
+            }
+          },
+          {
+            "description": "End date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date for analysis (YYYY-MM-DD)",
+              "title": "End Date"
+            }
+          },
+          {
+            "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+            "in": "query",
+            "name": "interval",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+              "title": "Interval",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Impact Trends",
+        "tags": [
+          "Visualizations"
+        ]
+      }
+    },
+    "/visualizations/multi-criteria-trends": {
+      "get": {
+        "description": "Retrieve trend data for multiple criteria for comparison visualization.\nSupports combining any of the available criteria: sentiment, risk, credibility, consistency, performance, impact.",
+        "operationId": "read_multi_criteria_trends_visualizations_multi_criteria_trends_get",
+        "parameters": [
+          {
+            "description": "List of criteria to include (e.g., sentiment, risk, credibility, consistency, performance, impact)",
+            "in": "query",
+            "name": "criteria",
+            "required": true,
+            "schema": {
+              "description": "List of criteria to include (e.g., sentiment, risk, credibility, consistency, performance, impact)",
+              "items": {
+                "type": "string"
+              },
+              "title": "Criteria",
+              "type": "array"
+            }
+          },
+          {
+            "description": "Filter by specific employee ID",
+            "in": "query",
+            "name": "employee_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific employee ID",
+              "title": "Employee Id"
+            }
+          },
+          {
+            "description": "Filter by specific department/wing",
+            "in": "query",
+            "name": "department",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific department/wing",
+              "title": "Department"
+            }
+          },
+          {
+            "description": "Start date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date for analysis (YYYY-MM-DD)",
+              "title": "Start Date"
+            }
+          },
+          {
+            "description": "End date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date for analysis (YYYY-MM-DD)",
+              "title": "End Date"
+            }
+          },
+          {
+            "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+            "in": "query",
+            "name": "interval",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+              "title": "Interval",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Multi Criteria Trends",
+        "tags": [
+          "Visualizations"
+        ]
+      }
+    },
+    "/visualizations/performance-trends": {
+      "get": {
+        "description": "Retrieve aggregated performance rating trend data for visualization.\nPerformance ratings (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.",
+        "operationId": "read_performance_trends_visualizations_performance_trends_get",
+        "parameters": [
+          {
+            "description": "Filter by specific employee ID",
+            "in": "query",
+            "name": "employee_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific employee ID",
+              "title": "Employee Id"
+            }
+          },
+          {
+            "description": "Filter by specific department/wing",
+            "in": "query",
+            "name": "department",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific department/wing",
+              "title": "Department"
+            }
+          },
+          {
+            "description": "Start date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date for analysis (YYYY-MM-DD)",
+              "title": "Start Date"
+            }
+          },
+          {
+            "description": "End date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date for analysis (YYYY-MM-DD)",
+              "title": "End Date"
+            }
+          },
+          {
+            "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+            "in": "query",
+            "name": "interval",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+              "title": "Interval",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Performance Trends",
+        "tags": [
+          "Visualizations"
+        ]
+      }
+    },
+    "/visualizations/risk-trends": {
+      "get": {
+        "description": "Retrieve aggregated risk level trend data for visualization.\nRisk levels (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.",
+        "operationId": "read_risk_trends_visualizations_risk_trends_get",
+        "parameters": [
+          {
+            "description": "Filter by specific employee ID",
+            "in": "query",
+            "name": "employee_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific employee ID",
+              "title": "Employee Id"
+            }
+          },
+          {
+            "description": "Filter by specific department/wing",
+            "in": "query",
+            "name": "department",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific department/wing",
+              "title": "Department"
+            }
+          },
+          {
+            "description": "Start date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date for analysis (YYYY-MM-DD)",
+              "title": "Start Date"
+            }
+          },
+          {
+            "description": "End date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date for analysis (YYYY-MM-DD)",
+              "title": "End Date"
+            }
+          },
+          {
+            "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+            "in": "query",
+            "name": "interval",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+              "title": "Interval",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Risk Trends",
+        "tags": [
+          "Visualizations"
+        ]
+      }
+    },
+    "/visualizations/sentiment-heatmap": {
+      "get": {
+        "description": "Retrieve sentiment heatmap data for visualization.",
+        "operationId": "read_sentiment_heatmap_visualizations_sentiment_heatmap_get",
+        "parameters": [
+          {
+            "description": "Dimension for y-axis ('department' or 'employee')",
+            "in": "query",
+            "name": "dimension",
+            "required": false,
+            "schema": {
+              "default": "department",
+              "description": "Dimension for y-axis ('department' or 'employee')",
+              "title": "Dimension",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Start date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date for analysis (YYYY-MM-DD)",
+              "title": "Start Date"
+            }
+          },
+          {
+            "description": "End date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date for analysis (YYYY-MM-DD)",
+              "title": "End Date"
+            }
+          },
+          {
+            "description": "Time interval for x-axis ('day', 'week', 'month', 'quarter', 'year')",
+            "in": "query",
+            "name": "interval",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "description": "Time interval for x-axis ('day', 'week', 'month', 'quarter', 'year')",
+              "title": "Interval",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeatmapResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Sentiment Heatmap",
+        "tags": [
+          "Visualizations"
+        ]
+      }
+    },
+    "/visualizations/sentiment-trends": {
+      "get": {
+        "description": "Retrieve aggregated sentiment trend data for visualization.",
+        "operationId": "read_sentiment_trends_visualizations_sentiment_trends_get",
+        "parameters": [
+          {
+            "description": "Filter by specific employee ID",
+            "in": "query",
+            "name": "employee_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific employee ID",
+              "title": "Employee Id"
+            }
+          },
+          {
+            "description": "Filter by specific department/wing",
+            "in": "query",
+            "name": "department",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by specific department/wing",
+              "title": "Department"
+            }
+          },
+          {
+            "description": "Start date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date for analysis (YYYY-MM-DD)",
+              "title": "Start Date"
+            }
+          },
+          {
+            "description": "End date for analysis (YYYY-MM-DD)",
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date for analysis (YYYY-MM-DD)",
+              "title": "End Date"
+            }
+          },
+          {
+            "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+            "in": "query",
+            "name": "interval",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "description": "Time interval for grouping ('day', 'week', 'month', 'quarter', 'year')",
+              "title": "Interval",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Sentiment Trends",
+        "tags": [
+          "Visualizations"
+        ]
+      }
+    }
+  }
+}

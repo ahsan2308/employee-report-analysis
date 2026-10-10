@@ -1,0 +1,42 @@
+{
+  "after_empty_prefix_clear": [
+    {},
+    {}
+  ],
+  "after_full_clear": [
+    {},
+    {}
+  ],
+  "after_nomatch_clear_keys": [
+    "risk:1"
+  ],
+  "after_prefix_clear_expiry_keys": [
+    "risk:1"
+  ],
+  "after_prefix_clear_keys": [
+    "risk:1"
+  ],
+  "default_ttl": 300,
+  "expiry_offsets": {
+    "risk:1": 0.0,
+    "sentiment:1": 300.0,
+    "sentiment:2": 10.0
+  },
+  "get_at_plus_10s": [
+    {
+      "v": 1
+    },
+    null
+  ],
+  "get_at_plus_300s": null,
+  "get_fresh": [
+    {
+      "v": 1
+    },
+    {
+      "v": 2
+    },
+    null,
+    null
+  ]
+}

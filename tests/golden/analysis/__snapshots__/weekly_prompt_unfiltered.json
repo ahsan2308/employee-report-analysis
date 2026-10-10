@@ -1,0 +1,4 @@
+{
+  "message": "'int' object is not subscriptable",
+  "raised": "TypeError"
+}

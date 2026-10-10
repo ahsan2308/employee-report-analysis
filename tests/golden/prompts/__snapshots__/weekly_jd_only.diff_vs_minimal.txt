@@ -1,0 +1,99 @@
+--- base
++++ variant
+@@ -233,4 +233,96 @@
+ <EMPLOYEE_REPORT_END_CURRENT_WEEK>
+ 
++## EMPLOYEE ROLE CONTEXT (Job Description)
++
++Primary Role: Assistant Director (Analysis) (effective 2025-07-01)
++Key Responsibilities:
++- Produce analytical products for Wing leadership
++- Validate field reporting against registries
++Additional Charge: Liaison Officer (effective 2026-01-15)
++
++
++**Performance Expectations Framework**:
++
++EXCEEDS EXPECTATIONS (one or more of):
++- Scope expansion: Completed work impacting higher organizational levels than JD specifies
++  (Example: JD specifies section-level reporting → Employee produced department-wide analysis used by leadership)
++- Innovation: Introduced process improvements or efficiency gains not required by role
++  (Example: JD requires "maintain records" → Employee "designed digital tracking system reducing processing time by 30%")
++- Leadership: Mentored colleagues, led initiatives, or took ownership beyond assigned tasks
++  (Example: JD requires "participate in meetings" → Employee "coordinated cross-departmental working group")
++- Mission impact: Delivered measurable outcomes beyond routine task completion
++  (Example: JD requires "prepare monthly reports" → Employee "identified efficiency opportunity saving 500K annually, supporting federal budget optimization")
++
++MEETS EXPECTATIONS:
++- Completes all JD-specified responsibilities on time and with quality
++- Handles challenges appropriate to role level effectively
++- Collaborates within defined scope and demonstrates required competencies
++
++BELOW EXPECTATIONS:
++- Consistently misses JD-required deliverables or deadlines
++- Requires excessive support for routine role responsibilities
++- Struggles with tasks that should be manageable at this role level
++
++**Role-Appropriate Challenge Assessment**:
++
++Challenges are APPROPRIATE when they align with role complexity:
++
++JUNIOR/ENTRY-LEVEL ROLES:
++✓ Expected: Learning new systems, need for guidance, unfamiliar procedures
++✓ Expected: Time management with multiple routine tasks
++✗ Concerning: Basic skills gaps (e.g., "don't know how to use standard office tools")
++✗ Concerning: Strategic planning difficulties (beyond role scope)
++
++MID-LEVEL ROLES:
++✓ Expected: Coordination across teams, resource constraints, process ambiguities
++✓ Expected: Balancing competing priorities, stakeholder management
++✗ Concerning: Inability to work independently on routine tasks
++✗ Concerning: Excessive need for supervisor guidance on standard procedures
++
++SENIOR/LEADERSHIP ROLES:
++✓ Expected: Strategic ambiguity, organizational politics, change resistance
++✓ Expected: Complex stakeholder conflicts, resource allocation dilemmas
++✗ Concerning: Struggling with tactical execution (should delegate)
++✗ Concerning: Basic operational challenges (below role level)
++
++Use this to assess credibility:
++- Junior reporting "navigated complex organizational politics" → May be exaggeration or misclassification
++- Senior reporting "needed help formatting documents" → May indicate skill gap or delegation failure
++
++**Special Role Scenarios**:
++
++MULTIPLE CONCURRENT ROLES:
++When employee holds multiple roles simultaneously:
++- Assess achievements against combined responsibilities from all JDs
++- Evaluate workload distribution across roles (is allocation reasonable?)
++- Identify role synergies (do responsibilities complement each other?)
++- Note role conflicts (competing priorities or time constraints)
++- Performance rating considers total workload complexity, not individual roles in isolation
++
++Example: Employee holds "Data Analyst" + "Training Coordinator" roles
++- Achievement: "Conducted 5 training sessions on new reporting tools" 
++  → Evaluate against Training Coordinator JD
++- Achievement: "Completed quarterly analysis ahead of schedule"
++  → Evaluate against Data Analyst JD
++- Overall assessment: Consider if managing both roles is sustainable
++
++MID WEEK JD TRANSITIONS:
++When employee's role changed during the reporting week:
++- Split assessment: Evaluate first part of week against old JD, second part against new JD
++- Transition credit: Acknowledge learning curve and adaptation in new role
++- Proportional evaluation: Weight achievements based on days in each role
++- Expectation adjustment: Lower performance bar slightly for new role portion (first 2-3 weeks)
++
++Example: Employee transitioned from "Junior Analyst" to "Senior Analyst" on Wednesday
++- Monday-Wednesday work: Assess against Junior Analyst JD (routine tasks expected)
++- Thursday-Friday work: Assess against Senior Analyst JD (acknowledge learning period)
++- Note in performance summary: "Transitioning to senior role, early adaptation signs positive"
++
++**Role-Based Reading Guidance**:
++Use the job description as the BASELINE for interpreting achievements and challenges:
++- Identify which activities are core JD duties vs. stretch contributions
++- Assess if challenges are appropriate to role level (see framework above)
++- Determine if workload reflects reasonable expectations for this position
++
+ ## COMPREHENSIVE ANALYSIS REQUIREMENTS
+ 

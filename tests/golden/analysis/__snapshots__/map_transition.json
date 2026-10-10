@@ -1,0 +1,79 @@
+{
+  "returned": {
+    "jd_groups": [
+      {
+        "effective_dates": {
+          "end": "2025-01-12",
+          "start": "2024-12-30"
+        },
+        "jd_ids": [
+          "JD_A"
+        ],
+        "jd_texts": [
+          "Analyst duties"
+        ],
+        "reports": [
+          {
+            "date": "2025-01-05",
+            "report_id": "rep-2025-01-05",
+            "text": "weekly report",
+            "week_end_date": "2025-01-05",
+            "week_start_date": "2024-12-30"
+          },
+          {
+            "date": "2025-01-12",
+            "report_id": "rep-2025-01-12",
+            "text": "weekly report",
+            "week_end_date": "2025-01-12",
+            "week_start_date": "2025-01-06"
+          }
+        ]
+      },
+      {
+        "effective_dates": {
+          "end": "2025-01-19",
+          "start": "2025-01-13"
+        },
+        "jd_ids": [
+          "JD_A",
+          "JD_B"
+        ],
+        "jd_texts": [
+          "Team lead duties",
+          "Analyst duties"
+        ],
+        "reports": [
+          {
+            "date": "2025-01-19",
+            "report_id": "rep-2025-01-19",
+            "text": "weekly report",
+            "week_end_date": "2025-01-19",
+            "week_start_date": "2025-01-13"
+          }
+        ]
+      },
+      {
+        "effective_dates": {
+          "end": "2025-01-26",
+          "start": "2025-01-20"
+        },
+        "jd_ids": [
+          "JD_B"
+        ],
+        "jd_texts": [
+          "Team lead duties"
+        ],
+        "reports": [
+          {
+            "date": "2025-01-26",
+            "report_id": "rep-2025-01-26",
+            "text": "weekly report",
+            "week_end_date": "2025-01-26",
+            "week_start_date": "2025-01-20"
+          }
+        ]
+      }
+    ],
+    "unmapped_reports": []
+  }
+}

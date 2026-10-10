@@ -1,0 +1,52 @@
+{
+  "properties": {
+    "challenge_resolution_progress": {
+      "description": "Progress in addressing challenges from earlier weeks",
+      "enum": [
+        "improved",
+        "declined",
+        "unchanged"
+      ],
+      "title": "Challenge Resolution Progress",
+      "type": "string"
+    },
+    "performance_trend": {
+      "description": "Overall trend in employee's performance",
+      "enum": [
+        "improving",
+        "declining",
+        "stable"
+      ],
+      "title": "Performance Trend",
+      "type": "string"
+    },
+    "risk_level_pattern": {
+      "description": "Pattern in risk levels over the month",
+      "enum": [
+        "increasing",
+        "decreasing",
+        "stable"
+      ],
+      "title": "Risk Level Pattern",
+      "type": "string"
+    },
+    "sentiment_trend": {
+      "description": "Trend in sentiment across weekly reports",
+      "enum": [
+        "positive",
+        "negative",
+        "stable"
+      ],
+      "title": "Sentiment Trend",
+      "type": "string"
+    }
+  },
+  "required": [
+    "performance_trend",
+    "sentiment_trend",
+    "risk_level_pattern",
+    "challenge_resolution_progress"
+  ],
+  "title": "ProgressTrends",
+  "type": "object"
+}

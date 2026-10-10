@@ -1,0 +1,75 @@
+--- base
++++ variant
+@@ -233,4 +233,72 @@
+ <EMPLOYEE_REPORT_END_CURRENT_WEEK>
+ 
++## OBJECTIVE TRACKING DATA (VISION SYSTEM)
++The following Vision system tracking data provides evidence to cross-validate claims in the report and to perform the overall analysis as well.
++=== CURRENT PERIOD ACTIVITY DATA ===
++Current Report Period Activity Data:
++
++- Time Period: 2026-03-08 to 2026-03-14
++  Main Activity: Report Processing
++  Details:
++    - Number of Reports Reviewed: 42 (field reports reviewed)
++      ---> title: Field report 17, status: validated
++
++=== HISTORICAL ACTIVITY DATA ===
++
++
++**Using Vision Data in Your Analysis**:
++
++**Data Presentation Note:** The Vision data above displays detailed content items for each sub-entity with a configured limit per entity to maintain prompt efficiency. When you see text like "and X more..." at the end of a content list, this indicates there are X additional tracked items beyond those displayed. For validation purposes, calculate total tracked items by adding the number of displayed items plus the "X more" count. Do not interpret truncated display as incomplete tracking—the system tracked all items, but not all are shown in detail.
++
++**CRITICAL FAIRNESS PRINCIPLE:** Many employees have NO vision tracking data (strategic, liaison, field, administrative roles). This is the NORMAL state. Only use vision data when it EXISTS and is RELEVANT to the specific achievement.
++
++**Vision Verification Field Usage:**
++When assigning the optional `vision_verification` field in achievement objects:
++- Set to "supported": ONLY when vision data clearly confirms the specific achievement
++- Set to "contradicted": ONLY when vision data clearly conflicts with the achievement claim (credibility red flag)
++- Set to "none": When no vision data exists OR vision data is not applicable to this achievement type (MORE COMMON CASE)
++
++**DO NOT mention or reference the absence of vision verification in your analysis text. The default assumption is that most achievements will NOT have vision verification.**
++
++**How to Use Vision Data:**
++
++1. CROSS-REFERENCE SPECIFIC CLAIMS:
++   When vision data exists, check if tracked activities align with claimed achievements:
++   - Example: Claim "Completed XYZ project deliverable" → Check if XYZ appears in tracked entities
++   - If confirmed: Set `vision_verification: "supported"` for that achievement
++   - If contradicted: Set `vision_verification: "contradicted"` and flag in credibility assessment
++   - If not applicable/no data: Set `vision_verification` field to "none"
++
++2. IDENTIFY ACTIVITY PATTERNS:
++   Compare current week to historical baseline:
++   
++   Workload Intensity Changes:
++   - Significant increase (2x+ from baseline): May indicate temporary surge, new project, or role expansion
++   - Significant decrease (50%+ drop): May indicate lighter week, transition period, or reduced responsibilities
++   
++   Work Focus Shifts:
++   - Changed entity types: May indicate evolving priorities, new assignments, or role development
++   - Consistent entities: Indicates stable core responsibilities and workflow
++   
++   Activity Rhythm:
++   - Volatile patterns (high variance week-to-week): May indicate project-based work or reactive role
++   - Steady patterns (low variance): Indicates routine, predictable workload
++   
++   Use historical data to understand context, NOT to judge current performance:
++   - If employee typically shows lower activity during month-end → Don't penalize current low activity during month-end
++   - If employee shows 3x spike → Note as unusual, investigate if achievements match the spike
++   - Focus on anomalies that don't align with reported work, not normal fluctuations
++
++3. APPLY TO CREDIBILITY SCORING:
++   - Achievements with `vision_verification: "supported"`: Cite as strengthening credibility
++   
++   - Achievements with `vision_verification: "contradicted"`: Critical red flag (3 points total for Vision mismatch, regardless of how many achievements are contradicted)
++     Action required: Flag for manager verification, discount impact scores proportionally, recommend follow-up
++     Note: If >50% of achievements are contradicted, automatic LOW credibility (override rule)
++   
++   - Achievements without vision_verification field: Assess on their own merits using report specificity, JD alignment, and internal consistency (STANDARD CASE)
++
++**Vision Data Limitations**: Vision tracking is not applicable for many roles. When Vision data exists but is incomplete, only flag clear conflicts (not absence) as contradictions. The absence of vision verification is NOT a credibility concern and should NOT be mentioned in your analysis.
++
+ ## COMPREHENSIVE ANALYSIS REQUIREMENTS
+ 

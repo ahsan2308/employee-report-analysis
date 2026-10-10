@@ -1,0 +1,41 @@
+{
+  "properties": {
+    "performance_stability": {
+      "description": "Stability of performance across the quarter",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Performance Stability",
+      "type": "string"
+    },
+    "task_completion_reliability": {
+      "description": "Reliability in completing planned tasks",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Task Completion Reliability",
+      "type": "string"
+    },
+    "work_quality_consistency": {
+      "description": "Consistency of work quality throughout the quarter",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Work Quality Consistency",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_completion_reliability",
+    "work_quality_consistency",
+    "performance_stability"
+  ],
+  "title": "ConsistencyMetrics",
+  "type": "object"
+}

@@ -1,0 +1,100 @@
+--- base
++++ variant
+@@ -109,4 +109,97 @@
+     
+     
++## ROLE CONTEXT FOR QUARTERLY PERIOD (Job Description Data)
++
++Primary Role: Assistant Director (Analysis) (effective 2025-07-01)
++Key Responsibilities:
++- Produce analytical products for Wing leadership
++- Validate field reporting against registries
++Additional Charge: Liaison Officer (effective 2026-01-15)
++
++
++### ROLE-BASED QUARTERLY ANALYSIS GUIDANCE
++
++### Performance Expectations Framework for Quarterly Assessment
++
++**EXCEEDS EXPECTATIONS** (one or more of):
++- Scope expansion: Work consistently impacted higher organizational levels than JD specifies across multiple months
++- Innovation: Introduced process improvements or efficiency gains beyond role requirements
++- Leadership: Mentored colleagues, led initiatives, or took ownership beyond assigned tasks
++- Mission impact: Delivered measurable outcomes beyond routine task completion
++
++**MEETS EXPECTATIONS:**
++- Completes all JD-specified responsibilities reliably across the quarter
++- Handles challenges appropriate to role level effectively
++- Collaborates within defined scope and demonstrates required competencies
++
++**BELOW EXPECTATIONS:**
++- Consistently misses JD-required deliverables or deadlines across months
++- Requires excessive support for routine role responsibilities
++- Struggles with tasks that should be manageable at this role level
++
++### Role-Appropriate Assessment by Seniority
++
++**JUNIOR ROLES (BPS-17 to 18):**
++- Focus on: Execution quality, learning agility, growth trajectory across quarter
++- Expected challenges: Learning systems, needing guidance, time management
++- Red flags: Persistent basic skill gaps, inability to complete routine tasks independently
++
++**MID-LEVEL ROLES (BPS-19 to 20):**
++- Focus on: Section/wing coordination, process mastery, reliability across quarter
++- Expected challenges: Cross-team coordination, resource constraints, competing priorities
++- Red flags: Excessive need for guidance persisting across months, inability to work independently
++
++**SENIOR ROLES (BPS-21 to 22):**
++- Focus on: Strategic thinking, leadership impact, organizational outcomes across quarter
++- Expected challenges: Strategic ambiguity, organizational politics, change management
++- Red flags: Struggling with tactical execution (should delegate), requiring excessive guidance
++
++### Career Progression Evaluation
++
++**Analyze performance trajectory:**
++- How well did employee master each role's core competencies over the quarter?
++- Did role transitions represent career advancement or lateral moves?
++- Track development of capabilities across multiple role contexts
++
++**Readiness Assessment:**
++- Evaluate readiness for role expansion or advancement based on JD requirements
++- Identify systematic gaps between current role requirements and demonstrated capabilities
++- Assess whether achievement themes demonstrate mastery beyond current role scope
++- Determine if behavioral assessment patterns indicate promotion readiness
++
++**Strategic Alignment:**
++- Assess how employee's contributions align with formal role responsibilities
++- Identify work performed beyond role scope (innovation, leadership, cross-functional impact)
++- Evaluate whether organizational impact matches role level expectations
++- Note misalignment between assigned role and actual work patterns (positive or negative)
++
++### Special Role Scenarios
++
++**MULTIPLE CONCURRENT ROLES:**
++- Assess achievements against combined responsibilities from all JDs across quarter
++- Evaluate workload distribution and prioritization across roles over time
++- Identify role synergies and conflicts
++- Consider total workload complexity, not individual roles in isolation
++
++**ROLE TRANSITIONS DURING QUARTER:**
++- Split assessment: Evaluate work against applicable JD for each period
++- Transition credit: Acknowledge learning curve in new role
++- Proportional evaluation: Weight by time in each role
++- Document adaptation quality and early performance indicators
++- Assess whether transition disrupted trajectory or accelerated growth
++
++### Authority & Autonomy Assessment (Quarterly Pattern)
++
++Consider whether employee exercised appropriate decision-making authority for their grade:
++- **BPS-17 to 18:** Work with guidance, escalate major decisions, coordinate within section
++- **BPS-19 to 20:** Make section/wing-level decisions independently, provide guidance to subordinates
++- **BPS-21 to 22:** Make strategic HQ-level decisions, represent organization externally
++
++Quarterly patterns to note:
++- Consistent appropriate authority usage → Positive indicator for promotion readiness
++- Pattern of exceeding authority without oversight → Governance concern
++- Pattern of under-utilizing authority → Development need or confidence gap
++
++
+ ## QUARTERLY CREDIBILITY AGGREGATION FRAMEWORK
+ 

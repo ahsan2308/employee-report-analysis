@@ -1,0 +1,21 @@
+{
+  "empty": {
+    "returned": ""
+  },
+  "multiple_with_none_assigned": {
+    "message": "'<' not supported between instances of 'NoneType' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "none": {
+    "returned": ""
+  },
+  "single_missing_keys": {
+    "returned": "\n## EMPLOYEE JOB DESCRIPTION\n\nEffective Since: None\n\nJob Description:\nNo job description available\n"
+  },
+  "single_string_assigned": {
+    "returned": "\n## EMPLOYEE JOB DESCRIPTION\n\nEffective Since: 2024-02-29\n\nJob Description:\nS\n"
+  },
+  "single_with_none_assigned": {
+    "returned": "\n## EMPLOYEE JOB DESCRIPTION\n\nEffective Since: None\n\nJob Description:\nNo job description available\n"
+  }
+}

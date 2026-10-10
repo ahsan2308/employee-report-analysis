@@ -1,0 +1,68 @@
+{
+  "$defs": {
+    "StakeholderImpact": {
+      "properties": {
+        "collaboration_type": {
+          "description": "Type of collaboration: leading_initiative (coordinating across Wings/Sections), contributing_expertise (specialized knowledge to other teams), mentoring (knowledge transfer/capability building), process_improvement (benefiting multiple units)",
+          "enum": [
+            "Leading Initiative",
+            "Contributing Expertise",
+            "Mentoring",
+            "Process Improvement"
+          ],
+          "title": "Collaboration Type",
+          "type": "string"
+        },
+        "evidence": {
+          "description": "Concrete example demonstrating this impact",
+          "title": "Evidence",
+          "type": "string"
+        },
+        "impact": {
+          "description": "Description of the impact on this stakeholder",
+          "title": "Impact",
+          "type": "string"
+        },
+        "stakeholder": {
+          "description": "Team or department impacted by the employee's work",
+          "title": "Stakeholder",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stakeholder",
+        "collaboration_type",
+        "impact",
+        "evidence"
+      ],
+      "title": "StakeholderImpact",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "collaboration_effectiveness": {
+      "description": "Effectiveness of collaboration with other teams/departments across the quarter",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Collaboration Effectiveness",
+      "type": "string"
+    },
+    "stakeholder_impacts": {
+      "description": "Specific collaboration activities with different stakeholders. Each represents a distinct collaboration pattern with its type, impact, and supporting evidence.",
+      "items": {
+        "$ref": "#/$defs/StakeholderImpact"
+      },
+      "title": "Stakeholder Impacts",
+      "type": "array"
+    }
+  },
+  "required": [
+    "collaboration_effectiveness",
+    "stakeholder_impacts"
+  ],
+  "title": "CrossFunctionalImpact",
+  "type": "object"
+}

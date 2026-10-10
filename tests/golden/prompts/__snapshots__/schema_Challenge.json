@@ -1,0 +1,25 @@
+{
+  "properties": {
+    "description": {
+      "description": "Detailed description of the challenge faced",
+      "title": "Description",
+      "type": "string"
+    },
+    "severity": {
+      "default": "medium",
+      "description": "How severe the challenge is (low, medium, high)",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "required": [
+    "description"
+  ],
+  "title": "Challenge",
+  "type": "object"
+}

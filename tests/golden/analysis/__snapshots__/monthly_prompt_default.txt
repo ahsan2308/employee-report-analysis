@@ -1,0 +1,23 @@
+
+Week 1 Activity Data (2025-02-03 to 2025-02-09):
+  Main Activity: Persons
+  Details:
+    - Number of Persons: 2 (New Person records created)
+      ---> name: Name 1, ref: R-1
+      ---> name: Name 2, ref: R-2
+      ---> name: Name 3, ref: R-3
+      ---> name: Name 4, ref: R-4
+      ---> name: Name 5, ref: R-5
+      ---> and 1 more...
+  Main Activity: Nadra
+  Details:
+    - Number of Requests: 10 (NADRA person verification requests added)
+      ---> cnic: LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL..., status: ok
+    - Number of Forwarded: 4 (NADRA person verification requests frowardred to concernd field offices of IB)
+    - Number of Notings: 1 (Notings added with NADRA person verification requests)
+
+Week 4 Activity Data (2025-02-17 to 2025-02-23):
+  Main Activity: PER
+  Details:
+    - Number of Initiated: 1 (PER initiated by HR department and sent to Reporting Officer (RO))
+    - Number of Recieved as CSO1: 2 (PER received by Counter Signing Officer 1 (CSO1) for review)

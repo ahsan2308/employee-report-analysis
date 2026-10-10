@@ -1,0 +1,37 @@
+{
+  "properties": {
+    "action": {
+      "description": "The recommended action in clear, actionable language",
+      "title": "Action",
+      "type": "string"
+    },
+    "ownership": {
+      "description": "Who is responsible for implementing this recommendation: employee (independent action), manager (intervention/approval required), hr (HR resources/training/policy support), cross-team (coordination with other Wings/Sections)",
+      "enum": [
+        "employee",
+        "manager",
+        "hr",
+        "cross-team"
+      ],
+      "title": "Ownership",
+      "type": "string"
+    },
+    "priority": {
+      "description": "Priority level: high (immediate intervention needed), medium (address within next quarter), low (desirable improvements)",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Priority",
+      "type": "string"
+    }
+  },
+  "required": [
+    "action",
+    "priority",
+    "ownership"
+  ],
+  "title": "Recommendation",
+  "type": "object"
+}

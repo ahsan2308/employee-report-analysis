@@ -1,0 +1,21 @@
+--- base
++++ variant
+@@ -233,4 +233,18 @@
+ <EMPLOYEE_REPORT_END_CURRENT_WEEK>
+ 
++## SIMILAR HISTORICAL REPORTS
++
++Similar Historical Report from 2025-11-22:
++Similar A.
++
++Similar Historical Report from 2025-10-04T12:00:00:
++Similar B.
++
++**About These Reports:** Similar reports provide comparable reference points based on overlapping work topics, task types, or complexity levels.
++
++**How to Use:** The current report is your primary analysis subject. Use similar reports to understand normal baselines (typical workload, common challenges, realistic outcomes) and detect meaningful deviations (improvement or regression). Each report's credibility is assessed independently—past patterns provide context only.
++
++**Pattern Insights:** Note increasing specificity, improving realism, better follow-through (positive); declining detail, persistent exaggeration, recurring unresolved challenges (concerns).
++
+ ## COMPREHENSIVE ANALYSIS REQUIREMENTS
+ 

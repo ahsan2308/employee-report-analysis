@@ -1,0 +1,168 @@
+{
+  "calls": [
+    {
+      "args": [
+        42
+      ],
+      "fn": "get_employee_info",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        1
+      ],
+      "fn": "get_reports_for_month",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        1
+      ],
+      "fn": "get_analyses_for_month",
+      "kwargs": {}
+    },
+    {
+      "args": [],
+      "fn": "get_employee_job_descriptions_for_period",
+      "kwargs": {
+        "employee_id": 42,
+        "period_end": "2025-01-31",
+        "period_start": "2025-01-01"
+      }
+    }
+  ],
+  "result": {
+    "analyses": [
+      {
+        "achievements": [
+          {
+            "impact_score": 8,
+            "title": "a1"
+          }
+        ],
+        "analysis_id": "an-2025-01-05",
+        "challenges": [
+          {
+            "title": "c1"
+          }
+        ],
+        "credibility_rating": null,
+        "date": "2025-01-05",
+        "exaggeration_flags": [],
+        "performance_rating": null,
+        "report_id": "rep-2025-01-05",
+        "risk_level": "high",
+        "sentiment_score": 0.4,
+        "topics": [
+          "budget",
+          "hiring"
+        ]
+      },
+      {
+        "achievements": [
+          {
+            "impact": "6 (moderate)",
+            "title": "a2"
+          }
+        ],
+        "analysis_id": "an-2025-01-12",
+        "challenges": [],
+        "credibility_rating": null,
+        "date": "2025-01-12",
+        "exaggeration_flags": [],
+        "performance_rating": null,
+        "report_id": "rep-2025-01-12",
+        "risk_level": "medium",
+        "sentiment_score": 0.5,
+        "topics": [
+          "budget"
+        ]
+      },
+      {
+        "achievements": [
+          {
+            "impact_score": 7.5,
+            "title": "a3"
+          },
+          {
+            "impact": "9",
+            "title": "a4"
+          }
+        ],
+        "analysis_id": "an-2025-01-19",
+        "challenges": [
+          {
+            "title": "c2"
+          },
+          {
+            "title": "c3"
+          }
+        ],
+        "credibility_rating": null,
+        "date": "2025-01-19",
+        "exaggeration_flags": [],
+        "performance_rating": null,
+        "report_id": "rep-2025-01-19",
+        "risk_level": "low",
+        "sentiment_score": 0.7,
+        "topics": [
+          "hiring",
+          "travel"
+        ]
+      },
+      {
+        "achievements": [],
+        "analysis_id": "an-2025-01-26",
+        "challenges": [],
+        "credibility_rating": null,
+        "date": "2025-01-26",
+        "exaggeration_flags": [],
+        "performance_rating": null,
+        "report_id": "rep-2025-01-26",
+        "risk_level": "medium",
+        "sentiment_score": 0.8,
+        "topics": [
+          "budget"
+        ]
+      }
+    ],
+    "employee_id": 42,
+    "employee_info": {
+      "id": 42,
+      "name": "Test Employee",
+      "position": "Analyst",
+      "wing": "Ops"
+    },
+    "employee_jds": [],
+    "jd_report_mapping": {
+      "jd_groups": [],
+      "unmapped_reports": []
+    },
+    "metrics": {
+      "achievement_count": 4,
+      "achievement_impact_avg": 7.62,
+      "avg_sentiment": 0.6,
+      "challenge_count": 3,
+      "recurring_topics": [
+        "budget",
+        "hiring"
+      ],
+      "report_count": 0,
+      "risk_levels": {
+        "high": 1,
+        "low": 1,
+        "medium": 2
+      },
+      "sentiment_trend": "improving"
+    },
+    "month": 1,
+    "period_end": "2025-01-31",
+    "period_start": "2025-01-01",
+    "reports": [],
+    "year": 2025
+  }
+}

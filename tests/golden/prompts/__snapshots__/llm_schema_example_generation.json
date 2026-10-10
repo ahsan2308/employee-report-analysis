@@ -1,0 +1,16 @@
+{
+  "provider_calls": [
+    {
+      "extra": {},
+      "max_tokens": 10000,
+      "method": "generate_text",
+      "num_ctx": 8192,
+      "prompt_starts_with_task_prompt": true,
+      "prompt_suffix_after_task_prompt": "\n\n\nIMPORTANT: Your response must be valid JSON data conforming to the schema, not the schema itself. Do not include any explanatory text or code formatting markers like ```json or ```.\n\nHere's the schema your response should conform to:\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"arr\": {\n      \"type\": \"array\"\n    },\n    \"num\": {\n      \"type\": \"number\"\n    },\n    \"int\": {\n      \"type\": \"integer\"\n    },\n    \"flag\": {\n      \"type\": \"boolean\"\n    },\n    \"obj\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"a\": {},\n        \"b\": {}\n      }\n    },\n    \"bare_obj\": {\n      \"type\": \"object\"\n    },\n    \"ref\": {\n      \"$ref\": \"#/$defs/X\"\n    }\n  }\n}\n\nExample format of what I'm expecting (with your own values):\n{\n  \"arr\": [\n    \"example item\"\n  ],\n  \"num\": 30,\n  \"int\": \"example value\",\n  \"flag\": true,\n  \"obj\": {\n    \"a\": \"example\",\n    \"b\": \"example\"\n  },\n  \"bare_obj\": \"example value\",\n  \"ref\": \"example value\"\n}\n",
+      "temperature": 0.2
+    }
+  ],
+  "result": {
+    "ok": 1
+  }
+}

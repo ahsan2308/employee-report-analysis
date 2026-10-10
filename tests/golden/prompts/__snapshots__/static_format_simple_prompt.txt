@@ -1,0 +1,11 @@
+
+IMPORTANT: Your response must be valid JSON data conforming to the schema, not the schema itself. Do not include any explanatory text or code formatting markers like ```json or ```.
+
+Follow this exact format:
+{
+  "summary": "example value",
+  "tags": [
+    "example item"
+  ],
+  "score": 30
+}

@@ -1,0 +1,21 @@
+{
+  "ops": [
+    [
+      "filter",
+      "public.reports.employee_id = 7"
+    ],
+    [
+      "filter",
+      "public.employees.wing = 'Ops'"
+    ],
+    [
+      "filter",
+      "public.reports.report_date >= '2025-01-01'"
+    ],
+    [
+      "filter",
+      "public.reports.report_date <= '2025-03-31'"
+    ]
+  ],
+  "same_query": true
+}

@@ -1,0 +1,54 @@
+{
+  "provider_calls": [
+    {
+      "extra": {},
+      "json_schema": {
+        "properties": {
+          "count": {
+            "type": "number"
+          },
+          "flag": {
+            "type": "number"
+          },
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "nested": {
+            "type": "object"
+          },
+          "nothing": {
+            "type": "object"
+          },
+          "ratio": {
+            "type": "number"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "max_tokens": 77,
+      "method": "generate_structured_output",
+      "num_ctx": 8192,
+      "prompt_starts_with_task_prompt": true,
+      "prompt_suffix_after_task_prompt": "",
+      "temperature": 0.2
+    },
+    {
+      "extra": {},
+      "max_tokens": 77,
+      "method": "generate_text",
+      "num_ctx": 8192,
+      "prompt_starts_with_task_prompt": true,
+      "prompt_suffix_after_task_prompt": "\n\n\nIMPORTANT: Your response must be valid JSON data conforming to the schema, not the schema itself. Do not include any explanatory text or code formatting markers like ```json or ```.\n\nFollow this exact format:\n{\n  \"text\": \"s\",\n  \"items\": [\n    \"a\"\n  ],\n  \"count\": 3,\n  \"ratio\": 0.5,\n  \"flag\": true,\n  \"nested\": {\n    \"k\": \"v\"\n  },\n  \"nothing\": null\n}\n",
+      "temperature": 0.9
+    }
+  ],
+  "result": {
+    "ok": 1
+  }
+}

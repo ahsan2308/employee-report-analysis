@@ -1,0 +1,2164 @@
+{
+  "schema": "public",
+  "tables": {
+    "public.background_tasks": {
+      "columns": {
+        "celery_task_id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "completed_at": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "created_at": {
+          "default": "callable:datetime.now",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "employee_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.employees.id"
+          ],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "error_message": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "month": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "quarter": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "report_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.reports.report_id"
+          ],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "UUID",
+          "unique": null
+        },
+        "result_data": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSON",
+          "unique": null
+        },
+        "started_at": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "status": {
+          "default": "'pending'",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "task_id": {
+          "default": "callable:uuid4",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "UUID",
+          "unique": null
+        },
+        "task_type": {
+          "default": "'REPORT_ANALYSIS'",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "year": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "ForeignKeyConstraint:None:employee_id",
+        "ForeignKeyConstraint:None:report_id",
+        "PrimaryKeyConstraint:None:task_id"
+      ],
+      "indexes": []
+    },
+    "public.csv_import_jobs": {
+      "columns": {
+        "completed_at": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "csv_type": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "error_count": {
+          "default": "0",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "filename": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "job_id": {
+          "default": "callable:uuid4",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "UUID",
+          "unique": null
+        },
+        "metrics_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "options": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "processed_rows": {
+          "default": "0",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "started_at": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "status": {
+          "default": "'pending'",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "submitted_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "successful_rows": {
+          "default": "0",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "total_rows": {
+          "default": "0",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "CheckConstraint:check_valid_import_status:status",
+        "PrimaryKeyConstraint:None:job_id"
+      ],
+      "indexes": []
+    },
+    "public.employee_analyses": {
+      "columns": {
+        "achievements_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "action_items": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "analysis_date": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "analysis_id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "challenges_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "consistency_score": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "created_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "credibility_explanation": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        },
+        "credibility_rating": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "employee_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.employees.id"
+          ],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "exaggeration_flags": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "full_analysis_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "performance_improvement_areas": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "performance_rating": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "performance_strengths": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "performance_summary": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        },
+        "report_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.reports.report_id"
+          ],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "UUID",
+          "unique": null
+        },
+        "risk_explanation": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        },
+        "risk_level": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "sentiment_score": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "FLOAT",
+          "unique": null
+        },
+        "topics": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "updated_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "ForeignKeyConstraint:None:employee_id",
+        "ForeignKeyConstraint:None:report_id",
+        "PrimaryKeyConstraint:None:analysis_id"
+      ],
+      "indexes": [
+        "ix_public_employee_analyses_employee_id:employee_id:unique=False",
+        "ix_public_employee_analyses_report_id:report_id:unique=False"
+      ]
+    },
+    "public.employee_job_descriptions": {
+      "columns": {
+        "assigned_date": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATE",
+          "unique": null
+        },
+        "created_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "employee_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.employees.id"
+          ],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "end_date": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATE",
+          "unique": null
+        },
+        "id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "is_current": {
+          "default": "True",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "BOOLEAN",
+          "unique": null
+        },
+        "jd_id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "job_description": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        },
+        "updated_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "ForeignKeyConstraint:None:employee_id",
+        "PrimaryKeyConstraint:None:id",
+        "UniqueConstraint:uq_employee_jd_assignment:employee_id,jd_id"
+      ],
+      "indexes": [
+        "ix_employee_jd_current:employee_id:unique=False",
+        "ix_employee_jd_jd_id:jd_id:unique=False"
+      ]
+    },
+    "public.employee_vision_data": {
+      "columns": {
+        "created_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "employee_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.employees.id"
+          ],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "from_date": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATE",
+          "unique": null
+        },
+        "main_entity": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "record_id": {
+          "default": "callable:uuid4",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "UUID",
+          "unique": null
+        },
+        "sub_entities": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "sub_entities_content": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "to_date": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATE",
+          "unique": null
+        },
+        "updated_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "ForeignKeyConstraint:None:employee_id",
+        "PrimaryKeyConstraint:None:record_id",
+        "UniqueConstraint:uix_vision_data_composite:employee_id,from_date,to_date,main_entity"
+      ],
+      "indexes": [
+        "ix_public_employee_vision_data_employee_id:employee_id:unique=False",
+        "ix_public_employee_vision_data_from_date:from_date:unique=False",
+        "ix_public_employee_vision_data_main_entity:main_entity:unique=False",
+        "ix_public_employee_vision_data_to_date:to_date:unique=False",
+        "ix_vision_data_date_range:from_date,to_date:unique=False",
+        "ix_vision_data_employee_id:employee_id:unique=False"
+      ]
+    },
+    "public.employees": {
+      "columns": {
+        "id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "name": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "position": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "wing": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "PrimaryKeyConstraint:None:id"
+      ],
+      "indexes": [
+        "ix_public_employees_name:name:unique=False",
+        "ix_public_employees_position:position:unique=False",
+        "ix_public_employees_wing:wing:unique=False"
+      ]
+    },
+    "public.import_errors": {
+      "columns": {
+        "error_id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "error_message": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        },
+        "field_name": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "job_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.csv_import_jobs.job_id"
+          ],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "UUID",
+          "unique": null
+        },
+        "row_data": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "row_number": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "ForeignKeyConstraint:None:job_id",
+        "PrimaryKeyConstraint:None:error_id"
+      ],
+      "indexes": [
+        "idx_import_errors_job_id:job_id:unique=False",
+        "idx_import_errors_job_row:job_id,row_number:unique=False"
+      ]
+    },
+    "public.monthly_analyses": {
+      "columns": {
+        "achievement_impact_avg": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "FLOAT",
+          "unique": null
+        },
+        "analysis_date": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "analysis_id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "approach_to_challenges": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "avg_sentiment_score": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "FLOAT",
+          "unique": null
+        },
+        "challenge_resolution_progress": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "complexity_of_tasks": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "confidence_level_change": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "consistency_notable_strengths": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "consistency_notable_weaknesses": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "employee_id": {
+          "default": null,
+          "foreign_keys": [
+            "employees.id"
+          ],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "escalating_risks": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "focus_areas": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "full_analysis_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "month": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "monthly_achievements": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "monthly_summary": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        },
+        "performance_stability": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "performance_trend": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "period_end": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATE",
+          "unique": null
+        },
+        "period_start": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATE",
+          "unique": null
+        },
+        "recurring_challenges": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "risk_explanation": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        },
+        "risk_level": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "risk_level_pattern": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "risk_mitigation_recommendations": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "sentiment_trend": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "significant_risks": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "skill_development_evidence": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "strategic_recommendations": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "task_completion_reliability": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "weekly_report_ids": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "ARRAY",
+          "unique": null
+        },
+        "work_quality_consistency": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "year": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "ForeignKeyConstraint:None:employee_id",
+        "PrimaryKeyConstraint:None:analysis_id"
+      ],
+      "indexes": []
+    },
+    "public.qdrant_mappings": {
+      "columns": {
+        "chunk_index": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "qdrant_id": {
+          "default": "callable:uuid4",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "UUID",
+          "unique": null
+        },
+        "report_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.reports.report_id"
+          ],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "UUID",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "ForeignKeyConstraint:None:report_id",
+        "PrimaryKeyConstraint:None:qdrant_id"
+      ],
+      "indexes": []
+    },
+    "public.quarterly_analyses": {
+      "columns": {
+        "achievement_themes_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "adaptation_effectiveness": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "analysis_date": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "analysis_id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "autonomy_level": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "behavioral_assessment_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "challenge_patterns_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "collaboration_effectiveness": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "credibility_assessment_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "credibility_rating": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "cross_functional_impact_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "development_focus": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        },
+        "employee_id": {
+          "default": null,
+          "foreign_keys": [
+            "employees.id"
+          ],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "forward_planning_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "full_analysis_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "learning_agility": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "monthly_analysis_ids": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "ARRAY",
+          "unique": null
+        },
+        "organizational_impact": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "performance_stability": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "performance_trajectory_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "performance_trend": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "period_end": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATE",
+          "unique": null
+        },
+        "period_start": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATE",
+          "unique": null
+        },
+        "quarter": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "quarterly_summary": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        },
+        "risk_assessment_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "risk_level": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "risk_trend": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "skill_development_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "stakeholder_count": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "strategic_alignment_json": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "task_completion_reliability": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "vision_data_alignment": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "work_quality_consistency": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "year": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "ForeignKeyConstraint:None:employee_id",
+        "PrimaryKeyConstraint:None:analysis_id"
+      ],
+      "indexes": []
+    },
+    "public.reports": {
+      "columns": {
+        "employee_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.employees.id"
+          ],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "report_date": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATE",
+          "unique": null
+        },
+        "report_id": {
+          "default": "callable:uuid4",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "UUID",
+          "unique": null
+        },
+        "report_text": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "ForeignKeyConstraint:None:employee_id",
+        "PrimaryKeyConstraint:None:report_id"
+      ],
+      "indexes": [
+        "idx_unique_report:employee_id,report_date:unique=True",
+        "ix_public_reports_employee_id:employee_id:unique=False",
+        "ix_public_reports_report_date:report_date:unique=False"
+      ]
+    },
+    "public.supervisor_feedback_forms": {
+      "columns": {
+        "created_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "employee_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.employees.id"
+          ],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "feedback_cache": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": "'{}'::jsonb",
+          "type": "JSONB",
+          "unique": null
+        },
+        "from_date": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATE",
+          "unique": null
+        },
+        "id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "ro_form_id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": true
+        },
+        "to_date": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATE",
+          "unique": null
+        },
+        "updated_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "ForeignKeyConstraint:None:employee_id",
+        "PrimaryKeyConstraint:None:id"
+      ],
+      "indexes": [
+        "ix_public_supervisor_feedback_forms_employee_id:employee_id:unique=False",
+        "ix_public_supervisor_feedback_forms_ro_form_id:ro_form_id:unique=True",
+        "ix_supervisor_feedback_form_employee_dates:employee_id,from_date,to_date:unique=False"
+      ]
+    },
+    "public.supervisor_feedback_metric_definitions": {
+      "columns": {
+        "created_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "max_value": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "metric_description": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        },
+        "metric_id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": true
+        },
+        "metric_name": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR(200)",
+          "unique": null
+        },
+        "metric_type": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR(1)",
+          "unique": null
+        },
+        "possible_values": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR(500)",
+          "unique": null
+        },
+        "section": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR(200)",
+          "unique": null
+        },
+        "section_id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "PrimaryKeyConstraint:None:id"
+      ],
+      "indexes": [
+        "ix_public_supervisor_feedback_metric_definitions_metric_id:metric_id:unique=True",
+        "ix_public_supervisor_feedback_metric_definitions_section:section:unique=False",
+        "ix_public_supervisor_feedback_metric_definitions_section_id:section_id:unique=False"
+      ]
+    },
+    "public.supervisor_feedback_responses": {
+      "columns": {
+        "created_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "form_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.supervisor_feedback_forms.id"
+          ],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "l_ro_form_metric_id": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": true
+        },
+        "max_value": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "metric_definition_id": {
+          "default": null,
+          "foreign_keys": [
+            "public.supervisor_feedback_metric_definitions.id"
+          ],
+          "index": true,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "numeric_rating": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "text_response": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "ForeignKeyConstraint:None:form_id",
+        "ForeignKeyConstraint:None:metric_definition_id",
+        "PrimaryKeyConstraint:None:id",
+        "UniqueConstraint:uq_form_metric:form_id,metric_definition_id"
+      ],
+      "indexes": [
+        "ix_public_supervisor_feedback_responses_form_id:form_id:unique=False",
+        "ix_public_supervisor_feedback_responses_l_ro_form_metric_id:l_ro_form_metric_id:unique=True",
+        "ix_public_supervisor_feedback_responses_metric_definition_id:metric_definition_id:unique=False",
+        "ix_supervisor_response_form_metric:form_id,metric_definition_id:unique=False"
+      ]
+    },
+    "public.sync_history": {
+      "columns": {
+        "completed_at": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "error_count": {
+          "default": "0",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "error_details": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "error_message": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "TEXT",
+          "unique": null
+        },
+        "last_sync_timestamp": {
+          "default": null,
+          "foreign_keys": [],
+          "index": true,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "records_created": {
+          "default": "0",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "records_queried": {
+          "default": "0",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "records_skipped": {
+          "default": "0",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "records_synced": {
+          "default": "0",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "records_updated": {
+          "default": "0",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "INTEGER",
+          "unique": null
+        },
+        "started_at": {
+          "default": "sql:now()",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "DATETIME",
+          "unique": null
+        },
+        "status": {
+          "default": "'pending'",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        },
+        "sync_id": {
+          "default": "callable:uuid4",
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": true,
+          "server_default": null,
+          "type": "UUID",
+          "unique": null
+        },
+        "sync_metadata": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "sync_options": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": true,
+          "primary_key": false,
+          "server_default": null,
+          "type": "JSONB",
+          "unique": null
+        },
+        "sync_type": {
+          "default": null,
+          "foreign_keys": [],
+          "index": null,
+          "nullable": false,
+          "primary_key": false,
+          "server_default": null,
+          "type": "VARCHAR",
+          "unique": null
+        }
+      },
+      "constraints": [
+        "CheckConstraint:check_valid_sync_status:status",
+        "CheckConstraint:check_valid_sync_type:sync_type",
+        "PrimaryKeyConstraint:None:sync_id"
+      ],
+      "indexes": [
+        "ix_public_sync_history_last_sync_timestamp:last_sync_timestamp:unique=False",
+        "ix_sync_history_started_at:started_at:unique=False",
+        "ix_sync_history_type_timestamp:sync_type,last_sync_timestamp:unique=False"
+      ]
+    }
+  }
+}

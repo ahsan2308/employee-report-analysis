@@ -1,0 +1,516 @@
+[
+  {
+    "endpoint": "app.api.main.home",
+    "methods": [
+      "GET"
+    ],
+    "path": "/",
+    "response_model": "None",
+    "status_code": null,
+    "tags": []
+  },
+  {
+    "endpoint": "app.api.analyses.analyze_report",
+    "methods": [
+      "POST"
+    ],
+    "path": "/analyses/analyze/{report_id}",
+    "response_model": "TaskStatusResponse",
+    "status_code": null,
+    "tags": [
+      "Analyses"
+    ]
+  },
+  {
+    "endpoint": "app.api.analyses.get_employee_analyses",
+    "methods": [
+      "GET"
+    ],
+    "path": "/analyses/employee/{employee_id}",
+    "response_model": "None",
+    "status_code": null,
+    "tags": [
+      "Analyses"
+    ]
+  },
+  {
+    "endpoint": "app.api.analyses.analyze_monthly_reports",
+    "methods": [
+      "POST"
+    ],
+    "path": "/analyses/monthly/analyze",
+    "response_model": "TaskStatusResponse",
+    "status_code": null,
+    "tags": [
+      "Analyses"
+    ]
+  },
+  {
+    "endpoint": "app.api.analyses.get_employee_monthly_analyses",
+    "methods": [
+      "GET"
+    ],
+    "path": "/analyses/monthly/employee/{employee_id}",
+    "response_model": "List",
+    "status_code": null,
+    "tags": [
+      "Analyses"
+    ]
+  },
+  {
+    "endpoint": "app.api.analyses.get_employee_monthly_analysis_by_period",
+    "methods": [
+      "GET"
+    ],
+    "path": "/analyses/monthly/employee/{employee_id}/{year}/{month}",
+    "response_model": "MonthlyAnalysisResponse",
+    "status_code": null,
+    "tags": [
+      "Analyses"
+    ]
+  },
+  {
+    "endpoint": "app.api.analyses.get_monthly_analysis",
+    "methods": [
+      "GET"
+    ],
+    "path": "/analyses/monthly/{analysis_id}",
+    "response_model": "MonthlyAnalysisResponse",
+    "status_code": null,
+    "tags": [
+      "Analyses"
+    ]
+  },
+  {
+    "endpoint": "app.api.analyses.analyze_quarterly_reports",
+    "methods": [
+      "POST"
+    ],
+    "path": "/analyses/quarterly/analyze",
+    "response_model": "TaskStatusResponse",
+    "status_code": null,
+    "tags": [
+      "Analyses"
+    ]
+  },
+  {
+    "endpoint": "app.api.analyses.get_employee_quarterly_analysis_by_period",
+    "methods": [
+      "GET"
+    ],
+    "path": "/analyses/quarterly/employee/{employee_id}/{year}/{quarter}",
+    "response_model": "QuarterlyAnalysisResponse",
+    "status_code": null,
+    "tags": [
+      "Analyses"
+    ]
+  },
+  {
+    "endpoint": "app.api.analyses.get_quarterly_analysis",
+    "methods": [
+      "GET"
+    ],
+    "path": "/analyses/quarterly/{analysis_id}",
+    "response_model": "QuarterlyAnalysisResponse",
+    "status_code": null,
+    "tags": [
+      "Analyses"
+    ]
+  },
+  {
+    "endpoint": "app.api.analyses.get_analysis_by_report",
+    "methods": [
+      "GET"
+    ],
+    "path": "/analyses/results/{report_id}",
+    "response_model": "AnalysisResponse",
+    "status_code": null,
+    "tags": [
+      "Analyses"
+    ]
+  },
+  {
+    "endpoint": "app.api.analyses.get_analysis_by_id",
+    "methods": [
+      "GET"
+    ],
+    "path": "/analyses/{analysis_id}",
+    "response_model": "AnalysisResponse",
+    "status_code": null,
+    "tags": [
+      "Analyses"
+    ]
+  },
+  {
+    "endpoint": "app.api.employees.get_all_employees",
+    "methods": [
+      "GET"
+    ],
+    "path": "/employees/",
+    "response_model": "None",
+    "status_code": null,
+    "tags": [
+      "Employees"
+    ]
+  },
+  {
+    "endpoint": "app.api.employees.create_employee",
+    "methods": [
+      "POST"
+    ],
+    "path": "/employees/",
+    "response_model": "None",
+    "status_code": null,
+    "tags": [
+      "Employees"
+    ]
+  },
+  {
+    "endpoint": "app.api.imports.list_import_jobs",
+    "methods": [
+      "GET"
+    ],
+    "path": "/imports/",
+    "response_model": "List",
+    "status_code": null,
+    "tags": [
+      "CSV Imports"
+    ]
+  },
+  {
+    "endpoint": "app.api.imports.upload_csv_file",
+    "methods": [
+      "POST"
+    ],
+    "path": "/imports/upload",
+    "response_model": "CSVImportJobResponse",
+    "status_code": null,
+    "tags": [
+      "CSV Imports"
+    ]
+  },
+  {
+    "endpoint": "app.api.imports.get_import_job",
+    "methods": [
+      "GET"
+    ],
+    "path": "/imports/{job_id}",
+    "response_model": "CSVImportJobResponse",
+    "status_code": null,
+    "tags": [
+      "CSV Imports"
+    ]
+  },
+  {
+    "endpoint": "app.api.imports.get_import_errors",
+    "methods": [
+      "GET"
+    ],
+    "path": "/imports/{job_id}/errors",
+    "response_model": "ImportErrorsResponse",
+    "status_code": null,
+    "tags": [
+      "CSV Imports"
+    ]
+  },
+  {
+    "endpoint": "app.api.reports.create_report",
+    "methods": [
+      "POST"
+    ],
+    "path": "/reports/create",
+    "response_model": "None",
+    "status_code": null,
+    "tags": [
+      "Reports"
+    ]
+  },
+  {
+    "endpoint": "app.api.reports.submit_report_form",
+    "methods": [
+      "POST"
+    ],
+    "path": "/reports/form",
+    "response_model": "None",
+    "status_code": null,
+    "tags": [
+      "Reports"
+    ]
+  },
+  {
+    "endpoint": "app.api.reports.get_employee_reports",
+    "methods": [
+      "GET"
+    ],
+    "path": "/reports/{employee_id}",
+    "response_model": "None",
+    "status_code": null,
+    "tags": [
+      "Reports"
+    ]
+  },
+  {
+    "endpoint": "app.api.sync_routes.get_sync_configuration",
+    "methods": [
+      "GET"
+    ],
+    "path": "/sync/config",
+    "response_model": "SyncConfigResponse",
+    "status_code": null,
+    "tags": [
+      "SQL Server Sync"
+    ]
+  },
+  {
+    "endpoint": "app.api.sync_routes.list_sync_history",
+    "methods": [
+      "GET"
+    ],
+    "path": "/sync/history",
+    "response_model": "SyncHistoryListResponse",
+    "status_code": null,
+    "tags": [
+      "SQL Server Sync"
+    ]
+  },
+  {
+    "endpoint": "app.api.sync_routes.get_last_successful_sync",
+    "methods": [
+      "GET"
+    ],
+    "path": "/sync/last-successful/{sync_type}",
+    "response_model": "LastSyncResponse",
+    "status_code": null,
+    "tags": [
+      "SQL Server Sync"
+    ]
+  },
+  {
+    "endpoint": "app.api.sync_routes.get_sync_status",
+    "methods": [
+      "GET"
+    ],
+    "path": "/sync/status/{sync_id}",
+    "response_model": "SyncStatusResponse",
+    "status_code": null,
+    "tags": [
+      "SQL Server Sync"
+    ]
+  },
+  {
+    "endpoint": "app.api.sync_routes.test_sql_server_connection",
+    "methods": [
+      "GET"
+    ],
+    "path": "/sync/test-connection",
+    "response_model": "ConnectionTestResponse",
+    "status_code": null,
+    "tags": [
+      "SQL Server Sync"
+    ]
+  },
+  {
+    "endpoint": "app.api.sync_routes.trigger_employee_reports_sync",
+    "methods": [
+      "POST"
+    ],
+    "path": "/sync/trigger/employee_reports",
+    "response_model": "SyncTriggerResponse",
+    "status_code": 202,
+    "tags": [
+      "SQL Server Sync"
+    ]
+  },
+  {
+    "endpoint": "app.api.sync_routes.trigger_full_sync",
+    "methods": [
+      "POST"
+    ],
+    "path": "/sync/trigger/full",
+    "response_model": "FullSyncTriggerResponse",
+    "status_code": 202,
+    "tags": [
+      "SQL Server Sync"
+    ]
+  },
+  {
+    "endpoint": "app.api.sync_routes.trigger_job_descriptions_sync",
+    "methods": [
+      "POST"
+    ],
+    "path": "/sync/trigger/job_descriptions",
+    "response_model": "SyncTriggerResponse",
+    "status_code": 202,
+    "tags": [
+      "SQL Server Sync"
+    ]
+  },
+  {
+    "endpoint": "app.api.sync_routes.trigger_supervisor_feedback_sync",
+    "methods": [
+      "POST"
+    ],
+    "path": "/sync/trigger/supervisor_feedback",
+    "response_model": "SyncTriggerResponse",
+    "status_code": 202,
+    "tags": [
+      "SQL Server Sync"
+    ]
+  },
+  {
+    "endpoint": "app.api.sync_routes.trigger_vision_data_sync",
+    "methods": [
+      "POST"
+    ],
+    "path": "/sync/trigger/vision_data",
+    "response_model": "SyncTriggerResponse",
+    "status_code": 202,
+    "tags": [
+      "SQL Server Sync"
+    ]
+  },
+  {
+    "endpoint": "app.api.sync_routes.get_sync_errors",
+    "methods": [
+      "GET"
+    ],
+    "path": "/sync/{sync_id}/errors",
+    "response_model": "SyncErrorsResponse",
+    "status_code": null,
+    "tags": [
+      "SQL Server Sync"
+    ]
+  },
+  {
+    "endpoint": "app.api.tasks.get_task_status_endpoint",
+    "methods": [
+      "GET"
+    ],
+    "path": "/tasks/{task_id}",
+    "response_model": "TaskStatusResponse",
+    "status_code": null,
+    "tags": [
+      "Tasks"
+    ]
+  },
+  {
+    "endpoint": "app.api.tasks.get_task_result_endpoint",
+    "methods": [
+      "GET"
+    ],
+    "path": "/tasks/{task_id}/result",
+    "response_model": "TaskResultResponse",
+    "status_code": null,
+    "tags": [
+      "Tasks"
+    ]
+  },
+  {
+    "endpoint": "app.api.visualizations.read_consistency_trends",
+    "methods": [
+      "GET"
+    ],
+    "path": "/visualizations/consistency-trends",
+    "response_model": "TrendResponse",
+    "status_code": null,
+    "tags": [
+      "Visualizations"
+    ]
+  },
+  {
+    "endpoint": "app.api.visualizations.read_credibility_trends",
+    "methods": [
+      "GET"
+    ],
+    "path": "/visualizations/credibility-trends",
+    "response_model": "TrendResponse",
+    "status_code": null,
+    "tags": [
+      "Visualizations"
+    ]
+  },
+  {
+    "endpoint": "app.api.visualizations.read_impact_heatmap",
+    "methods": [
+      "GET"
+    ],
+    "path": "/visualizations/impact-heatmap",
+    "response_model": "HeatmapResponse",
+    "status_code": null,
+    "tags": [
+      "Visualizations"
+    ]
+  },
+  {
+    "endpoint": "app.api.visualizations.read_impact_trends",
+    "methods": [
+      "GET"
+    ],
+    "path": "/visualizations/impact-trends",
+    "response_model": "TrendResponse",
+    "status_code": null,
+    "tags": [
+      "Visualizations"
+    ]
+  },
+  {
+    "endpoint": "app.api.visualizations.read_multi_criteria_trends",
+    "methods": [
+      "GET"
+    ],
+    "path": "/visualizations/multi-criteria-trends",
+    "response_model": "TrendResponse",
+    "status_code": null,
+    "tags": [
+      "Visualizations"
+    ]
+  },
+  {
+    "endpoint": "app.api.visualizations.read_performance_trends",
+    "methods": [
+      "GET"
+    ],
+    "path": "/visualizations/performance-trends",
+    "response_model": "TrendResponse",
+    "status_code": null,
+    "tags": [
+      "Visualizations"
+    ]
+  },
+  {
+    "endpoint": "app.api.visualizations.read_risk_trends",
+    "methods": [
+      "GET"
+    ],
+    "path": "/visualizations/risk-trends",
+    "response_model": "TrendResponse",
+    "status_code": null,
+    "tags": [
+      "Visualizations"
+    ]
+  },
+  {
+    "endpoint": "app.api.visualizations.read_sentiment_heatmap",
+    "methods": [
+      "GET"
+    ],
+    "path": "/visualizations/sentiment-heatmap",
+    "response_model": "HeatmapResponse",
+    "status_code": null,
+    "tags": [
+      "Visualizations"
+    ]
+  },
+  {
+    "endpoint": "app.api.visualizations.read_sentiment_trends",
+    "methods": [
+      "GET"
+    ],
+    "path": "/visualizations/sentiment-trends",
+    "response_model": "TrendResponse",
+    "status_code": null,
+    "tags": [
+      "Visualizations"
+    ]
+  }
+]

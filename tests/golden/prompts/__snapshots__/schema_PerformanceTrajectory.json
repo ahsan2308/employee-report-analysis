@@ -1,0 +1,103 @@
+{
+  "$defs": {
+    "ConsistencyMetrics": {
+      "properties": {
+        "performance_stability": {
+          "description": "Stability of performance across the quarter",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Performance Stability",
+          "type": "string"
+        },
+        "task_completion_reliability": {
+          "description": "Reliability in completing planned tasks",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Task Completion Reliability",
+          "type": "string"
+        },
+        "work_quality_consistency": {
+          "description": "Consistency of work quality throughout the quarter",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Work Quality Consistency",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_completion_reliability",
+        "work_quality_consistency",
+        "performance_stability"
+      ],
+      "title": "ConsistencyMetrics",
+      "type": "object"
+    },
+    "NotableShift": {
+      "properties": {
+        "description": {
+          "description": "Description of what changed in performance",
+          "title": "Description",
+          "type": "string"
+        },
+        "factors": {
+          "description": "Factors that contributed to this change",
+          "title": "Factors",
+          "type": "string"
+        },
+        "month": {
+          "description": "Month when a notable performance shift occurred",
+          "title": "Month",
+          "type": "string"
+        }
+      },
+      "required": [
+        "month",
+        "description",
+        "factors"
+      ],
+      "title": "NotableShift",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "consistency": {
+      "$ref": "#/$defs/ConsistencyMetrics",
+      "description": "Metrics related to performance consistency"
+    },
+    "notable_shifts": {
+      "description": "Significant shifts in performance during the quarter",
+      "items": {
+        "$ref": "#/$defs/NotableShift"
+      },
+      "title": "Notable Shifts",
+      "type": "array"
+    },
+    "trend": {
+      "description": "Overall trend in employee's performance over the quarter",
+      "enum": [
+        "improving",
+        "stable",
+        "declining",
+        "mixed"
+      ],
+      "title": "Trend",
+      "type": "string"
+    }
+  },
+  "required": [
+    "trend",
+    "consistency",
+    "notable_shifts"
+  ],
+  "title": "PerformanceTrajectory",
+  "type": "object"
+}

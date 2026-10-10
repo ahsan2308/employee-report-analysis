@@ -1,0 +1,5 @@
+{
+  "class": "MSSQLDatabase",
+  "schema_name": "public",
+  "url": "mssql+pyodbc://myuser:mypassword@localhost:5432/employee_reports?driver=ODBC+Driver+17+for+SQL+Server"
+}

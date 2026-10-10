@@ -1,0 +1,80 @@
+--- base
++++ variant
+@@ -137,4 +137,77 @@
+ 
+ 
++## ROLE CONTEXT FOR MONTHLY PERIOD (Job Description Data)
++
++Primary Role: Assistant Director (Analysis) (effective 2025-07-01)
++Key Responsibilities:
++- Produce analytical products for Wing leadership
++- Validate field reporting against registries
++Additional Charge: Liaison Officer (effective 2026-01-15)
++
++
++### ROLE-BASED MONTHLY ANALYSIS GUIDANCE
++
++### Performance Expectations Framework for Monthly Assessment
++
++**EXCEEDS EXPECTATIONS** (one or more of):
++- Scope expansion: Work consistently impacted higher organizational levels than JD specifies
++- Innovation: Introduced process improvements or efficiency gains beyond role requirements
++- Leadership: Mentored colleagues, led initiatives, or took ownership beyond assigned tasks
++- Mission impact: Delivered measurable outcomes beyond routine task completion
++
++**MEETS EXPECTATIONS:**
++- Completes all JD-specified responsibilities reliably across the month
++- Handles challenges appropriate to role level effectively
++- Collaborates within defined scope and demonstrates required competencies
++
++**BELOW EXPECTATIONS:**
++- Consistently misses JD-required deliverables or deadlines across weeks
++- Requires excessive support for routine role responsibilities
++- Struggles with tasks that should be manageable at this role level
++
++### Role-Appropriate Assessment by Seniority
++
++**JUNIOR ROLES (BPS-17 to 18):**
++- Focus on: Execution quality, learning agility, growth trajectory
++- Expected challenges: Learning systems, needing guidance, time management
++- Red flags: Basic skill gaps, inability to complete routine tasks independently
++
++**MID-LEVEL ROLES (BPS-19 to 20):**
++- Focus on: Section/wing coordination, process mastery, reliability
++- Expected challenges: Cross-team coordination, resource constraints, competing priorities
++- Red flags: Excessive need for guidance, inability to work independently
++
++**SENIOR ROLES (BPS-21 to 22):**
++- Focus on: Strategic thinking, leadership impact, organizational outcomes
++- Expected challenges: Strategic ambiguity, organizational politics, change management
++- Red flags: Struggling with tactical execution (should delegate), requiring excessive guidance
++
++### Special Role Scenarios
++
++**MULTIPLE CONCURRENT ROLES:**
++- Assess achievements against combined responsibilities from all JDs
++- Evaluate workload distribution and prioritization across roles
++- Identify role synergies and conflicts
++- Consider total workload complexity, not individual roles in isolation
++
++**MID-MONTH ROLE TRANSITIONS:**
++- Split assessment: Evaluate work against applicable JD for each period
++- Transition credit: Acknowledge learning curve in new role (first 2-3 weeks)
++- Proportional evaluation: Weight by time in each role
++- Document adaptation quality and early performance indicators
++
++### Authority & Autonomy Assessment
++
++Consider whether employee exercised appropriate decision-making authority for their grade:
++- BPS-17 to 18: Work with guidance, escalate major decisions, coordinate within section
++- BPS-19 to 20: Make section/wing-level decisions independently, provide guidance to subordinates
++- BPS-21 to 22: Make strategic HQ-level decisions, represent organization externally
++
++Monthly patterns to note:
++- Consistent appropriate authority usage → Positive indicator
++- Pattern of exceeding authority without oversight → Governance concern
++- Pattern of under-utilizing authority → Development need or confidence gap
++
++
+ ## WEEKLY ANALYSIS SUMMARIES (AI-Generated from Weekly Reports)
+ 

@@ -1,0 +1,58 @@
+{
+  "duplicate_month_numbers": {
+    "achievement_count": 0,
+    "achievement_impact_avg": 0.0,
+    "avg_sentiment": 0.75,
+    "challenge_count": 0,
+    "monthly_summaries": [],
+    "sentiment_trend": "improving"
+  },
+  "impact_avg_none_counts_in_denominator": {
+    "achievement_count": 4,
+    "achievement_impact_avg": 4.0,
+    "avg_sentiment": 0.5,
+    "challenge_count": 0,
+    "monthly_summaries": [],
+    "sentiment_trend": "improving"
+  },
+  "impact_zero": {
+    "achievement_count": 1,
+    "achievement_impact_avg": 0.0,
+    "avg_sentiment": 0.0,
+    "challenge_count": 0,
+    "monthly_summaries": [],
+    "sentiment_trend": "stble"
+  },
+  "missing_month_key": {
+    "achievement_count": 1,
+    "achievement_impact_avg": 5.0,
+    "avg_sentiment": 0.7,
+    "challenge_count": 0,
+    "monthly_summaries": [],
+    "sentiment_trend": "stble"
+  },
+  "no_achievements_impact_ignored": {
+    "achievement_count": 1,
+    "achievement_impact_avg": 3.33,
+    "avg_sentiment": 0.0,
+    "challenge_count": 0,
+    "monthly_summaries": [],
+    "sentiment_trend": "improving"
+  },
+  "rounding": {
+    "achievement_count": 4,
+    "achievement_impact_avg": 7.25,
+    "avg_sentiment": 0.5,
+    "challenge_count": 0,
+    "monthly_summaries": [],
+    "sentiment_trend": "improving"
+  },
+  "zero_reports_means_no_weighted_sentiment": {
+    "achievement_count": 0,
+    "achievement_impact_avg": 0.0,
+    "avg_sentiment": 0.0,
+    "challenge_count": 0,
+    "monthly_summaries": [],
+    "sentiment_trend": "improving"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "empty": {
+    "returned": "No vision data available for the quarter."
+  },
+  "missing_date_context": {
+    "message": "'date_context'",
+    "raised": "KeyError"
+  },
+  "months_empty": {
+    "returned": "No vision data available for the quarter."
+  },
+  "none": {
+    "returned": "No vision data available for the quarter."
+  }
+}

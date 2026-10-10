@@ -1,0 +1,6 @@
+# Test tooling, installed on top of requirements.txt.
+# On Linux/macOS install requirements.txt without pywin32 (Windows-only wheels):
+#   grep -v '^pywin32' requirements.txt > /tmp/requirements-linux.txt
+#   pip install -r /tmp/requirements-linux.txt -r requirements-dev.txt
+alembic==1.14.1
+pytest-timeout==2.3.1

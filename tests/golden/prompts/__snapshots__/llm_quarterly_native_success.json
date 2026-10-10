@@ -1,0 +1,21 @@
+{
+  "provider_calls": [
+    {
+      "extra": {},
+      "json_schema": "<pydantic model QuarterlyAnalysis>",
+      "max_tokens": 10000,
+      "method": "generate_structured_output",
+      "num_ctx": 40000,
+      "prompt_starts_with_task_prompt": true,
+      "prompt_suffix_after_task_prompt": "",
+      "temperature": 0
+    }
+  ],
+  "result": {
+    "anything": "goes",
+    "not": [
+      "validated"
+    ]
+  },
+  "sleeps": []
+}

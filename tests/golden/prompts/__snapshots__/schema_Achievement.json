@@ -1,0 +1,40 @@
+{
+  "properties": {
+    "description": {
+      "description": "Detailed description of the achievement in complete sentences without referencing the impact rating",
+      "title": "Description",
+      "type": "string"
+    },
+    "impact_reason": {
+      "description": "Brief reason for the impact rating (max 120 characters), explaining which organizational level was impacted",
+      "maxLength": 180,
+      "title": "Impact Reason",
+      "type": "string"
+    },
+    "impact_score": {
+      "description": "Impact rating from 1 to 10, where 1-3 is individual level, 4-6 is section level, 7-8 is wing level, 9-10 is HQ strategic level",
+      "maximum": 10,
+      "minimum": 1,
+      "title": "Impact Score",
+      "type": "integer"
+    },
+    "vision_verification": {
+      "default": "none",
+      "description": "If vision data confirms this achievement, set to 'supported'. If vision data contradicts it, set to 'contradicted'. If NO vision data appears in your prompt or it does not exist for the specific achievement, set the key to 'none'",
+      "enum": [
+        "supported",
+        "contradicted",
+        "none"
+      ],
+      "title": "Vision Verification",
+      "type": "string"
+    }
+  },
+  "required": [
+    "description",
+    "impact_score",
+    "impact_reason"
+  ],
+  "title": "Achievement",
+  "type": "object"
+}

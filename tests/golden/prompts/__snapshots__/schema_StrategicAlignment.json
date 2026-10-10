@@ -1,0 +1,81 @@
+{
+  "$defs": {
+    "KeyInitiative": {
+      "properties": {
+        "alignment": {
+          "description": "Level of alignment with organizational priorities",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Alignment",
+          "type": "string"
+        },
+        "initiative": {
+          "description": "Name of the strategic initiative",
+          "title": "Initiative",
+          "type": "string"
+        },
+        "outcomes": {
+          "description": "Concrete mission outcomes achieved through this initiative",
+          "title": "Outcomes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "initiative",
+        "alignment",
+        "outcomes"
+      ],
+      "title": "KeyInitiative",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "key_initiatives": {
+      "description": "Strategic initiatives the employee has contributed to",
+      "items": {
+        "$ref": "#/$defs/KeyInitiative"
+      },
+      "title": "Key Initiatives",
+      "type": "array"
+    },
+    "organizational_impact": {
+      "description": "Scope of impact the employee's work has had",
+      "enum": [
+        "individual",
+        "cell",
+        "unit",
+        "section",
+        "wing",
+        "hq"
+      ],
+      "title": "Organizational Impact",
+      "type": "string"
+    },
+    "role_alignment": {
+      "description": "How well employee's work aligns with job description responsibilities across the quarter",
+      "enum": [
+        "strong",
+        "partial",
+        "weak"
+      ],
+      "title": "Role Alignment",
+      "type": "string"
+    },
+    "role_fit_assessment": {
+      "description": "Detailed assessment of Job Description fit, including stretch contributions beyond role scope and any gaps between role requirements and actual work patterns",
+      "title": "Role Fit Assessment",
+      "type": "string"
+    }
+  },
+  "required": [
+    "organizational_impact",
+    "key_initiatives",
+    "role_alignment",
+    "role_fit_assessment"
+  ],
+  "title": "StrategicAlignment",
+  "type": "object"
+}

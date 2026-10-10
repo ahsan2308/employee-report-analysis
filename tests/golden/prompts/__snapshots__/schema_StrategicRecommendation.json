@@ -1,0 +1,25 @@
+{
+  "properties": {
+    "action": {
+      "description": "Specific action to enhance performance or address challenges",
+      "title": "Action",
+      "type": "string"
+    },
+    "priority": {
+      "description": "Priority level for this recommendation",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Priority",
+      "type": "string"
+    }
+  },
+  "required": [
+    "action",
+    "priority"
+  ],
+  "title": "StrategicRecommendation",
+  "type": "object"
+}

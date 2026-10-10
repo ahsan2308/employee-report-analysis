@@ -1,0 +1,30 @@
+{
+  "0": {
+    "attempts": 3,
+    "sleeps": [
+      1.0,
+      2.0
+    ],
+    "value": ""
+  },
+  "1": {
+    "attempts": 1,
+    "sleeps": [],
+    "value": ""
+  },
+  "2": {
+    "attempts": 2,
+    "sleeps": [
+      1.0
+    ],
+    "value": ""
+  },
+  "None": {
+    "attempts": 3,
+    "sleeps": [
+      1.0,
+      2.0
+    ],
+    "value": ""
+  }
+}

@@ -1,0 +1,46 @@
+
+Current Report Period Activity Data:
+
+- Time Period: 2025-01-06 to 2025-01-12
+  Main Activity: Persons
+  Details:
+    - Number of Persons: 3 (New Person records created)
+      ---> name: Name 1, ref: R-1
+      ---> name: Name 2, ref: R-2
+      ---> name: Name 3, ref: R-3
+      ---> name: Name 4, ref: R-4
+      ---> name: Name 5, ref: R-5
+      ---> and 2 more...
+    - Number of Pictures: 2 (Pictures uploaded with Persons (Profile Pictures))
+      ---> file: LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL...
+    - Number of Unknown Thing: 5 ()
+      ---> x: 1
+
+- Time Period: 2025-01-06 to 2025-01-12
+  Main Activity: Correspondence
+  Details:
+    - Number of Labels: 1 (Events marked with specific labels)
+    - Number of Groups: 2 (Events marked with specific groups (muli-level labeling))
+    - Number of Lookup: 1 (A general purpose repository where records are stored for later reference, usually includes generic fields like Name, Description, Reference/Purpose of Entry, etc.)
+    - Number of Special Reports: 1 (Special report attachments uploaded with events)
+    - Number of Attachments: 4 (Attachments uploaded with events)
+    - Number of Notings: 2 (Notings added with NADRA person verification requests)
+
+Historical Activity Data:
+
+- Time Period: 2024-12-30 to 2025-01-05
+  Main Activity: Tasks
+  Details:
+    - Number of Tasks: 1 (New Tasks created)
+      ---> name: Task 1, ref: R-1
+      ---> name: Task 2, ref: R-2
+      ---> name: Task 3, ref: R-3
+      ---> name: Task 4, ref: R-4
+      ---> name: Task 5, ref: R-5
+    - Number of Task Updates: -1 (Updates added with Tasks)
+
+- Time Period: 2024-12-23 to 2024-12-29
+  Main Activity: Events
+  Details:
+    - Number of Events: None (Event records created (Incidents, Protests, Strikes, Press conferences, etc.))
+    - Number of EOIs: 3 (Events marked as Event of Interest)

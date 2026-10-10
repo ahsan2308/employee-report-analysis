@@ -1,0 +1,480 @@
+{
+  "calls": [
+    {
+      "args": [
+        42
+      ],
+      "fn": "get_employee_info",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        1
+      ],
+      "fn": "get_monthly_analyses_for_quarter",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        1
+      ],
+      "fn": "get_weekly_analyses_for_quarter",
+      "kwargs": {}
+    },
+    {
+      "args": [],
+      "fn": "get_employee_job_descriptions_for_period",
+      "kwargs": {
+        "employee_id": 42,
+        "period_end": "2025-03-31",
+        "period_start": "2025-01-01"
+      }
+    }
+  ],
+  "result": {
+    "employee_id": 42,
+    "employee_info": {
+      "id": 42,
+      "name": "Test Employee",
+      "position": "Analyst",
+      "wing": "Ops"
+    },
+    "employee_jds": [
+      {
+        "assigned_date": "2025-01-01",
+        "effective_during_period": {
+          "end": "2025-02-14",
+          "start": "2025-01-01"
+        },
+        "end_date": null,
+        "is_current": true,
+        "jd_id": "JD_A",
+        "job_description": "Analyst"
+      },
+      {
+        "assigned_date": "2025-02-15",
+        "effective_during_period": {
+          "end": "2025-03-31",
+          "start": "2025-02-15"
+        },
+        "end_date": null,
+        "is_current": true,
+        "jd_id": "JD_B",
+        "job_description": "Lead"
+      }
+    ],
+    "jd_analysis_mapping": {
+      "jd_groups": [
+        {
+          "effective_dates": {
+            "end": "2025-02-09",
+            "start": "2025-01-06"
+          },
+          "jd_ids": [
+            "JD_A"
+          ],
+          "jd_texts": [
+            "Analyst"
+          ],
+          "reports": [
+            {
+              "date": "2025-01-12",
+              "report_date": "2025-01-12",
+              "report_id": "rep-2025-01-12",
+              "week_end_date": "2025-01-12",
+              "week_start_date": "2025-01-06"
+            },
+            {
+              "date": "2025-01-26",
+              "report_date": "2025-01-26",
+              "report_id": "rep-2025-01-26",
+              "week_end_date": "2025-01-26",
+              "week_start_date": "2025-01-20"
+            },
+            {
+              "date": "2025-02-09",
+              "report_date": "2025-02-09",
+              "report_id": "rep-2025-02-09",
+              "week_end_date": "2025-02-09",
+              "week_start_date": "2025-02-03"
+            }
+          ]
+        },
+        {
+          "effective_dates": {
+            "end": "2025-03-23",
+            "start": "2025-02-17"
+          },
+          "jd_ids": [
+            "JD_B"
+          ],
+          "jd_texts": [
+            "Lead"
+          ],
+          "reports": [
+            {
+              "date": "2025-02-23",
+              "report_date": "2025-02-23",
+              "report_id": "rep-2025-02-23",
+              "week_end_date": "2025-02-23",
+              "week_start_date": "2025-02-17"
+            },
+            {
+              "date": "2025-03-09",
+              "report_date": "2025-03-09",
+              "report_id": "rep-2025-03-09",
+              "week_end_date": "2025-03-09",
+              "week_start_date": "2025-03-03"
+            },
+            {
+              "date": "2025-03-23",
+              "report_date": "2025-03-23",
+              "report_id": "rep-2025-03-23",
+              "week_end_date": "2025-03-23",
+              "week_start_date": "2025-03-17"
+            }
+          ]
+        }
+      ],
+      "unmapped_reports": []
+    },
+    "metrics": {
+      "achievement_count": 6,
+      "achievement_impact_avg": 7.83,
+      "avg_sentiment": 0.56,
+      "challenge_count": 3,
+      "challenge_resolution_trend": "improving",
+      "detailed_topics": [
+        {
+          "frequency": 3,
+          "topic": "budget"
+        },
+        {
+          "frequency": 2,
+          "topic": "hiring"
+        },
+        {
+          "frequency": 2,
+          "topic": "travel"
+        }
+      ],
+      "monthly_progress_trends": [
+        {
+          "challenge_resolution_progress": "unchanged",
+          "month": 1,
+          "performance_trend": "stable",
+          "risk_level_pattern": "increasing",
+          "sentiment_trend": "declining"
+        },
+        {
+          "challenge_resolution_progress": "unchanged",
+          "month": 2,
+          "performance_trend": "improving",
+          "risk_level_pattern": "stable",
+          "sentiment_trend": "stable"
+        },
+        {
+          "challenge_resolution_progress": "improved",
+          "month": 3,
+          "performance_trend": "improving",
+          "risk_level_pattern": "stable",
+          "sentiment_trend": "stable"
+        }
+      ],
+      "monthly_summaries": [
+        {
+          "month": "January",
+          "summary": "January went slowly."
+        },
+        {
+          "month": "February",
+          "summary": "February improved."
+        }
+      ],
+      "performance_rating_aggregation": {
+        "most_common_rating": "medium",
+        "rating_distribution": {
+          "excellent": 0.16666666666666666,
+          "high": 0.3333333333333333,
+          "low": 0.16666666666666666,
+          "medium": 0.3333333333333333
+        },
+        "rating_trend": "improving"
+      },
+      "performance_stability": "medium",
+      "performance_trend": "improving",
+      "quality_consistency_trend": "improving",
+      "recurring_topics": [
+        "budget",
+        "hiring",
+        "travel"
+      ],
+      "risk_levels": {
+        "high": 1,
+        "low": 1,
+        "medium": 1
+      },
+      "risk_trend": "decreasing",
+      "sentiment_trend": "improving",
+      "task_reliability_trend": "improving",
+      "weekly_credibility_data": {
+        "avg_credibility_rating": "medium",
+        "credibility_trend": "improving",
+        "exaggeration_frequency": 3
+      },
+      "weekly_performance_ratings": [
+        {
+          "date": "2025-01-12",
+          "rating": "low"
+        },
+        {
+          "date": "2025-01-26",
+          "rating": "medium"
+        },
+        {
+          "date": "2025-02-09",
+          "rating": "medium"
+        },
+        {
+          "date": "2025-02-23",
+          "rating": "excellent"
+        },
+        {
+          "date": "2025-03-09",
+          "rating": "high"
+        },
+        {
+          "date": "2025-03-23",
+          "rating": "high"
+        }
+      ],
+      "weekly_report_count": 6
+    },
+    "monthly_analyses": [
+      {
+        "achievement_impact_avg": 6.0,
+        "analysis_id": 1,
+        "avg_sentiment_score": 0.4,
+        "consistency_assessment": {
+          "performance_stability": "low",
+          "task_completion_reliability": "low",
+          "work_quality_consistency": "medium"
+        },
+        "month": 1,
+        "month_name": "January",
+        "monthly_achievements": [
+          {
+            "a": 1
+          },
+          {
+            "a": 2
+          }
+        ],
+        "monthly_risk_assessment": {
+          "overall_risk_level": "high"
+        },
+        "monthly_summary": "January went slowly.",
+        "progress_trends": {
+          "challenge_resolution_progress": "unchanged",
+          "performance_trend": "stable",
+          "risk_level_pattern": "increasing",
+          "sentiment_trend": "declining"
+        },
+        "recurring_challenges": [
+          {
+            "c": 1
+          }
+        ],
+        "weekly_report_ids": [
+          "r1",
+          "r2",
+          "r3",
+          "r4"
+        ],
+        "year": 2025
+      },
+      {
+        "achievement_impact_avg": 8.0,
+        "analysis_id": 2,
+        "avg_sentiment_score": 0.6,
+        "consistency_assessment": {
+          "performance_stability": "medium",
+          "task_completion_reliability": "medium",
+          "work_quality_consistency": "medium"
+        },
+        "month": 2,
+        "month_name": "February",
+        "monthly_achievements": [
+          {
+            "a": 3
+          }
+        ],
+        "monthly_risk_assessment": {
+          "overall_risk_level": "medium"
+        },
+        "monthly_summary": "February improved.",
+        "progress_trends": {
+          "performance_trend": "improving"
+        },
+        "recurring_challenges": [],
+        "weekly_report_ids": [
+          "r5",
+          "r6",
+          "r7",
+          "r8"
+        ],
+        "year": 2025
+      },
+      {
+        "achievement_impact_avg": 9.0,
+        "analysis_id": 3,
+        "avg_sentiment_score": 0.8,
+        "consistency_assessment": {
+          "performance_stability": "high",
+          "task_completion_reliability": "high",
+          "work_quality_consistency": "high"
+        },
+        "month": 3,
+        "month_name": "March",
+        "monthly_achievements": [
+          {
+            "a": 4
+          },
+          {
+            "a": 5
+          },
+          {
+            "a": 6
+          }
+        ],
+        "monthly_risk_assessment": {
+          "overall_risk_level": "low"
+        },
+        "monthly_summary": "",
+        "progress_trends": {
+          "challenge_resolution_progress": "improved",
+          "performance_trend": "improving"
+        },
+        "recurring_challenges": [
+          {
+            "c": 2
+          },
+          {
+            "c": 3
+          }
+        ],
+        "weekly_report_ids": [
+          "r9",
+          "r10"
+        ],
+        "year": 2025
+      }
+    ],
+    "period_end": "2025-03-31",
+    "period_start": "2025-01-01",
+    "quarter": 1,
+    "weekly_analyses": [
+      {
+        "achievements": [],
+        "analysis_id": "an-2025-01-12",
+        "challenges": [],
+        "credibility_rating": "low",
+        "date": "2025-01-12",
+        "exaggeration_flags": [
+          "x"
+        ],
+        "performance_rating": "low",
+        "report_id": "rep-2025-01-12",
+        "risk_level": "medium",
+        "sentiment_score": 0.5,
+        "topics": [
+          "budget",
+          "hiring"
+        ]
+      },
+      {
+        "achievements": [],
+        "analysis_id": "an-2025-01-26",
+        "challenges": [],
+        "credibility_rating": "medium",
+        "date": "2025-01-26",
+        "exaggeration_flags": [],
+        "performance_rating": "medium",
+        "report_id": "rep-2025-01-26",
+        "risk_level": "medium",
+        "sentiment_score": 0.5,
+        "topics": [
+          "budget"
+        ]
+      },
+      {
+        "achievements": [],
+        "analysis_id": "an-2025-02-09",
+        "challenges": [],
+        "credibility_rating": "high",
+        "date": "2025-02-09",
+        "exaggeration_flags": [
+          "y",
+          "z"
+        ],
+        "performance_rating": "medium",
+        "report_id": "rep-2025-02-09",
+        "risk_level": "medium",
+        "sentiment_score": 0.5,
+        "topics": [
+          "hiring"
+        ]
+      },
+      {
+        "achievements": [],
+        "analysis_id": "an-2025-02-23",
+        "challenges": [],
+        "credibility_rating": "weird",
+        "date": "2025-02-23",
+        "exaggeration_flags": [],
+        "performance_rating": "excellent",
+        "report_id": "rep-2025-02-23",
+        "risk_level": "medium",
+        "sentiment_score": 0.5,
+        "topics": [
+          "travel"
+        ]
+      },
+      {
+        "achievements": [],
+        "analysis_id": "an-2025-03-09",
+        "challenges": [],
+        "credibility_rating": "high",
+        "date": "2025-03-09",
+        "exaggeration_flags": [],
+        "performance_rating": "high",
+        "report_id": "rep-2025-03-09",
+        "risk_level": "medium",
+        "sentiment_score": 0.5,
+        "topics": [
+          "budget",
+          "travel"
+        ]
+      },
+      {
+        "achievements": [],
+        "analysis_id": "an-2025-03-23",
+        "challenges": [],
+        "credibility_rating": null,
+        "date": "2025-03-23",
+        "exaggeration_flags": null,
+        "performance_rating": "high",
+        "report_id": "rep-2025-03-23",
+        "risk_level": "medium",
+        "sentiment_score": 0.5,
+        "topics": []
+      }
+    ],
+    "year": 2025
+  },
+  "stdout": "[{'analysis_id': 'an-2025-01-12', 'report_id': 'rep-2025-01-12', 'date': datetime.date(2025, 1, 12), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': ['budget', 'hiring'], 'achievements': [], 'challenges': [], 'credibility_rating': 'low', 'exaggeration_flags': ['x'], 'performance_rating': 'low'}, {'analysis_id': 'an-2025-01-26', 'report_id': 'rep-2025-01-26', 'date': datetime.date(2025, 1, 26), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': ['budget'], 'achievements': [], 'challenges': [], 'credibility_rating': 'medium', 'exaggeration_flags': [], 'performance_rating': 'medium'}, {'analysis_id': 'an-2025-02-09', 'report_id': 'rep-2025-02-09', 'date': datetime.date(2025, 2, 9), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': ['hiring'], 'achievements': [], 'challenges': [], 'credibility_rating': 'high', 'exaggeration_flags': ['y', 'z'], 'performance_rating': 'medium'}, {'analysis_id': 'an-2025-02-23', 'report_id': 'rep-2025-02-23', 'date': datetime.date(2025, 2, 23), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': ['travel'], 'achievements': [], 'challenges': [], 'credibility_rating': 'weird', 'exaggeration_flags': [], 'performance_rating': 'excellent'}, {'analysis_id': 'an-2025-03-09', 'report_id': 'rep-2025-03-09', 'date': datetime.date(2025, 3, 9), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': ['budget', 'travel'], 'achievements': [], 'challenges': [], 'credibility_rating': 'high', 'exaggeration_flags': [], 'performance_rating': 'high'}, {'analysis_id': 'an-2025-03-23', 'report_id': 'rep-2025-03-23', 'date': datetime.date(2025, 3, 23), 'sentiment_score': 0.5, 'risk_level': 'medium', 'topics': [], 'achievements': [], 'challenges': [], 'credibility_rating': None, 'exaggeration_flags': None, 'performance_rating': 'high'}]\n[{'analysis_id': 1, 'month': 1, 'month_name': 'January', 'year': 2025, 'weekly_report_ids': ['r1', 'r2', 'r3', 'r4'], 'avg_sentiment_score': 0.4, 'progress_trends': {'performance_trend': 'stable', 'sentiment_trend': 'declining', 'risk_level_pattern': 'increasing', 'challenge_resolution_progress': 'unchanged'}, 'monthly_achievements': [{'a': 1}, {'a': 2}], 'recurring_challenges': [{'c': 1}], 'consistency_assessment': {'task_completion_reliability': 'low', 'work_quality_consistency': 'medium', 'performance_stability': 'low'}, 'achievement_impact_avg': 6.0, 'monthly_risk_assessment': {'overall_risk_level': 'high'}, 'monthly_summary': 'January went slowly.'}, {'analysis_id': 2, 'month': 2, 'month_name': 'February', 'year': 2025, 'weekly_report_ids': ['r5', 'r6', 'r7', 'r8'], 'avg_sentiment_score': 0.6, 'progress_trends': {'performance_trend': 'improving'}, 'monthly_achievements': [{'a': 3}], 'recurring_challenges': [], 'consistency_assessment': {'task_completion_reliability': 'medium', 'work_quality_consistency': 'medium', 'performance_stability': 'medium'}, 'achievement_impact_avg': 8.0, 'monthly_risk_assessment': {'overall_risk_level': 'medium'}, 'monthly_summary': 'February improved.'}, {'analysis_id': 3, 'month': 3, 'month_name': 'March', 'year': 2025, 'weekly_report_ids': ['r9', 'r10'], 'avg_sentiment_score': 0.8, 'progress_trends': {'performance_trend': 'improving', 'challenge_resolution_progress': 'improved'}, 'monthly_achievements': [{'a': 4}, {'a': 5}, {'a': 6}], 'recurring_challenges': [{'c': 2}, {'c': 3}], 'consistency_assessment': {'task_completion_reliability': 'high', 'work_quality_consistency': 'high', 'performance_stability': 'high'}, 'achievement_impact_avg': 9.0, 'monthly_risk_assessment': {'overall_risk_level': 'low'}, 'monthly_summary': ''}]\n"
+}
