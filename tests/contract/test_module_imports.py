@@ -1,8 +1,7 @@
 """Every module under app/ and what importing it does today.
 
-Dead modules are recorded as they behave now (e.g. app.core.config raises
-FileNotFoundError, app.config.config prints at import). Deleting them later is
-an intentional, reviewed snapshot change.
+For example, app.api.main connects to the database and prints at import.
+Any change to these outcomes is an intentional, reviewed snapshot change.
 """
 
 
