@@ -21,7 +21,7 @@ EMBED_DIM = 4
 
 @pytest.fixture(autouse=True)
 def _isolated_cwd(tmp_path, monkeypatch):
-    """StructuredPrompts.quarterly_analysis_prompt writes generated_quarterly_prompt.txt into the cwd."""
+    """Run each pipeline in an empty directory, so nothing it writes there leaks between tests."""
     monkeypatch.chdir(tmp_path)
 
 

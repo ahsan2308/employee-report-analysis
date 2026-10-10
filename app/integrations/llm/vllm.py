@@ -88,43 +88,38 @@ class VLLMProvider(LLMProvider):
         Returns:
             Generated text from the LLM
         """
+        # Handle Ollama-specific parameters gracefully
+        if 'num_ctx' in kwargs:
+            logger.debug("num_ctx parameter provided but not used by vLLM provider")
+
+        # Use chat completions API for better results with chat models
+        payload = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+            "stream": stream
+        }
+
+        response = self.session.post(
+            self.chat_endpoint,
+            json=payload,
+            headers=self.headers,
+            timeout=self.timeout
+        )
+
         try:
-            # Handle Ollama-specific parameters gracefully
-            if 'num_ctx' in kwargs:
-                logger.debug("num_ctx parameter provided but not used by vLLM provider")
-            
-            # Use chat completions API for better results with chat models
-            payload = {
-                "model": self.model,
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": max_tokens,
-                "temperature": temperature,
-                "stream": stream
-            }
-            
-            response = self.session.post(
-                self.chat_endpoint, 
-                json=payload, 
-                headers=self.headers,
-                timeout=self.timeout
-            )
-            
-            try:
-                response.raise_for_status()
-            except requests.RequestException as e:
-                logger.error(f"Request failed: {e}, Response: {response.text}")
-                return ""
-                
-            result = response.json()
-            
-            # Extract the generated text from the response
-            if "choices" in result and len(result["choices"]) > 0:
-                return result["choices"][0]["message"]["content"]
-            return ""
-            
-        except Exception as e:
-            logger.error(f"Error generating text with vLLM: {e}")
-            return ""
+            response.raise_for_status()
+        except requests.RequestException as e:
+            logger.error(f"Request failed: {e}, Response: {response.text}")
+            raise
+
+        result = response.json()
+
+        # Extract the generated text from the response
+        if "choices" in result and len(result["choices"]) > 0:
+            return result["choices"][0]["message"]["content"]
+        return ""
     
     def generate_structured_output(
         self,
@@ -179,7 +174,7 @@ class VLLMProvider(LLMProvider):
                 response.raise_for_status()
             except requests.RequestException as e:
                 logger.error(f"Request failed: {e}, Response: {response.text}")
-                return None
+                raise
                 
             result = response.json()
             
@@ -198,7 +193,9 @@ class VLLMProvider(LLMProvider):
                         logger.error(f"Failed to parse JSON response: {text_response}")
                         return None
             return None
-                
+
+        except requests.RequestException:
+            raise  # transport and HTTP errors reach the caller, which retries or fails the run
         except Exception as e:
             logger.error(f"Error generating structured output with vLLM: {e}")
             return None

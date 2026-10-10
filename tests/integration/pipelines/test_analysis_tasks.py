@@ -134,13 +134,9 @@ WEEKLY_SCENARIOS = {
     "llm_text_fallback_recovers": dict(responses=["{not json", "Here you go:\n```json\n" + WEEKLY_JSON + "\n```"],
                                        seed={}),
 }
-WEEKLY_B6 = {"llm_empty", "llm_connection_error", "llm_invalid_json"}
 
 
-@pytest.mark.parametrize("scenario", [
-    pytest.param(name, marks=[pytest.mark.known_bug("B6")] if name in WEEKLY_B6 else [])
-    for name in WEEKLY_SCENARIOS
-])
+@pytest.mark.parametrize("scenario", list(WEEKLY_SCENARIOS))
 def test_weekly_analysis(scenario, db_session, ext, snapshot):
     spec = WEEKLY_SCENARIOS[scenario]
     seed_analysis_world(db_session, **spec["seed"])
@@ -185,13 +181,9 @@ MONTHLY_SCENARIOS = {
     "analysis_already_exists": dict(responses=[MONTHLY_JSON], seed={}, task={"year": 2025, "month": 2}),
     "missing_month_param": dict(responses=[MONTHLY_JSON], seed={}, task={"year": 2025, "month": None}),
 }
-MONTHLY_B6 = {"llm_empty", "llm_invalid_json"}
 
 
-@pytest.mark.parametrize("scenario", [
-    pytest.param(name, marks=[pytest.mark.known_bug("B6")] if name in MONTHLY_B6 else [])
-    for name in MONTHLY_SCENARIOS
-])
+@pytest.mark.parametrize("scenario", list(MONTHLY_SCENARIOS))
 def test_monthly_analysis(scenario, db_session, ext, snapshot):
     spec = MONTHLY_SCENARIOS[scenario]
     seed_analysis_world(db_session, **spec["seed"])
@@ -227,13 +219,9 @@ QUARTERLY_SCENARIOS = {
     "no_monthly_analyses": dict(responses=[QUARTERLY_JSON], seed={}, task={"year": 2025, "quarter": 2}),
     "missing_quarter_param": dict(responses=[QUARTERLY_JSON], seed={}, task={"year": 2025, "quarter": None}),
 }
-QUARTERLY_B6 = {"llm_empty", "llm_invalid_json"}
 
 
-@pytest.mark.parametrize("scenario", [
-    pytest.param(name, marks=[pytest.mark.known_bug("B6")] if name in QUARTERLY_B6 else [])
-    for name in QUARTERLY_SCENARIOS
-])
+@pytest.mark.parametrize("scenario", list(QUARTERLY_SCENARIOS))
 def test_quarterly_analysis(scenario, db_session, ext, snapshot):
     spec = QUARTERLY_SCENARIOS[scenario]
     seed_analysis_world(db_session, **spec["seed"])
@@ -244,15 +232,8 @@ def test_quarterly_analysis(scenario, db_session, ext, snapshot):
     result = analyze_quarterly_reports_task.apply(args=[str(task_id)], task_id="celery-quarterly")
 
     _snapshot_run(snapshot, f"quarterly__{scenario}", result, db_session, ext)
-    # Side effect: the prompt builder dumps the prompt into the cwd (tmp_path via the _isolated_cwd fixture).
-    dumped = Path("generated_quarterly_prompt.txt")
-    snapshot(f"quarterly__{scenario}__cwd_prompt_file", {
-        "exists": dumped.exists(),
-        # The provider appends a JSON instruction; the builder's prompt is everything before it.
-        "contains_prompt_sent_to_llm": bool(ext.llm.prompts) and dumped.exists()
-        and ext.llm.prompts[0].rsplit("\n\nReturn as JSON", 1)[0] in dumped.read_text(encoding="utf-8"),
-        "line_count": len(dumped.read_text(encoding="utf-8").splitlines()) if dumped.exists() else None,
-    })
+    # The run leaves nothing in the working directory (B15 fixed: the prompt used to be dumped there).
+    assert list(Path.cwd().iterdir()) == []
 
 
 def test_quarterly_analysis_already_exists(db_session, ext, snapshot):

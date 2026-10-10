@@ -28,7 +28,10 @@
       "temperature": 0
     }
   ],
-  "result": {},
+  "result": {
+    "error": "down",
+    "status": "failed"
+  },
   "sleeps": [
     1.0,
     2.0

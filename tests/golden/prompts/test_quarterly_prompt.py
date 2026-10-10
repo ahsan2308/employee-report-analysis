@@ -1,8 +1,7 @@
 """Golden master for StructuredPrompts.quarterly_analysis_prompt.
 
-NOTE: the builder currently writes ``generated_quarterly_prompt.txt`` into the
-current working directory and prints a debug line on every call, so every test
-here runs inside a temporary directory.
+Every test runs inside an empty temporary directory, so a builder that writes
+files into the working directory is caught.
 """
 from datetime import date
 
@@ -103,15 +102,9 @@ def test_quarterly_progress_trend_month_must_be_int():
         build({"metrics": {"monthly_progress_trends": [{"month": "January"}]}})
 
 
-def test_quarterly_writes_debug_file_and_prints(_isolated_cwd, capsys, snapshot):
-    """Side effect of every call: debug file in CWD (overwritten) + stdout line."""
+def test_quarterly_has_no_side_effects(_isolated_cwd, capsys, snapshot):
+    """Building a prompt writes no file and prints nothing (B15 fixed: it used to dump the prompt to the CWD)."""
     prompt = build(quarterly_minimal_data())
-    written = (_isolated_cwd / "generated_quarterly_prompt.txt").read_text(encoding="utf-8")
-    bar = "=" * 100
-    assert written == (
-        f"{bar}\nGENERATED QUARTERLY ANALYSIS PROMPT:\n{bar}\n\n{prompt}\n\n{bar}\n"
-        f"Total prompt length: {len(prompt)} characters\n{bar}\n"
-    )
-    out = capsys.readouterr().out
-    assert out == f"[DEBUG] Quarterly prompt saved to generated_quarterly_prompt.txt ({len(prompt)} characters)\n"
+    assert list(_isolated_cwd.iterdir()) == []
+    assert capsys.readouterr().out == ""
     snapshot("quarterly_minimal_length", {"chars": len(prompt)})

@@ -44,6 +44,9 @@ class LLMService:
             
         Returns:
             Generated text response
+
+        Raises:
+            Exception: the provider's last error, once every attempt has failed
         """
         attempts = 0
         max_attempts = retries or self.max_retries
@@ -64,7 +67,7 @@ class LLMService:
                 
                 if attempts >= max_attempts:
                     logger.error(f"LLM generation failed after {max_attempts} attempts")
-                    return ""
+                    raise
                 
                 logger.debug(f"Waiting {current_delay}s before retry")
                 time.sleep(current_delay)
@@ -130,7 +133,9 @@ class LLMService:
             Structured response as dictionary
             
         Raises:
-            ValueError: If neither response_format nor pydantic_model is provided
+            ValueError: If neither response_format nor pydantic_model is provided,
+                or the model's answer contains no usable JSON
+            Exception: the provider's last error, once text generation has used every retry
         """
         # If Pydantic model is provided, derive schema from it
         if pydantic_model is not None:
@@ -227,19 +232,16 @@ class LLMService:
             
         full_prompt = StructuredPrompts.combine_prompt(prompt, format_instructions)
         
-        try:
-            logger.debug("Generating structured response using text approach")
-            response = self.generate_text(full_prompt, temperature=temperature, max_tokens=max_tokens, num_ctx=num_ctx)
-            logger.debug(f"Raw response from LLM: {response[:200]}...")
-            
-            result = self.extract_json_from_text(response)
-            logger.debug(f"Extracted JSON: {result}")
-            
-            return result
-                
-        except Exception as e:
-            logger.error(f"Failed to get structured response: {e}")
-            return {}
+        logger.debug("Generating structured response using text approach")
+        response = self.generate_text(full_prompt, temperature=temperature, max_tokens=max_tokens, num_ctx=num_ctx) or ""
+        logger.debug(f"Raw response from LLM: {response[:200]}...")
+
+        result = self.extract_json_from_text(response)
+        logger.debug(f"Extracted JSON: {result}")
+
+        if not result:
+            raise ValueError("The LLM returned no usable JSON")
+        return result
 
     def analyze_report(
         self, 
@@ -278,9 +280,7 @@ class LLMService:
             formatted_jd_data,
             employee_info
         )
-        logger.debug(report_text)
-
-        logger.info(f"Generated prompt: {prompt}")
+        logger.info(f"Generated prompt: {len(prompt)} characters")
 
         try:
             # Decide whether to use the custom format or the Pydantic model
@@ -315,7 +315,6 @@ class LLMService:
                 )
             else:
                 # Default behavior: use the enhanced EmployeeAnalysis Pydantic model
-                logger.debug(prompt)
                 return self.get_structured_response(
                     prompt=prompt,
                     pydantic_model=EmployeeAnalysis,
@@ -354,7 +353,7 @@ class LLMService:
         # Generate the prompt using the monthly analysis prompt template
         prompt = StructuredPrompts.monthly_analysis_prompt(monthly_data)
         logger.info(f"Generating monthly analysis for employee {monthly_data.get('employee_id')}")
-        logger.info(f"Generated prompt: {prompt}")  
+        logger.info(f"Generated prompt: {len(prompt)} characters")
         
         try:
             # Decide whether to use the custom format or the Pydantic model

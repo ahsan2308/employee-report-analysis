@@ -159,7 +159,6 @@ def analyze_report_task(self, task_id: str):
         similar_report_data = get_reports_for_vector_results(similar_reports_chunks)
         
         logger.info(f"Found {len(similar_report_data)} semantically similar reports for context")
-        logger.info(f"Found {(similar_report_data)}")
         
         # Get vision data, filter it, and format it
         raw_vision_data = get_employee_vision_data(report.employee_id, report.report_date, num_previous_weeks=4)
@@ -198,7 +197,14 @@ def analyze_report_task(self, task_id: str):
             },
             num_ctx=64000
         )
-        
+
+        # Handle error in analysis generation
+        if "error" in analysis_result and analysis_result["error"]:
+            logger.error(f"Error in LLM analysis: {analysis_result['error']}")
+            _mark_task_failed(db, task_id, f"LLM analysis failed: {analysis_result['error']}")
+
+            return {"error": f"LLM analysis failed: {analysis_result['error']}"}
+
         # Extract key fields
         sentiment = analysis_result.get("sentiment", "neutral")
         risk_level = analysis_result.get("risk_level", "low")
@@ -415,7 +421,7 @@ def analyze_monthly_reports_task(self, task_id: str):
         
         monthly_data["formatted_vision_data"] = formatted_monthly_vision_data
         
-        logger.info(f"Formatted vision data for employee {employee_id}, {year}-{month}: {formatted_monthly_vision_data}")
+        logger.info(f"Formatted vision data for employee {employee_id}, {year}-{month}: {len(formatted_monthly_vision_data)} characters")
 
         # Format JD data for monthly prompt
         # Use the jd_report_mapping which contains temporal groupings

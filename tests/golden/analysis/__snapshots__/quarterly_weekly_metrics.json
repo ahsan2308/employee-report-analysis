@@ -44,7 +44,7 @@
     "performance_rating_aggregation": {
       "most_common_rating": null,
       "rating_distribution": {},
-      "rating_trend": "stble"
+      "rating_trend": "stable"
     },
     "recurring_topics": [],
     "weekly_credibility_data": {
@@ -93,12 +93,12 @@
     "performance_rating_aggregation": {
       "most_common_rating": null,
       "rating_distribution": {},
-      "rating_trend": "stble"
+      "rating_trend": "stable"
     },
     "recurring_topics": [],
     "weekly_credibility_data": {
       "avg_credibility_rating": "medium",
-      "credibility_trend": "stble",
+      "credibility_trend": "stable",
       "exaggeration_frequency": 0
     },
     "weekly_performance_ratings": [],
@@ -142,12 +142,12 @@
     "performance_rating_aggregation": {
       "most_common_rating": null,
       "rating_distribution": {},
-      "rating_trend": "stble"
+      "rating_trend": "stable"
     },
     "recurring_topics": [],
     "weekly_credibility_data": {
       "avg_credibility_rating": null,
-      "credibility_trend": "stble",
+      "credibility_trend": "stable",
       "exaggeration_frequency": 0
     },
     "weekly_performance_ratings": [],
@@ -207,7 +207,7 @@
     "recurring_topics": [],
     "weekly_credibility_data": {
       "avg_credibility_rating": null,
-      "credibility_trend": "stble",
+      "credibility_trend": "stable",
       "exaggeration_frequency": 0
     },
     "weekly_performance_ratings": [
@@ -298,7 +298,7 @@
     "performance_rating_aggregation": {
       "most_common_rating": null,
       "rating_distribution": {},
-      "rating_trend": "stble"
+      "rating_trend": "stable"
     },
     "recurring_topics": [
       "t0",
@@ -317,7 +317,7 @@
     ],
     "weekly_credibility_data": {
       "avg_credibility_rating": null,
-      "credibility_trend": "stble",
+      "credibility_trend": "stable",
       "exaggeration_frequency": 0
     },
     "weekly_performance_ratings": [],
@@ -364,12 +364,12 @@
         "high": 0.5,
         "medium": 0.5
       },
-      "rating_trend": "stble"
+      "rating_trend": "stable"
     },
     "recurring_topics": [],
     "weekly_credibility_data": {
       "avg_credibility_rating": null,
-      "credibility_trend": "stble",
+      "credibility_trend": "stable",
       "exaggeration_frequency": 0
     },
     "weekly_performance_ratings": [
@@ -436,14 +436,14 @@
         "high": 0.5,
         "low": 0.5
       },
-      "rating_trend": "stble"
+      "rating_trend": "stable"
     },
     "recurring_topics": [
       "t"
     ],
     "weekly_credibility_data": {
       "avg_credibility_rating": null,
-      "credibility_trend": "stble",
+      "credibility_trend": "stable",
       "exaggeration_frequency": 0
     },
     "weekly_performance_ratings": [
@@ -499,12 +499,12 @@
         "high": 0.5,
         "low": 0.5
       },
-      "rating_trend": "stble"
+      "rating_trend": "stable"
     },
     "recurring_topics": [],
     "weekly_credibility_data": {
       "avg_credibility_rating": null,
-      "credibility_trend": "stble",
+      "credibility_trend": "stable",
       "exaggeration_frequency": 0
     },
     "weekly_performance_ratings": [

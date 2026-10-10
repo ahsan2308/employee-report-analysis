@@ -769,15 +769,5 @@ Be specific and actionable. Avoid vague recommendations like "Improve performanc
 Proceed with your structured JSON analysis now.
 """ 
 
-    # # TODO: REMOVE THIS - For testing only to see full generated prompt
-    # with open("generated_weekly_prompt.txt", "w", encoding="utf-8") as f:
-    #     f.write("="*100 + "\n")
-    #     f.write("GENERATED WEEKLY ANALYSIS PROMPT:\n")
-    #     f.write("="*100 + "\n\n")
-    #     f.write(prompt)
-    #     f.write("\n\n" + "="*100 + "\n")
-    #     f.write(f"Total prompt length: {len(prompt)} characters\n")
-    #     f.write("="*100 + "\n")
-    # print(f"[DEBUG] Weekly prompt saved to generated_weekly_prompt.txt ({len(prompt)} characters)")
 
     return prompt

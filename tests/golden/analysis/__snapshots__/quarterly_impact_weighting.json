@@ -21,7 +21,7 @@
     "avg_sentiment": 0.0,
     "challenge_count": 0,
     "monthly_summaries": [],
-    "sentiment_trend": "stble"
+    "sentiment_trend": "stable"
   },
   "missing_month_key": {
     "achievement_count": 1,
@@ -29,7 +29,7 @@
     "avg_sentiment": 0.7,
     "challenge_count": 0,
     "monthly_summaries": [],
-    "sentiment_trend": "stble"
+    "sentiment_trend": "stable"
   },
   "no_achievements_impact_ignored": {
     "achievement_count": 1,

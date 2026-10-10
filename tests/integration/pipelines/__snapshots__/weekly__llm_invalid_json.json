@@ -6,38 +6,13 @@
         "completed_at": "<timestamp>",
         "created_at": "<timestamp>",
         "employee_id": 101,
-        "error_message": null,
+        "error_message": "LLM analysis failed: The LLM returned no usable JSON",
         "month": null,
         "quarter": null,
         "report_id": "00000000-0000-4000-8000-0000000000a4",
-        "result_data": {
-          "achievements_json": [],
-          "action_items": [],
-          "analysis_id": 4,
-          "challenges_json": [],
-          "credibility_assessment": {
-            "consistency_score": "medium",
-            "exaggeration_flags": [],
-            "explanation": "",
-            "rating": "medium"
-          },
-          "employee_name": "Ayesha Khan",
-          "full_analysis_json": {},
-          "performance_assessment": {
-            "improvement_areas": [],
-            "key_strengths": [],
-            "rating": "medium",
-            "summary": ""
-          },
-          "report_id": "00000000-0000-4000-8000-0000000000a4",
-          "risk_explanation": "",
-          "risk_level": "low",
-          "sentiment": 0.5,
-          "sentiment_score": 0.5,
-          "topics": []
-        },
+        "result_data": null,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "failed",
         "task_id": "00000000-0000-4000-9000-000000000001",
         "task_type": "REPORT_ANALYSIS",
         "year": null
@@ -179,30 +154,6 @@
           "backlog",
           "archives"
         ],
-        "updated_at": "<timestamp>"
-      },
-      {
-        "achievements_json": [],
-        "action_items": [],
-        "analysis_date": "<timestamp>",
-        "analysis_id": 4,
-        "challenges_json": [],
-        "consistency_score": "medium",
-        "created_at": "<timestamp>",
-        "credibility_explanation": "",
-        "credibility_rating": "medium",
-        "employee_id": 101,
-        "exaggeration_flags": [],
-        "full_analysis_json": {},
-        "performance_improvement_areas": [],
-        "performance_rating": "medium",
-        "performance_strengths": [],
-        "performance_summary": "",
-        "report_id": "00000000-0000-4000-8000-0000000000a4",
-        "risk_explanation": "",
-        "risk_level": "low",
-        "sentiment_score": 0.5,
-        "topics": [],
         "updated_at": "<timestamp>"
       }
     ],
@@ -426,30 +377,7 @@
   ],
   "outcome": {
     "return": {
-      "achievements_json": [],
-      "action_items": [],
-      "analysis_id": 4,
-      "challenges_json": [],
-      "credibility_assessment": {
-        "consistency_score": "medium",
-        "exaggeration_flags": [],
-        "explanation": "",
-        "rating": "medium"
-      },
-      "employee_name": "Ayesha Khan",
-      "full_analysis_json": {},
-      "performance_assessment": {
-        "improvement_areas": [],
-        "key_strengths": [],
-        "rating": "medium",
-        "summary": ""
-      },
-      "report_id": "00000000-0000-4000-8000-0000000000a4",
-      "risk_explanation": "",
-      "risk_level": "low",
-      "sentiment": 0.5,
-      "sentiment_score": 0.5,
-      "topics": []
+      "error": "LLM analysis failed: The LLM returned no usable JSON"
     },
     "state": "SUCCESS"
   }

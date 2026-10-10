@@ -297,8 +297,8 @@ class TestLLMServiceAdvanced(unittest.TestCase):
     def test_max_retries_failure(self, mock_get_provider):
         """Test behavior when maximum retries are exceeded.
         
-        This test verifies that the service properly handles the case
-        when all retry attempts fail and returns an appropriate result.
+        This test verifies that the service retries, then raises the provider's
+        error once all attempts have failed.
         """
         print("\n=== Testing Max Retries Failure ===")
         
@@ -312,14 +312,12 @@ class TestLLMServiceAdvanced(unittest.TestCase):
         service.retry_delay = 0.01  # Speed up for testing
         service.max_retries = 2
         
-        # Call generate_text and verify it handles failure gracefully
-        result = service.generate_text("Test prompt", max_tokens=10)
-        
-        # Verify the expected behavior
-        self.assertEqual(result, "")
+        # Once every attempt has failed, the provider's error reaches the caller (B6 fixed)
+        with self.assertRaisesRegex(Exception, "API always fails"):
+            service.generate_text("Test prompt", max_tokens=10)
+
         self.assertEqual(mock_provider.generate_text.call_count, 2)  # In practice, max_retries=2 means 2 total attempts
         print(f"Max retries exceeded as expected. Attempts: {mock_provider.generate_text.call_count}")
-        print(f"Final result: '{result}'")
 
 
 def run_tests():

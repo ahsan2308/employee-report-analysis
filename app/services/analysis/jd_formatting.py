@@ -479,7 +479,7 @@ The employee experienced {transition_count} role transition(s) during this quart
                 
                 if week_start and week_end:
                     start_str = week_start.isoformat() if hasattr(week_start, "isoformat") else str(week_start)
-                    end_str = week_end.isoformat() if hasattr(end, "isoformat") else str(week_end)
+                    end_str = week_end.isoformat() if hasattr(week_end, "isoformat") else str(week_end)
                     formatted_text += f"  - Week {start_str} to {end_str}\n"
         
         # Add separator between phases

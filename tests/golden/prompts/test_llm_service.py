@@ -165,7 +165,7 @@ def test_text_path_full_call(env, snapshot, period):
 
 
 def test_text_path_provider_always_raises(env, snapshot):
-    """3 attempts, exponential sleeps 1.0 then 2.0, final '' parsed to {}."""
+    """3 attempts with exponential sleeps 1.0 then 2.0, then the error is returned as a failure (B6 fixed)."""
     provider = FakeTextProvider([ConnectionError("down")] * 5)
     snapshot("llm_weekly_text_path_provider_always_raises", _run(env, "weekly", provider))
 
@@ -232,7 +232,7 @@ def test_get_structured_response_schema_example_generation(env, snapshot):
 @pytest.mark.parametrize("model", [EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis])
 def test_text_fallback_format_instructions_per_model(env, snapshot, model):
     """Exact instructions appended to the task prompt when native output is unavailable."""
-    provider = FakeTextProvider(["{}"])
+    provider = FakeTextProvider(['{"ok": true}'])
     service = env.make(provider)
     service.get_structured_response("TASK", pydantic_model=model)
     call = provider.calls[0]
@@ -241,14 +241,15 @@ def test_text_fallback_format_instructions_per_model(env, snapshot, model):
 
 
 def test_generate_text_retries_argument(env, snapshot):
-    """retries=None or 0 -> self.max_retries (3); retries=1 -> no sleep at all."""
+    """retries=None or 0 -> self.max_retries (3); retries=1 -> no sleep at all. The last error is raised."""
     out = {}
     for retries in (None, 0, 1, 2):
         env.sleeps.clear()
         provider = FakeTextProvider([RuntimeError("x")] * 5)
         service = env.make(provider)
-        value = service.generate_text("p", retries=retries)
-        out[str(retries)] = {"value": value, "attempts": len(provider.calls), "sleeps": list(env.sleeps)}
+        with pytest.raises(RuntimeError) as raised:
+            service.generate_text("p", retries=retries)
+        out[str(retries)] = {"raised": repr(raised.value), "attempts": len(provider.calls), "sleeps": list(env.sleeps)}
     snapshot("llm_generate_text_retries", out)
 
 
@@ -259,17 +260,20 @@ def test_generate_text_defaults(env, snapshot):
     snapshot("llm_generate_text_defaults", describe_calls(provider.calls, "p"))
 
 
-@pytest.mark.known_bug("B13")
-def test_full_prompts_logged_at_info(env):
-    """analyze_report and analyze_monthly_reports log the entire prompt at INFO;
-    native results are also logged at INFO."""
+def test_prompts_are_not_logged(env):
+    """B13 fixed: prompts carry report text, so only their length is logged, at any level."""
     provider = FakeStructuredProvider([{"r": 1}, {"r": 2}, {"r": 3}])
     service = env.make(provider)
     service.analyze_report(**weekly_full_kwargs())
     service.analyze_monthly_reports(monthly_full_data())
     service.analyze_quarterly_reports(quarterly_full_data())
+    prompts = [_weekly_prompt(), StructuredPrompts.monthly_analysis_prompt(monthly_full_data()),
+               StructuredPrompts.quarterly_analysis_prompt(quarterly_full_data())]
+    logged = [str(arg) for level in ("debug", "info", "warning", "error")
+              for call in getattr(env.logger, level).call_args_list for arg in call.args]
+    report_text = weekly_full_kwargs()["report_text"]
+    assert not any(report_text in message for message in logged)
+    assert not any(prompt[:200] in message for prompt in prompts for message in logged)
     info_messages = [c.args[0] for c in env.logger.info.call_args_list]
-    assert f"Generated prompt: {_weekly_prompt()}" in info_messages
-    assert f"Generated prompt: {StructuredPrompts.monthly_analysis_prompt(monthly_full_data())}" in info_messages
-    assert "Received native structured output: {'r': 1}" in info_messages
-    assert not any(m.startswith("Generated prompt: # QUARTERLY") for m in info_messages)
+    assert f"Generated prompt: {len(prompts[0])} characters" in info_messages
+    assert f"Generated prompt: {len(prompts[1])} characters" in info_messages

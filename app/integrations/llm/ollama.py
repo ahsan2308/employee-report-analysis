@@ -47,25 +47,24 @@ class OllamaProvider(LLMProvider):
             temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)
             stream: Whether to stream the response (not currently implemented in Ollama provider)
             num_ctx: Context window size (Ollama-specific parameter)
+
+        Raises:
+            Exception: whatever the Ollama client raises, so the caller can retry or fail the run
         """
-        try:
-            # If streaming is requested, log that it's not implemented
-            if stream:
-                logger.warning("Streaming not implemented in Ollama provider, returning full response")
-                
-            response = self.client.generate(
-                model=self.model,
-                prompt=prompt,
-                options={
-                    "num_predict": max_tokens,
-                    "temperature": temperature,
-                    "num_ctx": num_ctx,
-                }
-            )
-            return response.get("response", "")
-        except Exception as e:
-            logger.error(f"Error generating text with Ollama: {e}")
-            return ""
+        # If streaming is requested, log that it's not implemented
+        if stream:
+            logger.warning("Streaming not implemented in Ollama provider, returning full response")
+
+        response = self.client.generate(
+            model=self.model,
+            prompt=prompt,
+            options={
+                "num_predict": max_tokens,
+                "temperature": temperature,
+                "num_ctx": num_ctx,
+            }
+        )
+        return response.get("response", "")
     
     def generate_structured_output(
         self,
@@ -89,7 +88,10 @@ class OllamaProvider(LLMProvider):
             temperature: Sampling temperature for the generation (0 recommended for structured outputs).
         
         Returns:
-            A dictionary parsed from the JSON output of the model, or None if parsing fails.
+            A dictionary parsed from the JSON output of the model, or None if the answer is empty or not JSON.
+
+        Raises:
+            Exception: whatever the Ollama client raises
         """
         # Process schema if it's a Pydantic model
         schema_dict = json_schema
@@ -101,33 +103,29 @@ class OllamaProvider(LLMProvider):
         # Add instruction to return as JSON to help model understand
         enhanced_prompt = f"{prompt}\n\nReturn as JSON according to the specified schema."
             
-        try:
-            # According to latest Ollama API, format is a top-level parameter, not part of options
-            response = self.client.generate(
-                model=self.model,
-                prompt=enhanced_prompt,
-                format=schema_dict,  # Format is now a top-level parameter
-                options={
-                    "num_predict": max_tokens,
-                    "temperature": temperature,
-                    "num_ctx": num_ctx,
+        # According to latest Ollama API, format is a top-level parameter, not part of options.
+        # Client errors propagate; an empty or unparseable answer returns None (the caller falls back).
+        response = self.client.generate(
+            model=self.model,
+            prompt=enhanced_prompt,
+            format=schema_dict,  # Format is now a top-level parameter
+            options={
+                "num_predict": max_tokens,
+                "temperature": temperature,
+                "num_ctx": num_ctx,
 
-                }
-            )
-            
-            output_text = response.get("response", "")
-            if not output_text:
-                logger.warning("Empty response from Ollama structured output")
-                return None
-                
-            try:
-                return json.loads(output_text)
-            except json.JSONDecodeError as e:
-                logger.error(f"Failed to parse JSON response: {e}, response: {output_text}")
-                return None
-                
-        except Exception as e:
-            logger.error(f"Error generating structured output with Ollama: {e}")
+            }
+        )
+
+        output_text = response.get("response", "")
+        if not output_text:
+            logger.warning("Empty response from Ollama structured output")
+            return None
+
+        try:
+            return json.loads(output_text)
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse JSON response: {e}, response: {output_text}")
             return None
 
     def get_embedding(self, text: Union[str, List[str]]) -> Union[List[float], List[List[float]]]:

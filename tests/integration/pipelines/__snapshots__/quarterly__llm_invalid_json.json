@@ -6,27 +6,13 @@
         "completed_at": "<timestamp>",
         "created_at": "<timestamp>",
         "employee_id": 101,
-        "error_message": null,
+        "error_message": "LLM analysis failed: The LLM returned no usable JSON",
         "month": null,
         "quarter": 1,
         "report_id": null,
-        "result_data": {
-          "achievement_theme_count": 0,
-          "analysis_id": 1,
-          "employee_id": 101,
-          "employee_name": "Ayesha Khan",
-          "organizational_impact": "individual",
-          "performance_trend": "stable",
-          "period_end": "2025-03-31",
-          "period_start": "2025-01-01",
-          "quarter": 1,
-          "quarterly_summary": "",
-          "risk_level": "medium",
-          "risk_trend": "stable",
-          "year": 2025
-        },
+        "result_data": null,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "failed",
         "task_id": "00000000-0000-4000-9000-000000000003",
         "task_type": "QUARTERLY_ANALYSIS",
         "year": 2025
@@ -389,49 +375,7 @@
         "year": 2025
       }
     ],
-    "quarterly_analyses": [
-      {
-        "achievement_themes_json": [],
-        "adaptation_effectiveness": "medium",
-        "analysis_date": "<timestamp>",
-        "analysis_id": 1,
-        "autonomy_level": "medium",
-        "behavioral_assessment_json": {},
-        "challenge_patterns_json": {},
-        "collaboration_effectiveness": "medium",
-        "credibility_assessment_json": {},
-        "credibility_rating": "medium",
-        "cross_functional_impact_json": {},
-        "development_focus": "",
-        "employee_id": 101,
-        "forward_planning_json": {},
-        "full_analysis_json": {},
-        "learning_agility": "medium",
-        "monthly_analysis_ids": [
-          1,
-          2,
-          3
-        ],
-        "organizational_impact": "individual",
-        "performance_stability": "medium",
-        "performance_trajectory_json": {},
-        "performance_trend": "stable",
-        "period_end": "2025-03-31",
-        "period_start": "2025-01-01",
-        "quarter": 1,
-        "quarterly_summary": "",
-        "risk_assessment_json": {},
-        "risk_level": "medium",
-        "risk_trend": "stable",
-        "skill_development_json": {},
-        "stakeholder_count": 0,
-        "strategic_alignment_json": {},
-        "task_completion_reliability": "medium",
-        "vision_data_alignment": "none",
-        "work_quality_consistency": "medium",
-        "year": 2025
-      }
-    ]
+    "quarterly_analyses": []
   },
   "external_calls": [
     {
@@ -451,7 +395,7 @@
         "num_predict": 10000,
         "temperature": 0
       },
-      "prompt_chars": 55490,
+      "prompt_chars": 55491,
       "prompt_index": 0
     },
     {
@@ -464,25 +408,13 @@
         "num_predict": 10000,
         "temperature": 0
       },
-      "prompt_chars": 79380,
+      "prompt_chars": 79381,
       "prompt_index": 1
     }
   ],
   "outcome": {
     "return": {
-      "achievement_theme_count": 0,
-      "analysis_id": 1,
-      "employee_id": 101,
-      "employee_name": "Ayesha Khan",
-      "organizational_impact": "individual",
-      "performance_trend": "stable",
-      "period_end": "2025-03-31",
-      "period_start": "2025-01-01",
-      "quarter": 1,
-      "quarterly_summary": "",
-      "risk_level": "medium",
-      "risk_trend": "stable",
-      "year": 2025
+      "error": "LLM analysis failed: The LLM returned no usable JSON"
     },
     "state": "SUCCESS"
   }
