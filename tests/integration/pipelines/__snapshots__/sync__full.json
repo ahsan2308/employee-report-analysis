@@ -109,7 +109,8 @@
             "processed_rows": 0,
             "reports_created": 2,
             "reports_updated": 0,
-            "successful_rows": 3
+            "successful_rows": 3,
+            "vector_store_failures": 0
           },
           "records_queried": 4,
           "records_synced": 3,
@@ -214,7 +215,8 @@
         "processed_rows": 0,
         "reports_created": 2,
         "reports_updated": 0,
-        "successful_rows": 3
+        "successful_rows": 3,
+        "vector_store_failures": 0
       },
       "sync_options": {
         "is_full_sync": true

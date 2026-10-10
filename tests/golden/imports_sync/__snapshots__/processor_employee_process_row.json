@@ -27,7 +27,8 @@
       "processed_rows": 0,
       "reports_created": 1,
       "reports_updated": 0,
-      "successful_rows": 1
+      "successful_rows": 1,
+      "vector_store_failures": 0
     },
     "result": {
       "ok": true
@@ -70,7 +71,8 @@
       "processed_rows": 0,
       "reports_created": 1,
       "reports_updated": 0,
-      "successful_rows": 1
+      "successful_rows": 1,
+      "vector_store_failures": 0
     },
     "result": {
       "ok": true
@@ -120,7 +122,8 @@
       "processed_rows": 0,
       "reports_created": 0,
       "reports_updated": 0,
-      "successful_rows": 0
+      "successful_rows": 0,
+      "vector_store_failures": 0
     },
     "result": {
       "ok": false
@@ -147,7 +150,8 @@
       "processed_rows": 0,
       "reports_created": 0,
       "reports_updated": 0,
-      "successful_rows": 1
+      "successful_rows": 1,
+      "vector_store_failures": 0
     },
     "result": {
       "ok": true
@@ -159,10 +163,10 @@
     "db_added": [],
     "errors": [
       {
-        "category": "processing",
-        "error_message": "Unexpected error: '>' not supported between instances of 'str' and 'datetime.date'",
-        "exception": "TypeError",
-        "field_name": null,
+        "category": "validation",
+        "error_message": "Value error, Invalid date format: 2024/01/01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "exception": null,
+        "field_name": "From",
         "row_data": {
           "BPS": "BS-18",
           "Challenges": null,
@@ -189,7 +193,8 @@
       "processed_rows": 0,
       "reports_created": 0,
       "reports_updated": 0,
-      "successful_rows": 0
+      "successful_rows": 0,
+      "vector_store_failures": 0
     },
     "result": {
       "ok": false
@@ -201,10 +206,10 @@
     "db_added": [],
     "errors": [
       {
-        "category": "processing",
-        "error_message": "Unexpected error: cannot access local variable 're' where it is not associated with a value",
-        "exception": "UnboundLocalError",
-        "field_name": null,
+        "category": "validation",
+        "error_message": "Value error, Invalid date format: March 2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "exception": null,
+        "field_name": "From",
         "row_data": {
           "BPS": "BS-18",
           "Challenges": null,
@@ -231,7 +236,8 @@
       "processed_rows": 0,
       "reports_created": 0,
       "reports_updated": 0,
-      "successful_rows": 0
+      "successful_rows": 0,
+      "vector_store_failures": 0
     },
     "result": {
       "ok": false
@@ -254,7 +260,8 @@
       "processed_rows": 0,
       "reports_created": 0,
       "reports_updated": 1,
-      "successful_rows": 1
+      "successful_rows": 1,
+      "vector_store_failures": 0
     },
     "result": {
       "ok": true
@@ -328,7 +335,8 @@
       "processed_rows": 0,
       "reports_created": 0,
       "reports_updated": 0,
-      "successful_rows": 0
+      "successful_rows": 0,
+      "vector_store_failures": 0
     },
     "result": {
       "ok": false

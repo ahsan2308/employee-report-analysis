@@ -21,6 +21,8 @@ class VisionDataProcessor(BaseCSVProcessor):
     """
     Processes Vision system data CSV rows into database operations.
     """
+
+    row_model = VisionDataCSVRow
     
     # Required headers for Vision data CSV format
     REQUIRED_HEADERS = [
@@ -34,6 +36,22 @@ class VisionDataProcessor(BaseCSVProcessor):
         self.vision_records_updated = 0
         self._existing_employee_ids = None
     
+    def validate_row(self, row_data: Dict[str, Any], row_number: int) -> bool:
+        """Dry-run check: the row model, then that the employee exists (read-only)."""
+        validated = self._validate_model(row_data, row_number)
+        if validated is None:
+            return False
+        employee_id = validated.model_dump().get('Employee_ID')
+        if employee_id not in self._get_existing_employee_ids():
+            self.error_handler.add_validation_error(
+                row_number=row_number,
+                error_message=f"Employee ID {employee_id} does not exist in the database",
+                field_name="Employee_ID",
+                row_data=row_data
+            )
+            return False
+        return True
+
     def _get_existing_employee_ids(self) -> Set[int]:
         """
         Get a set of existing employee IDs for validation.
@@ -196,6 +214,7 @@ class VisionDataProcessor(BaseCSVProcessor):
         Returns:
             Tuple of (successful_rows, total_rows)
         """
+        first_index = df.index[0] if len(df) else 0  # index of this chunk's first file row
         if df.empty:
             return 0, 0
         
@@ -208,7 +227,8 @@ class VisionDataProcessor(BaseCSVProcessor):
         invalid_rows = []
         
         for idx, row in df.iterrows():
-            row_number = start_row_number + idx
+            # Chunks keep the file-wide index; dropped duplicates keep their gaps
+            row_number = start_row_number + (idx - first_index)
             try:
                 if pre_cleaned:
                     # Data is already cleaned by PandasCSVReader.read_dataframes

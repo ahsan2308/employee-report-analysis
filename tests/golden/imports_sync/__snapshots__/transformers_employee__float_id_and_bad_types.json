@@ -34,7 +34,28 @@
     "To": "09:00:00"
   },
   "validated": {
-    "message": "cannot access local variable 're' where it is not associated with a value",
-    "raised": "UnboundLocalError"
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: 20240101. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      },
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: 09:00:00. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      },
+      {
+        "loc": [
+          "Confidence_Level"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
   }
 }

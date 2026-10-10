@@ -60,7 +60,7 @@
       "collection_name": "employee_reports",
       "points": [
         {
-          "document_id": "<uuid:4>",
+          "document_id": "<uuid:3>",
           "payload": {
             "chunk_index": 0,
             "employee_id": 201,
@@ -93,7 +93,8 @@
           "processed_rows": 0,
           "reports_created": 1,
           "reports_updated": 1,
-          "successful_rows": 2
+          "successful_rows": 2,
+          "vector_store_failures": 0
         },
         "options": {
           "auto_mode_selection": true,
@@ -107,7 +108,7 @@
           "processing_mode": "row_by_row",
           "stop_on_error": false
         },
-        "processed_rows": 0,
+        "processed_rows": 7,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -142,7 +143,7 @@
       },
       {
         "error_id": 2,
-        "error_message": "tuple index out of range",
+        "error_message": "Value error, From date (2025-03-10) cannot be after To date (2025-03-03)",
         "field_name": null,
         "job_id": "<uuid:1>",
         "row_data": {
@@ -162,12 +163,12 @@
           "Tasks_Planned": "x",
           "To": "2025-03-03"
         },
-        "row_number": 5
+        "row_number": 3
       },
       {
         "error_id": 3,
-        "error_message": "tuple index out of range",
-        "field_name": null,
+        "error_message": "Value error, Name contains invalid characters. Allowed: letters, numbers, spaces, commas, periods, slashes, hyphens, apostrophes, parentheses, and square brackets",
+        "field_name": "Name",
         "job_id": "<uuid:1>",
         "row_data": {
           "BPS": "BS-16",
@@ -186,11 +187,11 @@
           "Tasks_Planned": "x",
           "To": "2025-03-07"
         },
-        "row_number": 6
+        "row_number": 4
       },
       {
         "error_id": 4,
-        "error_message": "tuple index out of range",
+        "error_message": "Value error, Either 'Tasks_Completed' must be provided or 'NTR' (Nothing to Report) must be specified with a valid reason",
         "field_name": null,
         "job_id": "<uuid:1>",
         "row_data": {
@@ -210,12 +211,12 @@
           "Tasks_Planned": "x",
           "To": "2025-03-07"
         },
-        "row_number": 9
+        "row_number": 5
       },
       {
         "error_id": 5,
-        "error_message": "tuple index out of range",
-        "field_name": null,
+        "error_message": "Value error, Invalid confidence level format. Expected number between 1-5, got '9'",
+        "field_name": "Confidence_Level",
         "job_id": "<uuid:1>",
         "row_data": {
           "BPS": "BS-16",
@@ -234,7 +235,7 @@
           "Tasks_Planned": "x",
           "To": "2025-03-07"
         },
-        "row_number": 10
+        "row_number": 6
       }
     ]
   },
@@ -252,9 +253,10 @@
           "processed_rows": 0,
           "reports_created": 1,
           "reports_updated": 1,
-          "successful_rows": 2
+          "successful_rows": 2,
+          "vector_store_failures": 0
         },
-        "processed_rows": 0,
+        "processed_rows": 7,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -281,12 +283,6 @@
         "employee_id": 201,
         "report_date": "2025-03-07",
         "upserted_point_index": 0
-      },
-      {
-        "chunk_index": 0,
-        "employee_id": 201,
-        "report_date": "2025-03-07",
-        "upserted_point_index": 1
       }
     ],
     "reports": [

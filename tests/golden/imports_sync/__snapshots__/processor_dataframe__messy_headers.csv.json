@@ -25,7 +25,8 @@
     "processed_rows": 0,
     "reports_created": 0,
     "reports_updated": 0,
-    "successful_rows": 0
+    "successful_rows": 0,
+    "vector_store_failures": 0
   },
   "pg_insert_values": [],
   "result": {

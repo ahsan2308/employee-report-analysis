@@ -1,11 +1,51 @@
 {
-  "external_calls": [],
+  "external_calls": [
+    {
+      "call": "vs.get_collection_info",
+      "collection_name": "employee_reports"
+    },
+    {
+      "call": "embed",
+      "input": "Test text",
+      "is_query": false
+    },
+    {
+      "call": "embed",
+      "input": [
+        "Tasks Completed: Second version of the same week wins.\n\nImpact: y\n\nChallenges: y\n\nSupport Required: y\n\nTasks Planned: y\n\nConfidence Level: 2\n\nReport Period: 2025-03-01 to 2025-03-07"
+      ],
+      "is_query": false
+    },
+    {
+      "call": "vs.add_documents_batch",
+      "collection_name": "employee_reports",
+      "points": [
+        {
+          "document_id": "<uuid:3>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 201,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "<uuid:2>",
+            "text": "Tasks Completed: Second version of the same week wins.\n\nImpact: y\n\nChallenges: y\n\nSupport Required: y\n\nTasks Planned: y\n\nConfidence Level: 2\n\nReport Period: 2025-03-01 to 2025-03-07"
+          },
+          "vector": [
+            0.8196,
+            0.7569,
+            0.3647,
+            0.7255
+          ]
+        }
+      ]
+    }
+  ],
   "import": {
     "csv_import_jobs": [
       {
         "completed_at": "<timestamp>",
         "csv_type": null,
-        "error_count": 8,
+        "error_count": 5,
         "filename": "employee_reports_bad.csv",
         "job_id": "<uuid:1>",
         "metrics_json": null,
@@ -56,55 +96,7 @@
       },
       {
         "error_id": 2,
-        "error_message": "tuple index out of range",
-        "field_name": null,
-        "job_id": "<uuid:1>",
-        "row_data": {
-          "BPS": "BS-17",
-          "Challenges": "x",
-          "Confidence_Level": "4",
-          "Designation": "Analyst",
-          "Draft": null,
-          "Employee_ID": "201",
-          "From": "2025-03-01",
-          "Impact": "x",
-          "NTR": null,
-          "Name": "Sana Malik",
-          "Office_Hierarchy": "Technical>Tech-I>SOC",
-          "Support_Required": "x",
-          "Tasks_Completed": "First version of the week.",
-          "Tasks_Planned": "x",
-          "To": "2025-03-07"
-        },
-        "row_number": 1
-      },
-      {
-        "error_id": 3,
-        "error_message": "tuple index out of range",
-        "field_name": null,
-        "job_id": "<uuid:1>",
-        "row_data": {
-          "BPS": "Grade-17",
-          "Challenges": "x",
-          "Confidence_Level": "4",
-          "Designation": "Officer",
-          "Draft": null,
-          "Employee_ID": "202",
-          "From": "2025-03-01",
-          "Impact": "x",
-          "NTR": null,
-          "Name": "Omar Farooq",
-          "Office_Hierarchy": "Operations",
-          "Support_Required": "x",
-          "Tasks_Completed": "Bad BPS row.",
-          "Tasks_Planned": "x",
-          "To": "2025-03-07"
-        },
-        "row_number": 2
-      },
-      {
-        "error_id": 4,
-        "error_message": "tuple index out of range",
+        "error_message": "Value error, From date (2025-03-10) cannot be after To date (2025-03-03)",
         "field_name": null,
         "job_id": "<uuid:1>",
         "row_data": {
@@ -127,9 +119,9 @@
         "row_number": 3
       },
       {
-        "error_id": 5,
-        "error_message": "tuple index out of range",
-        "field_name": null,
+        "error_id": 3,
+        "error_message": "Value error, Name contains invalid characters. Allowed: letters, numbers, spaces, commas, periods, slashes, hyphens, apostrophes, parentheses, and square brackets",
+        "field_name": "Name",
         "job_id": "<uuid:1>",
         "row_data": {
           "BPS": "BS-16",
@@ -151,8 +143,8 @@
         "row_number": 4
       },
       {
-        "error_id": 6,
-        "error_message": "tuple index out of range",
+        "error_id": 4,
+        "error_message": "Value error, Either 'Tasks_Completed' must be provided or 'NTR' (Nothing to Report) must be specified with a valid reason",
         "field_name": null,
         "job_id": "<uuid:1>",
         "row_data": {
@@ -175,9 +167,9 @@
         "row_number": 5
       },
       {
-        "error_id": 7,
-        "error_message": "tuple index out of range",
-        "field_name": null,
+        "error_id": 5,
+        "error_message": "Value error, Invalid confidence level format. Expected number between 1-5, got '9'",
+        "field_name": "Confidence_Level",
         "job_id": "<uuid:1>",
         "row_data": {
           "BPS": "BS-16",
@@ -197,30 +189,6 @@
           "To": "2025-03-07"
         },
         "row_number": 6
-      },
-      {
-        "error_id": 8,
-        "error_message": "tuple index out of range",
-        "field_name": null,
-        "job_id": "<uuid:1>",
-        "row_data": {
-          "BPS": "BS-17",
-          "Challenges": "y",
-          "Confidence_Level": "2",
-          "Designation": "Analyst",
-          "Draft": null,
-          "Employee_ID": "201",
-          "From": "2025-03-01",
-          "Impact": "y",
-          "NTR": null,
-          "Name": "Sana Malik",
-          "Office_Hierarchy": "Technical>Tech-I>SOC",
-          "Support_Required": "y",
-          "Tasks_Completed": "Second version of the same week wins.",
-          "Tasks_Planned": "y",
-          "To": "2025-03-07"
-        },
-        "row_number": 7
       }
     ]
   },
@@ -229,7 +197,7 @@
       "return": {
         "completed_at": "<timestamp>",
         "csv_type": null,
-        "error_count": 8,
+        "error_count": 5,
         "filename": "employee_reports_bad.csv",
         "job_id": "<uuid:1>",
         "metrics": {},
@@ -246,9 +214,30 @@
   "tables": {
     "employee_job_descriptions": [],
     "employee_vision_data": [],
-    "employees": [],
-    "qdrant_mappings": [],
-    "reports": [],
+    "employees": [
+      {
+        "id": 201,
+        "name": "Sana Malik",
+        "position": "Analyst (BS-17)",
+        "wing": "Technical>Tech-I>SOC"
+      }
+    ],
+    "qdrant_mappings": [
+      {
+        "chunk_index": 0,
+        "employee_id": 201,
+        "report_date": "2025-03-07",
+        "upserted_point_index": 0
+      }
+    ],
+    "reports": [
+      {
+        "employee_id": 201,
+        "report_date": "2025-03-07",
+        "report_id": "<uuid:2>",
+        "report_text": "Tasks Completed: Second version of the same week wins.\n\nImpact: y\n\nChallenges: y\n\nSupport Required: y\n\nTasks Planned: y\n\nConfidence Level: 2\n\nReport Period: 2025-03-01 to 2025-03-07"
+      }
+    ],
     "supervisor_feedback_forms": [],
     "supervisor_feedback_metric_definitions": [],
     "supervisor_feedback_responses": []

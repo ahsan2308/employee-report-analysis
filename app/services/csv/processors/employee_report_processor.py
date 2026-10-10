@@ -20,6 +20,8 @@ class EmployeeReportProcessor(BaseCSVProcessor):
     """
     Processes employee report CSV rows into database operations.
     """
+
+    row_model = CombinedCSVRow
     
     # Required headers for employee report CSV format
     REQUIRED_HEADERS = [
@@ -38,6 +40,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
         self.employees_updated = 0
         self.reports_created = 0
         self.reports_updated = 0
+        self.vector_store_failures = 0  # reports saved but not added to the vector store
         self._existing_employee_ids = None
     
     def _get_existing_employee_id_map(self) -> Dict[str, int]:
@@ -146,7 +149,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                 # Add to vector store
                 try:
                     # Pass the session to vector store function
-                    add_report_to_vector_store(
+                    added = add_report_to_vector_store(
                         report_id=str(report_id),
                         employee_id=emp_id,
                         report_date=str(report_date),
@@ -154,8 +157,11 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                         session=self.db
                     )
                 except Exception as ve:
-                    # Log but don't fail the import if vector store fails
                     logger.warning(f"Failed to add report {report_id} to vector store: {str(ve)}")
+                    added = False
+                if not added:
+                    # The report is kept; the failure is reported instead of passing as success
+                    self._record_vector_store_failure(1, row_number)
             
             self.db.commit()  # Commit after vector store operations
             self.successful_rows += 1
@@ -187,6 +193,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
         Returns:
             Tuple of (successful_rows, total_rows)
         """
+        first_index = df.index[0] if len(df) else 0  # index of this chunk's first file row
         if df.empty:
             return 0, 0
         
@@ -211,7 +218,8 @@ class EmployeeReportProcessor(BaseCSVProcessor):
         invalid_rows = []
         
         for idx, row in df.iterrows():
-            row_number = start_row_number + idx
+            # Chunks keep the file-wide index; dropped duplicates keep their gaps
+            row_number = start_row_number + (idx - first_index)
             try:
                 if pre_cleaned:
                     # Data is already cleaned by PandasCSVReader.read_dataframes
@@ -227,12 +235,13 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                 invalid_rows.append((row_number, row.to_dict(), e))
                 # Record validation errors
                 for error in e.errors():
-                    field = error.get("loc", ["unknown"])[0]
+                    loc = error.get("loc") or ()
                     message = error.get("msg", "Unknown validation error")
                     self.error_handler.add_validation_error(
                         row_number=row_number,
                         error_message=message,
-                        field_name=str(field),
+                        # A model-level check (e.g. From after To) has no field
+                        field_name=str(loc[0]) if loc else None,
                         row_data=row.to_dict()
                     )
         
@@ -402,14 +411,18 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             # Process all reports in a single batch call to vector store
             if reports_for_vector_store:
                 try:
-                    add_report_to_vector_store(
+                    added = add_report_to_vector_store(
                         reports=reports_for_vector_store,
                         session=self.db
                     )
-                    logger.info(f"Added {len(reports_for_vector_store)} reports to vector store in batch")
                 except Exception as ve:
-                    # Log but don't fail the import if vector store fails
                     logger.warning(f"Failed to add reports to vector store in batch: {str(ve)}")
+                    added = False
+                if added:
+                    logger.info(f"Added {len(reports_for_vector_store)} reports to vector store in batch")
+                else:
+                    # The reports are kept; the failure is reported instead of passing as success
+                    self._record_vector_store_failure(len(reports_for_vector_store))
             
             # Now commit the entire transaction after all vector store operations
             self.db.commit()
@@ -421,6 +434,17 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             self.db.rollback()
             return False
     
+    def _record_vector_store_failure(self, report_count: int, row_number: int = 0) -> None:
+        """Count reports that were saved but not added to the vector store, and report it as an error."""
+        self.vector_store_failures += report_count
+        self.error_handler.add_processing_error(
+            row_number=row_number,
+            error_message=(
+                f"{report_count} report(s) were saved but could not be added to the vector store, "
+                "so analyses will not find them as similar reports. Import the file again to retry."
+            ),
+        )
+
     def get_metrics(self) -> Dict[str, int]:
         """Get processing metrics."""
         return {
@@ -428,6 +452,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             "employees_updated": self.employees_updated,
             "reports_created": self.reports_created,
             "reports_updated": self.reports_updated,
+            "vector_store_failures": self.vector_store_failures,
             "processed_rows": self.processed_rows,
             "successful_rows": self.successful_rows
         }

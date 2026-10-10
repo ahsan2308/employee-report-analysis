@@ -26,6 +26,8 @@ class JobDescriptionProcessor(BaseCSVProcessor):
     - Tracks metrics (created/updated records)
     - Integrates with existing error handling system
     """
+
+    row_model = JobDescriptionCSVRow
     
     # Required headers for job description CSV format
     REQUIRED_HEADERS = [
@@ -149,6 +151,7 @@ class JobDescriptionProcessor(BaseCSVProcessor):
         Returns:
             Tuple of (successful_rows, total_rows)
         """
+        first_index = df.index[0] if len(df) else 0  # index of this chunk's first file row
         if df.empty:
             return 0, 0
         
@@ -161,7 +164,8 @@ class JobDescriptionProcessor(BaseCSVProcessor):
         invalid_rows = []
         
         for idx, row in df.iterrows():
-            row_number = start_row_number + idx
+            # Chunks keep the file-wide index; dropped duplicates keep their gaps
+            row_number = start_row_number + (idx - first_index)
             try:
                 if pre_cleaned:
                     # Data is already cleaned by PandasCSVReader.read_dataframes

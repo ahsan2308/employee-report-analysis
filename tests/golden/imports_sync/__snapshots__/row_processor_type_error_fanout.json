@@ -7,9 +7,9 @@
     "errors": [
       {
         "category": "validation",
-        "error_message": "Type error in date comparison: '>' not supported between instances of 'str' and 'datetime.date'",
+        "error_message": "Value error, Invalid date format: 2024/01/01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
         "exception": null,
-        "field_name": "date_range",
+        "field_name": "From",
         "row_data": {
           "BPS": "BS-18",
           "Challenges": null,
@@ -27,51 +27,28 @@
           "Tasks_Planned": null,
           "To": "2024-03-31"
         },
-        "row_number": 13
-      },
-      {
-        "category": "validation",
-        "error_message": "Type error in date comparison: '>' not supported between instances of 'str' and 'datetime.date'",
-        "exception": null,
-        "field_name": "date_range",
-        "row_data": {
-          "BPS": "BS-18",
-          "Challenges": null,
-          "Confidence_Level": "4",
-          "Designation": "Deputy Director",
-          "Draft": null,
-          "Employee_ID": "102",
-          "From": "2024-03-01",
-          "Impact": null,
-          "NTR": null,
-          "Name": "Ayesha Khan",
-          "Office_Hierarchy": "Technical>SOC",
-          "Support_Required": null,
-          "Tasks_Completed": "Reviewed cases",
-          "Tasks_Planned": null,
-          "To": "2024-03-31"
-        },
-        "row_number": 14
+        "row_number": "10"
       }
     ],
     "metrics": {
       "ok": {
         "csv_type": "employee_report",
         "metrics": {
-          "employees_created": 0,
+          "employees_created": 1,
           "employees_updated": 0,
           "processed_rows": 0,
-          "reports_created": 0,
+          "reports_created": 1,
           "reports_updated": 0,
-          "successful_rows": 0
+          "successful_rows": 1,
+          "vector_store_failures": 0
         },
         "processed_rows": 0,
-        "successful_rows": 0
+        "successful_rows": 1
       }
     },
     "result": {
       "ok": [
-        0,
+        1,
         2
       ]
     }
@@ -79,10 +56,10 @@
   "unbound_local_error": {
     "errors": [
       {
-        "category": "processing",
-        "error_message": "cannot access local variable 're' where it is not associated with a value",
-        "exception": "UnboundLocalError",
-        "field_name": null,
+        "category": "validation",
+        "error_message": "Value error, Invalid date format: soon. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "exception": null,
+        "field_name": "From",
         "row_data": {
           "BPS": "BS-18",
           "Challenges": null,

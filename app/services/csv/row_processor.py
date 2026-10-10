@@ -110,8 +110,9 @@ class RowProcessor:
         except Exception as e:
             logger.error(f"Error processing dataframe: {str(e)}\n{traceback.format_exc()}")
             # Register error for each row in the dataframe
+            first_index = df.index[0] if len(df) else 0
             for i, row in df.iterrows():
-                row_number = start_row_number + i
+                row_number = start_row_number + (i - first_index)
                 row_data = row.to_dict() if not pd.isna(row).all() else {}
                 
                 # Handle different error types appropriately

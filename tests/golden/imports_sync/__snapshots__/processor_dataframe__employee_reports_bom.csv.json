@@ -141,6 +141,56 @@
     },
     {
       "category": "validation",
+      "error_message": "Value error, Invalid date format: 2024/01/05. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+      "exception": null,
+      "field_name": "From",
+      "row_data": {
+        "BPS": "BS-16",
+        "Challenges": null,
+        "Confidence_Level": "9",
+        "Designation": "Officer",
+        "Draft": null,
+        "Employee_ID": "105",
+        "Extra_Notes": null,
+        "From": "2024/01/05",
+        "Impact": "Low",
+        "NTR": null,
+        "Name": "Zara Iqbal",
+        "Office_Hierarchy": null,
+        "Support_Required": null,
+        "Tasks_Completed": "Filed returns",
+        "Tasks_Planned": null,
+        "To": "2024-31-01"
+      },
+      "row_number": 7
+    },
+    {
+      "category": "validation",
+      "error_message": "Value error, Invalid date format: 2024-31-01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+      "exception": null,
+      "field_name": "To",
+      "row_data": {
+        "BPS": "BS-16",
+        "Challenges": null,
+        "Confidence_Level": "9",
+        "Designation": "Officer",
+        "Draft": null,
+        "Employee_ID": "105",
+        "Extra_Notes": null,
+        "From": "2024/01/05",
+        "Impact": "Low",
+        "NTR": null,
+        "Name": "Zara Iqbal",
+        "Office_Hierarchy": null,
+        "Support_Required": null,
+        "Tasks_Completed": "Filed returns",
+        "Tasks_Planned": null,
+        "To": "2024-31-01"
+      },
+      "row_number": 7
+    },
+    {
+      "category": "validation",
       "error_message": "Value error, Invalid confidence level format. Expected number between 1-5, got '9'",
       "exception": null,
       "field_name": "Confidence_Level",
@@ -171,7 +221,8 @@
     "processed_rows": 0,
     "reports_created": 3,
     "reports_updated": 0,
-    "successful_rows": 4
+    "successful_rows": 4,
+    "vector_store_failures": 0
   },
   "pg_insert_values": [
     {

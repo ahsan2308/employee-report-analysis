@@ -404,16 +404,8 @@ class CSVImportService:
                     row_data[field_name] = None
                 logger.debug(f"  Field '{field_name}': '{value}' (type: {type(value).__name__})")
             
-            # Call the processor's process_row but rollback any changes
-            # This makes it behave like a validation without permanent effects
-            try:
-                temp_processor.db.begin_nested()  # Create savepoint
-                result = processor.process_row(row_data, row_number)
-                temp_processor.db.rollback()  # Roll back to savepoint
-                return result
-            except Exception as e:
-                temp_processor.db.rollback()  # Ensure rollback on error
-                raise e
+            # Validate only: process_row would write to the database and the vector store
+            return processor.validate_row(row_data, row_number)
             
         except Exception as e:
             # Log detailed error
@@ -503,7 +495,12 @@ class CSVImportService:
             else:
                 status = ImportStatus.COMPLETED
             
-            metrics = row_processor.get_metrics()
+            metrics = {
+                **row_processor.get_metrics(),
+                # The service counts rows itself; most processors do not
+                "processed_rows": processed_rows,
+                "successful_rows": successful_rows,
+            }
             
             self._update_job_status(
                 session=session,
@@ -557,8 +554,8 @@ class CSVImportService:
                     successful_rows += chunk_successful
                 else:
                     # In dry run mode, use shared validation helper
-                    for idx, row in chunk_df.iterrows():
-                        row_number = processed_rows + idx + 1
+                    for position, (_, row) in enumerate(chunk_df.iterrows()):
+                        row_number = processed_rows + position + 1
                         if self._validate_row(row.to_dict(), row_number, error_handler):
                             successful_rows += 1
                 
@@ -611,7 +608,12 @@ class CSVImportService:
             else:
                 status = ImportStatus.COMPLETED
             
-            metrics = row_processor.get_metrics()
+            metrics = {
+                **row_processor.get_metrics(),
+                # The service counts rows itself; most processors do not
+                "processed_rows": processed_rows,
+                "successful_rows": successful_rows,
+            }
             
             self._update_job_status(
                 session=session,

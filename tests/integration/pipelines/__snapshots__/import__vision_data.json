@@ -15,7 +15,7 @@
           "vision_records_updated": 0
         },
         "options": null,
-        "processed_rows": 0,
+        "processed_rows": 3,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -35,7 +35,7 @@
           "vision_records_updated": 1
         },
         "options": null,
-        "processed_rows": 0,
+        "processed_rows": 6,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -55,7 +55,7 @@
           "vision_records_updated": 2
         },
         "options": null,
-        "processed_rows": 0,
+        "processed_rows": 3,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -215,7 +215,7 @@
           "vision_records_created": 2,
           "vision_records_updated": 0
         },
-        "processed_rows": 0,
+        "processed_rows": 3,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -237,7 +237,7 @@
           "vision_records_created": 0,
           "vision_records_updated": 1
         },
-        "processed_rows": 0,
+        "processed_rows": 6,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -259,7 +259,7 @@
           "vision_records_created": 0,
           "vision_records_updated": 2
         },
-        "processed_rows": 0,
+        "processed_rows": 3,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",

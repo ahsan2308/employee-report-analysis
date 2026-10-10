@@ -150,7 +150,8 @@
           "processed_rows": 0,
           "reports_created": 3,
           "reports_updated": 0,
-          "successful_rows": 4
+          "successful_rows": 4,
+          "vector_store_failures": 0
         },
         "options": {
           "auto_mode_selection": false,
@@ -164,7 +165,7 @@
           "processing_mode": "row_by_row",
           "stop_on_error": false
         },
-        "processed_rows": 0,
+        "processed_rows": 4,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -188,9 +189,10 @@
           "processed_rows": 0,
           "reports_created": 3,
           "reports_updated": 0,
-          "successful_rows": 4
+          "successful_rows": 4,
+          "vector_store_failures": 0
         },
-        "processed_rows": 0,
+        "processed_rows": 4,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",

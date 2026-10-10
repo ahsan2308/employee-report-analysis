@@ -142,7 +142,8 @@ def pg_insert(monkeypatch):
 @pytest.fixture
 def vector_store(monkeypatch):
     calls = []
-    monkeypatch.setattr(erp_module, "add_report_to_vector_store", lambda **kw: calls.append(tag(kw)))
+    # Like the real function, report success (it returns False when the store rejects the reports)
+    monkeypatch.setattr(erp_module, "add_report_to_vector_store", lambda **kw: calls.append(tag(kw)) or True)
     return calls
 
 

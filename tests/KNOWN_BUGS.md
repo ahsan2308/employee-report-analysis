@@ -46,13 +46,6 @@ are candidates for the bug-fix track; fixed ones are listed at the end.
 - The quarterly prompt builds weekly ranges with 7 days, the weekly prompt with 6. Weeks are matched to months by month number regardless of year (`structured_prompts.py:1959,1973`).
 - `get_complete_reports_by_ids` returns rows in `set()` order, so the order of similar reports in prompts can vary (`db_service.py:28`).
 
-**CSV import**
-- One model-level validation error (From after To) raises IndexError and fails the whole chunk, valid rows included (`employee_report_processor.py:230`).
-- A dry run still writes to the database and the vector store (`csv_import_service.py:412-414`).
-- Row numbers drift after the first chunk (`start_row_number + idx` in all four processors). `processed_rows` stays 0 except for supervisor feedback.
-- A failed vector upsert is reported as a successful import, and re-imports duplicate vectors and `qdrant_mappings` rows (`employee_report_processor.py:405`).
-- Dates without `/` or `-` raise UnboundLocalError instead of a validation error, and date rules differ between the four row models (`csv_import_schema.py:187,611`).
-
 **SQL Server connector**
 - The password is put into the ODBC connection string unescaped. There is a hard-coded default password. Substring blocklists reject harmless names such as "LastUpdated" and hosts containing "sp_" (`sqlserver_connector.py:209,327,855`).
 
@@ -64,3 +57,10 @@ are candidates for the bug-fix track; fixed ones are listed at the end.
 - 500 responses carry a fixed message; the exception (SQL, parameters, broker errors) is logged instead of returned (`integration/api/*`).
 - An analysis task with the wrong task type is marked FAILED with the reason (`integration/pipelines/test_analysis_tasks.py`).
 - `GET /imports/{id}` reports the stored error count without writing it back (`integration/api/test_imports.py`, `integration/services/test_csv_import_service.py`).
+
+**CSV import**
+- A model-level validation error (From after To) is recorded for its row with no field name, instead of raising IndexError and failing the whole chunk (`golden/imports_sync/test_imports_processors.py`).
+- A dry run only validates: each row is checked against its row model (plus the read-only "employee exists" check for vision and supervisor feedback), and nothing is written to the database or the vector store (`integration/pipelines/test_csv_import_pipeline.py`).
+- Error row numbers count from the file's first data row whatever the chunk size, including when duplicate rows are dropped. Jobs record the real `processed_rows` and `successful_rows` (`integration/pipelines/test_csv_import_pipeline.py`).
+- A failed vector upsert is reported as an import error and counted in `vector_store_failures`; the reports are kept. Vector point IDs are derived from (report, chunk), so a re-import overwrites its points, and stale points and `qdrant_mappings` rows (including duplicates from earlier imports) are removed (`integration/pipelines/test_csv_import_pipeline.py`).
+- The three report-period row models (employee reports, vision data, supervisor feedback) share one date parser: MM/DD/YYYY (then DD/MM/YYYY), YYYY-MM-DD, MM-DD-YYYY (then DD-MM-YYYY), with a trailing time ignored. Anything else, a future date or an empty required date is a validation error, where it used to raise UnboundLocalError or pass through as an unparsed string (`golden/imports_sync/test_imports_row_schemas.py`).

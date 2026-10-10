@@ -15,7 +15,7 @@
           "successful_rows": 3
         },
         "options": null,
-        "processed_rows": 0,
+        "processed_rows": 3,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -35,7 +35,7 @@
           "successful_rows": 1
         },
         "options": null,
-        "processed_rows": 0,
+        "processed_rows": 6,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -55,7 +55,7 @@
           "successful_rows": 3
         },
         "options": null,
-        "processed_rows": 0,
+        "processed_rows": 3,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -155,7 +155,7 @@
           "processed_rows": 0,
           "successful_rows": 3
         },
-        "processed_rows": 0,
+        "processed_rows": 3,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -177,7 +177,7 @@
           "processed_rows": 0,
           "successful_rows": 1
         },
-        "processed_rows": 0,
+        "processed_rows": 6,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
@@ -199,7 +199,7 @@
           "processed_rows": 0,
           "successful_rows": 3
         },
-        "processed_rows": 0,
+        "processed_rows": 3,
         "started_at": "<timestamp>",
         "status": "completed",
         "submitted_at": "<timestamp>",
