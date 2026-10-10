@@ -1,0 +1,53 @@
+{
+  "key_order": [
+    "L_RO_Form_Metric_ID",
+    "RO_Form_ID",
+    "Employee_ID",
+    "Name",
+    "Designation",
+    "BPS",
+    "Office_Hierarchy",
+    "Executive_Office",
+    "From",
+    "To",
+    "Section_ID",
+    "Section",
+    "Metric_ID",
+    "Metric_Title",
+    "Instructions",
+    "Metric_Type",
+    "Possible_Values",
+    "Value"
+  ],
+  "transformed": {
+    "BPS": "BS-19",
+    "Designation": "Director",
+    "Employee_ID": "<Decimal 1012>",
+    "Executive_Office": "PPHQ",
+    "From": "<date 2024-11-01>",
+    "Instructions": "Ability to deliver",
+    "L_RO_Form_Metric_ID": 74,
+    "Metric_ID": 1,
+    "Metric_Title": "Quality & Accuracy",
+    "Metric_Type": " R",
+    "Name": "MAJ.(R) NADEEM ARIF CH",
+    "Office_Hierarchy": "PPHQ>CI",
+    "Possible_Values": "Poor,Fair,Good,Excellent",
+    "RO_Form_ID": "<Decimal 15>",
+    "Section": "Performance & Work Habits",
+    "Section_ID": 1,
+    "To": "<date 2024-11-30>",
+    "Value": "  good "
+  },
+  "validated": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee_ID must be a valid integer or numeric string. Received: '1012'",
+        "type": "value_error"
+      }
+    ]
+  }
+}

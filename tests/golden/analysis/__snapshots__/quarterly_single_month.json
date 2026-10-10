@@ -1,0 +1,144 @@
+{
+  "calls": [
+    {
+      "args": [
+        42
+      ],
+      "fn": "get_employee_info",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        1
+      ],
+      "fn": "get_monthly_analyses_for_quarter",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        1
+      ],
+      "fn": "get_weekly_analyses_for_quarter",
+      "kwargs": {}
+    },
+    {
+      "args": [],
+      "fn": "get_employee_job_descriptions_for_period",
+      "kwargs": {
+        "employee_id": 42,
+        "period_end": "2025-03-31",
+        "period_start": "2025-01-01"
+      }
+    }
+  ],
+  "result": {
+    "employee_id": 42,
+    "employee_info": {
+      "id": 42,
+      "name": "Test Employee",
+      "position": "Analyst",
+      "wing": "Ops"
+    },
+    "employee_jds": [],
+    "jd_analysis_mapping": {
+      "jd_groups": [],
+      "unmapped_reports": []
+    },
+    "metrics": {
+      "achievement_count": 2,
+      "achievement_impact_avg": 6.0,
+      "avg_sentiment": 0.4,
+      "challenge_count": 1,
+      "challenge_resolution_trend": "stble",
+      "detailed_topics": [],
+      "monthly_progress_trends": [
+        {
+          "challenge_resolution_progress": "unchanged",
+          "month": 1,
+          "performance_trend": "stable",
+          "risk_level_pattern": "increasing",
+          "sentiment_trend": "declining"
+        }
+      ],
+      "monthly_summaries": [
+        {
+          "month": "January",
+          "summary": "January went slowly."
+        }
+      ],
+      "performance_rating_aggregation": {
+        "most_common_rating": null,
+        "rating_distribution": {},
+        "rating_trend": "stble"
+      },
+      "performance_stability": "low",
+      "quality_consistency_trend": "stble",
+      "recurring_topics": [],
+      "risk_levels": {},
+      "risk_trend": "stble",
+      "sentiment_trend": "stble",
+      "task_reliability_trend": "stble",
+      "weekly_credibility_data": {
+        "avg_credibility_rating": null,
+        "credibility_trend": "stble",
+        "exaggeration_frequency": 0
+      },
+      "weekly_performance_ratings": [],
+      "weekly_report_count": 0
+    },
+    "monthly_analyses": [
+      {
+        "achievement_impact_avg": 6.0,
+        "analysis_id": 1,
+        "avg_sentiment_score": 0.4,
+        "consistency_assessment": {
+          "performance_stability": "low",
+          "task_completion_reliability": "low",
+          "work_quality_consistency": "medium"
+        },
+        "month": 1,
+        "month_name": "January",
+        "monthly_achievements": [
+          {
+            "a": 1
+          },
+          {
+            "a": 2
+          }
+        ],
+        "monthly_risk_assessment": {
+          "overall_risk_level": "high"
+        },
+        "monthly_summary": "January went slowly.",
+        "progress_trends": {
+          "challenge_resolution_progress": "unchanged",
+          "performance_trend": "stable",
+          "risk_level_pattern": "increasing",
+          "sentiment_trend": "declining"
+        },
+        "recurring_challenges": [
+          {
+            "c": 1
+          }
+        ],
+        "weekly_report_ids": [
+          "r1",
+          "r2",
+          "r3",
+          "r4"
+        ],
+        "year": 2025
+      }
+    ],
+    "period_end": "2025-03-31",
+    "period_start": "2025-01-01",
+    "quarter": 1,
+    "weekly_analyses": [],
+    "year": 2025
+  },
+  "stdout": "[]\n[{'analysis_id': 1, 'month': 1, 'month_name': 'January', 'year': 2025, 'weekly_report_ids': ['r1', 'r2', 'r3', 'r4'], 'avg_sentiment_score': 0.4, 'progress_trends': {'performance_trend': 'stable', 'sentiment_trend': 'declining', 'risk_level_pattern': 'increasing', 'challenge_resolution_progress': 'unchanged'}, 'monthly_achievements': [{'a': 1}, {'a': 2}], 'recurring_challenges': [{'c': 1}], 'consistency_assessment': {'task_completion_reliability': 'low', 'work_quality_consistency': 'medium', 'performance_stability': 'low'}, 'achievement_impact_avg': 6.0, 'monthly_risk_assessment': {'overall_risk_level': 'high'}, 'monthly_summary': 'January went slowly.'}]\n"
+}

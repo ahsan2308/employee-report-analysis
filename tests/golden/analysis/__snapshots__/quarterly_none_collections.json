@@ -1,0 +1,210 @@
+{
+  "monthly_achievements_none": {
+    "employee_id": 42,
+    "employee_info": {
+      "id": 42,
+      "name": "Test Employee",
+      "position": "Analyst",
+      "wing": "Ops"
+    },
+    "metrics": {
+      "achievement_count": 0,
+      "achievement_impact_avg": 0.0,
+      "avg_sentiment": 0.0,
+      "challenge_count": 0,
+      "challenge_resolution_trend": "stble",
+      "detailed_topics": [],
+      "monthly_progress_trends": [],
+      "monthly_summaries": [],
+      "performance_rating_aggregation": {
+        "most_common_rating": null,
+        "rating_distribution": {},
+        "rating_trend": "stble"
+      },
+      "performance_stability": "mdium",
+      "quality_consistency_trend": "stble",
+      "recurring_topics": [],
+      "risk_levels": {},
+      "risk_trend": "stble",
+      "sentiment_trend": "stble",
+      "task_reliability_trend": "stble",
+      "weekly_credibility_data": {
+        "avg_credibility_rating": null,
+        "credibility_trend": "stble",
+        "exaggeration_frequency": 0
+      },
+      "weekly_performance_ratings": [],
+      "weekly_report_count": 0
+    },
+    "monthly_analyses": [
+      {
+        "achievement_impact_avg": null,
+        "analysis_id": 1,
+        "avg_sentiment_score": 0.5,
+        "consistency_assessment": {},
+        "month": 1,
+        "month_name": "M1",
+        "monthly_achievements": null,
+        "monthly_risk_assessment": {},
+        "monthly_summary": "s",
+        "progress_trends": {},
+        "recurring_challenges": [],
+        "weekly_report_ids": [],
+        "year": 2025
+      }
+    ],
+    "period_end": "2025-03-31",
+    "period_start": "2025-01-01",
+    "quarter": 1,
+    "weekly_analyses": [],
+    "year": 2025
+  },
+  "progress_trends_none": {
+    "employee_id": 42,
+    "employee_info": {
+      "id": 42,
+      "name": "Test Employee",
+      "position": "Analyst",
+      "wing": "Ops"
+    },
+    "employee_jds": [
+      {
+        "assigned_date": "2025-01-01",
+        "effective_during_period": {
+          "end": "2025-02-14",
+          "start": "2025-01-01"
+        },
+        "end_date": null,
+        "is_current": true,
+        "jd_id": "JD_A",
+        "job_description": "Analyst"
+      },
+      {
+        "assigned_date": "2025-02-15",
+        "effective_during_period": {
+          "end": "2025-03-31",
+          "start": "2025-02-15"
+        },
+        "end_date": null,
+        "is_current": true,
+        "jd_id": "JD_B",
+        "job_description": "Lead"
+      }
+    ],
+    "jd_analysis_mapping": {
+      "jd_groups": [],
+      "unmapped_reports": []
+    },
+    "metrics": {
+      "achievement_count": 0,
+      "achievement_impact_avg": 0.0,
+      "avg_sentiment": 0.0,
+      "challenge_count": 0,
+      "challenge_resolution_trend": "stble",
+      "detailed_topics": [],
+      "monthly_progress_trends": [],
+      "monthly_summaries": [],
+      "performance_rating_aggregation": {
+        "most_common_rating": null,
+        "rating_distribution": {},
+        "rating_trend": "stble"
+      },
+      "performance_stability": "mdium",
+      "quality_consistency_trend": "stble",
+      "recurring_topics": [],
+      "risk_levels": {},
+      "risk_trend": "stble",
+      "sentiment_trend": "stble",
+      "task_reliability_trend": "stble",
+      "weekly_credibility_data": {
+        "avg_credibility_rating": null,
+        "credibility_trend": "stble",
+        "exaggeration_frequency": 0
+      },
+      "weekly_performance_ratings": [],
+      "weekly_report_count": 0
+    },
+    "monthly_analyses": [
+      {
+        "achievement_impact_avg": null,
+        "analysis_id": 1,
+        "avg_sentiment_score": 0.5,
+        "consistency_assessment": {},
+        "month": 1,
+        "month_name": "M1",
+        "monthly_achievements": [],
+        "monthly_risk_assessment": {},
+        "monthly_summary": null,
+        "progress_trends": null,
+        "recurring_challenges": [],
+        "weekly_report_ids": [],
+        "year": 2025
+      }
+    ],
+    "period_end": "2025-03-31",
+    "period_start": "2025-01-01",
+    "quarter": 1,
+    "weekly_analyses": [],
+    "year": 2025
+  },
+  "weekly_report_ids_none": {
+    "employee_id": 42,
+    "employee_info": {
+      "id": 42,
+      "name": "Test Employee",
+      "position": "Analyst",
+      "wing": "Ops"
+    },
+    "metrics": {
+      "achievement_count": 0,
+      "achievement_impact_avg": 0.0,
+      "avg_sentiment": 0.0,
+      "challenge_count": 0,
+      "challenge_resolution_trend": "stble",
+      "detailed_topics": [],
+      "monthly_progress_trends": [],
+      "monthly_summaries": [],
+      "performance_rating_aggregation": {
+        "most_common_rating": null,
+        "rating_distribution": {},
+        "rating_trend": "stble"
+      },
+      "performance_stability": "mdium",
+      "quality_consistency_trend": "stble",
+      "recurring_topics": [],
+      "risk_levels": {},
+      "risk_trend": "stble",
+      "sentiment_trend": "stble",
+      "task_reliability_trend": "stble",
+      "weekly_credibility_data": {
+        "avg_credibility_rating": null,
+        "credibility_trend": "stble",
+        "exaggeration_frequency": 0
+      },
+      "weekly_performance_ratings": [],
+      "weekly_report_count": 0
+    },
+    "monthly_analyses": [
+      {
+        "achievement_impact_avg": null,
+        "analysis_id": 1,
+        "avg_sentiment_score": 0.5,
+        "consistency_assessment": {},
+        "month": 1,
+        "month_name": "M1",
+        "monthly_achievements": [],
+        "monthly_risk_assessment": {},
+        "monthly_summary": "s",
+        "progress_trends": {},
+        "recurring_challenges": [],
+        "weekly_report_ids": null,
+        "year": 2025
+      }
+    ],
+    "period_end": "2025-03-31",
+    "period_start": "2025-01-01",
+    "quarter": 1,
+    "weekly_analyses": [],
+    "year": 2025
+  }
+}

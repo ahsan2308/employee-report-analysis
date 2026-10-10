@@ -1,0 +1,160 @@
+{
+  "duplicate_risk": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": "rgba(231, 76, 60, 0.2)",
+          "borderColor": "rgba(231, 76, 60, 1)",
+          "data": [
+            0.8,
+            0.65,
+            0.2,
+            0.35,
+            0.2
+          ],
+          "label": "Risk Level",
+          "metadata": {
+            "avg": 0.44,
+            "max": 0.8,
+            "min": 0.2
+          }
+        }
+      ],
+      "labels": [
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03",
+        "2025-04"
+      ]
+    },
+    "status": 200
+  },
+  "impact_then_risk": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": "rgba(155, 89, 182, 0.2)",
+          "borderColor": "rgba(155, 89, 182, 1)",
+          "data": [
+            3.0,
+            5.5,
+            9.5,
+            7.0,
+            4.0
+          ],
+          "label": "Impact Score",
+          "metadata": {
+            "avg": 5.8,
+            "max": 9.5,
+            "min": 3.0
+          }
+        },
+        {
+          "backgroundColor": "rgba(231, 76, 60, 0.2)",
+          "borderColor": "rgba(231, 76, 60, 1)",
+          "data": [
+            0.8,
+            0.65,
+            0.2,
+            0.35,
+            0.2
+          ],
+          "label": "Risk Level",
+          "metadata": {
+            "avg": 0.44,
+            "max": 0.8,
+            "min": 0.2
+          }
+        }
+      ],
+      "labels": [
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03",
+        "2025-04"
+      ]
+    },
+    "status": 200
+  },
+  "risk_then_impact": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": "rgba(155, 89, 182, 0.2)",
+          "borderColor": "rgba(155, 89, 182, 1)",
+          "data": [
+            3.0,
+            5.5,
+            9.5,
+            7.0,
+            4.0
+          ],
+          "label": "Impact Score",
+          "metadata": {
+            "avg": 5.8,
+            "max": 9.5,
+            "min": 3.0
+          }
+        },
+        {
+          "backgroundColor": "rgba(231, 76, 60, 0.2)",
+          "borderColor": "rgba(231, 76, 60, 1)",
+          "data": [
+            0.8,
+            0.65,
+            0.2,
+            0.35,
+            0.2
+          ],
+          "label": "Risk Level",
+          "metadata": {
+            "avg": 0.44,
+            "max": 0.8,
+            "min": 0.2
+          }
+        }
+      ],
+      "labels": [
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03",
+        "2025-04"
+      ]
+    },
+    "status": 200
+  },
+  "single_performance": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": "rgba(243, 156, 18, 0.2)",
+          "borderColor": "rgba(243, 156, 18, 1)",
+          "data": [
+            0.2,
+            0.35,
+            0.8,
+            0.65,
+            0.8
+          ],
+          "label": "Performance Rating",
+          "metadata": {
+            "avg": 0.56,
+            "max": 0.8,
+            "min": 0.2
+          }
+        }
+      ],
+      "labels": [
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03",
+        "2025-04"
+      ]
+    },
+    "status": 200
+  }
+}

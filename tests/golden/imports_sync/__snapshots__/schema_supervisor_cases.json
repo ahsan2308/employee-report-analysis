@@ -1,0 +1,576 @@
+{
+  "date_objects": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2024-11-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "datetime_objects": {
+    "message": "can't compare datetime.datetime to datetime.date",
+    "raised": "TypeError"
+  },
+  "datetime_vs_date": {
+    "message": "can't compare datetime.datetime to datetime.date",
+    "raised": "TypeError"
+  },
+  "employee_id_float": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee_ID must be a valid integer or numeric string. Received: '1012.0'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "employee_id_text": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee_ID must be a valid integer or numeric string. Received: 'abc'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "employee_id_zero": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee_ID must be a positive integer. Received: 0",
+        "type": "value_error"
+      }
+    ]
+  },
+  "empty_input": {
+    "validation_errors": [
+      {
+        "loc": [
+          "RO_Form_ID"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "L_RO_Form_Metric_ID"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Section_ID"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Section"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Metric_ID"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Metric_Title"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Metric_Type"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      }
+    ]
+  },
+  "from_after_to": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, From date (2024-12-01) must be before To date (2024-11-01)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "from_equals_to": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, From date (2024-11-01) must be before To date (2024-11-01)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "ids_float_strings": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "instructions_1001": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Instructions"
+        ],
+        "msg": "String should have at most 1000 characters",
+        "type": "string_too_long"
+      }
+    ]
+  },
+  "ints_native": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 0,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "metric_id_zero": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Metric_ID"
+        ],
+        "msg": "Input should be greater than 0",
+        "type": "greater_than"
+      }
+    ]
+  },
+  "metric_type_lower": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Metric_Type"
+        ],
+        "msg": "String should match pattern '^[RT]$'",
+        "type": "string_pattern_mismatch"
+      }
+    ]
+  },
+  "metric_type_other": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Metric_Type"
+        ],
+        "msg": "String should match pattern '^[RT]$'",
+        "type": "string_pattern_mismatch"
+      }
+    ]
+  },
+  "metric_type_padded": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "T",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": null,
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "name_empty": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "String should have at least 1 character",
+        "type": "string_too_short"
+      }
+    ]
+  },
+  "name_spaces": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "String should have at least 1 character",
+        "type": "string_too_short"
+      }
+    ]
+  },
+  "optional_fields_none": {
+    "ok": {
+      "BPS": null,
+      "Designation": null,
+      "Employee_ID": 1012,
+      "Executive_Office": null,
+      "From": "<date 2020-01-01>",
+      "Instructions": null,
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": null,
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "rating_no_possible_values": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, Rating metric (Metric_ID=1) must define Possible_Values.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "rating_possible_values_no_spaces": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor,Fair,Good",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "rating_possible_values_spaces": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, Rating metric (Metric_ID=1) must define Possible_Values.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "rating_value_case_insensitive": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "good"
+    }
+  },
+  "rating_value_empty": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": ""
+    }
+  },
+  "rating_value_none": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": null
+    }
+  },
+  "rating_value_not_in_options": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, Value 'great' not found in Possible_Values 'Poor, Fair, Good, Excellent' for metric 1.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "rating_value_padded": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Excellent"
+    }
+  },
+  "ro_form_id_zero": {
+    "validation_errors": [
+      {
+        "loc": [
+          "RO_Form_ID"
+        ],
+        "msg": "Input should be greater than 0",
+        "type": "greater_than"
+      }
+    ]
+  },
+  "section_id_negative": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Section_ID"
+        ],
+        "msg": "Input should be greater than or equal to 0",
+        "type": "greater_than_equal"
+      }
+    ]
+  },
+  "text_metric_na_values": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "T",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "N/A",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "free text"
+    }
+  },
+  "text_metric_no_value": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "T",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": null,
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": null
+    }
+  },
+  "text_metric_with_values": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "T",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "A,B",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "anything"
+    }
+  },
+  "valid_base": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2020-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "value_5001": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Value"
+        ],
+        "msg": "String should have at most 5000 characters",
+        "type": "string_too_long"
+      }
+    ]
+  }
+}

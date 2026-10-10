@@ -1,0 +1,41 @@
+{
+  "body": {
+    "cells": [
+      {
+        "value": 0.4,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "value": 0.77,
+        "x": 1,
+        "y": 0
+      },
+      {
+        "value": 0.35,
+        "x": 1,
+        "y": 1
+      },
+      {
+        "value": 0.68,
+        "x": 1,
+        "y": 2
+      }
+    ],
+    "metadata": {
+      "avg": 0.55,
+      "max": 0.77,
+      "min": 0.35
+    },
+    "x_labels": [
+      "2024",
+      "2025"
+    ],
+    "y_labels": [
+      "Alice Analyst (#1)",
+      "Bob Builder (#2)",
+      "Carol Coder (#3)"
+    ]
+  },
+  "status": 200
+}

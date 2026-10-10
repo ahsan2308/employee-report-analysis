@@ -1,0 +1,54 @@
+{
+  "chunks": {
+    "ok": [
+      {
+        "columns": [
+          " Employee_ID ",
+          " name ",
+          "Designation",
+          "Designation.1",
+          "From",
+          "To",
+          "Tasks_Completed"
+        ],
+        "dtypes": {
+          " Employee_ID ": "object",
+          " name ": "object",
+          "Designation": "object",
+          "Designation.1": "object",
+          "From": "object",
+          "Tasks_Completed": "object",
+          "To": "object"
+        },
+        "index": [
+          0
+        ],
+        "records": [
+          {
+            " Employee_ID ": "401",
+            " name ": "Kamran",
+            "Designation": "Officer",
+            "Designation.1": "Officer2",
+            "From": "2024-01-01",
+            "Tasks_Completed": "Work",
+            "To": "2024-01-31"
+          }
+        ]
+      }
+    ]
+  },
+  "state": {
+    "delimiter_attr": null,
+    "detected_delimiter": ",",
+    "detected_encoding": "ascii",
+    "headers": [
+      " Employee_ID ",
+      " name ",
+      "Designation",
+      "Designation.1",
+      "From",
+      "To",
+      "Tasks_Completed"
+    ]
+  }
+}

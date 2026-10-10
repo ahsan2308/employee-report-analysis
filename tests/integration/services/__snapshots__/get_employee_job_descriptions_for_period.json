@@ -1,0 +1,130 @@
+{
+  "inverted_period": [
+    {
+      "assigned_date": "2023-01-01",
+      "effective_during_period": {
+        "end": "2023-06-30",
+        "start": "2025-03-31"
+      },
+      "end_date": "2023-06-30",
+      "is_current": true,
+      "jd_id": "JD-CURRENT-BUT-ENDED-EARLY",
+      "job_description": "JD text for JD-CURRENT-BUT-ENDED-EARLY"
+    },
+    {
+      "assigned_date": "2023-01-01",
+      "effective_during_period": {
+        "end": "2025-01-01",
+        "start": "2025-03-31"
+      },
+      "end_date": "2026-01-01",
+      "is_current": false,
+      "jd_id": "JD-SPANS",
+      "job_description": "JD text for JD-SPANS"
+    }
+  ],
+  "q1_2025": [
+    {
+      "assigned_date": "2023-01-01",
+      "effective_during_period": {
+        "end": "2023-06-30",
+        "start": "2025-01-01"
+      },
+      "end_date": "2023-06-30",
+      "is_current": true,
+      "jd_id": "JD-CURRENT-BUT-ENDED-EARLY",
+      "job_description": "JD text for JD-CURRENT-BUT-ENDED-EARLY"
+    },
+    {
+      "assigned_date": "2023-01-01",
+      "effective_during_period": {
+        "end": "2025-03-31",
+        "start": "2025-01-01"
+      },
+      "end_date": "2026-01-01",
+      "is_current": false,
+      "jd_id": "JD-SPANS",
+      "job_description": "JD text for JD-SPANS"
+    },
+    {
+      "assigned_date": "2024-06-01",
+      "effective_during_period": {
+        "end": "2025-01-01",
+        "start": "2025-01-01"
+      },
+      "end_date": "2025-01-01",
+      "is_current": false,
+      "jd_id": "JD-ENDS-ON-START",
+      "job_description": "JD text for JD-ENDS-ON-START"
+    },
+    {
+      "assigned_date": "2025-01-15",
+      "effective_during_period": {
+        "end": "2025-02-15",
+        "start": "2025-01-15"
+      },
+      "end_date": "2025-02-15",
+      "is_current": false,
+      "jd_id": "JD-MID-PERIOD",
+      "job_description": "JD text for JD-MID-PERIOD"
+    },
+    {
+      "assigned_date": "2025-02-16",
+      "effective_during_period": {
+        "end": "2025-03-31",
+        "start": "2025-02-16"
+      },
+      "end_date": null,
+      "is_current": true,
+      "jd_id": "JD-CURRENT",
+      "job_description": "JD text for JD-CURRENT"
+    },
+    {
+      "assigned_date": "2025-03-31",
+      "effective_during_period": {
+        "end": "2025-03-31",
+        "start": "2025-03-31"
+      },
+      "end_date": null,
+      "is_current": true,
+      "jd_id": "JD-STARTS-ON-END",
+      "job_description": "JD text for JD-STARTS-ON-END"
+    }
+  ],
+  "single_day": [
+    {
+      "assigned_date": "2023-01-01",
+      "effective_during_period": {
+        "end": "2023-06-30",
+        "start": "2025-02-15"
+      },
+      "end_date": "2023-06-30",
+      "is_current": true,
+      "jd_id": "JD-CURRENT-BUT-ENDED-EARLY",
+      "job_description": "JD text for JD-CURRENT-BUT-ENDED-EARLY"
+    },
+    {
+      "assigned_date": "2023-01-01",
+      "effective_during_period": {
+        "end": "2025-02-15",
+        "start": "2025-02-15"
+      },
+      "end_date": "2026-01-01",
+      "is_current": false,
+      "jd_id": "JD-SPANS",
+      "job_description": "JD text for JD-SPANS"
+    },
+    {
+      "assigned_date": "2025-01-15",
+      "effective_during_period": {
+        "end": "2025-02-15",
+        "start": "2025-02-15"
+      },
+      "end_date": "2025-02-15",
+      "is_current": false,
+      "jd_id": "JD-MID-PERIOD",
+      "job_description": "JD text for JD-MID-PERIOD"
+    }
+  ],
+  "unknown_employee": []
+}

@@ -1,0 +1,71 @@
+{
+  "collections": {
+    "employee_reports": 4
+  },
+  "external_calls": [
+    {
+      "call": "embed",
+      "input": "backlog audit",
+      "is_query": true
+    },
+    {
+      "call": "vs.search",
+      "collection_name": "employee_reports",
+      "filter_params": {
+        "must": [
+          {
+            "key": "employee_id",
+            "match": {
+              "value": 101
+            }
+          }
+        ]
+      },
+      "limit": 5,
+      "query_vector": [
+        0.851,
+        0.6941,
+        0.6196,
+        0.2431
+      ]
+    }
+  ],
+  "outcome": [
+    {
+      "chunk_index": 0,
+      "employee_id": 101,
+      "id": "pt-2025-02-07-0",
+      "report_date": "2025-02-07",
+      "report_date_ts": 0.0,
+      "report_id": "r-a",
+      "score": 0.55,
+      "text": "chunk of 2025-02-07"
+    },
+    {
+      "chunk_index": 0,
+      "employee_id": 101,
+      "id": "pt-2025-02-21-0",
+      "report_date": "2025-02-21",
+      "report_date_ts": 0.0,
+      "report_id": "r-b",
+      "score": 0.95,
+      "text": "chunk of 2025-02-21"
+    },
+    {
+      "chunk_index": 2,
+      "employee_id": 101,
+      "id": "pt-2025-02-14-2",
+      "report_date": "2025-02-14",
+      "report_date_ts": 0.0,
+      "report_id": "r-d",
+      "score": 0.3,
+      "text": "chunk of 2025-02-14"
+    },
+    {
+      "report_date": "07/03/2025",
+      "report_id": "r-e",
+      "score": 0.9
+    }
+  ],
+  "points_left": 0
+}

@@ -1,0 +1,173 @@
+{
+  "empty_range": {
+    "body": {
+      "cells": [],
+      "metadata": {
+        "avg": 0.0,
+        "max": 0.0,
+        "min": 0.0
+      },
+      "x_labels": [],
+      "y_labels": []
+    },
+    "status": 200
+  },
+  "end_date": {
+    "body": {
+      "cells": [
+        {
+          "value": 3.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "value": 6.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "value": 5.0,
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "metadata": {
+        "avg": 4.67,
+        "max": 6.0,
+        "min": 3.0
+      },
+      "x_labels": [
+        "2024-12",
+        "2025-01"
+      ],
+      "y_labels": [
+        "Alice Analyst (#1)",
+        "Bob Builder (#2)"
+      ]
+    },
+    "status": 200
+  },
+  "ignored_employee_and_department": {
+    "body": {
+      "cells": [
+        {
+          "value": 3.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "value": 6.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "value": 5.0,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "value": 9.5,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "value": 7.0,
+          "x": 3,
+          "y": 0
+        },
+        {
+          "value": 4.0,
+          "x": 4,
+          "y": 0
+        }
+      ],
+      "metadata": {
+        "avg": 5.75,
+        "max": 9.5,
+        "min": 3.0
+      },
+      "x_labels": [
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03",
+        "2025-04"
+      ],
+      "y_labels": [
+        "Engineering",
+        "Finance"
+      ]
+    },
+    "status": 200
+  },
+  "range_quarter": {
+    "body": {
+      "cells": [
+        {
+          "value": 8.0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "value": 5.0,
+          "x": 0,
+          "y": 1
+        },
+        {
+          "value": 4.0,
+          "x": 1,
+          "y": 0
+        }
+      ],
+      "metadata": {
+        "avg": 5.67,
+        "max": 8.0,
+        "min": 4.0
+      },
+      "x_labels": [
+        "2025-Q1",
+        "2025-Q2"
+      ],
+      "y_labels": [
+        "Engineering",
+        "Finance"
+      ]
+    },
+    "status": 200
+  },
+  "start_date": {
+    "body": {
+      "cells": [
+        {
+          "value": 9.5,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "value": 7.0,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "value": 4.0,
+          "x": 2,
+          "y": 0
+        }
+      ],
+      "metadata": {
+        "avg": 6.83,
+        "max": 9.5,
+        "min": 4.0
+      },
+      "x_labels": [
+        "2025-02",
+        "2025-03",
+        "2025-04"
+      ],
+      "y_labels": [
+        "Engineering"
+      ]
+    },
+    "status": 200
+  }
+}

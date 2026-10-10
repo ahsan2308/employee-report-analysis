@@ -1,0 +1,403 @@
+{
+  "compact_no_separator": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: 20240301. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "dash_dd_mm_yyyy": {
+    "ok": {
+      "Assigned_Date": "2024-02-13",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "dash_invalid": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: 31-31-2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "dash_iso_with_time": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: 2024-03-01 10:30:00. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "dash_mm_dd_yyyy": {
+    "ok": {
+      "Assigned_Date": "2024-03-01",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "dash_token": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: -. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "date_obj": {
+    "ok": {
+      "Assigned_Date": "2024-03-01",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "datetime_obj": {
+    "ok": {
+      "Assigned_Date": "2024-03-01",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "dd_mm_fallback": {
+    "ok": {
+      "Assigned_Date": "2024-02-13",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "dotted": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: 01.03.2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "empty": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Assigned_Date is required and cannot be empty",
+        "type": "value_error"
+      }
+    ]
+  },
+  "future_dash": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Assigned_Date cannot be in the future. Received: 01-01-2099 (Today is <today>)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "future_date_obj": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Assigned_Date cannot be in the future. Received: 2099-01-01 (Today is <today>)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "future_iso": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Assigned_Date cannot be in the future. Received: 2099-01-01 (Today is <today>)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "future_slash": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Assigned_Date cannot be in the future. Received: 01/01/2099 (Today is <today>)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "int": {
+    "ok": {
+      "Assigned_Date": "1970-08-23",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "iso": {
+    "ok": {
+      "Assigned_Date": "2024-03-01",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "iso_invalid_month": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: 2024-13-01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "iso_single_digit_parts": {
+    "ok": {
+      "Assigned_Date": "2024-03-01",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "iso_slashes_year_first": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: 2024/03/01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "iso_t_time": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: 2024-03-01T10:30:00. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "iso_whitespace": {
+    "ok": {
+      "Assigned_Date": "2024-03-01",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "mm_dd_unambiguous": {
+    "ok": {
+      "Assigned_Date": "2024-02-13",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "na_token": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: N/A. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "none": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date",
+          "constrained-str"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "Assigned_Date",
+          "date"
+        ],
+        "msg": "Input should be a valid date",
+        "type": "date_type"
+      },
+      {
+        "loc": [
+          "Assigned_Date",
+          "datetime"
+        ],
+        "msg": "Input should be a valid datetime",
+        "type": "datetime_type"
+      }
+    ]
+  },
+  "null_token": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: null. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "old_date_obj": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Assigned_Date appears unreasonably old (1965-01-01). Dates before 1970-01-01 are not accepted.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "old_iso": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Assigned_Date appears unreasonably old (1965-01-01). Dates before 1970-01-01 are not accepted.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "old_slash": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Assigned_Date appears unreasonably old (01/01/1965). Dates before 1970-01-01 are not accepted.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "slash_both_invalid": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: 31/31/2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "slash_feb_30": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: 02/30/2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "slash_two_digit_year": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: 03/01/24. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "spaces_only": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Assigned_Date is required and cannot be empty",
+        "type": "value_error"
+      }
+    ]
+  },
+  "text_month": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Value error, Invalid date format: March 1, 2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "us_mm_dd_ambiguous": {
+    "ok": {
+      "Assigned_Date": "2024-03-01",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "us_single_digits": {
+    "ok": {
+      "Assigned_Date": "2024-03-01",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  }
+}

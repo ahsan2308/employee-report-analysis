@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Employee not found."
+  },
+  "status": 404
+}

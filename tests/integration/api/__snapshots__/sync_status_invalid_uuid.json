@@ -1,0 +1,19 @@
+{
+  "body": {
+    "detail": [
+      {
+        "ctx": {
+          "error": "invalid length: expected length 32 for simple format, found 3"
+        },
+        "input": "abc",
+        "loc": [
+          "path",
+          "sync_id"
+        ],
+        "msg": "Input should be a valid UUID, invalid length: expected length 32 for simple format, found 3",
+        "type": "uuid_parsing"
+      }
+    ]
+  },
+  "status": 422
+}

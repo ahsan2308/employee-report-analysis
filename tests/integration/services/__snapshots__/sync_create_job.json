@@ -1,0 +1,48 @@
+{
+  "returned_types": [
+    "SyncHistory",
+    "pending",
+    "pending"
+  ],
+  "row_count": 2,
+  "to_dict": [
+    {
+      "completed_at": null,
+      "duration_seconds": null,
+      "error_count": 0,
+      "error_message": null,
+      "last_sync_timestamp": null,
+      "records_created": 0,
+      "records_queried": 0,
+      "records_skipped": 0,
+      "records_synced": 0,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "pending",
+      "sync_id": "<uuid:1>",
+      "sync_options": {
+        "is_full_sync": true
+      },
+      "sync_type": "vision_data"
+    },
+    {
+      "completed_at": null,
+      "duration_seconds": null,
+      "error_count": 0,
+      "error_message": null,
+      "last_sync_timestamp": null,
+      "records_created": 0,
+      "records_queried": 0,
+      "records_skipped": 0,
+      "records_synced": 0,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "pending",
+      "sync_id": "<uuid:2>",
+      "sync_options": {
+        "is_full_sync": false
+      },
+      "sync_type": "employee_reports"
+    }
+  ]
+}

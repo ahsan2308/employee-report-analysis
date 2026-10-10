@@ -1,0 +1,7 @@
+{
+  "body": {
+    "detail": "Invalid parameter: bad"
+  },
+  "dispatch": [],
+  "status": 400
+}

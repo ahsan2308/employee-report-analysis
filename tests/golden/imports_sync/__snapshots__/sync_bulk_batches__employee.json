@@ -1,0 +1,340 @@
+{
+  "errors": [
+    {
+      "category": "processing",
+      "error_message": "Transformation error: 'str' object has no attribute 'get'",
+      "exception": "AttributeError",
+      "field_name": null,
+      "row_data": "not-a-dict",
+      "row_number": 5
+    },
+    {
+      "category": "processing",
+      "error_message": "Transformation error: 'str' object has no attribute 'get'",
+      "exception": "AttributeError",
+      "field_name": null,
+      "row_data": "only-bad",
+      "row_number": 6
+    },
+    {
+      "category": "processing",
+      "error_message": "Batch processing error: processor exploded",
+      "exception": "RuntimeError",
+      "field_name": null,
+      "row_data": {
+        "BPS": "BS-17",
+        "Challenges": null,
+        "Confidence_Level": "3",
+        "Designation": "Officer",
+        "Draft": null,
+        "Employee_ID": null,
+        "From": "<date 2024-03-01>",
+        "Impact": null,
+        "LastModifiedDate": "<datetime 2024-04-01T10:00:00.999000>",
+        "NTR": null,
+        "Name": "Ayesha Khan",
+        "Office_Hierarchy": "A>B",
+        "Support_Required": null,
+        "Tasks_Completed": "x",
+        "Tasks_Planned": null,
+        "To": "<date 2024-03-31>"
+      },
+      "row_number": 6
+    }
+  ],
+  "frames": [
+    {
+      "frame": {
+        "columns": [
+          "Employee_ID",
+          "Name",
+          "Designation",
+          "BPS",
+          "Office_Hierarchy",
+          "From",
+          "To",
+          "Draft",
+          "Tasks_Completed",
+          "Impact",
+          "Challenges",
+          "Support_Required",
+          "Tasks_Planned",
+          "Confidence_Level",
+          "NTR"
+        ],
+        "dtypes": {
+          "BPS": "object",
+          "Challenges": "object",
+          "Confidence_Level": "object",
+          "Designation": "object",
+          "Draft": "object",
+          "Employee_ID": "int64",
+          "From": "object",
+          "Impact": "object",
+          "NTR": "object",
+          "Name": "object",
+          "Office_Hierarchy": "object",
+          "Support_Required": "object",
+          "Tasks_Completed": "object",
+          "Tasks_Planned": "object",
+          "To": "object"
+        },
+        "index": [
+          0,
+          1
+        ],
+        "records": [
+          {
+            "BPS": "BS-17",
+            "Challenges": null,
+            "Confidence_Level": "3",
+            "Designation": "Officer",
+            "Draft": null,
+            "Employee_ID": 101,
+            "From": "2024-03-01",
+            "Impact": null,
+            "NTR": null,
+            "Name": "Ayesha Khan",
+            "Office_Hierarchy": "A>B",
+            "Support_Required": null,
+            "Tasks_Completed": "x",
+            "Tasks_Planned": null,
+            "To": "2024-03-31"
+          },
+          {
+            "BPS": "BS-17",
+            "Challenges": null,
+            "Confidence_Level": "3",
+            "Designation": "Officer",
+            "Draft": null,
+            "Employee_ID": 101,
+            "From": "2024-03-01",
+            "Impact": null,
+            "NTR": null,
+            "Name": "Ayesha Khan",
+            "Office_Hierarchy": "A>B",
+            "Support_Required": null,
+            "Tasks_Completed": "x",
+            "Tasks_Planned": null,
+            "To": "2024-03-31"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 1
+    },
+    {
+      "frame": {
+        "columns": [
+          "Employee_ID",
+          "Name",
+          "Designation",
+          "BPS",
+          "Office_Hierarchy",
+          "From",
+          "To",
+          "Draft",
+          "Tasks_Completed",
+          "Impact",
+          "Challenges",
+          "Support_Required",
+          "Tasks_Planned",
+          "Confidence_Level",
+          "NTR"
+        ],
+        "dtypes": {
+          "BPS": "object",
+          "Challenges": "object",
+          "Confidence_Level": "object",
+          "Designation": "object",
+          "Draft": "object",
+          "Employee_ID": "object",
+          "From": "object",
+          "Impact": "object",
+          "NTR": "object",
+          "Name": "object",
+          "Office_Hierarchy": "object",
+          "Support_Required": "object",
+          "Tasks_Completed": "object",
+          "Tasks_Planned": "object",
+          "To": "object"
+        },
+        "index": [
+          0,
+          1
+        ],
+        "records": [
+          {
+            "BPS": null,
+            "Challenges": null,
+            "Confidence_Level": null,
+            "Designation": null,
+            "Draft": null,
+            "Employee_ID": 101,
+            "From": null,
+            "Impact": null,
+            "NTR": null,
+            "Name": null,
+            "Office_Hierarchy": null,
+            "Support_Required": null,
+            "Tasks_Completed": null,
+            "Tasks_Planned": null,
+            "To": null
+          },
+          {
+            "BPS": "BS-17",
+            "Challenges": null,
+            "Confidence_Level": "3",
+            "Designation": "Officer",
+            "Draft": null,
+            "Employee_ID": "<Decimal 102>",
+            "From": "2024-03-01",
+            "Impact": null,
+            "NTR": null,
+            "Name": "Ayesha Khan",
+            "Office_Hierarchy": "A>B",
+            "Support_Required": null,
+            "Tasks_Completed": "x",
+            "Tasks_Planned": null,
+            "To": "2024-03-31"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 3
+    },
+    {
+      "frame": {
+        "columns": [
+          "Employee_ID",
+          "Name",
+          "Designation",
+          "BPS",
+          "Office_Hierarchy",
+          "From",
+          "To",
+          "Draft",
+          "Tasks_Completed",
+          "Impact",
+          "Challenges",
+          "Support_Required",
+          "Tasks_Planned",
+          "Confidence_Level",
+          "NTR"
+        ],
+        "dtypes": {
+          "BPS": "object",
+          "Challenges": "object",
+          "Confidence_Level": "object",
+          "Designation": "object",
+          "Draft": "object",
+          "Employee_ID": "int64",
+          "From": "object",
+          "Impact": "object",
+          "NTR": "object",
+          "Name": "object",
+          "Office_Hierarchy": "object",
+          "Support_Required": "object",
+          "Tasks_Completed": "object",
+          "Tasks_Planned": "object",
+          "To": "object"
+        },
+        "index": [
+          0
+        ],
+        "records": [
+          {
+            "BPS": "BS-17",
+            "Challenges": null,
+            "Confidence_Level": "3",
+            "Designation": "Officer",
+            "Draft": null,
+            "Employee_ID": 101,
+            "From": "2024-03-01",
+            "Impact": null,
+            "NTR": null,
+            "Name": "Ayesha Khan",
+            "Office_Hierarchy": "A>B",
+            "Support_Required": null,
+            "Tasks_Completed": "x",
+            "Tasks_Planned": null,
+            "To": "2024-03-31"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 5
+    },
+    {
+      "frame": {
+        "columns": [
+          "Employee_ID",
+          "Name",
+          "Designation",
+          "BPS",
+          "Office_Hierarchy",
+          "From",
+          "To",
+          "Draft",
+          "Tasks_Completed",
+          "Impact",
+          "Challenges",
+          "Support_Required",
+          "Tasks_Planned",
+          "Confidence_Level",
+          "NTR"
+        ],
+        "dtypes": {
+          "BPS": "object",
+          "Challenges": "object",
+          "Confidence_Level": "object",
+          "Designation": "object",
+          "Draft": "object",
+          "Employee_ID": "object",
+          "From": "object",
+          "Impact": "object",
+          "NTR": "object",
+          "Name": "object",
+          "Office_Hierarchy": "object",
+          "Support_Required": "object",
+          "Tasks_Completed": "object",
+          "Tasks_Planned": "object",
+          "To": "object"
+        },
+        "index": [
+          0
+        ],
+        "records": [
+          {
+            "BPS": "BS-17",
+            "Challenges": null,
+            "Confidence_Level": "3",
+            "Designation": "Officer",
+            "Draft": null,
+            "Employee_ID": null,
+            "From": "2024-03-01",
+            "Impact": null,
+            "NTR": null,
+            "Name": "Ayesha Khan",
+            "Office_Hierarchy": "A>B",
+            "Support_Required": null,
+            "Tasks_Completed": "x",
+            "Tasks_Planned": null,
+            "To": "2024-03-31"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 6
+    }
+  ],
+  "max_modified": {
+    "_max_modified_date": "<datetime 2025-01-01T00:00:00.001000>"
+  },
+  "result": {
+    "ok": [
+      2,
+      7
+    ]
+  }
+}

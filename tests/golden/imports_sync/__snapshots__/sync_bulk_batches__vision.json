@@ -1,0 +1,205 @@
+{
+  "errors": [
+    {
+      "category": "processing",
+      "error_message": "Transformation error: 'str' object has no attribute 'get'",
+      "exception": "AttributeError",
+      "field_name": null,
+      "row_data": "not-a-dict",
+      "row_number": 5
+    },
+    {
+      "category": "processing",
+      "error_message": "Transformation error: 'str' object has no attribute 'get'",
+      "exception": "AttributeError",
+      "field_name": null,
+      "row_data": "only-bad",
+      "row_number": 6
+    },
+    {
+      "category": "processing",
+      "error_message": "Batch processing error: processor exploded",
+      "exception": "RuntimeError",
+      "field_name": null,
+      "row_data": {
+        "Employee_ID": null,
+        "From_Date": "<date 2024-04-01>",
+        "Main_Entity": "Persons",
+        "ModifiedDate": "<datetime 2024-05-01T09:00:00>",
+        "Sub_Entities": "Persons:1",
+        "Sub_Entities_Content": "Persons:[]",
+        "To_Date": "<date 2024-04-30>"
+      },
+      "row_number": 6
+    }
+  ],
+  "frames": [
+    {
+      "frame": {
+        "columns": [
+          "Employee_ID",
+          "From_Date",
+          "To_Date",
+          "Main_Entity",
+          "Sub_Entities",
+          "Sub_Entities_Content"
+        ],
+        "dtypes": {
+          "Employee_ID": "int64",
+          "From_Date": "object",
+          "Main_Entity": "object",
+          "Sub_Entities": "object",
+          "Sub_Entities_Content": "object",
+          "To_Date": "object"
+        },
+        "index": [
+          0,
+          1
+        ],
+        "records": [
+          {
+            "Employee_ID": 101,
+            "From_Date": "2024-04-01",
+            "Main_Entity": "Persons",
+            "Sub_Entities": "Persons:1",
+            "Sub_Entities_Content": "Persons:[]",
+            "To_Date": "2024-04-30"
+          },
+          {
+            "Employee_ID": 101,
+            "From_Date": "2024-04-01",
+            "Main_Entity": "Persons",
+            "Sub_Entities": "Persons:1",
+            "Sub_Entities_Content": "Persons:[]",
+            "To_Date": "2024-04-30"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 1
+    },
+    {
+      "frame": {
+        "columns": [
+          "Employee_ID",
+          "From_Date",
+          "To_Date",
+          "Main_Entity",
+          "Sub_Entities",
+          "Sub_Entities_Content"
+        ],
+        "dtypes": {
+          "Employee_ID": "object",
+          "From_Date": "object",
+          "Main_Entity": "object",
+          "Sub_Entities": "object",
+          "Sub_Entities_Content": "object",
+          "To_Date": "object"
+        },
+        "index": [
+          0,
+          1
+        ],
+        "records": [
+          {
+            "Employee_ID": 101,
+            "From_Date": null,
+            "Main_Entity": null,
+            "Sub_Entities": null,
+            "Sub_Entities_Content": null,
+            "To_Date": null
+          },
+          {
+            "Employee_ID": "<Decimal 102>",
+            "From_Date": "2024-04-01",
+            "Main_Entity": "Persons",
+            "Sub_Entities": "Persons:1",
+            "Sub_Entities_Content": "Persons:[]",
+            "To_Date": "2024-04-30"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 3
+    },
+    {
+      "frame": {
+        "columns": [
+          "Employee_ID",
+          "From_Date",
+          "To_Date",
+          "Main_Entity",
+          "Sub_Entities",
+          "Sub_Entities_Content"
+        ],
+        "dtypes": {
+          "Employee_ID": "int64",
+          "From_Date": "object",
+          "Main_Entity": "object",
+          "Sub_Entities": "object",
+          "Sub_Entities_Content": "object",
+          "To_Date": "object"
+        },
+        "index": [
+          0
+        ],
+        "records": [
+          {
+            "Employee_ID": 101,
+            "From_Date": "2024-04-01",
+            "Main_Entity": "Persons",
+            "Sub_Entities": "Persons:1",
+            "Sub_Entities_Content": "Persons:[]",
+            "To_Date": "2024-04-30"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 5
+    },
+    {
+      "frame": {
+        "columns": [
+          "Employee_ID",
+          "From_Date",
+          "To_Date",
+          "Main_Entity",
+          "Sub_Entities",
+          "Sub_Entities_Content"
+        ],
+        "dtypes": {
+          "Employee_ID": "object",
+          "From_Date": "object",
+          "Main_Entity": "object",
+          "Sub_Entities": "object",
+          "Sub_Entities_Content": "object",
+          "To_Date": "object"
+        },
+        "index": [
+          0
+        ],
+        "records": [
+          {
+            "Employee_ID": null,
+            "From_Date": "2024-04-01",
+            "Main_Entity": "Persons",
+            "Sub_Entities": "Persons:1",
+            "Sub_Entities_Content": "Persons:[]",
+            "To_Date": "2024-04-30"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 6
+    }
+  ],
+  "max_modified": {
+    "_max_modified_date_vision": "<datetime 2025-01-01T00:00:00.001000>"
+  },
+  "result": {
+    "ok": [
+      2,
+      7
+    ]
+  }
+}

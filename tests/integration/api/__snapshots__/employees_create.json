@@ -1,0 +1,21 @@
+{
+  "body": {
+    "employee": {
+      "id": 1,
+      "name": "Dana Dev",
+      "position": "SRE",
+      "wing": "Ops"
+    },
+    "message": "Employee added successfully"
+  },
+  "db": [
+    {
+      "id": 1,
+      "name": "Dana Dev",
+      "position": "SRE",
+      "wing": "Ops"
+    }
+  ],
+  "dispatch": [],
+  "status": 200
+}

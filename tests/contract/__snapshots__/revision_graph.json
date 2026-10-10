@@ -1,0 +1,100 @@
+{
+  "base": [
+    "65a702f08ade"
+  ],
+  "chain_head_to_base": [
+    {
+      "down_revision": "407c40171b98",
+      "file": "3379963e0751_sync_type_enum_update.py",
+      "revision": "3379963e0751"
+    },
+    {
+      "down_revision": "296d61b28e32",
+      "file": "407c40171b98_add_supervisor_feedback_tables.py",
+      "revision": "407c40171b98"
+    },
+    {
+      "down_revision": "6a9d66801388",
+      "file": "296d61b28e32_add_employee_job_descriptions_table.py",
+      "revision": "296d61b28e32"
+    },
+    {
+      "down_revision": "378f3464504b",
+      "file": "6a9d66801388_modified_sync_history_table.py",
+      "revision": "6a9d66801388"
+    },
+    {
+      "down_revision": "2884cc2a40f3",
+      "file": "378f3464504b_add_sync_history_table.py",
+      "revision": "378f3464504b"
+    },
+    {
+      "down_revision": "2fdc11581b1d",
+      "file": "2884cc2a40f3_add_sub_entities_content_column_to_.py",
+      "revision": "2884cc2a40f3"
+    },
+    {
+      "down_revision": "7745b677b0ec",
+      "file": "2fdc11581b1d_modify_monthly_analysis_table_and_task_.py",
+      "revision": "2fdc11581b1d"
+    },
+    {
+      "down_revision": "c858a2c22c2a",
+      "file": "7745b677b0ec_modify_tasks_table.py",
+      "revision": "7745b677b0ec"
+    },
+    {
+      "down_revision": "812ef54a9d2b",
+      "file": "c858a2c22c2a_add_monthly_analysis_table.py",
+      "revision": "c858a2c22c2a"
+    },
+    {
+      "down_revision": "1cee61420935",
+      "file": "xxx_add_performance_assessment.py",
+      "revision": "812ef54a9d2b"
+    },
+    {
+      "down_revision": "b0cfff55a0db",
+      "file": "1cee61420935_add_unique_constraint_to_vision_data.py",
+      "revision": "1cee61420935"
+    },
+    {
+      "down_revision": "5f2ebe525334",
+      "file": "b0cfff55a0db_add_csv_type_and_metrics_json_to_.py",
+      "revision": "b0cfff55a0db"
+    },
+    {
+      "down_revision": "b4e7ae76295f",
+      "file": "5f2ebe525334_add_employee_vision_data_table.py",
+      "revision": "5f2ebe525334"
+    },
+    {
+      "down_revision": "create_a_unique_id_here",
+      "file": "b4e7ae76295f_add_credibility_assessment_fields.py",
+      "revision": "b4e7ae76295f"
+    },
+    {
+      "down_revision": "320fec19a06a",
+      "file": "new_migration_add_credibility_assessment_fields.py",
+      "revision": "create_a_unique_id_here"
+    },
+    {
+      "down_revision": "757ae1f7af0f",
+      "file": "320fec19a06a_add_csv_import_job_and_error_models.py",
+      "revision": "320fec19a06a"
+    },
+    {
+      "down_revision": "65a702f08ade",
+      "file": "757ae1f7af0f_update_background_tasks_table.py",
+      "revision": "757ae1f7af0f"
+    },
+    {
+      "down_revision": null,
+      "file": "65a702f08ade_create_background_tasks_table.py",
+      "revision": "65a702f08ade"
+    }
+  ],
+  "heads": [
+    "3379963e0751"
+  ]
+}

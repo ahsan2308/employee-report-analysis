@@ -1,0 +1,18 @@
+{
+  "body": {
+    "errors": [
+      {
+        "error_category": "db",
+        "error_message": "late",
+        "field_name": null,
+        "row_data": null,
+        "row_number": 12
+      }
+    ],
+    "page": 3,
+    "page_size": 2,
+    "sync_id": "<uuid:1>",
+    "total_errors": 5
+  },
+  "status": 200
+}

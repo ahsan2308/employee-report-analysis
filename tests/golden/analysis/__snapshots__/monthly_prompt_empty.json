@@ -1,0 +1,18 @@
+{
+  "empty": {
+    "returned": ""
+  },
+  "none": {
+    "message": "'NoneType' object has no attribute 'keys'",
+    "raised": "AttributeError"
+  },
+  "week_without_activities": {
+    "returned": ""
+  },
+  "weekly_shape": {
+    "returned": ""
+  },
+  "weeks_empty": {
+    "returned": ""
+  }
+}

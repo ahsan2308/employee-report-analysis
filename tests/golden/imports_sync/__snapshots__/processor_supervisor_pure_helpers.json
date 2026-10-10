@@ -1,0 +1,127 @@
+{
+  "caches": {
+    "empty": {
+      "form_data": {
+        "sections": []
+      },
+      "generated_at": "<timestamp>",
+      "stats": {
+        "average_rating": null,
+        "completion_percentage": 0,
+        "maximum_score": 0,
+        "metrics_completed": 0,
+        "text_responses_count": 0,
+        "total_metrics": 0,
+        "total_score": 0
+      }
+    },
+    "mixed": {
+      "form_data": {
+        "sections": [
+          {
+            "metrics": [
+              {
+                "max_value": 4,
+                "metric_id": 1,
+                "metric_name": "Metric 1",
+                "metric_type": "R",
+                "possible_values": "Poor, Fair, Good, Excellent",
+                "response": "Good"
+              },
+              {
+                "max_value": 4,
+                "metric_id": 2,
+                "metric_name": "Metric 2",
+                "metric_type": "R",
+                "possible_values": "Poor,Fair,Good,Excellent",
+                "response": "Excellent"
+              },
+              {
+                "max_value": 3,
+                "metric_id": 3,
+                "metric_name": "Metric 3",
+                "metric_type": "R",
+                "possible_values": "Poor, Fair, Good",
+                "response": "good"
+              },
+              {
+                "max_value": 2,
+                "metric_id": 7,
+                "metric_name": "Metric 7",
+                "metric_type": "R",
+                "possible_values": "A,B",
+                "response": null
+              },
+              {
+                "max_value": 5,
+                "metric_id": 8,
+                "metric_name": "Metric 8",
+                "metric_type": "R",
+                "possible_values": "A,B",
+                "response": "B"
+              }
+            ],
+            "section_id": 1,
+            "section_name": "Performance"
+          },
+          {
+            "metrics": [
+              {
+                "max_value": null,
+                "metric_id": 5,
+                "metric_name": "Metric 5",
+                "metric_type": "T",
+                "possible_values": null,
+                "response": "Steady"
+              },
+              {
+                "max_value": null,
+                "metric_id": 6,
+                "metric_name": "Metric 6",
+                "metric_type": "T",
+                "possible_values": null,
+                "response": "   "
+              }
+            ],
+            "section_id": 2,
+            "section_name": "Comments"
+          }
+        ]
+      },
+      "generated_at": "<timestamp>",
+      "stats": {
+        "average_rating": 71.67,
+        "completion_percentage": 75.0,
+        "maximum_score": 300,
+        "metrics_completed": 6,
+        "text_responses_count": 2,
+        "total_metrics": 8,
+        "total_score": 215.0
+      }
+    }
+  },
+  "grouped": {
+    "15": [
+      {
+        "Metric_ID": 1,
+        "RO_Form_ID": 15
+      },
+      {
+        "Metric_ID": 2,
+        "RO_Form_ID": 15
+      }
+    ],
+    "16": [
+      {
+        "Metric_ID": 1,
+        "RO_Form_ID": 16
+      }
+    ],
+    "None": [
+      {
+        "Metric_ID": 3,
+        "RO_Form_ID": null
+      }
+    ]
+  }
+}

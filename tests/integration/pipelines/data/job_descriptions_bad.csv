@@ -1,0 +1,7 @@
+Employee_ID,JD_ID,Job_Description,Assigned_Date,Is_Current,End_Date
+201,1001,"Analyst: leads backlog reduction, audits archives and drafts monthly performance summaries for the wing. Updated scope.",2025-01-15,TRUE,
+201,1003,Too short.,2025-01-15,TRUE,
+201,ABC,"Analyst: leads backlog reduction, audits archives and drafts monthly performance summaries for the wing.",2025-01-15,TRUE,
+999,1004,"Field officer: inspects district offices, verifies submissions and reports discrepancies to operations.",2025-01-15,TRUE,
+202,1005,"Field officer: inspects district offices, verifies submissions and reports discrepancies to operations.",2025/13/45,TRUE,
+202,1006,"TBD placeholder text for the role, to be determined later by HR.",2025-01-15,TRUE,

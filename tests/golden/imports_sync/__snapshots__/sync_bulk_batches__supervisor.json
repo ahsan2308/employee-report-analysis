@@ -1,0 +1,381 @@
+{
+  "errors": [
+    {
+      "category": "processing",
+      "error_message": "Transformation error: 'str' object has no attribute 'get'",
+      "exception": "AttributeError",
+      "field_name": null,
+      "row_data": "not-a-dict",
+      "row_number": 5
+    },
+    {
+      "category": "processing",
+      "error_message": "Transformation error: 'str' object has no attribute 'get'",
+      "exception": "AttributeError",
+      "field_name": null,
+      "row_data": "only-bad",
+      "row_number": 6
+    },
+    {
+      "category": "processing",
+      "error_message": "Batch processing error: processor exploded",
+      "exception": "RuntimeError",
+      "field_name": null,
+      "row_data": {
+        "Employee_ID": null,
+        "From": "<date 2024-11-01>",
+        "Instructions": null,
+        "L_RO_Form_Metric_ID": 74,
+        "LastModifiedDate": "<datetime 2024-12-01T00:00:00>",
+        "Metric_ID": 1,
+        "Metric_Title": "T",
+        "Metric_Type": "R",
+        "Name": "N",
+        "Possible_Values": "A,B",
+        "RO_Form_ID": 15,
+        "Section": "S",
+        "Section_ID": 1,
+        "To": "<date 2024-11-30>",
+        "Value": "A"
+      },
+      "row_number": 6
+    }
+  ],
+  "frames": [
+    {
+      "frame": {
+        "columns": [
+          "L_RO_Form_Metric_ID",
+          "RO_Form_ID",
+          "Employee_ID",
+          "Name",
+          "Designation",
+          "BPS",
+          "Office_Hierarchy",
+          "Executive_Office",
+          "From",
+          "To",
+          "Section_ID",
+          "Section",
+          "Metric_ID",
+          "Metric_Title",
+          "Instructions",
+          "Metric_Type",
+          "Possible_Values",
+          "Value"
+        ],
+        "dtypes": {
+          "BPS": "object",
+          "Designation": "object",
+          "Employee_ID": "int64",
+          "Executive_Office": "object",
+          "From": "object",
+          "Instructions": "object",
+          "L_RO_Form_Metric_ID": "int64",
+          "Metric_ID": "int64",
+          "Metric_Title": "object",
+          "Metric_Type": "object",
+          "Name": "object",
+          "Office_Hierarchy": "object",
+          "Possible_Values": "object",
+          "RO_Form_ID": "int64",
+          "Section": "object",
+          "Section_ID": "int64",
+          "To": "object",
+          "Value": "object"
+        },
+        "index": [
+          0,
+          1
+        ],
+        "records": [
+          {
+            "BPS": null,
+            "Designation": null,
+            "Employee_ID": 1012,
+            "Executive_Office": null,
+            "From": "<date 2024-11-01>",
+            "Instructions": null,
+            "L_RO_Form_Metric_ID": 74,
+            "Metric_ID": 1,
+            "Metric_Title": "T",
+            "Metric_Type": "R",
+            "Name": "N",
+            "Office_Hierarchy": null,
+            "Possible_Values": "A,B",
+            "RO_Form_ID": 15,
+            "Section": "S",
+            "Section_ID": 1,
+            "To": "<date 2024-11-30>",
+            "Value": "A"
+          },
+          {
+            "BPS": null,
+            "Designation": null,
+            "Employee_ID": 1012,
+            "Executive_Office": null,
+            "From": "<date 2024-11-01>",
+            "Instructions": null,
+            "L_RO_Form_Metric_ID": 74,
+            "Metric_ID": 1,
+            "Metric_Title": "T",
+            "Metric_Type": "R",
+            "Name": "N",
+            "Office_Hierarchy": null,
+            "Possible_Values": "A,B",
+            "RO_Form_ID": 15,
+            "Section": "S",
+            "Section_ID": 1,
+            "To": "<date 2024-11-30>",
+            "Value": "A"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 1
+    },
+    {
+      "frame": {
+        "columns": [
+          "L_RO_Form_Metric_ID",
+          "RO_Form_ID",
+          "Employee_ID",
+          "Name",
+          "Designation",
+          "BPS",
+          "Office_Hierarchy",
+          "Executive_Office",
+          "From",
+          "To",
+          "Section_ID",
+          "Section",
+          "Metric_ID",
+          "Metric_Title",
+          "Instructions",
+          "Metric_Type",
+          "Possible_Values",
+          "Value"
+        ],
+        "dtypes": {
+          "BPS": "object",
+          "Designation": "object",
+          "Employee_ID": "object",
+          "Executive_Office": "object",
+          "From": "object",
+          "Instructions": "object",
+          "L_RO_Form_Metric_ID": "float64",
+          "Metric_ID": "float64",
+          "Metric_Title": "object",
+          "Metric_Type": "object",
+          "Name": "object",
+          "Office_Hierarchy": "object",
+          "Possible_Values": "object",
+          "RO_Form_ID": "float64",
+          "Section": "object",
+          "Section_ID": "float64",
+          "To": "object",
+          "Value": "object"
+        },
+        "index": [
+          0,
+          1
+        ],
+        "records": [
+          {
+            "BPS": null,
+            "Designation": null,
+            "Employee_ID": 1012,
+            "Executive_Office": null,
+            "From": null,
+            "Instructions": null,
+            "L_RO_Form_Metric_ID": "<float nan>",
+            "Metric_ID": "<float nan>",
+            "Metric_Title": null,
+            "Metric_Type": null,
+            "Name": null,
+            "Office_Hierarchy": null,
+            "Possible_Values": null,
+            "RO_Form_ID": "<float nan>",
+            "Section": null,
+            "Section_ID": "<float nan>",
+            "To": null,
+            "Value": null
+          },
+          {
+            "BPS": null,
+            "Designation": null,
+            "Employee_ID": "<Decimal 102>",
+            "Executive_Office": null,
+            "From": "<date 2024-11-01>",
+            "Instructions": null,
+            "L_RO_Form_Metric_ID": 74.0,
+            "Metric_ID": 1.0,
+            "Metric_Title": "T",
+            "Metric_Type": "R",
+            "Name": "N",
+            "Office_Hierarchy": null,
+            "Possible_Values": "A,B",
+            "RO_Form_ID": 15.0,
+            "Section": "S",
+            "Section_ID": 1.0,
+            "To": "<date 2024-11-30>",
+            "Value": "A"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 3
+    },
+    {
+      "frame": {
+        "columns": [
+          "L_RO_Form_Metric_ID",
+          "RO_Form_ID",
+          "Employee_ID",
+          "Name",
+          "Designation",
+          "BPS",
+          "Office_Hierarchy",
+          "Executive_Office",
+          "From",
+          "To",
+          "Section_ID",
+          "Section",
+          "Metric_ID",
+          "Metric_Title",
+          "Instructions",
+          "Metric_Type",
+          "Possible_Values",
+          "Value"
+        ],
+        "dtypes": {
+          "BPS": "object",
+          "Designation": "object",
+          "Employee_ID": "int64",
+          "Executive_Office": "object",
+          "From": "object",
+          "Instructions": "object",
+          "L_RO_Form_Metric_ID": "int64",
+          "Metric_ID": "int64",
+          "Metric_Title": "object",
+          "Metric_Type": "object",
+          "Name": "object",
+          "Office_Hierarchy": "object",
+          "Possible_Values": "object",
+          "RO_Form_ID": "int64",
+          "Section": "object",
+          "Section_ID": "int64",
+          "To": "object",
+          "Value": "object"
+        },
+        "index": [
+          0
+        ],
+        "records": [
+          {
+            "BPS": null,
+            "Designation": null,
+            "Employee_ID": 1012,
+            "Executive_Office": null,
+            "From": "<date 2024-11-01>",
+            "Instructions": null,
+            "L_RO_Form_Metric_ID": 74,
+            "Metric_ID": 1,
+            "Metric_Title": "T",
+            "Metric_Type": "R",
+            "Name": "N",
+            "Office_Hierarchy": null,
+            "Possible_Values": "A,B",
+            "RO_Form_ID": 15,
+            "Section": "S",
+            "Section_ID": 1,
+            "To": "<date 2024-11-30>",
+            "Value": "A"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 5
+    },
+    {
+      "frame": {
+        "columns": [
+          "L_RO_Form_Metric_ID",
+          "RO_Form_ID",
+          "Employee_ID",
+          "Name",
+          "Designation",
+          "BPS",
+          "Office_Hierarchy",
+          "Executive_Office",
+          "From",
+          "To",
+          "Section_ID",
+          "Section",
+          "Metric_ID",
+          "Metric_Title",
+          "Instructions",
+          "Metric_Type",
+          "Possible_Values",
+          "Value"
+        ],
+        "dtypes": {
+          "BPS": "object",
+          "Designation": "object",
+          "Employee_ID": "object",
+          "Executive_Office": "object",
+          "From": "object",
+          "Instructions": "object",
+          "L_RO_Form_Metric_ID": "int64",
+          "Metric_ID": "int64",
+          "Metric_Title": "object",
+          "Metric_Type": "object",
+          "Name": "object",
+          "Office_Hierarchy": "object",
+          "Possible_Values": "object",
+          "RO_Form_ID": "int64",
+          "Section": "object",
+          "Section_ID": "int64",
+          "To": "object",
+          "Value": "object"
+        },
+        "index": [
+          0
+        ],
+        "records": [
+          {
+            "BPS": null,
+            "Designation": null,
+            "Employee_ID": null,
+            "Executive_Office": null,
+            "From": "<date 2024-11-01>",
+            "Instructions": null,
+            "L_RO_Form_Metric_ID": 74,
+            "Metric_ID": 1,
+            "Metric_Title": "T",
+            "Metric_Type": "R",
+            "Name": "N",
+            "Office_Hierarchy": null,
+            "Possible_Values": "A,B",
+            "RO_Form_ID": 15,
+            "Section": "S",
+            "Section_ID": 1,
+            "To": "<date 2024-11-30>",
+            "Value": "A"
+          }
+        ]
+      },
+      "pre_cleaned": true,
+      "start_row_number": 6
+    }
+  ],
+  "max_modified": {
+    "_max_modified_date_sf": "<datetime 2025-01-01T00:00:00.001000>"
+  },
+  "result": {
+    "ok": [
+      2,
+      7
+    ]
+  }
+}

@@ -1,0 +1,71 @@
+--- base
++++ variant
+@@ -233,4 +233,68 @@
+ <EMPLOYEE_REPORT_END_CURRENT_WEEK>
+ 
++## CHRONOLOGICAL CONTEXT: RECENT REPORTS
++
++Week (2026-03-01 to 2026-03-07):
++Plain date week.
++
++Week (2026-02-22T18:30:00 to 2026-02-28T18:30:00):
++Datetime week.
++
++Week (2026-W08):
++Iso-only week.
++
++**═══════════════════════════════════════════════════════════════════════════**
++**CRITICAL: YOU ARE ANALYZING THE CURRENT WEEK'S REPORT ONLY**
++
++The recent reports above are BACKGROUND CONTEXT for:
++- Task follow-through tracking (did employee complete what they planned?)
++- Reporting quality trends (is specificity improving or declining?)
++- Challenge persistence (are same issues recurring?)
++
++**DATA SOURCE FOR YOUR ANALYSIS:**
++✓ Use CURRENT WEEK's report for: achievements, figures, claims, challenges
++✓ Use recent reports for: task completion tracking, quality trends, patterns
++
++**COMMON ERROR TO AVOID:**
++✗ WRONG: Analyzing previous week's "90 million" figure when current week claims "80 million"
++✓ CORRECT: Analyze the "80 million" figure from the current week's report
++
++**Verification Check:** Before finalizing your analysis, confirm that all figures, claims, and achievements you discuss come from the CURRENT WEEK's report text, NOT from the recent reports context section.
++
++**Independence Principle:** Each week's credibility is assessed based on THAT WEEK's own evidence (Vision data, JD scope, internal consistency). Previous weeks provide context for patterns, not for credibility comparison.
++**═══════════════════════════════════════════════════════════════════════════**
++
++**Temporal Analysis Framework**:
++
++1. TASK FOLLOW-THROUGH (Critical):
++   - Did employee complete tasks planned in previous week's report?
++   - If incomplete: Was this addressed in current report's challenges section?
++   - Pattern detection: Over-planning (consistently plans more than completes)?
++
++2. CHALLENGE PERSISTENCE (Critical):
++   - Are challenges from previous weeks still present?
++   - Has employee made progress on resolving them?
++   - Are resource requests being fulfilled, or do they recur?
++
++3. REPORTING CONSISTENCY (Secondary):
++   - Detail level: Has specificity increased, decreased, or remained stable?
++     Example: Previous reports vague → Current report specific (positive trend)
++     Example: Previous reports detailed → Current report vague (potential concern)
++   - Claim patterns: Has tendency toward exaggeration or realism changed?
++     Example: Previous reports flagged for superlatives → Current report measured (improvement)
++
++4. TREND INDICATORS (Secondary):
++   - Confidence levels: Improving (3→4→5) or declining (4→3→2)?
++   - Sentiment: More positive or negative over recent weeks?
++   - Workload stability: Consistent task volume or volatile?
++
++Focus primarily on (1) and (2) for your assessment. Use (3) and (4) for context.
++
++**Recency Weighting:** Most recent report = primary comparison for task follow-through; older reports = pattern context.
++
++**Pattern Detection:** One occurrence = ignore; two occurrences = note; three occurrences = flag as established pattern.
++
++**Avoid Recency Bias:** One week's deviation should not overshadow sustained patterns. Note shifts and recommend monitoring rather than immediate rating changes.
++
+ ## COMPREHENSIVE ANALYSIS REQUIREMENTS
+ 

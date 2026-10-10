@@ -1,0 +1,7 @@
+{
+  "body": {
+    "detail": "Error submitting analysis: boom"
+  },
+  "dispatch": [],
+  "status": 500
+}

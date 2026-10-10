@@ -1,0 +1,24 @@
+{
+  "found": {
+    "celery_task_id": "celery-80",
+    "completed_at": "<timestamp>",
+    "created_at": "<timestamp>",
+    "employee_id": null,
+    "error_message": null,
+    "month": null,
+    "quarter": null,
+    "report_id": "00000000-0000-0000-0000-000000000001",
+    "result_data": null,
+    "started_at": "<timestamp>",
+    "status": "running",
+    "task_id": "00000000-0000-0000-0000-000000000080",
+    "task_type": "REPORT_ANALYSIS",
+    "year": null
+  },
+  "missing": null,
+  "properties": {
+    "duration": 30.0,
+    "is_active": true,
+    "is_complete": false
+  }
+}

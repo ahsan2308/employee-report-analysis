@@ -1,0 +1,50 @@
+{
+  "found": {
+    "achievement_impact_avg": null,
+    "analysis_date": "<timestamp>",
+    "analysis_id": 1,
+    "approach_to_challenges": null,
+    "avg_sentiment_score": 0.6,
+    "challenge_resolution_progress": null,
+    "complexity_of_tasks": null,
+    "confidence_level_change": null,
+    "consistency_notable_strengths": null,
+    "consistency_notable_weaknesses": null,
+    "employee_id": 1,
+    "escalating_risks": null,
+    "focus_areas": null,
+    "full_analysis_json": {
+      "month": 1
+    },
+    "month": 1,
+    "monthly_achievements": [
+      {
+        "a": 1
+      }
+    ],
+    "monthly_summary": "summary 2025-1",
+    "performance_stability": null,
+    "performance_trend": "improving",
+    "period_end": "2025-01-31",
+    "period_start": "2025-01-01",
+    "recurring_challenges": null,
+    "risk_explanation": null,
+    "risk_level": "low",
+    "risk_level_pattern": null,
+    "risk_mitigation_recommendations": null,
+    "sentiment_trend": null,
+    "significant_risks": [
+      "x"
+    ],
+    "skill_development_evidence": null,
+    "strategic_recommendations": null,
+    "task_completion_reliability": null,
+    "weekly_report_ids": [
+      "00000000-0000-0000-0000-000000000005"
+    ],
+    "work_quality_consistency": null,
+    "year": 2025
+  },
+  "other_employee": null,
+  "other_month": null
+}

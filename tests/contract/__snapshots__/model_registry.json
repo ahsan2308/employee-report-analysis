@@ -1,0 +1,17 @@
+[
+  "app.models.db_models.Employee -> public.employees",
+  "app.models.db_models.EmployeeAnalysis -> public.employee_analyses",
+  "app.models.db_models.EmployeeJobDescription -> public.employee_job_descriptions",
+  "app.models.db_models.MonthlyAnalysis -> public.monthly_analyses",
+  "app.models.db_models.QdrantMapping -> public.qdrant_mappings",
+  "app.models.db_models.QuarterlyAnalysis -> public.quarterly_analyses",
+  "app.models.db_models.Report -> public.reports",
+  "app.models.db_models.SupervisorFeedbackForm -> public.supervisor_feedback_forms",
+  "app.models.db_models.SupervisorFeedbackMetricDefinition -> public.supervisor_feedback_metric_definitions",
+  "app.models.db_models.SupervisorFeedbackResponse -> public.supervisor_feedback_responses",
+  "app.models.import_models.CSVImportJob -> public.csv_import_jobs",
+  "app.models.import_models.ImportError -> public.import_errors",
+  "app.models.sync_models.SyncHistory -> public.sync_history",
+  "app.models.task_models.BackgroundTask -> public.background_tasks",
+  "app.models.vision_data_models.EmployeeVisionData -> public.employee_vision_data"
+]

@@ -1,0 +1,92 @@
+{
+  "NoneType:None": {
+    "returned": {
+      "type": "NoneType",
+      "value": null
+    }
+  },
+  "date:datetime.date(2024, 2, 29)": {
+    "returned": {
+      "type": "date",
+      "value": "2024-02-29"
+    }
+  },
+  "datetime:datetime.datetime(2025, 1, 5, 13, 45, 7)": {
+    "returned": {
+      "type": "datetime",
+      "value": "2025-01-05 13:45:07"
+    }
+  },
+  "int:0": {
+    "returned": {
+      "type": "NoneType",
+      "value": null
+    }
+  },
+  "int:20250105": {
+    "returned": {
+      "type": "NoneType",
+      "value": null
+    }
+  },
+  "list:[2025, 1, 5]": {
+    "returned": {
+      "type": "NoneType",
+      "value": null
+    }
+  },
+  "str:''": {
+    "returned": {
+      "type": "NoneType",
+      "value": null
+    }
+  },
+  "str:'05/01/2025'": {
+    "returned": {
+      "type": "NoneType",
+      "value": null
+    }
+  },
+  "str:'2023-02-29'": {
+    "returned": {
+      "type": "NoneType",
+      "value": null
+    }
+  },
+  "str:'2025-01-05 10:00:00'": {
+    "returned": {
+      "type": "date",
+      "value": "2025-01-05"
+    }
+  },
+  "str:'2025-01-05'": {
+    "returned": {
+      "type": "date",
+      "value": "2025-01-05"
+    }
+  },
+  "str:'2025-01-05T10:00:00'": {
+    "returned": {
+      "type": "date",
+      "value": "2025-01-05"
+    }
+  },
+  "str:'2025-01-05T10:00:00+05:00'": {
+    "returned": {
+      "type": "date",
+      "value": "2025-01-05"
+    }
+  },
+  "str:'2025-13-01'": {
+    "returned": {
+      "type": "NoneType",
+      "value": null
+    }
+  },
+  "str:'not a date'": {
+    "returned": {
+      "type": "NoneType",
+      "value": null
+    }
+  }
+}

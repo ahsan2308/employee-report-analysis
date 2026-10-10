@@ -1,0 +1,95 @@
+{
+  "body": {
+    "datasets": [
+      {
+        "backgroundColor": "rgba(52, 152, 219, 0.2)",
+        "borderColor": "rgba(52, 152, 219, 1)",
+        "data": [
+          0.4,
+          0.62
+        ],
+        "label": "Sentiment Score",
+        "metadata": {
+          "avg": 0.51,
+          "max": 0.62,
+          "min": 0.4
+        }
+      },
+      {
+        "backgroundColor": "rgba(231, 76, 60, 0.2)",
+        "borderColor": "rgba(231, 76, 60, 1)",
+        "data": [
+          0.8,
+          0.4
+        ],
+        "label": "Risk Level",
+        "metadata": {
+          "avg": 0.6,
+          "max": 0.8,
+          "min": 0.4
+        }
+      },
+      {
+        "backgroundColor": "rgba(241, 196, 15, 0.2)",
+        "borderColor": "rgba(241, 196, 15, 1)",
+        "data": [
+          0.2,
+          0.59
+        ],
+        "label": "Credibility Rating",
+        "metadata": {
+          "avg": 0.4,
+          "max": 0.59,
+          "min": 0.2
+        }
+      },
+      {
+        "backgroundColor": "rgba(46, 204, 113, 0.2)",
+        "borderColor": "rgba(46, 204, 113, 1)",
+        "data": [
+          0.2,
+          0.65
+        ],
+        "label": "Consistency Score",
+        "metadata": {
+          "avg": 0.43,
+          "max": 0.65,
+          "min": 0.2
+        }
+      },
+      {
+        "backgroundColor": "rgba(243, 156, 18, 0.2)",
+        "borderColor": "rgba(243, 156, 18, 1)",
+        "data": [
+          0.2,
+          0.63
+        ],
+        "label": "Performance Rating",
+        "metadata": {
+          "avg": 0.42,
+          "max": 0.63,
+          "min": 0.2
+        }
+      },
+      {
+        "backgroundColor": "rgba(155, 89, 182, 0.2)",
+        "borderColor": "rgba(155, 89, 182, 1)",
+        "data": [
+          3.0,
+          6.83
+        ],
+        "label": "Impact Score",
+        "metadata": {
+          "avg": 4.92,
+          "max": 6.83,
+          "min": 3.0
+        }
+      }
+    ],
+    "labels": [
+      "2024",
+      "2025"
+    ]
+  },
+  "status": 200
+}

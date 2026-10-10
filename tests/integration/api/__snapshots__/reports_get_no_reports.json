@@ -1,0 +1,7 @@
+{
+  "body": {
+    "employee_id": 3,
+    "message": "No reports found for this employee."
+  },
+  "status": 200
+}

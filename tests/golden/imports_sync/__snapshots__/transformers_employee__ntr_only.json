@@ -1,0 +1,47 @@
+{
+  "key_order": [
+    "Employee_ID",
+    "Name",
+    "Designation",
+    "BPS",
+    "Office_Hierarchy",
+    "From",
+    "To",
+    "Draft",
+    "Tasks_Completed",
+    "Impact",
+    "Challenges",
+    "Support_Required",
+    "Tasks_Planned",
+    "Confidence_Level",
+    "NTR"
+  ],
+  "transformed": {
+    "BPS": null,
+    "Challenges": null,
+    "Confidence_Level": "<Decimal 2>",
+    "Designation": "Director",
+    "Draft": null,
+    "Employee_ID": 104,
+    "From": "2024-01-01",
+    "Impact": null,
+    "NTR": "On leave",
+    "Name": "Usman Tariq",
+    "Office_Hierarchy": null,
+    "Support_Required": null,
+    "Tasks_Completed": null,
+    "Tasks_Planned": null,
+    "To": "2024-01-31"
+  },
+  "validated": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Confidence_Level"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "after_clear": {
+    "count": 0,
+    "patterns": {},
+    "percentage_10": 0.0
+  },
+  "count": 7,
+  "count_by_category": {
+    "database": 1,
+    "other": 1,
+    "processing": 1,
+    "system": 1,
+    "validation": 3
+  },
+  "count_by_category_key_types": [
+    "ErrorCategory"
+  ],
+  "errors": [
+    {
+      "category": "other",
+      "error_message": "generic problem",
+      "exception": null,
+      "field_name": null,
+      "row_data": null,
+      "row_number": 1
+    },
+    {
+      "category": "validation",
+      "error_message": "Name too short",
+      "exception": null,
+      "field_name": "Name",
+      "row_data": {
+        "Name": "A"
+      },
+      "row_number": 2
+    },
+    {
+      "category": "validation",
+      "error_message": "BPS bad",
+      "exception": null,
+      "field_name": "BPS",
+      "row_data": {
+        "BPS": "X"
+      },
+      "row_number": 2
+    },
+    {
+      "category": "processing",
+      "error_message": "boom",
+      "exception": "RuntimeError",
+      "field_name": null,
+      "row_data": {
+        "x": 1
+      },
+      "row_number": 3
+    },
+    {
+      "category": "database",
+      "error_message": "unique violation",
+      "exception": "ValueError",
+      "field_name": null,
+      "row_data": {
+        "id": 4
+      },
+      "row_number": 4
+    },
+    {
+      "category": "system",
+      "error_message": "Name too short",
+      "exception": null,
+      "field_name": "Name",
+      "row_data": null,
+      "row_number": 5
+    },
+    {
+      "category": "validation",
+      "error_message": "header problem",
+      "exception": null,
+      "field_name": "",
+      "row_data": null,
+      "row_number": 0
+    }
+  ],
+  "get_errors_is_same_list": true,
+  "patterns": [
+    [
+      "Name too short",
+      2
+    ],
+    [
+      "generic problem",
+      1
+    ],
+    [
+      "BPS bad",
+      1
+    ],
+    [
+      "boom",
+      1
+    ],
+    [
+      "unique violation",
+      1
+    ],
+    [
+      "header problem",
+      1
+    ]
+  ],
+  "percentages": {
+    "-1": 0.0,
+    "0": 0.0,
+    "1": 600.0,
+    "100": 6.0,
+    "3": 200.0,
+    "6": 100.0
+  },
+  "summary_by_field": {
+    "BPS": 1,
+    "Name": 2
+  }
+}

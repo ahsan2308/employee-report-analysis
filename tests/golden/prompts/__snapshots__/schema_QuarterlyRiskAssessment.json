@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "key_risk_factors": {
+      "description": "Specific factors contributing to risk",
+      "items": {
+        "type": "string"
+      },
+      "title": "Key Risk Factors",
+      "type": "array"
+    },
+    "mitigation_strategies": {
+      "description": "Recommended strategies to mitigate identified risks",
+      "items": {
+        "type": "string"
+      },
+      "title": "Mitigation Strategies",
+      "type": "array"
+    },
+    "overall_risk_level": {
+      "description": "Overall risk assessment for the quarter",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Overall Risk Level",
+      "type": "string"
+    },
+    "risk_trend": {
+      "description": "Trend in risk level over the quarter",
+      "enum": [
+        "increasing",
+        "stable",
+        "decreasing"
+      ],
+      "title": "Risk Trend",
+      "type": "string"
+    }
+  },
+  "required": [
+    "overall_risk_level",
+    "risk_trend",
+    "key_risk_factors",
+    "mitigation_strategies"
+  ],
+  "title": "QuarterlyRiskAssessment",
+  "type": "object"
+}

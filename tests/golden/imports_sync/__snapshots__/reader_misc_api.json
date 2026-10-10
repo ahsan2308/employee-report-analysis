@@ -1,0 +1,35 @@
+{
+  "count_rows_ragged_stream": {
+    "ok": 2
+  },
+  "count_rows_stream": {
+    "ok": 2
+  },
+  "defaults": {
+    "chunk_size": 1000,
+    "common_encodings": [
+      "utf-8-sig",
+      "utf-8",
+      "windows-1252",
+      "iso-8859-1",
+      "cp1251",
+      "utf-16"
+    ],
+    "delimiter": null,
+    "encoding": null
+  },
+  "get_file_obj_bytes_type": "BytesIO",
+  "get_file_obj_none": {
+    "message": "Either file_path or file_obj must be provided",
+    "raised": "ValueError"
+  },
+  "get_file_obj_path": "x.csv",
+  "total_rows_before_read": {
+    "message": "No file has been read yet",
+    "raised": "ValueError"
+  },
+  "validate_headers_before_read": {
+    "message": "No headers available. Call read_csv first.",
+    "raised": "ValueError"
+  }
+}

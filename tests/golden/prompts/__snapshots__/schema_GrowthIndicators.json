@@ -1,0 +1,52 @@
+{
+  "properties": {
+    "approach_to_challenges": {
+      "description": "How the employee's approach to challenges has evolved",
+      "enum": [
+        "more proactive",
+        "more reactive",
+        "unchanged"
+      ],
+      "title": "Approach To Challenges",
+      "type": "string"
+    },
+    "complexity_of_tasks": {
+      "description": "Change in complexity of tasks handled",
+      "enum": [
+        "increased",
+        "decreased",
+        "unchanged"
+      ],
+      "title": "Complexity Of Tasks",
+      "type": "string"
+    },
+    "confidence_level_change": {
+      "description": "Change in employee's confidence level",
+      "enum": [
+        "increased",
+        "decreased",
+        "unchanged"
+      ],
+      "title": "Confidence Level Change",
+      "type": "string"
+    },
+    "skill_development_evidence": {
+      "description": "Evidence of skill development during the month",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Skill Development Evidence",
+      "type": "string"
+    }
+  },
+  "required": [
+    "complexity_of_tasks",
+    "skill_development_evidence",
+    "confidence_level_change",
+    "approach_to_challenges"
+  ],
+  "title": "GrowthIndicators",
+  "type": "object"
+}

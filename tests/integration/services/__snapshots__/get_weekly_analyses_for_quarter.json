@@ -1,0 +1,211 @@
+{
+  "emp2_q1": [
+    {
+      "achievements": null,
+      "action_items": null,
+      "analysis_date": "<timestamp>",
+      "analysis_id": 7,
+      "challenges": null,
+      "consistency_score": null,
+      "created_at": "<timestamp>",
+      "credibility_explanation": null,
+      "credibility_rating": null,
+      "date": "2025-02-10",
+      "exaggeration_flags": null,
+      "full_analysis": {
+        "summary": "analysis of 00000000-0000-0000-0000-000000000007"
+      },
+      "performance_improvement_areas": null,
+      "performance_rating": null,
+      "performance_strengths": null,
+      "performance_summary": null,
+      "report_id": "00000000-0000-0000-0000-000000000007",
+      "risk_explanation": null,
+      "risk_level": "low",
+      "sentiment_score": 0.7,
+      "topics": null,
+      "updated_at": "<timestamp>"
+    }
+  ],
+  "q1": [
+    {
+      "achievements": [
+        {
+          "description": "x",
+          "impact": "8"
+        }
+      ],
+      "action_items": [
+        "a1"
+      ],
+      "analysis_date": "<timestamp>",
+      "analysis_id": 1,
+      "challenges": [
+        {
+          "description": "c",
+          "severity": "high"
+        }
+      ],
+      "consistency_score": "medium",
+      "created_at": "<timestamp>",
+      "credibility_explanation": "ok",
+      "credibility_rating": "high",
+      "date": "2025-01-31",
+      "exaggeration_flags": [
+        "f"
+      ],
+      "full_analysis": {
+        "summary": "analysis of 00000000-0000-0000-0000-000000000001"
+      },
+      "performance_improvement_areas": [
+        "i"
+      ],
+      "performance_rating": "high",
+      "performance_strengths": [
+        "s"
+      ],
+      "performance_summary": "good",
+      "report_id": "00000000-0000-0000-0000-000000000001",
+      "risk_explanation": null,
+      "risk_level": "high",
+      "sentiment_score": 0.1,
+      "topics": [
+        "t1"
+      ],
+      "updated_at": "<timestamp>"
+    },
+    {
+      "achievements": null,
+      "action_items": null,
+      "analysis_date": "<timestamp>",
+      "analysis_id": 2,
+      "challenges": null,
+      "consistency_score": null,
+      "created_at": "<timestamp>",
+      "credibility_explanation": null,
+      "credibility_rating": null,
+      "date": "2025-02-01",
+      "exaggeration_flags": null,
+      "full_analysis": {
+        "summary": "analysis of 00000000-0000-0000-0000-000000000002"
+      },
+      "performance_improvement_areas": null,
+      "performance_rating": null,
+      "performance_strengths": null,
+      "performance_summary": null,
+      "report_id": "00000000-0000-0000-0000-000000000002",
+      "risk_explanation": null,
+      "risk_level": "low",
+      "sentiment_score": 0.2,
+      "topics": null,
+      "updated_at": "<timestamp>"
+    },
+    {
+      "achievements": null,
+      "action_items": null,
+      "analysis_date": "<timestamp>",
+      "analysis_id": 3,
+      "challenges": null,
+      "consistency_score": null,
+      "created_at": "<timestamp>",
+      "credibility_explanation": null,
+      "credibility_rating": null,
+      "date": "2025-02-28",
+      "exaggeration_flags": null,
+      "full_analysis": {
+        "summary": "analysis of 00000000-0000-0000-0000-000000000003"
+      },
+      "performance_improvement_areas": null,
+      "performance_rating": null,
+      "performance_strengths": null,
+      "performance_summary": null,
+      "report_id": "00000000-0000-0000-0000-000000000003",
+      "risk_explanation": null,
+      "risk_level": "low",
+      "sentiment_score": 0.3,
+      "topics": null,
+      "updated_at": "<timestamp>"
+    },
+    {
+      "achievements": null,
+      "action_items": null,
+      "analysis_date": "<timestamp>",
+      "analysis_id": 4,
+      "challenges": null,
+      "consistency_score": null,
+      "created_at": "<timestamp>",
+      "credibility_explanation": null,
+      "credibility_rating": null,
+      "date": "2025-02-28",
+      "exaggeration_flags": null,
+      "full_analysis": {
+        "summary": "analysis of 00000000-0000-0000-0000-000000000003"
+      },
+      "performance_improvement_areas": null,
+      "performance_rating": null,
+      "performance_strengths": null,
+      "performance_summary": null,
+      "report_id": "00000000-0000-0000-0000-000000000003",
+      "risk_explanation": null,
+      "risk_level": "medium",
+      "sentiment_score": 0.35,
+      "topics": null,
+      "updated_at": "<timestamp>"
+    },
+    {
+      "achievements": null,
+      "action_items": null,
+      "analysis_date": "<timestamp>",
+      "analysis_id": 5,
+      "challenges": null,
+      "consistency_score": null,
+      "created_at": "<timestamp>",
+      "credibility_explanation": null,
+      "credibility_rating": null,
+      "date": "2025-03-31",
+      "exaggeration_flags": null,
+      "full_analysis": {
+        "summary": "analysis of 00000000-0000-0000-0000-000000000005"
+      },
+      "performance_improvement_areas": null,
+      "performance_rating": null,
+      "performance_strengths": null,
+      "performance_summary": null,
+      "report_id": "00000000-0000-0000-0000-000000000005",
+      "risk_explanation": null,
+      "risk_level": "low",
+      "sentiment_score": 0.5,
+      "topics": null,
+      "updated_at": "<timestamp>"
+    }
+  ],
+  "q2": [
+    {
+      "achievements": null,
+      "action_items": null,
+      "analysis_date": "<timestamp>",
+      "analysis_id": 6,
+      "challenges": null,
+      "consistency_score": null,
+      "created_at": "<timestamp>",
+      "credibility_explanation": null,
+      "credibility_rating": null,
+      "date": "2025-04-01",
+      "exaggeration_flags": null,
+      "full_analysis": {
+        "summary": "analysis of 00000000-0000-0000-0000-000000000006"
+      },
+      "performance_improvement_areas": null,
+      "performance_rating": null,
+      "performance_strengths": null,
+      "performance_summary": null,
+      "report_id": "00000000-0000-0000-0000-000000000006",
+      "risk_explanation": null,
+      "risk_level": "low",
+      "sentiment_score": 0.6,
+      "topics": null,
+      "updated_at": "<timestamp>"
+    }
+  ],
+  "q3_empty": []
+}

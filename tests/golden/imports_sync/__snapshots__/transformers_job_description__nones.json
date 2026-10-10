@@ -1,0 +1,67 @@
+{
+  "key_order": [
+    "Employee_ID",
+    "JD_ID",
+    "Job_Description",
+    "Assigned_Date",
+    "Is_Current",
+    "End_Date"
+  ],
+  "transformed": {
+    "Assigned_Date": null,
+    "Employee_ID": null,
+    "End_Date": null,
+    "Is_Current": null,
+    "JD_ID": null,
+    "Job_Description": null
+  },
+  "validated": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee_ID must be a valid integer or numeric string. Received: 'None'",
+        "type": "value_error"
+      },
+      {
+        "loc": [
+          "JD_ID"
+        ],
+        "msg": "Value error, JD_ID is required and cannot be empty",
+        "type": "value_error"
+      },
+      {
+        "loc": [
+          "Job_Description"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "Assigned_Date",
+          "constrained-str"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "Assigned_Date",
+          "date"
+        ],
+        "msg": "Input should be a valid date",
+        "type": "date_type"
+      },
+      {
+        "loc": [
+          "Assigned_Date",
+          "datetime"
+        ],
+        "msg": "Input should be a valid datetime",
+        "type": "datetime_type"
+      }
+    ]
+  }
+}

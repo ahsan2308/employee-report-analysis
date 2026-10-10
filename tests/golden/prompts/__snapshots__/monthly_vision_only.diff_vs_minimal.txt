@@ -1,0 +1,77 @@
+--- base
++++ variant
+@@ -137,4 +137,74 @@
+ 
+ 
++## VISION SYSTEM ACTIVITY DATA (Objective Tracking)
++
++
++Current Report Period Activity Data:
++
++- Time Period: 2026-03-08 to 2026-03-14
++  Main Activity: Report Processing
++  Details:
++    - Number of Reports Reviewed: 42 (field reports reviewed)
++      ---> title: Field report 17, status: validated
++
++
++### Using Vision Data for Monthly Analysis
++
++**Data Presentation Note:** The Vision data displays detailed content items for each sub-entity with a configured limit per entity. When you see text like "and X more..." at the end of a content list, this indicates additional tracked items beyond those displayed. For validation, calculate totals by adding displayed items plus the "X more" count. Truncated display ≠ incomplete tracking.
++
++**CRITICAL FAIRNESS PRINCIPLE:** Many employees have NO vision tracking data (strategic, liaison, field, administrative roles). This is the NORMAL state. Vision data absence should NOT be mentioned or weighed negatively in your analysis.
++
++**Vision Verification Field Usage in Monthly Achievements:**
++When assigning the optional `vision_verification` field to monthly achievements:
++- Set to "supported": ONLY when vision data confirms this achievement
++- Set to "contradicted": ONLY when vision data conflicts with this claimed achievement (credibility concern)
++- Set to "none": When no vision data exists OR vision data is not applicable to this achievement type (MOST COMMON CASE)
++
++**DO NOT create summary statements about vision data availability. Simply use it when it exists and is relevant.**
++
++**How to Use Vision Data Across the Month:**
++
++**1. CROSS-VERIFICATION (Quality Assurance):**
++   **CRITICAL:** Do not blindly trust weekly `vision_verification` values. Independently verify key achievements against the raw Vision System Data above:
++   
++   - **Review weekly verification decisions:** Check if weekly LLM's "supported"/"contradicted" determinations align with the actual vision data
++   - **Document discrepancies:** If you find weekly verification was incorrect, note this in your monthly assessment and apply correct verification status
++   
++   **IMPORTANT DATA PRESENTATION CAVEAT:**
++   The vision data you see in this monthly prompt may be TRUNCATED compared to what the weekly LLM saw (e.g., 5 items per sub-entity shown here vs. 10 items shown in weekly analysis due to context length constraints). Therefore:
++   
++   - **Absence of evidence ≠ Evidence of absence:** If weekly marked "supported" but you don't see specific supporting evidence in the truncated monthly view, this does NOT automatically mean weekly was wrong
++   - **Trust "supported" unless contradicted:** Only override weekly "supported" to "contradicted" if you see ACTIVE CONTRADICTORY evidence (e.g., achievement claims 50 emails sent but vision shows only 5 emails), NOT just because you can't find confirming evidence in truncated data
++   - **Verify "contradicted" more strictly:** Weekly "contradicted" decisions should be based on clear conflicts that remain visible even in truncated data—these are worth verifying
++   - **Use entity-level totals:** When cross-verifying, rely on entity-level activity counts and date ranges (these are not truncated) rather than requiring specific content items to match
++   
++   **When to override weekly verification:**
++   - Weekly marked "supported" but vision data shows CONTRADICTORY activity (conflicting evidence, wrong timeframe, impossible volumes) → Change to "contradicted"
++   - Weekly marked "contradicted" but vision data actually supports the claim → Change to "supported"
++   - Weekly omitted verification but clear vision data exists in monthly view → Add appropriate verification status
++   - Weekly marked "supported" and monthly vision shows consistent entity-level patterns → Confirm as "supported"
++   
++   **Quality principle:** Weekly analysis is your starting point with access to more detailed data. Cross-verify for contradictions and errors, but respect weekly decisions when monthly data is inconclusive due to truncation.
++
++**2. AGGREGATE VERIFIED PATTERNS:**
++   After cross-verification, identify monthly achievement patterns:
++   - If multiple weeks show CONFIRMED `vision_verification: "supported"` for related achievements → Set monthly achievement to "supported"
++   - If multiple weeks show CONFIRMED `vision_verification: "contradicted"` for related achievements → Significant credibility concern, set monthly achievement to "contradicted"
++   - If weekly achievements lack vision_verification fields AND raw vision data doesn't apply to the achievement → Set monthly achievement's vision_verification field to "none".
++
++**3. ACTIVITY PATTERN ANALYSIS:**
++   Across the month, assess:
++   - **Workload Trends:** Increasing/decreasing/stable activity volume week-over-week
++   - **Focus Consistency:** Same entities tracked throughout (stable focus) vs. shifting entities (evolving priorities)
++   - **Effort Distribution:** Even spread vs. concentrated bursts (project deadlines vs. reactive work)
++
++**4. APPLICATION TO MONTHLY CREDIBILITY:**
++   - Achievements with VERIFIED `vision_verification: "supported"` → Cite as strengthening credibility
++   - Achievements with VERIFIED `vision_verification: "contradicted"` → Significant credibility concern, discount impact and flag for review
++   - Achievements without vision_verification field → Assess on merit using JD alignment, consistency, and specificity (STANDARD CASE)
++
++**Vision Data Limitations:** Vision tracking is not applicable for many roles. Only flag clear, repeated contradictions when vision data exists—never penalize absence of vision data.
++
++
+ ## WEEKLY ANALYSIS SUMMARIES (AI-Generated from Weekly Reports)
+ 

@@ -1,0 +1,9 @@
+{
+  "ops": [
+    [
+      "filter",
+      "public.reports.employee_id = 12"
+    ]
+  ],
+  "same_query": true
+}

@@ -1,0 +1,22 @@
+
+## EMPLOYEE JOB DESCRIPTIONS
+
+The employee currently holds multiple roles:
+
+
+### Job Description #1 (Effective since 2023-05-01):
+Old role text
+
+
+### Job Description #2 (Effective since 2024-01-01):
+Third role
+
+
+### Job Description #3 (Effective since 2024-08-15):
+New role text
+
+
+ANALYSIS GUIDANCE:
+- Evaluate achievements and challenges against expectations from BOTH roles
+- Consider workload distribution across multiple responsibilities
+- Assess time management and prioritization given dual role requirements

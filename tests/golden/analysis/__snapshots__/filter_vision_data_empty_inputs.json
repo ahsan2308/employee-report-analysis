@@ -1,0 +1,76 @@
+{
+  "current_key_only_empty": {
+    "returned": {
+      "current_data": [],
+      "date_context": {},
+      "months_data": [],
+      "previous_data": [],
+      "weeks_data": []
+    }
+  },
+  "empty_dict": {
+    "returned": {}
+  },
+  "months_data_empty": {
+    "returned": {
+      "current_data": [],
+      "date_context": {},
+      "months_data": [],
+      "previous_data": [],
+      "weeks_data": []
+    }
+  },
+  "none": {
+    "returned": {}
+  },
+  "only_date_context": {
+    "returned": {
+      "current_data": [],
+      "date_context": {
+        "a": 1
+      },
+      "months_data": [],
+      "previous_data": [],
+      "weeks_data": []
+    }
+  },
+  "previous_key_only": {
+    "returned": {
+      "current_data": [],
+      "date_context": {},
+      "months_data": [],
+      "previous_data": [
+        {
+          "from_date": "2025-01-06",
+          "main_entity": "Tasks",
+          "sub_entities": {
+            "Tasks": {
+              "description": "New Tasks created",
+              "value": 2
+            }
+          },
+          "to_date": "2025-01-12"
+        }
+      ],
+      "weeks_data": []
+    }
+  },
+  "unknown_shape": {
+    "returned": {
+      "current_data": [],
+      "date_context": {},
+      "months_data": [],
+      "previous_data": [],
+      "weeks_data": []
+    }
+  },
+  "weeks_data_empty": {
+    "returned": {
+      "current_data": [],
+      "date_context": {},
+      "months_data": [],
+      "previous_data": [],
+      "weeks_data": []
+    }
+  }
+}

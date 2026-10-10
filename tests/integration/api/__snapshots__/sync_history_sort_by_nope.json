@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Error listing history: type object 'SyncHistory' has no attribute 'nope'"
+  },
+  "status": 500
+}

@@ -1,0 +1,28 @@
+{
+  "0-Q1": {
+    "message": "year 0 is out of range",
+    "raised": "ValueError"
+  },
+  "10000-Q1": {
+    "message": "year 10000 is out of range",
+    "raised": "ValueError"
+  },
+  "2025-Q-1": {
+    "message": "Quarter must be between 1 and 4, got -1",
+    "raised": "ValueError"
+  },
+  "2025-Q0": {
+    "message": "Quarter must be between 1 and 4, got 0",
+    "raised": "ValueError"
+  },
+  "2025-Q5": {
+    "message": "Quarter must be between 1 and 4, got 5",
+    "raised": "ValueError"
+  },
+  "9999-Q4": {
+    "returned": [
+      "9999-10-01",
+      "9999-12-31"
+    ]
+  }
+}

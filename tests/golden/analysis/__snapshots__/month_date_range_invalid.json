@@ -1,0 +1,34 @@
+{
+  "0-1": {
+    "message": "year 0 is out of range",
+    "raised": "ValueError"
+  },
+  "1-1": {
+    "returned": [
+      "0001-01-01",
+      "0001-01-31"
+    ]
+  },
+  "10000-1": {
+    "message": "year 10000 is out of range",
+    "raised": "ValueError"
+  },
+  "2025--1": {
+    "message": "month must be in 1..12",
+    "raised": "ValueError"
+  },
+  "2025-0": {
+    "message": "month must be in 1..12",
+    "raised": "ValueError"
+  },
+  "2025-13": {
+    "message": "month must be in 1..12",
+    "raised": "ValueError"
+  },
+  "9999-12": {
+    "returned": [
+      "9999-12-01",
+      "9999-12-31"
+    ]
+  }
+}

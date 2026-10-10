@@ -1,0 +1,446 @@
+{
+  "errrows=0|total=0|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=0|threshold=0.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=0|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=0|threshold=10.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=0|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=0|threshold=12.5|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=1000|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=1000|threshold=0.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=1000|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=1000|threshold=10.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=1000|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=1000|threshold=12.5|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=10|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=10|threshold=0.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=10|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=10|threshold=10.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=10|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=10|threshold=12.5|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=199|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=199|threshold=0.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=199|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=199|threshold=10.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=199|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=199|threshold=12.5|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=200|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=200|threshold=0.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=200|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=200|threshold=10.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=200|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=200|threshold=12.5|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=250|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=250|threshold=0.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=250|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=250|threshold=10.0|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=250|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=0|total=250|threshold=12.5|stop=True": [
+    false,
+    ""
+  ],
+  "errrows=0|total=50|min_rows=10": [
+    false,
+    ""
+  ],
+  "errrows=1|total=0|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=0|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=0|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=0|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=0|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=0|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=1000|threshold=0.0|stop=False": [
+    true,
+    "Error threshold exceeded: 0.1% > 0.0%"
+  ],
+  "errrows=1|total=1000|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=1000|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=1000|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=1000|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=1000|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=10|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=10|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=10|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=10|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=10|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=10|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=199|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=199|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=199|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=199|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=199|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=199|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=200|threshold=0.0|stop=False": [
+    true,
+    "Error threshold exceeded: 0.5% > 0.0%"
+  ],
+  "errrows=1|total=200|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=200|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=200|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=200|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=200|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=250|threshold=0.0|stop=False": [
+    true,
+    "Error threshold exceeded: 0.4% > 0.0%"
+  ],
+  "errrows=1|total=250|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=250|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=250|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=250|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=1|total=250|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=1|total=50|min_rows=10": [
+    false,
+    ""
+  ],
+  "errrows=25|total=0|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=0|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=0|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=0|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=0|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=0|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=1000|threshold=0.0|stop=False": [
+    true,
+    "Error threshold exceeded: 2.5% > 0.0%"
+  ],
+  "errrows=25|total=1000|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=1000|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=1000|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=1000|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=1000|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=10|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=10|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=10|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=10|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=10|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=10|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=199|threshold=0.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=199|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=199|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=199|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=199|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=199|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=200|threshold=0.0|stop=False": [
+    true,
+    "Error threshold exceeded: 12.5% > 0.0%"
+  ],
+  "errrows=25|total=200|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=200|threshold=10.0|stop=False": [
+    true,
+    "Error threshold exceeded: 12.5% > 10.0%"
+  ],
+  "errrows=25|total=200|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=200|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=200|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=250|threshold=0.0|stop=False": [
+    true,
+    "Error threshold exceeded: 10.0% > 0.0%"
+  ],
+  "errrows=25|total=250|threshold=0.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=250|threshold=10.0|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=250|threshold=10.0|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=250|threshold=12.5|stop=False": [
+    false,
+    ""
+  ],
+  "errrows=25|total=250|threshold=12.5|stop=True": [
+    true,
+    "Stopping due to stop_on_error=True and errors were found"
+  ],
+  "errrows=25|total=50|min_rows=10": [
+    true,
+    "Error threshold exceeded: 50.0% > 10.0%"
+  ]
+}

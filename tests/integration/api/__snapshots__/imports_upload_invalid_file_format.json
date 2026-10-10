@@ -1,0 +1,8 @@
+{
+  "body": {
+    "detail": "Error processing upload: 1 validation error for CSVImportOptions\nfile_format\n  Input should be 'csv', 'txt', 'tsv' or 'auto' [type=literal_error, input_value='xml', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.10/v/literal_error"
+  },
+  "db": [],
+  "dispatch": [],
+  "status": 500
+}

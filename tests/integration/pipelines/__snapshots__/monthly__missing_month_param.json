@@ -1,0 +1,311 @@
+{
+  "db": {
+    "background_tasks": [
+      {
+        "celery_task_id": "celery-monthly",
+        "completed_at": "<timestamp>",
+        "created_at": "<timestamp>",
+        "employee_id": 101,
+        "error_message": "Missing required parameters: employee_id=101, year=2025, month=None",
+        "month": null,
+        "quarter": null,
+        "report_id": null,
+        "result_data": null,
+        "started_at": "<timestamp>",
+        "status": "failed",
+        "task_id": "00000000-0000-4000-9000-000000000002",
+        "task_type": "MONTHLY_ANALYSIS",
+        "year": 2025
+      }
+    ],
+    "employee_analyses": [
+      {
+        "achievements_json": [
+          {
+            "description": "Closed backlog batch 0",
+            "impact": "6 (backlog)"
+          }
+        ],
+        "action_items": [
+          "Escalate late reports"
+        ],
+        "analysis_date": "<timestamp>",
+        "analysis_id": 1,
+        "challenges_json": [
+          {
+            "description": "Late field reports",
+            "severity": "medium"
+          }
+        ],
+        "consistency_score": "high",
+        "created_at": "<timestamp>",
+        "credibility_explanation": "Consistent with vision data",
+        "credibility_rating": "high",
+        "employee_id": 101,
+        "exaggeration_flags": [],
+        "full_analysis_json": {
+          "sentiment": "positive",
+          "week": "2025-03-07"
+        },
+        "performance_improvement_areas": [
+          "Delegation"
+        ],
+        "performance_rating": "high",
+        "performance_strengths": [
+          "Diligent"
+        ],
+        "performance_summary": "Solid week 0",
+        "report_id": "00000000-0000-4000-8000-0000000000a1",
+        "risk_explanation": "Risk note 0",
+        "risk_level": "low",
+        "sentiment_score": 0.5,
+        "topics": [
+          "backlog",
+          "archives"
+        ],
+        "updated_at": "<timestamp>"
+      },
+      {
+        "achievements_json": [
+          {
+            "description": "Closed backlog batch 1",
+            "impact": "7 (backlog)"
+          }
+        ],
+        "action_items": [
+          "Escalate late reports"
+        ],
+        "analysis_date": "<timestamp>",
+        "analysis_id": 2,
+        "challenges_json": [
+          {
+            "description": "Late field reports",
+            "severity": "medium"
+          }
+        ],
+        "consistency_score": "high",
+        "created_at": "<timestamp>",
+        "credibility_explanation": "Consistent with vision data",
+        "credibility_rating": "high",
+        "employee_id": 101,
+        "exaggeration_flags": [],
+        "full_analysis_json": {
+          "sentiment": "positive",
+          "week": "2025-03-14"
+        },
+        "performance_improvement_areas": [
+          "Delegation"
+        ],
+        "performance_rating": "high",
+        "performance_strengths": [
+          "Diligent"
+        ],
+        "performance_summary": "Solid week 1",
+        "report_id": "00000000-0000-4000-8000-0000000000a2",
+        "risk_explanation": "Risk note 1",
+        "risk_level": "medium",
+        "sentiment_score": 0.8,
+        "topics": [
+          "backlog"
+        ],
+        "updated_at": "<timestamp>"
+      },
+      {
+        "achievements_json": [
+          {
+            "description": "Closed backlog batch 2",
+            "impact": "8 (backlog)"
+          }
+        ],
+        "action_items": [
+          "Escalate late reports"
+        ],
+        "analysis_date": "<timestamp>",
+        "analysis_id": 3,
+        "challenges_json": [
+          {
+            "description": "Late field reports",
+            "severity": "medium"
+          }
+        ],
+        "consistency_score": "high",
+        "created_at": "<timestamp>",
+        "credibility_explanation": "Consistent with vision data",
+        "credibility_rating": "high",
+        "employee_id": 101,
+        "exaggeration_flags": [],
+        "full_analysis_json": {
+          "sentiment": "positive",
+          "week": "2025-03-21"
+        },
+        "performance_improvement_areas": [
+          "Delegation"
+        ],
+        "performance_rating": "high",
+        "performance_strengths": [
+          "Diligent"
+        ],
+        "performance_summary": "Solid week 2",
+        "report_id": "00000000-0000-4000-8000-0000000000a3",
+        "risk_explanation": "Risk note 2",
+        "risk_level": "low",
+        "sentiment_score": 0.8,
+        "topics": [
+          "backlog",
+          "archives"
+        ],
+        "updated_at": "<timestamp>"
+      }
+    ],
+    "monthly_analyses": [
+      {
+        "achievement_impact_avg": 8.0,
+        "analysis_date": "<timestamp>",
+        "analysis_id": 1,
+        "approach_to_challenges": "more proactive",
+        "avg_sentiment_score": 0.7,
+        "challenge_resolution_progress": "improved",
+        "complexity_of_tasks": "increased",
+        "confidence_level_change": "increased",
+        "consistency_notable_strengths": [
+          "Reliable"
+        ],
+        "consistency_notable_weaknesses": [
+          "Delegation"
+        ],
+        "employee_id": 101,
+        "escalating_risks": [],
+        "focus_areas": [
+          {
+            "priority_level": "high",
+            "project": "Archive audit",
+            "time_investment": "high"
+          }
+        ],
+        "full_analysis_json": {
+          "month": 1
+        },
+        "month": 1,
+        "monthly_achievements": [
+          {
+            "description": "Month 1 backlog cleared",
+            "impact": "8 (major)",
+            "impact_score": 8
+          }
+        ],
+        "monthly_summary": "Summary for month 1.",
+        "performance_stability": "medium",
+        "performance_trend": "improving",
+        "period_end": "2025-01-31",
+        "period_start": "2025-01-01",
+        "recurring_challenges": [
+          {
+            "description": "Late field reports",
+            "severity": "medium",
+            "status": "ongoing"
+          }
+        ],
+        "risk_explanation": "Month 1 risk",
+        "risk_level": "low",
+        "risk_level_pattern": "stable",
+        "risk_mitigation_recommendations": [
+          "Weekly sync"
+        ],
+        "sentiment_trend": "stable",
+        "significant_risks": [
+          "Late reports"
+        ],
+        "skill_development_evidence": "medium",
+        "strategic_recommendations": [
+          {
+            "action": "Mentor juniors",
+            "priority": "medium"
+          }
+        ],
+        "task_completion_reliability": "high",
+        "weekly_report_ids": [
+          "00000000-0000-4000-8000-0000000000c1"
+        ],
+        "work_quality_consistency": "high",
+        "year": 2025
+      },
+      {
+        "achievement_impact_avg": 8.0,
+        "analysis_date": "<timestamp>",
+        "analysis_id": 2,
+        "approach_to_challenges": "more proactive",
+        "avg_sentiment_score": 0.8,
+        "challenge_resolution_progress": "improved",
+        "complexity_of_tasks": "increased",
+        "confidence_level_change": "increased",
+        "consistency_notable_strengths": [
+          "Reliable"
+        ],
+        "consistency_notable_weaknesses": [
+          "Delegation"
+        ],
+        "employee_id": 101,
+        "escalating_risks": [],
+        "focus_areas": [
+          {
+            "priority_level": "high",
+            "project": "Archive audit",
+            "time_investment": "high"
+          }
+        ],
+        "full_analysis_json": {
+          "month": 2
+        },
+        "month": 2,
+        "monthly_achievements": [
+          {
+            "description": "Month 2 backlog cleared",
+            "impact": "8 (major)",
+            "impact_score": 8
+          }
+        ],
+        "monthly_summary": "Summary for month 2.",
+        "performance_stability": "medium",
+        "performance_trend": "improving",
+        "period_end": "2025-02-28",
+        "period_start": "2025-02-01",
+        "recurring_challenges": [
+          {
+            "description": "Late field reports",
+            "severity": "medium",
+            "status": "ongoing"
+          }
+        ],
+        "risk_explanation": "Month 2 risk",
+        "risk_level": "low",
+        "risk_level_pattern": "stable",
+        "risk_mitigation_recommendations": [
+          "Weekly sync"
+        ],
+        "sentiment_trend": "stable",
+        "significant_risks": [
+          "Late reports"
+        ],
+        "skill_development_evidence": "medium",
+        "strategic_recommendations": [
+          {
+            "action": "Mentor juniors",
+            "priority": "medium"
+          }
+        ],
+        "task_completion_reliability": "high",
+        "weekly_report_ids": [
+          "00000000-0000-4000-8000-0000000000b1"
+        ],
+        "work_quality_consistency": "high",
+        "year": 2025
+      }
+    ],
+    "quarterly_analyses": []
+  },
+  "external_calls": [],
+  "outcome": {
+    "exception": "ValueError('Missing required parameters: employee_id=101, year=2025, month=None')",
+    "state": "FAILURE"
+  }
+}

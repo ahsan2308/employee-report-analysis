@@ -1,0 +1,170 @@
+{
+  "2024-Q1": {
+    "calls": [
+      {
+        "args": [
+          42
+        ],
+        "fn": "get_employee_info",
+        "kwargs": {}
+      },
+      {
+        "args": [
+          42,
+          2024,
+          1
+        ],
+        "fn": "get_monthly_analyses_for_quarter",
+        "kwargs": {}
+      },
+      {
+        "args": [
+          42,
+          2024,
+          1
+        ],
+        "fn": "get_weekly_analyses_for_quarter",
+        "kwargs": {}
+      },
+      {
+        "args": [],
+        "fn": "get_employee_job_descriptions_for_period",
+        "kwargs": {
+          "employee_id": 42,
+          "period_end": "2024-03-31",
+          "period_start": "2024-01-01"
+        }
+      }
+    ],
+    "period": [
+      "2024-01-01",
+      "2024-03-31"
+    ]
+  },
+  "2025-Q2": {
+    "calls": [
+      {
+        "args": [
+          42
+        ],
+        "fn": "get_employee_info",
+        "kwargs": {}
+      },
+      {
+        "args": [
+          42,
+          2025,
+          2
+        ],
+        "fn": "get_monthly_analyses_for_quarter",
+        "kwargs": {}
+      },
+      {
+        "args": [
+          42,
+          2025,
+          2
+        ],
+        "fn": "get_weekly_analyses_for_quarter",
+        "kwargs": {}
+      },
+      {
+        "args": [],
+        "fn": "get_employee_job_descriptions_for_period",
+        "kwargs": {
+          "employee_id": 42,
+          "period_end": "2025-06-30",
+          "period_start": "2025-04-01"
+        }
+      }
+    ],
+    "period": [
+      "2025-04-01",
+      "2025-06-30"
+    ]
+  },
+  "2025-Q3": {
+    "calls": [
+      {
+        "args": [
+          42
+        ],
+        "fn": "get_employee_info",
+        "kwargs": {}
+      },
+      {
+        "args": [
+          42,
+          2025,
+          3
+        ],
+        "fn": "get_monthly_analyses_for_quarter",
+        "kwargs": {}
+      },
+      {
+        "args": [
+          42,
+          2025,
+          3
+        ],
+        "fn": "get_weekly_analyses_for_quarter",
+        "kwargs": {}
+      },
+      {
+        "args": [],
+        "fn": "get_employee_job_descriptions_for_period",
+        "kwargs": {
+          "employee_id": 42,
+          "period_end": "2025-09-30",
+          "period_start": "2025-07-01"
+        }
+      }
+    ],
+    "period": [
+      "2025-07-01",
+      "2025-09-30"
+    ]
+  },
+  "2025-Q4": {
+    "calls": [
+      {
+        "args": [
+          42
+        ],
+        "fn": "get_employee_info",
+        "kwargs": {}
+      },
+      {
+        "args": [
+          42,
+          2025,
+          4
+        ],
+        "fn": "get_monthly_analyses_for_quarter",
+        "kwargs": {}
+      },
+      {
+        "args": [
+          42,
+          2025,
+          4
+        ],
+        "fn": "get_weekly_analyses_for_quarter",
+        "kwargs": {}
+      },
+      {
+        "args": [],
+        "fn": "get_employee_job_descriptions_for_period",
+        "kwargs": {
+          "employee_id": 42,
+          "period_end": "2025-12-31",
+          "period_start": "2025-10-01"
+        }
+      }
+    ],
+    "period": [
+      "2025-10-01",
+      "2025-12-31"
+    ]
+  }
+}

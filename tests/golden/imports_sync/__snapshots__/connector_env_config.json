@@ -1,0 +1,154 @@
+{
+  "defaults": {
+    "allowed_tables": [
+      "EmployeeJobDescriptions",
+      "EmployeeReports",
+      "SupervisorFeedback",
+      "VisionEmployeeData"
+    ],
+    "allowed_timestamp_columns": [
+      "LastModifiedDate",
+      "ModifiedDate",
+      "UpdatedAt"
+    ],
+    "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+    "connection_timeout": 30,
+    "driver": "ODBC Driver 18 for SQL Server",
+    "max_batch_size": 10000,
+    "port": null,
+    "query_timeout": 300,
+    "use_encryption": true
+  },
+  "env_batch=' 42 '": {
+    "ok": {
+      "allowed_tables": [
+        "Custom_Table",
+        "EmployeeReports"
+      ],
+      "allowed_timestamp_columns": [
+        "RowVersion",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 42,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
+  },
+  "env_batch='-5'": {
+    "ok": {
+      "allowed_tables": [
+        "Custom_Table",
+        "EmployeeReports"
+      ],
+      "allowed_timestamp_columns": [
+        "RowVersion",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": -5,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
+  },
+  "env_batch='0'": {
+    "ok": {
+      "allowed_tables": [
+        "Custom_Table",
+        "EmployeeReports"
+      ],
+      "allowed_timestamp_columns": [
+        "RowVersion",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 0,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
+  },
+  "env_batch='1e3'": {
+    "ok": {
+      "allowed_tables": [
+        "Custom_Table",
+        "EmployeeReports"
+      ],
+      "allowed_timestamp_columns": [
+        "RowVersion",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
+  },
+  "env_batch='500'": {
+    "ok": {
+      "allowed_tables": [
+        "Custom_Table",
+        "EmployeeReports"
+      ],
+      "allowed_timestamp_columns": [
+        "RowVersion",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 500,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
+  },
+  "env_batch='abc'": {
+    "ok": {
+      "allowed_tables": [
+        "Custom_Table",
+        "EmployeeReports"
+      ],
+      "allowed_timestamp_columns": [
+        "RowVersion",
+        "UpdatedAt"
+      ],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 10000,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
+  },
+  "env_tables_only_commas": {
+    "ok": []
+  },
+  "explicit_overrides_env": {
+    "ok": {
+      "allowed_tables": [
+        "A"
+      ],
+      "allowed_timestamp_columns": [],
+      "connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=db.example.local;DATABASE=HRDB;UID=sync_user;PWD=s3cret;Encrypt=yes;TrustServerCertificate=yes;ApplicationIntent=ReadOnly;",
+      "connection_timeout": 30,
+      "driver": "ODBC Driver 18 for SQL Server",
+      "max_batch_size": 0,
+      "port": null,
+      "query_timeout": 300,
+      "use_encryption": true
+    }
+  }
+}

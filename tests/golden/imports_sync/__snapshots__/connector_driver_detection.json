@@ -1,0 +1,41 @@
+{
+  "17_and_18_prefers_17": {
+    "ok": "ODBC Driver 17 for SQL Server"
+  },
+  "env_driver=''": {
+    "ok": "ODBC Driver 13 for SQL Server"
+  },
+  "env_driver='AUTO'": {
+    "ok": "ODBC Driver 13 for SQL Server"
+  },
+  "env_driver='FreeTDS'": {
+    "ok": "FreeTDS"
+  },
+  "env_driver='auto'": {
+    "ok": "ODBC Driver 13 for SQL Server"
+  },
+  "explicit_driver_skips_detection": {
+    "ok": "My Driver"
+  },
+  "fallback_contains_sql_server": {
+    "ok": "Custom SQL Server Bridge"
+  },
+  "lowercase_name": {
+    "message": "No suitable ODBC driver found for SQL Server. Available drivers: odbc driver 17 for sql server. Please install 'ODBC Driver 17 for SQL Server' or newer.",
+    "raised": "RuntimeError"
+  },
+  "native_client": {
+    "ok": "SQL Server Native Client 11.0"
+  },
+  "none_installed": {
+    "message": "No suitable ODBC driver found for SQL Server. Available drivers: . Please install 'ODBC Driver 17 for SQL Server' or newer.",
+    "raised": "RuntimeError"
+  },
+  "only_18": {
+    "ok": "ODBC Driver 18 for SQL Server"
+  },
+  "unrelated_only": {
+    "message": "No suitable ODBC driver found for SQL Server. Available drivers: FreeTDS, SQLite3. Please install 'ODBC Driver 17 for SQL Server' or newer.",
+    "raised": "RuntimeError"
+  }
+}

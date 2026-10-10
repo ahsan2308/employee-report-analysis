@@ -1,0 +1,20 @@
+{
+  "body": {
+    "detail": [
+      {
+        "ctx": {
+          "error": "invalid character in year"
+        },
+        "input": "10/03/2025",
+        "loc": [
+          "body",
+          "report_date"
+        ],
+        "msg": "Input should be a valid date or datetime, invalid character in year",
+        "type": "date_from_datetime_parsing"
+      }
+    ]
+  },
+  "db": [],
+  "status": 422
+}

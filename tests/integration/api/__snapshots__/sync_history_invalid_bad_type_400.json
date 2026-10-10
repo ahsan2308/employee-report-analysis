@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Invalid sync_type"
+  },
+  "status": 400
+}

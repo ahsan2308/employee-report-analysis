@@ -1,0 +1,113 @@
+{
+  "no_input": {
+    "message": "Either row_data or df must be provided",
+    "raised": "ValueError"
+  },
+  "type_error": {
+    "errors": [
+      {
+        "category": "validation",
+        "error_message": "Type error in date comparison: '>' not supported between instances of 'str' and 'datetime.date'",
+        "exception": null,
+        "field_name": "date_range",
+        "row_data": {
+          "BPS": "BS-18",
+          "Challenges": null,
+          "Confidence_Level": "4",
+          "Designation": "Deputy Director",
+          "Draft": null,
+          "Employee_ID": "101",
+          "From": "2024/01/01",
+          "Impact": null,
+          "NTR": null,
+          "Name": "Ayesha Khan",
+          "Office_Hierarchy": "Technical>SOC",
+          "Support_Required": null,
+          "Tasks_Completed": "Reviewed cases",
+          "Tasks_Planned": null,
+          "To": "2024-03-31"
+        },
+        "row_number": 13
+      },
+      {
+        "category": "validation",
+        "error_message": "Type error in date comparison: '>' not supported between instances of 'str' and 'datetime.date'",
+        "exception": null,
+        "field_name": "date_range",
+        "row_data": {
+          "BPS": "BS-18",
+          "Challenges": null,
+          "Confidence_Level": "4",
+          "Designation": "Deputy Director",
+          "Draft": null,
+          "Employee_ID": "102",
+          "From": "2024-03-01",
+          "Impact": null,
+          "NTR": null,
+          "Name": "Ayesha Khan",
+          "Office_Hierarchy": "Technical>SOC",
+          "Support_Required": null,
+          "Tasks_Completed": "Reviewed cases",
+          "Tasks_Planned": null,
+          "To": "2024-03-31"
+        },
+        "row_number": 14
+      }
+    ],
+    "metrics": {
+      "ok": {
+        "csv_type": "employee_report",
+        "metrics": {
+          "employees_created": 0,
+          "employees_updated": 0,
+          "processed_rows": 0,
+          "reports_created": 0,
+          "reports_updated": 0,
+          "successful_rows": 0
+        },
+        "processed_rows": 0,
+        "successful_rows": 0
+      }
+    },
+    "result": {
+      "ok": [
+        0,
+        2
+      ]
+    }
+  },
+  "unbound_local_error": {
+    "errors": [
+      {
+        "category": "processing",
+        "error_message": "cannot access local variable 're' where it is not associated with a value",
+        "exception": "UnboundLocalError",
+        "field_name": null,
+        "row_data": {
+          "BPS": "BS-18",
+          "Challenges": null,
+          "Confidence_Level": "4",
+          "Designation": "Deputy Director",
+          "Draft": null,
+          "Employee_ID": "101",
+          "From": "soon",
+          "Impact": null,
+          "NTR": null,
+          "Name": "Ayesha Khan",
+          "Office_Hierarchy": "Technical>SOC",
+          "Support_Required": null,
+          "Tasks_Completed": "Reviewed cases",
+          "Tasks_Planned": null,
+          "To": "2024-03-31"
+        },
+        "row_number": 1
+      }
+    ],
+    "result": {
+      "ok": [
+        0,
+        1
+      ]
+    }
+  }
+}

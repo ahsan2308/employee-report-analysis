@@ -1,0 +1,139 @@
+{
+  "chunks": {
+    "ok": [
+      {
+        "columns": [
+          "Employee_ID",
+          "JD_ID",
+          "Job_Description",
+          "Assigned_Date",
+          "Is_Current",
+          "End_Date"
+        ],
+        "dtypes": {
+          "Assigned_Date": "object",
+          "Employee_ID": "object",
+          "End_Date": "object",
+          "Is_Current": "object",
+          "JD_ID": "object",
+          "Job_Description": "object"
+        },
+        "index": [
+          0,
+          1
+        ],
+        "records": [
+          {
+            "Assigned_Date": "2024-01-15",
+            "Employee_ID": "101",
+            "End_Date": null,
+            "Is_Current": "TRUE",
+            "JD_ID": "1001",
+            "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+          },
+          {
+            "Assigned_Date": "01/15/2024",
+            "Employee_ID": "102",
+            "End_Date": "2024-06-30",
+            "Is_Current": "no",
+            "JD_ID": "1002.0",
+            "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+          }
+        ]
+      },
+      {
+        "columns": [
+          "Employee_ID",
+          "JD_ID",
+          "Job_Description",
+          "Assigned_Date",
+          "Is_Current",
+          "End_Date"
+        ],
+        "dtypes": {
+          "Assigned_Date": "object",
+          "Employee_ID": "object",
+          "End_Date": "object",
+          "Is_Current": "object",
+          "JD_ID": "object",
+          "Job_Description": "object"
+        },
+        "index": [
+          2,
+          3
+        ],
+        "records": [
+          {
+            "Assigned_Date": "15/01/2024",
+            "Employee_ID": "103",
+            "End_Date": "N/A",
+            "Is_Current": "yes",
+            "JD_ID": "JD-7",
+            "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+          },
+          {
+            "Assigned_Date": "2024-01-15",
+            "Employee_ID": "104",
+            "End_Date": "null",
+            "Is_Current": "1",
+            "JD_ID": "1004",
+            "Job_Description": "Short text"
+          }
+        ]
+      },
+      {
+        "columns": [
+          "Employee_ID",
+          "JD_ID",
+          "Job_Description",
+          "Assigned_Date",
+          "Is_Current",
+          "End_Date"
+        ],
+        "dtypes": {
+          "Assigned_Date": "object",
+          "Employee_ID": "object",
+          "End_Date": "object",
+          "Is_Current": "object",
+          "JD_ID": "object",
+          "Job_Description": "object"
+        },
+        "index": [
+          4,
+          5
+        ],
+        "records": [
+          {
+            "Assigned_Date": "1965-01-01",
+            "Employee_ID": "105",
+            "End_Date": "-",
+            "Is_Current": "maybe",
+            "JD_ID": "1005",
+            "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+          },
+          {
+            "Assigned_Date": null,
+            "Employee_ID": "106",
+            "End_Date": "31-12-2023",
+            "Is_Current": "0",
+            "JD_ID": "1006",
+            "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+          }
+        ]
+      }
+    ]
+  },
+  "state": {
+    "delimiter_attr": null,
+    "detected_delimiter": "|",
+    "detected_encoding": "ascii",
+    "headers": [
+      "Employee_ID",
+      "JD_ID",
+      "Job_Description",
+      "Assigned_Date",
+      "Is_Current",
+      "End_Date"
+    ]
+  }
+}

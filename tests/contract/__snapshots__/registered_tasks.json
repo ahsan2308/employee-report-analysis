@@ -1,0 +1,72 @@
+{
+  "app.tasks.analysis_tasks.analyze_monthly_reports_task": {
+    "acks_late": false,
+    "base": "Task",
+    "implementation": "app.tasks.analysis_tasks.analyze_monthly_reports_task",
+    "max_retries": 3,
+    "signature": "(task_id: str)"
+  },
+  "app.tasks.analysis_tasks.analyze_quarterly_reports_task": {
+    "acks_late": false,
+    "base": "Task",
+    "implementation": "app.tasks.analysis_tasks.analyze_quarterly_reports_task",
+    "max_retries": 3,
+    "signature": "(task_id: str)"
+  },
+  "app.tasks.analysis_tasks.analyze_report_task": {
+    "acks_late": false,
+    "base": "Task",
+    "implementation": "app.tasks.analysis_tasks.analyze_report_task",
+    "max_retries": 3,
+    "signature": "(task_id: str)"
+  },
+  "csv_import.process": {
+    "acks_late": false,
+    "base": "ImportTask",
+    "implementation": "app.tasks.import_tasks.process_csv_import",
+    "max_retries": 3,
+    "signature": "(job_id: str, file_path: Optional[str] = None, file_content: Optional[bytes] = None, filename: Optional[str] = None, options: Optional[Dict[str, Any]] = None, csv_type: Optional[str] = None) -> Dict[str, Any]"
+  },
+  "sync.employee_reports": {
+    "acks_late": false,
+    "base": "SyncTask",
+    "implementation": "app.tasks.sync_tasks.sync_employee_reports_task",
+    "max_retries": 3,
+    "signature": "(is_full_sync: bool = False, sync_id: Optional[str] = None)"
+  },
+  "sync.full": {
+    "acks_late": false,
+    "base": "SyncTask",
+    "implementation": "app.tasks.sync_tasks.full_sync_task",
+    "max_retries": 3,
+    "signature": "(employee_sync_id: Optional[str] = None, vision_sync_id: Optional[str] = None, jd_sync_id: Optional[str] = None, sf_sync_id: Optional[str] = None) -> Dict[str, Any]"
+  },
+  "sync.incremental": {
+    "acks_late": false,
+    "base": "SyncTask",
+    "implementation": "app.tasks.sync_tasks.incremental_sync_task",
+    "max_retries": 3,
+    "signature": "() -> Dict[str, Any]"
+  },
+  "sync.job_descriptions": {
+    "acks_late": false,
+    "base": "SyncTask",
+    "implementation": "app.tasks.sync_tasks.sync_job_descriptions_task",
+    "max_retries": 3,
+    "signature": "(is_full_sync: bool = False, sync_id: Optional[str] = None) -> Dict[str, Any]"
+  },
+  "sync.supervisor_feedback": {
+    "acks_late": false,
+    "base": "SyncTask",
+    "implementation": "app.tasks.sync_tasks.sync_supervisor_feedback_task",
+    "max_retries": 3,
+    "signature": "(is_full_sync: bool = False, sync_id: Optional[str] = None) -> Dict[str, Any]"
+  },
+  "sync.vision_data": {
+    "acks_late": false,
+    "base": "SyncTask",
+    "implementation": "app.tasks.sync_tasks.sync_vision_data_task",
+    "max_retries": 3,
+    "signature": "(is_full_sync: bool = False, sync_id: Optional[str] = None) -> Dict[str, Any]"
+  }
+}

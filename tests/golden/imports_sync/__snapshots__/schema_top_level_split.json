@@ -1,0 +1,212 @@
+[
+  {
+    "comma": {
+      "ok": []
+    },
+    "input": "None",
+    "pipe": {
+      "ok": []
+    }
+  },
+  {
+    "comma": {
+      "ok": []
+    },
+    "input": "''",
+    "pipe": {
+      "ok": []
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    "input": "'a,b,c'",
+    "pipe": {
+      "ok": [
+        "a,b,c"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    "input": "' a , b ,c '",
+    "pipe": {
+      "ok": [
+        "a , b ,c"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "Cases:[1,2]",
+        "Tasks:[{\"a\": 1, \"b\": 2}]"
+      ]
+    },
+    "input": "'Cases:[1,2], Tasks:[{\"a\": 1, \"b\": 2}]'",
+    "pipe": {
+      "ok": [
+        "Cases:[1,2], Tasks:[{\"a\": 1, \"b\": 2}]"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "x:{\"k\": [1, {\"z\": 3}]}",
+        "y:[]"
+      ]
+    },
+    "input": "'x:{\"k\": [1, {\"z\": 3}]}, y:[]'",
+    "pipe": {
+      "ok": [
+        "x:{\"k\": [1, {\"z\": 3}]}, y:[]"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "q:\"a,b\"",
+        "r:'c,d'"
+      ]
+    },
+    "input": "'q:\"a,b\", r:\\'c,d\\''",
+    "pipe": {
+      "ok": [
+        "q:\"a,b\", r:'c,d'"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "esc:\\,next",
+        "other"
+      ]
+    },
+    "input": "'esc:\\\\,next, other'",
+    "pipe": {
+      "ok": [
+        "esc:\\,next, other"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "unbalanced:]]",
+        "after"
+      ]
+    },
+    "input": "'unbalanced:]], after'",
+    "pipe": {
+      "ok": [
+        "unbalanced:]], after"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "open:[1,2"
+      ]
+    },
+    "input": "'open:[1,2'",
+    "pipe": {
+      "ok": [
+        "open:[1,2"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "trailing"
+      ]
+    },
+    "input": "'trailing,'",
+    "pipe": {
+      "ok": [
+        "trailing,"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "",
+        "leading"
+      ]
+    },
+    "input": "',leading'",
+    "pipe": {
+      "ok": [
+        ",leading"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "a",
+        "",
+        "b"
+      ]
+    },
+    "input": "'a,,b'",
+    "pipe": {
+      "ok": [
+        "a,,b"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "mixed:\"it's, fine\"",
+        "z:1"
+      ]
+    },
+    "input": "'mixed:\"it\\'s, fine\", z:1'",
+    "pipe": {
+      "ok": [
+        "mixed:\"it's, fine\", z:1"
+      ]
+    }
+  },
+  {
+    "comma": {
+      "ok": [
+        "12345"
+      ]
+    },
+    "input": "12345",
+    "pipe": {
+      "ok": [
+        "12345"
+      ]
+    }
+  },
+  {
+    "input": "a|b,[c|d]|e",
+    "pipe": {
+      "ok": [
+        "a",
+        "b,[c|d]",
+        "e"
+      ]
+    }
+  }
+]

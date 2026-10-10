@@ -1,0 +1,250 @@
+{
+  "errors": [
+    {
+      "error_id": 1,
+      "error_message": "bad name",
+      "field_name": "Name",
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": {
+        "Name": ""
+      },
+      "row_number": 3
+    },
+    {
+      "error_id": 2,
+      "error_message": "weird date",
+      "field_name": "Date",
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": {
+        "Date": "2025-01-01",
+        "n": null,
+        "ok": 1
+      },
+      "row_number": 4
+    },
+    {
+      "error_id": 3,
+      "error_message": "dup",
+      "field_name": null,
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": {
+        "set": "{1}"
+      },
+      "row_number": 4
+    },
+    {
+      "error_id": 4,
+      "error_message": "other",
+      "field_name": null,
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": null,
+      "row_number": 9
+    },
+    {
+      "error_id": 5,
+      "error_message": "Input should be a valid string",
+      "field_name": "Name",
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": {
+        "Age": "x",
+        "Name": 5
+      },
+      "row_number": 10
+    },
+    {
+      "error_id": 6,
+      "error_message": "Input should be a valid integer, unable to parse string as an integer",
+      "field_name": "Age",
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": {
+        "Age": "x",
+        "Name": 5
+      },
+      "row_number": 10
+    },
+    {
+      "error_id": 7,
+      "error_message": "bad name",
+      "field_name": "Name",
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": {
+        "Name": ""
+      },
+      "row_number": 3
+    },
+    {
+      "error_id": 8,
+      "error_message": "weird date",
+      "field_name": "Date",
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": {
+        "Date": "2025-01-01",
+        "n": null,
+        "ok": 1
+      },
+      "row_number": 4
+    },
+    {
+      "error_id": 9,
+      "error_message": "dup",
+      "field_name": null,
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": {
+        "set": "{1}"
+      },
+      "row_number": 4
+    },
+    {
+      "error_id": 10,
+      "error_message": "other",
+      "field_name": null,
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": null,
+      "row_number": 9
+    },
+    {
+      "error_id": 11,
+      "error_message": "Input should be a valid string",
+      "field_name": "Name",
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": {
+        "Age": "x",
+        "Name": 5
+      },
+      "row_number": 10
+    },
+    {
+      "error_id": 12,
+      "error_message": "Input should be a valid integer, unable to parse string as an integer",
+      "field_name": "Age",
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "row_data": {
+        "Age": "x",
+        "Name": 5
+      },
+      "row_number": 10
+    }
+  ],
+  "jobs": [
+    {
+      "completed_at": null,
+      "csv_type": null,
+      "error_count": 12,
+      "filename": "file1.csv",
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "metrics_json": null,
+      "options": null,
+      "processed_rows": 0,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "2025-01-02@08:00:00.000000",
+      "successful_rows": 0,
+      "total_rows": 0
+    }
+  ],
+  "summary": {
+    "by_category": {
+      "database": 1,
+      "other": 1,
+      "processing": 1,
+      "system": 0,
+      "validation": 3
+    },
+    "by_field": {
+      "Age": 1,
+      "Date": 1,
+      "Name": 2
+    },
+    "count": 6,
+    "models": [
+      {
+        "error_message": "bad name",
+        "field_name": "Name",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": {
+          "Name": ""
+        },
+        "row_number": 3
+      },
+      {
+        "error_message": "weird date",
+        "field_name": "Date",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": {
+          "Date": "2025-01-01",
+          "n": null,
+          "ok": 1
+        },
+        "row_number": 4
+      },
+      {
+        "error_message": "dup",
+        "field_name": null,
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": {
+          "set": "{1}"
+        },
+        "row_number": 4
+      },
+      {
+        "error_message": "other",
+        "field_name": null,
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": null,
+        "row_number": 9
+      },
+      {
+        "error_message": "Input should be a valid string",
+        "field_name": "Name",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": {
+          "Age": "x",
+          "Name": 5
+        },
+        "row_number": 10
+      },
+      {
+        "error_message": "Input should be a valid integer, unable to parse string as an integer",
+        "field_name": "Age",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "row_data": {
+          "Age": "x",
+          "Name": 5
+        },
+        "row_number": 10
+      }
+    ],
+    "patterns": {
+      "Input should be a valid integer, unable to parse string as an integer": 1,
+      "Input should be a valid string": 1,
+      "bad name": 1,
+      "dup": 1,
+      "other": 1,
+      "weird date": 1
+    },
+    "pct_of_0": 0.0,
+    "pct_of_8": 50.0,
+    "should_abort": {
+      "at_200_rows": [
+        false,
+        ""
+      ],
+      "at_200_threshold_1pct": [
+        true,
+        "Error threshold exceeded: 2.0% > 1.0%"
+      ],
+      "custom_min": [
+        true,
+        "Error threshold exceeded: 40.0% > 10.0%"
+      ],
+      "stop_on_error": [
+        true,
+        "Stopping due to stop_on_error=True and errors were found"
+      ],
+      "under_min_rows": [
+        false,
+        ""
+      ]
+    }
+  }
+}

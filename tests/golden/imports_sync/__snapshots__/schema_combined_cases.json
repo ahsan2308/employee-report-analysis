@@ -1,0 +1,780 @@
+{
+  "bps_empty": {
+    "ok": {
+      "BPS": "",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "bps_lowercase": {
+    "ok": {
+      "BPS": "bs-17",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "bps_na": {
+    "validation_errors": [
+      {
+        "loc": [
+          "BPS"
+        ],
+        "msg": "Value error, BPS should be in format 'BS-XX' or 'TS-XX' where XX is a number (e.g., BS-21)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "bps_no_dash": {
+    "validation_errors": [
+      {
+        "loc": [
+          "BPS"
+        ],
+        "msg": "Value error, BPS should be in format 'BS-XX' or 'TS-XX' where XX is a number (e.g., BS-21)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "bps_ts": {
+    "ok": {
+      "BPS": "TS-16",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "confidence_decimal_text": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "confidence_embedded": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 2,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "confidence_empty": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": null,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "confidence_int": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Confidence_Level"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "confidence_none": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": null,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "confidence_plain": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 3,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "confidence_six": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Confidence_Level"
+        ],
+        "msg": "Value error, Invalid confidence level format. Expected number between 1-5, got '6 - Very'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "confidence_text": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Confidence_Level"
+        ],
+        "msg": "Value error, Invalid confidence level format. Expected number between 1-5, got 'High'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "confidence_zero": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Confidence_Level"
+        ],
+        "msg": "Value error, Invalid confidence level format. Expected number between 1-5, got '0'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "designation_short": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Designation"
+        ],
+        "msg": "String should have at least 2 characters",
+        "type": "string_too_short"
+      }
+    ]
+  },
+  "employee_id_decimal": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "employee_id_float_integral": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "employee_id_float_string": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "employee_id_int": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "employee_id_negative": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": -5,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "employee_id_none": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": null,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "employee_id_text": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Input should be a valid integer, unable to parse string as an integer",
+        "type": "int_parsing"
+      }
+    ]
+  },
+  "extra_columns_ignored": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "from_after_to": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, From date (2024-06-01) cannot be after To date (2024-05-01)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "from_after_to_mixed_formats": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, From date (2024-06-01) cannot be after To date (2024-05-01)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "from_unparsed_string_vs_date": {
+    "message": "'>' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "missing_dates": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "multiple_errors": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "Value error, Name contains invalid characters. Allowed: letters, numbers, spaces, commas, periods, slashes, hyphens, apostrophes, parentheses, and square brackets",
+        "type": "value_error"
+      },
+      {
+        "loc": [
+          "BPS"
+        ],
+        "msg": "Value error, BPS should be in format 'BS-XX' or 'TS-XX' where XX is a number (e.g., BS-21)",
+        "type": "value_error"
+      },
+      {
+        "loc": [
+          "Confidence_Level"
+        ],
+        "msg": "Value error, Invalid confidence level format. Expected number between 1-5, got '9'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "name_101_chars": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "String should have at most 100 characters",
+        "type": "string_too_long"
+      }
+    ]
+  },
+  "name_ampersand": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "Value error, Name contains invalid characters. Allowed: letters, numbers, spaces, commas, periods, slashes, hyphens, apostrophes, parentheses, and square brackets",
+        "type": "value_error"
+      }
+    ]
+  },
+  "name_html": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "Value error, Name contains invalid characters. Allowed: letters, numbers, spaces, commas, periods, slashes, hyphens, apostrophes, parentheses, and square brackets",
+        "type": "value_error"
+      }
+    ]
+  },
+  "name_missing": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "name_one_char": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "String should have at least 2 characters",
+        "type": "string_too_short"
+      }
+    ]
+  },
+  "name_spaces_only": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "String should have at least 2 characters",
+        "type": "string_too_short"
+      }
+    ]
+  },
+  "name_unicode": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "Value error, Name contains invalid characters. Allowed: letters, numbers, spaces, commas, periods, slashes, hyphens, apostrophes, parentheses, and square brackets",
+        "type": "value_error"
+      }
+    ]
+  },
+  "name_whitespace_padded": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "name_with_brackets_quotes": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "O'Brien [Acting] (Sr.)",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "office_leading_separator": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": ">Tech",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": ""
+    }
+  },
+  "office_no_separator": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Ops",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Ops"
+    }
+  },
+  "office_none": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": null,
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Unspecified"
+    }
+  },
+  "required_only_keys_missing": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Name"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Designation"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      }
+    ]
+  },
+  "tasks_dash_token": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "-",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "tasks_na_token": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "N/A",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "tasks_none_no_ntr": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, Either 'Tasks_Completed' must be provided or 'NTR' (Nothing to Report) must be specified with a valid reason",
+        "type": "value_error"
+      }
+    ]
+  },
+  "tasks_none_ntr_null_token": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, Either 'Tasks_Completed' must be provided or 'NTR' (Nothing to Report) must be specified with a valid reason",
+        "type": "value_error"
+      }
+    ]
+  },
+  "tasks_none_ntr_spaces": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, Either 'Tasks_Completed' must be provided or 'NTR' (Nothing to Report) must be specified with a valid reason",
+        "type": "value_error"
+      }
+    ]
+  },
+  "tasks_none_with_ntr": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": "On leave",
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": null,
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  },
+  "tasks_null_token_no_ntr": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, Either 'Tasks_Completed' must be provided or 'NTR' (Nothing to Report) must be specified with a valid reason",
+        "type": "value_error"
+      }
+    ]
+  },
+  "valid_base": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-12-31>",
+      "department": "Technical"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "body": {
+    "celery_task_id": "immediate",
+    "completed_at": "<timestamp>",
+    "created_at": "<timestamp>",
+    "duration": null,
+    "is_complete": true,
+    "started_at": "<timestamp>",
+    "status": "completed",
+    "task_id": "<uuid:1>"
+  },
+  "db": [
+    {
+      "celery_task_id": "immediate",
+      "completed_at": "<timestamp>",
+      "created_at": "<timestamp>",
+      "employee_id": null,
+      "error_message": null,
+      "month": null,
+      "quarter": null,
+      "report_id": "<uuid:2>",
+      "result_data": {
+        "analysis_id": 1,
+        "report_id": "<uuid:2>"
+      },
+      "started_at": "<timestamp>",
+      "status": "completed",
+      "task_id": "<uuid:1>",
+      "task_type": "REPORT_ANALYSIS",
+      "year": null
+    }
+  ],
+  "dispatch": [],
+  "status": 200
+}

@@ -1,0 +1,29 @@
+{
+  "body": {
+    "detail": [
+      {
+        "input": {
+          "employee_id": 1
+        },
+        "loc": [
+          "body",
+          "report_date"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "input": {
+          "employee_id": 1
+        },
+        "loc": [
+          "body",
+          "report_text"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      }
+    ]
+  },
+  "status": 422
+}

@@ -1,0 +1,15 @@
+{
+  "db": {
+    "background_tasks": [],
+    "employee_analyses": [],
+    "monthly_analyses": [],
+    "quarterly_analyses": []
+  },
+  "external_calls": [],
+  "outcome": {
+    "return": {
+      "error": "Task not found"
+    },
+    "state": "SUCCESS"
+  }
+}

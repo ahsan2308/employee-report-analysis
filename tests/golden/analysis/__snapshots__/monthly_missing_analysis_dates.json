@@ -1,0 +1,81 @@
+{
+  "calls": [
+    {
+      "args": [
+        42
+      ],
+      "fn": "get_employee_info",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        6
+      ],
+      "fn": "get_reports_for_month",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        6
+      ],
+      "fn": "get_analyses_for_month",
+      "kwargs": {}
+    }
+  ],
+  "result": {
+    "analyses": [
+      {
+        "achievements": [],
+        "analysis_id": "an-2025-06-01",
+        "challenges": [],
+        "credibility_rating": null,
+        "date": null,
+        "exaggeration_flags": [],
+        "performance_rating": null,
+        "report_id": "rep-2025-06-01",
+        "risk_level": "medium",
+        "sentiment_score": 0.3,
+        "topics": []
+      },
+      {
+        "achievements": [],
+        "analysis_id": "an-2025-06-08",
+        "challenges": [],
+        "credibility_rating": null,
+        "date": null,
+        "exaggeration_flags": [],
+        "performance_rating": null,
+        "report_id": "rep-2025-06-08",
+        "risk_level": "medium",
+        "sentiment_score": 0.6,
+        "topics": []
+      }
+    ],
+    "employee_id": 42,
+    "employee_info": {
+      "id": 42,
+      "name": "Test Employee",
+      "position": "Analyst",
+      "wing": "Ops"
+    },
+    "metrics": {
+      "achievement_count": 0,
+      "achievement_impact_avg": 0.0,
+      "avg_sentiment": 0.45,
+      "challenge_count": 0,
+      "recurring_topics": [],
+      "report_count": 0,
+      "risk_levels": {},
+      "sentiment_trend": "stable"
+    },
+    "month": 6,
+    "period_end": "2025-06-30",
+    "period_start": "2025-06-01",
+    "reports": [],
+    "year": 2025
+  }
+}

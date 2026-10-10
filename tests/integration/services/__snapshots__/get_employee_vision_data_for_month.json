@@ -1,0 +1,265 @@
+{
+  "2025-01": {
+    "date_context": {
+      "month": 1,
+      "period_end": "2025-01-31",
+      "period_start": "2025-01-01",
+      "year": 2025
+    },
+    "weeks_data": [
+      {
+        "activities": [
+          {
+            "from_date": "2025-01-06",
+            "main_entity": "Meetings",
+            "sub_entities": {
+              "count": 6
+            },
+            "sub_entities_content": null,
+            "to_date": "2025-01-10"
+          }
+        ],
+        "iso_week": 2,
+        "week_number": 1
+      },
+      {
+        "activities": [
+          {
+            "from_date": "2025-01-27",
+            "main_entity": "Meetings",
+            "sub_entities": {
+              "count": 7
+            },
+            "sub_entities_content": null,
+            "to_date": "2025-01-31"
+          },
+          {
+            "from_date": "2025-01-01",
+            "main_entity": "Monthly",
+            "sub_entities": {
+              "total": 30
+            },
+            "sub_entities_content": null,
+            "to_date": "2025-01-31"
+          }
+        ],
+        "iso_week": 5,
+        "week_number": 2
+      }
+    ]
+  },
+  "2025-02": {
+    "date_context": {
+      "month": 2,
+      "period_end": "2025-02-28",
+      "period_start": "2025-02-01",
+      "year": 2025
+    },
+    "weeks_data": [
+      {
+        "activities": [
+          {
+            "from_date": "2025-02-02",
+            "main_entity": "Tasks",
+            "sub_entities": {
+              "done": 1
+            },
+            "sub_entities_content": null,
+            "to_date": "2025-02-06"
+          },
+          {
+            "from_date": "2025-02-03",
+            "main_entity": "Meetings",
+            "sub_entities": {
+              "count": 1
+            },
+            "sub_entities_content": null,
+            "to_date": "2025-02-07"
+          }
+        ],
+        "iso_week": 6,
+        "week_number": 1
+      },
+      {
+        "activities": [
+          {
+            "from_date": "2025-02-24",
+            "main_entity": "Meetings",
+            "sub_entities": {
+              "count": 2
+            },
+            "sub_entities_content": null,
+            "to_date": "2025-02-28"
+          }
+        ],
+        "iso_week": 9,
+        "week_number": 2
+      }
+    ]
+  },
+  "2025-03": {
+    "date_context": {
+      "month": 3,
+      "period_end": "2025-03-31",
+      "period_start": "2025-03-01",
+      "year": 2025
+    },
+    "weeks_data": [
+      {
+        "activities": [
+          {
+            "from_date": "2025-03-03",
+            "main_entity": "Meetings",
+            "sub_entities": {
+              "count": 3
+            },
+            "sub_entities_content": {
+              "notes": "n1"
+            },
+            "to_date": "2025-03-07"
+          },
+          {
+            "from_date": "2025-03-03",
+            "main_entity": "Tasks",
+            "sub_entities": {
+              "done": 5
+            },
+            "sub_entities_content": null,
+            "to_date": "2025-03-07"
+          }
+        ],
+        "iso_week": 10,
+        "week_number": 1
+      },
+      {
+        "activities": [
+          {
+            "from_date": "2025-03-10",
+            "main_entity": "Meetings",
+            "sub_entities": {
+              "count": 9
+            },
+            "sub_entities_content": null,
+            "to_date": "2025-03-14"
+          }
+        ],
+        "iso_week": 11,
+        "week_number": 2
+      }
+    ]
+  },
+  "2025-04_empty": {
+    "date_context": {
+      "month": 4,
+      "period_end": "2025-04-30",
+      "period_start": "2025-04-01",
+      "year": 2025
+    },
+    "weeks_data": []
+  },
+  "2025-12_iso_week_1_first": {
+    "date_context": {
+      "month": 12,
+      "period_end": "2025-12-31",
+      "period_start": "2025-12-01",
+      "year": 2025
+    },
+    "weeks_data": [
+      {
+        "activities": [
+          {
+            "from_date": "2025-12-29",
+            "main_entity": "Meetings",
+            "sub_entities": {
+              "count": 12
+            },
+            "sub_entities_content": null,
+            "to_date": "2025-12-31"
+          }
+        ],
+        "iso_week": 1,
+        "week_number": 1
+      },
+      {
+        "activities": [
+          {
+            "from_date": "2025-12-01",
+            "main_entity": "Meetings",
+            "sub_entities": {
+              "count": 11
+            },
+            "sub_entities_content": null,
+            "to_date": "2025-12-05"
+          }
+        ],
+        "iso_week": 49,
+        "week_number": 2
+      }
+    ]
+  },
+  "2027-01_iso_week_53_last": {
+    "date_context": {
+      "month": 1,
+      "period_end": "2027-01-31",
+      "period_start": "2027-01-01",
+      "year": 2027
+    },
+    "weeks_data": [
+      {
+        "activities": [
+          {
+            "from_date": "2027-01-04",
+            "main_entity": "Meetings",
+            "sub_entities": {
+              "count": 14
+            },
+            "sub_entities_content": null,
+            "to_date": "2027-01-08"
+          }
+        ],
+        "iso_week": 1,
+        "week_number": 1
+      },
+      {
+        "activities": [
+          {
+            "from_date": "2026-12-28",
+            "main_entity": "Meetings",
+            "sub_entities": {
+              "count": 13
+            },
+            "sub_entities_content": null,
+            "to_date": "2027-01-01"
+          }
+        ],
+        "iso_week": 53,
+        "week_number": 2
+      }
+    ]
+  },
+  "emp2_2025-03": {
+    "date_context": {
+      "month": 3,
+      "period_end": "2025-03-31",
+      "period_start": "2025-03-01",
+      "year": 2025
+    },
+    "weeks_data": [
+      {
+        "activities": [
+          {
+            "from_date": "2025-03-03",
+            "main_entity": "Meetings",
+            "sub_entities": {
+              "count": 4
+            },
+            "sub_entities_content": null,
+            "to_date": "2025-03-07"
+          }
+        ],
+        "iso_week": 10,
+        "week_number": 1
+      }
+    ]
+  }
+}

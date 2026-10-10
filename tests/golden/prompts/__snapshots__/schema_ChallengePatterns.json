@@ -1,0 +1,82 @@
+{
+  "$defs": {
+    "QuarterlyRecurringChallenge": {
+      "properties": {
+        "description": {
+          "description": "Description of a recurring challenge",
+          "title": "Description",
+          "type": "string"
+        },
+        "frequency": {
+          "description": "Pattern of occurrence for this challenge",
+          "enum": [
+            "constant",
+            "intermittent",
+            "decreasing",
+            "increasing"
+          ],
+          "title": "Frequency",
+          "type": "string"
+        },
+        "resolution_status": {
+          "description": "Current status of this challenge",
+          "enum": [
+            "resolved",
+            "ongoing"
+          ],
+          "title": "Resolution Status",
+          "type": "string"
+        },
+        "systemic": {
+          "description": "Whether this is a systemic issue or specific to the employee",
+          "title": "Systemic",
+          "type": "boolean"
+        },
+        "type": {
+          "description": "Whether the challenge is internal (organizational) or external",
+          "enum": [
+            "internal",
+            "external"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "type",
+        "frequency",
+        "resolution_status",
+        "systemic"
+      ],
+      "title": "QuarterlyRecurringChallenge",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "adaptation_effectiveness": {
+      "description": "How effectively the employee adapted to challenges",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Adaptation Effectiveness",
+      "type": "string"
+    },
+    "recurring_challenges": {
+      "description": "Challenges that recurred throughout the quarter",
+      "items": {
+        "$ref": "#/$defs/QuarterlyRecurringChallenge"
+      },
+      "title": "Recurring Challenges",
+      "type": "array"
+    }
+  },
+  "required": [
+    "recurring_challenges",
+    "adaptation_effectiveness"
+  ],
+  "title": "ChallengePatterns",
+  "type": "object"
+}

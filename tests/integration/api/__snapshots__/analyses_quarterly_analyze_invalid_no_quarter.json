@@ -1,0 +1,17 @@
+{
+  "body": {
+    "detail": [
+      {
+        "input": null,
+        "loc": [
+          "query",
+          "quarter"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      }
+    ]
+  },
+  "dispatch": [],
+  "status": 422
+}

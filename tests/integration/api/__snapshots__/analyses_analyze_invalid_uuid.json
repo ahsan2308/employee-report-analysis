@@ -1,0 +1,8 @@
+{
+  "body": {
+    "detail": "Invalid report ID format: badly formed hexadecimal UUID string"
+  },
+  "db": [],
+  "dispatch": [],
+  "status": 400
+}

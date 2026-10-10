@@ -1,0 +1,9 @@
+﻿Employee_ID,Name,Designation,BPS,Office_Hierarchy,From,To,Draft,Tasks_Completed,Impact,Challenges,Support_Required,Tasks_Planned,Confidence_Level,NTR,Extra_Notes
+101,Ayesha Khan,Deputy Director,BS-18,Technical>Tech-I>SOC,2024-03-01,2024-03-31,,"Reviewed 12 cases, closed 9",Faster turnaround,None,N/A,Audit Q2,4 - Confident,,keep
+102,"Bilal Ahmed, Jr.",Assistant Director,BS-17,Admin>HR,03/01/2024,03/31/2024,draft-1,"Line one
+Line two",High,-,null,Training,3,,
+
+103,Sara Malik,Analyst,TS-16,Ops,13/02/2024,28/02/2024,,Built dashboard,Medium,"Data ""quality"" issues",,Iterate,5,,
+,,,,,,,,,,,,,,,
+104,Usman Tariq,Director,BS-20,Technical>Tech-II,02-01-2024,02-29-2024,,NULL,,,,,2,On leave,x
+105,Zara Iqbal,Officer,BS-16,,2024/01/05,2024-31-01,,Filed returns,Low,,,,9,,

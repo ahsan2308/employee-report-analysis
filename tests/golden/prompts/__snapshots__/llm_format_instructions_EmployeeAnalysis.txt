@@ -1,0 +1,262 @@
+
+IMPORTANT: Your response must be valid JSON data conforming to the schema, not the schema itself. Do not include any explanatory text or code formatting markers like ```json or ```.
+
+Here's the schema your response should conform to:
+{
+  "$defs": {
+    "Achievement": {
+      "properties": {
+        "description": {
+          "description": "Detailed description of the achievement in complete sentences without referencing the impact rating",
+          "title": "Description",
+          "type": "string"
+        },
+        "impact_score": {
+          "description": "Impact rating from 1 to 10, where 1-3 is individual level, 4-6 is section level, 7-8 is wing level, 9-10 is HQ strategic level",
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Impact Score",
+          "type": "integer"
+        },
+        "impact_reason": {
+          "description": "Brief reason for the impact rating (max 120 characters), explaining which organizational level was impacted",
+          "maxLength": 180,
+          "title": "Impact Reason",
+          "type": "string"
+        },
+        "vision_verification": {
+          "default": "none",
+          "description": "If vision data confirms this achievement, set to 'supported'. If vision data contradicts it, set to 'contradicted'. If NO vision data appears in your prompt or it does not exist for the specific achievement, set the key to 'none'",
+          "enum": [
+            "supported",
+            "contradicted",
+            "none"
+          ],
+          "title": "Vision Verification",
+          "type": "string"
+        }
+      },
+      "required": [
+        "description",
+        "impact_score",
+        "impact_reason"
+      ],
+      "title": "Achievement",
+      "type": "object"
+    },
+    "Challenge": {
+      "properties": {
+        "description": {
+          "description": "Detailed description of the challenge faced",
+          "title": "Description",
+          "type": "string"
+        },
+        "severity": {
+          "default": "medium",
+          "description": "How severe the challenge is (low, medium, high)",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "title": "Challenge",
+      "type": "object"
+    },
+    "CredibilityAssessment": {
+      "properties": {
+        "rating": {
+          "description": "Overall credibility rating of the report",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Rating",
+          "type": "string"
+        },
+        "explanation": {
+          "description": "Assessment of the report's credibility, focusing on potential exaggeration",
+          "title": "Explanation",
+          "type": "string"
+        },
+        "exaggeration_flags": {
+          "description": "Specific claims that appear to be exaggerated",
+          "items": {
+            "type": "string"
+          },
+          "title": "Exaggeration Flags",
+          "type": "array"
+        },
+        "consistency_score": {
+          "description": "How well the various sections of the report align with each other",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Consistency Score",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rating",
+        "explanation",
+        "exaggeration_flags",
+        "consistency_score"
+      ],
+      "title": "CredibilityAssessment",
+      "type": "object"
+    },
+    "PerformanceAssessment": {
+      "properties": {
+        "rating": {
+          "description": "Overall performance rating of the employee based on the report",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Rating",
+          "type": "string"
+        },
+        "summary": {
+          "description": "Brief overall performance assessment summarizing the key findings",
+          "title": "Summary",
+          "type": "string"
+        },
+        "key_strengths": {
+          "description": "Notable strengths identified from the report",
+          "items": {
+            "type": "string"
+          },
+          "title": "Key Strengths",
+          "type": "array"
+        },
+        "improvement_areas": {
+          "description": "Specific areas where performance could be enhanced",
+          "items": {
+            "type": "string"
+          },
+          "title": "Improvement Areas",
+          "type": "array"
+        }
+      },
+      "required": [
+        "rating",
+        "summary",
+        "key_strengths",
+        "improvement_areas"
+      ],
+      "title": "PerformanceAssessment",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "achievements": {
+      "description": "Key achievements mentioned in the report",
+      "items": {
+        "$ref": "#/$defs/Achievement"
+      },
+      "title": "Achievements",
+      "type": "array"
+    },
+    "challenges": {
+      "description": "Challenges mentioned in the report",
+      "items": {
+        "$ref": "#/$defs/Challenge"
+      },
+      "title": "Challenges",
+      "type": "array"
+    },
+    "sentiment": {
+      "description": "Overall sentiment of the individual writing the report",
+      "enum": [
+        "positive",
+        "negative",
+        "neutral"
+      ],
+      "title": "Sentiment",
+      "type": "string"
+    },
+    "topics": {
+      "description": "Key topics covered in the report",
+      "items": {
+        "type": "string"
+      },
+      "title": "Topics",
+      "type": "array"
+    },
+    "action_items": {
+      "description": "Recommended action items based on the report",
+      "items": {
+        "type": "string"
+      },
+      "title": "Action Items",
+      "type": "array"
+    },
+    "risk_level": {
+      "description": "Overall risk assessment level",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Risk Level",
+      "type": "string"
+    },
+    "risk_explanation": {
+      "description": "Explanation for the assigned risk level",
+      "title": "Risk Explanation",
+      "type": "string"
+    },
+    "credibility_assessment": {
+      "$ref": "#/$defs/CredibilityAssessment",
+      "description": "Assessment of the report's credibility and potential exaggeration"
+    },
+    "performance_assessment": {
+      "$ref": "#/$defs/PerformanceAssessment",
+      "description": "Assessment of the employee's overall performance based on the report"
+    }
+  },
+  "required": [
+    "achievements",
+    "challenges",
+    "sentiment",
+    "topics",
+    "action_items",
+    "risk_level",
+    "risk_explanation",
+    "credibility_assessment",
+    "performance_assessment"
+  ],
+  "title": "EmployeeAnalysis",
+  "type": "object"
+}
+
+Example format of what I'm expecting (with your own values):
+{
+  "achievements": [
+    "example item"
+  ],
+  "challenges": [
+    "example item"
+  ],
+  "sentiment": "example value",
+  "topics": [
+    "example item"
+  ],
+  "action_items": [
+    "example item"
+  ],
+  "risk_level": "example value",
+  "risk_explanation": "example value",
+  "credibility_assessment": "example value",
+  "performance_assessment": "example value"
+}

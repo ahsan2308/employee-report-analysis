@@ -1,0 +1,16 @@
+{
+  "body": {
+    "available_tables": [
+      "dbo.JD",
+      "dbo.Reports",
+      "dbo.VisionData"
+    ],
+    "connection_time_ms": 250,
+    "database": "EmployeeTestDB",
+    "message": "Successfully connected to SQL Server",
+    "server": "sql.test.local\\SQLEXPRESS",
+    "status": "connected"
+  },
+  "status": 200,
+  "test_connection_calls": 1
+}

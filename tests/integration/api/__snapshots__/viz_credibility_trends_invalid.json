@@ -1,0 +1,68 @@
+{
+  "employee_id_not_int_422": {
+    "body": {
+      "detail": [
+        {
+          "input": "abc",
+          "loc": [
+            "query",
+            "employee_id"
+          ],
+          "msg": "Input should be a valid integer, unable to parse string as an integer",
+          "type": "int_parsing"
+        }
+      ]
+    },
+    "status": 422
+  },
+  "end_date_bad_value_422": {
+    "body": {
+      "detail": [
+        {
+          "ctx": {
+            "error": "day value is outside expected range"
+          },
+          "input": "2025-02-30",
+          "loc": [
+            "query",
+            "end_date"
+          ],
+          "msg": "Input should be a valid date or datetime, day value is outside expected range",
+          "type": "date_from_datetime_parsing"
+        }
+      ]
+    },
+    "status": 422
+  },
+  "interval_hour_400": {
+    "body": {
+      "detail": "Invalid interval. Allowed values are: day, week, month, quarter, year"
+    },
+    "status": 400
+  },
+  "interval_uppercase_400": {
+    "body": {
+      "detail": "Invalid interval. Allowed values are: day, week, month, quarter, year"
+    },
+    "status": 400
+  },
+  "start_date_bad_format_422": {
+    "body": {
+      "detail": [
+        {
+          "ctx": {
+            "error": "invalid character in year"
+          },
+          "input": "01/02/2025",
+          "loc": [
+            "query",
+            "start_date"
+          ],
+          "msg": "Input should be a valid date or datetime, invalid character in year",
+          "type": "date_from_datetime_parsing"
+        }
+      ]
+    },
+    "status": 422
+  }
+}

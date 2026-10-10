@@ -1,0 +1,83 @@
+{
+  "$defs": {
+    "Capability": {
+      "properties": {
+        "growth": {
+          "description": "How this skill has changed over the quarter",
+          "enum": [
+            "improved",
+            "stable",
+            "declined"
+          ],
+          "title": "Growth",
+          "type": "string"
+        },
+        "proficiency": {
+          "description": "Current proficiency level in this skill",
+          "enum": [
+            "developing",
+            "proficient",
+            "advanced"
+          ],
+          "title": "Proficiency",
+          "type": "string"
+        },
+        "skill": {
+          "description": "Name of the skill or capability",
+          "title": "Skill",
+          "type": "string"
+        }
+      },
+      "required": [
+        "skill",
+        "proficiency",
+        "growth"
+      ],
+      "title": "Capability",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "autonomy_level": {
+      "description": "Level of independence in executing responsibilities",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Autonomy Level",
+      "type": "string"
+    },
+    "development_focus": {
+      "description": "Recommended skill or capability to develop next",
+      "title": "Development Focus",
+      "type": "string"
+    },
+    "key_capabilities": {
+      "description": "Key skills demonstrated or developed during the quarter",
+      "items": {
+        "$ref": "#/$defs/Capability"
+      },
+      "title": "Key Capabilities",
+      "type": "array"
+    },
+    "learning_agility": {
+      "description": "Employee's ability to learn and adapt to new information",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Learning Agility",
+      "type": "string"
+    }
+  },
+  "required": [
+    "key_capabilities",
+    "learning_agility",
+    "autonomy_level",
+    "development_focus"
+  ],
+  "title": "SkillDevelopment",
+  "type": "object"
+}

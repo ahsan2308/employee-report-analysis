@@ -1,0 +1,592 @@
+{
+  "assigned_int": {
+    "ok": {
+      "Assigned_Date": "1970-08-23",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "assigned_missing_key": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      }
+    ]
+  },
+  "assigned_none": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Assigned_Date",
+          "constrained-str"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "Assigned_Date",
+          "date"
+        ],
+        "msg": "Input should be a valid date",
+        "type": "date_type"
+      },
+      {
+        "loc": [
+          "Assigned_Date",
+          "datetime"
+        ],
+        "msg": "Input should be a valid datetime",
+        "type": "datetime_type"
+      }
+    ]
+  },
+  "current_with_end_date": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": "2024-01-01",
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "employee_id_bool": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 1,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "employee_id_decimal": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee_ID must be a valid integer or numeric string. Received: '101'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "employee_id_float": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee_ID must be a valid integer or numeric string. Received: '101.0'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "employee_id_int": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "employee_id_none": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee_ID must be a valid integer or numeric string. Received: 'None'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "employee_id_padded": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "employee_id_text": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee_ID must be a valid integer or numeric string. Received: 'E-101'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "employee_id_zero": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee_ID must be a positive integer. Received: 0",
+        "type": "value_error"
+      }
+    ]
+  },
+  "empty_input": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "JD_ID"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Job_Description"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Assigned_Date"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Is_Current"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      }
+    ]
+  },
+  "end_date_before_assigned": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": "2020-01-01",
+      "Is_Current": false,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "end_date_double_dash": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "end_date_na": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "end_date_tbd": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "extra_columns_ignored": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "is_current_bool_false": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": false,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "is_current_float": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "is_current_int_0": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": false,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "is_current_int_2": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "is_current_maybe": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "is_current_missing_key": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Is_Current"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      }
+    ]
+  },
+  "is_current_no": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": "2024-01-01",
+      "Is_Current": false,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "is_current_none": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "is_current_null_token": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "is_current_y": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "is_current_yes": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "jd_49_chars": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Job_Description"
+        ],
+        "msg": "String should have at least 50 characters",
+        "type": "string_too_short"
+      }
+    ]
+  },
+  "jd_50_chars": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  "jd_contains_na_word": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Job_Description"
+        ],
+        "msg": "Value error, Job description appears to contain placeholder text ('n/a'). Please provide an actual job description.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_digits_only": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Job_Description"
+        ],
+        "msg": "Value error, Job description must contain actual text (letters), not just numbers or symbols",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_id_51_digits": {
+    "validation_errors": [
+      {
+        "loc": [
+          "JD_ID"
+        ],
+        "msg": "Value error, JD_ID exceeds maximum length of 50 characters. Received 51 characters.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_id_bool": {
+    "validation_errors": [
+      {
+        "loc": [
+          "JD_ID"
+        ],
+        "msg": "Value error, JD_ID must be numeric. Final value 'True' is not a valid integer.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_id_decimal": {
+    "validation_errors": [
+      {
+        "loc": [
+          "JD_ID"
+        ],
+        "msg": "Value error, JD_ID must be an integer or numeric string, got Decimal",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_id_empty": {
+    "validation_errors": [
+      {
+        "loc": [
+          "JD_ID"
+        ],
+        "msg": "Value error, JD_ID must be numeric. Received non-numeric string: ''",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_id_float_fraction": {
+    "validation_errors": [
+      {
+        "loc": [
+          "JD_ID"
+        ],
+        "msg": "Value error, JD_ID must be an integer, got float with decimal: 1001.5",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_id_float_integral": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "jd_id_float_string": {
+    "validation_errors": [
+      {
+        "loc": [
+          "JD_ID"
+        ],
+        "msg": "Value error, JD_ID must be numeric. Received non-numeric string: '1002.0'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_id_int": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "jd_id_leading_zeros": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "007",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "jd_id_negative": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "-5",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "jd_id_none": {
+    "validation_errors": [
+      {
+        "loc": [
+          "JD_ID"
+        ],
+        "msg": "Value error, JD_ID is required and cannot be empty",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_id_padded": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1002",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  },
+  "jd_id_text": {
+    "validation_errors": [
+      {
+        "loc": [
+          "JD_ID"
+        ],
+        "msg": "Value error, JD_ID must be numeric. Received non-numeric string: 'JD-7'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_none": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Job_Description"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "jd_padded_to_50": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Job_Description"
+        ],
+        "msg": "String should have at least 50 characters",
+        "type": "string_too_short"
+      }
+    ]
+  },
+  "jd_placeholder_long": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Job_Description"
+        ],
+        "msg": "Value error, Job description appears to contain placeholder text ('tbd'). Please provide an actual job description.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_placeholder_short": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Job_Description"
+        ],
+        "msg": "Value error, Job description appears to contain placeholder text ('tbd'). Please provide an actual job description.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "jd_short": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Job_Description"
+        ],
+        "msg": "String should have at least 50 characters",
+        "type": "string_too_short"
+      }
+    ]
+  },
+  "valid_base": {
+    "ok": {
+      "Assigned_Date": "2023-01-15",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
+  }
+}

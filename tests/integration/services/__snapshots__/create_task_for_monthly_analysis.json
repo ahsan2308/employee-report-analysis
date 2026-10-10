@@ -1,0 +1,112 @@
+{
+  "again_is_new_row": true,
+  "dispatch": [
+    {
+      "args": [
+        "<uuid:1>"
+      ],
+      "kwargs": {},
+      "task": "analyze_monthly_reports_task"
+    },
+    {
+      "args": [
+        "<uuid:3>"
+      ],
+      "kwargs": {},
+      "task": "analyze_monthly_reports_task"
+    }
+  ],
+  "existing": {
+    "celery_task_id": "immediate",
+    "completed_at": "<timestamp>",
+    "created_at": "<timestamp>",
+    "employee_id": 2,
+    "error_message": null,
+    "month": 3,
+    "quarter": null,
+    "report_id": null,
+    "result_data": {
+      "analysis_id": 42,
+      "employee_id": 2,
+      "month": 3,
+      "year": 2025
+    },
+    "started_at": "<timestamp>",
+    "status": "completed",
+    "task_id": "<uuid:2>",
+    "task_type": "MONTHLY_ANALYSIS",
+    "year": 2025
+  },
+  "new": {
+    "celery_task_id": "pending",
+    "completed_at": "<timestamp>",
+    "created_at": "<timestamp>",
+    "employee_id": 1,
+    "error_message": "Task failed to produce monthly analysis",
+    "month": 3,
+    "quarter": null,
+    "report_id": null,
+    "result_data": null,
+    "started_at": null,
+    "status": "failed",
+    "task_id": "<uuid:1>",
+    "task_type": "MONTHLY_ANALYSIS",
+    "year": 2025
+  },
+  "rows": [
+    {
+      "celery_task_id": "pending",
+      "completed_at": "<timestamp>",
+      "created_at": "<timestamp>",
+      "employee_id": 1,
+      "error_message": "Task failed to produce monthly analysis",
+      "month": 3,
+      "quarter": null,
+      "report_id": null,
+      "result_data": null,
+      "started_at": null,
+      "status": "failed",
+      "task_id": "<uuid:1>",
+      "task_type": "MONTHLY_ANALYSIS",
+      "year": 2025
+    },
+    {
+      "celery_task_id": "immediate",
+      "completed_at": "<timestamp>",
+      "created_at": "<timestamp>",
+      "employee_id": 2,
+      "error_message": null,
+      "month": 3,
+      "quarter": null,
+      "report_id": null,
+      "result_data": {
+        "analysis_id": 42,
+        "employee_id": 2,
+        "month": 3,
+        "year": 2025
+      },
+      "started_at": "<timestamp>",
+      "status": "completed",
+      "task_id": "<uuid:2>",
+      "task_type": "MONTHLY_ANALYSIS",
+      "year": 2025
+    },
+    {
+      "celery_task_id": "pending",
+      "completed_at": null,
+      "created_at": "<timestamp>",
+      "employee_id": 1,
+      "error_message": null,
+      "month": 3,
+      "quarter": null,
+      "report_id": null,
+      "result_data": null,
+      "started_at": null,
+      "status": "pending",
+      "task_id": "<uuid:3>",
+      "task_type": "MONTHLY_ANALYSIS",
+      "year": 2025
+    }
+  ],
+  "unknown_employee_error": "Employee with ID 99 not found"
+}

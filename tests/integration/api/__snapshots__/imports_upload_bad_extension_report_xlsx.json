@@ -1,0 +1,8 @@
+{
+  "body": {
+    "detail": "File must have a .csv, .txt, or .tsv extension. Delimiter will be auto-detected."
+  },
+  "db": [],
+  "dispatch": [],
+  "status": 400
+}

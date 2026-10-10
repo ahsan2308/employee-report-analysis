@@ -1,0 +1,31 @@
+{
+  "properties": {
+    "alignment": {
+      "description": "Level of alignment with organizational priorities",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Alignment",
+      "type": "string"
+    },
+    "initiative": {
+      "description": "Name of the strategic initiative",
+      "title": "Initiative",
+      "type": "string"
+    },
+    "outcomes": {
+      "description": "Concrete mission outcomes achieved through this initiative",
+      "title": "Outcomes",
+      "type": "string"
+    }
+  },
+  "required": [
+    "initiative",
+    "alignment",
+    "outcomes"
+  ],
+  "title": "KeyInitiative",
+  "type": "object"
+}

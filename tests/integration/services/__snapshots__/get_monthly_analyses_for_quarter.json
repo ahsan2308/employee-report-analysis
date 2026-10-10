@@ -1,0 +1,238 @@
+{
+  "emp2_q1": [
+    {
+      "achievement_impact_avg": null,
+      "analysis_id": 6,
+      "avg_sentiment_score": 0.9,
+      "consistency_assessment": {
+        "notable_strengths": null,
+        "notable_weaknesses": null,
+        "performance_stability": null,
+        "task_completion_reliability": null,
+        "work_quality_consistency": null
+      },
+      "focus_areas": null,
+      "full_analysis_json": {
+        "month": 2
+      },
+      "growth_indicators": {
+        "approach_to_challenges": null,
+        "complexity_of_tasks": null,
+        "confidence_level_change": null,
+        "skill_development_evidence": null
+      },
+      "month": 2,
+      "month_name": "February",
+      "monthly_achievements": null,
+      "monthly_risk_assessment": {
+        "escalating_risks": null,
+        "overall_risk_level": "low",
+        "risk_explanation": null,
+        "risk_mitigation_recommendations": null,
+        "significant_risks": null
+      },
+      "monthly_summary": "summary 2025-2",
+      "period_end": "2025-02-28",
+      "period_start": "2025-02-01",
+      "progress_trends": {
+        "challenge_resolution_progress": null,
+        "performance_trend": "improving",
+        "risk_level_pattern": null,
+        "sentiment_trend": null
+      },
+      "recurring_challenges": null,
+      "strategic_recommendations": null,
+      "weekly_report_ids": null,
+      "year": 2025
+    }
+  ],
+  "q1": [
+    {
+      "achievement_impact_avg": null,
+      "analysis_id": 2,
+      "avg_sentiment_score": 0.1,
+      "consistency_assessment": {
+        "notable_strengths": [
+          "s"
+        ],
+        "notable_weaknesses": null,
+        "performance_stability": null,
+        "task_completion_reliability": null,
+        "work_quality_consistency": null
+      },
+      "focus_areas": null,
+      "full_analysis_json": {
+        "month": 1
+      },
+      "growth_indicators": {
+        "approach_to_challenges": null,
+        "complexity_of_tasks": null,
+        "confidence_level_change": null,
+        "skill_development_evidence": null
+      },
+      "month": 1,
+      "month_name": "January",
+      "monthly_achievements": null,
+      "monthly_risk_assessment": {
+        "escalating_risks": [
+          "e"
+        ],
+        "overall_risk_level": "low",
+        "risk_explanation": null,
+        "risk_mitigation_recommendations": null,
+        "significant_risks": null
+      },
+      "monthly_summary": "summary 2025-1",
+      "period_end": "2025-01-31",
+      "period_start": "2025-01-01",
+      "progress_trends": {
+        "challenge_resolution_progress": null,
+        "performance_trend": "improving",
+        "risk_level_pattern": null,
+        "sentiment_trend": null
+      },
+      "recurring_challenges": null,
+      "strategic_recommendations": null,
+      "weekly_report_ids": null,
+      "year": 2025
+    },
+    {
+      "achievement_impact_avg": null,
+      "analysis_id": 3,
+      "avg_sentiment_score": 0.2,
+      "consistency_assessment": {
+        "notable_strengths": null,
+        "notable_weaknesses": null,
+        "performance_stability": null,
+        "task_completion_reliability": null,
+        "work_quality_consistency": null
+      },
+      "focus_areas": null,
+      "full_analysis_json": {
+        "month": 2
+      },
+      "growth_indicators": {
+        "approach_to_challenges": null,
+        "complexity_of_tasks": null,
+        "confidence_level_change": null,
+        "skill_development_evidence": null
+      },
+      "month": 2,
+      "month_name": "February",
+      "monthly_achievements": null,
+      "monthly_risk_assessment": {
+        "escalating_risks": null,
+        "overall_risk_level": "low",
+        "risk_explanation": null,
+        "risk_mitigation_recommendations": null,
+        "significant_risks": null
+      },
+      "monthly_summary": "summary 2025-2",
+      "period_end": "2025-02-28",
+      "period_start": "2025-02-01",
+      "progress_trends": {
+        "challenge_resolution_progress": null,
+        "performance_trend": "improving",
+        "risk_level_pattern": null,
+        "sentiment_trend": null
+      },
+      "recurring_challenges": null,
+      "strategic_recommendations": null,
+      "weekly_report_ids": null,
+      "year": 2025
+    },
+    {
+      "achievement_impact_avg": null,
+      "analysis_id": 1,
+      "avg_sentiment_score": 0.3,
+      "consistency_assessment": {
+        "notable_strengths": null,
+        "notable_weaknesses": null,
+        "performance_stability": null,
+        "task_completion_reliability": null,
+        "work_quality_consistency": null
+      },
+      "focus_areas": null,
+      "full_analysis_json": {
+        "month": 3
+      },
+      "growth_indicators": {
+        "approach_to_challenges": null,
+        "complexity_of_tasks": null,
+        "confidence_level_change": null,
+        "skill_development_evidence": null
+      },
+      "month": 3,
+      "month_name": "March",
+      "monthly_achievements": null,
+      "monthly_risk_assessment": {
+        "escalating_risks": null,
+        "overall_risk_level": "low",
+        "risk_explanation": null,
+        "risk_mitigation_recommendations": null,
+        "significant_risks": null
+      },
+      "monthly_summary": "summary 2025-3",
+      "period_end": "2025-03-31",
+      "period_start": "2025-03-01",
+      "progress_trends": {
+        "challenge_resolution_progress": null,
+        "performance_trend": "improving",
+        "risk_level_pattern": null,
+        "sentiment_trend": null
+      },
+      "recurring_challenges": null,
+      "strategic_recommendations": null,
+      "weekly_report_ids": null,
+      "year": 2025
+    }
+  ],
+  "q2": [
+    {
+      "achievement_impact_avg": null,
+      "analysis_id": 4,
+      "avg_sentiment_score": 0.4,
+      "consistency_assessment": {
+        "notable_strengths": null,
+        "notable_weaknesses": null,
+        "performance_stability": null,
+        "task_completion_reliability": null,
+        "work_quality_consistency": null
+      },
+      "focus_areas": null,
+      "full_analysis_json": {
+        "month": 4
+      },
+      "growth_indicators": {
+        "approach_to_challenges": null,
+        "complexity_of_tasks": null,
+        "confidence_level_change": null,
+        "skill_development_evidence": null
+      },
+      "month": 4,
+      "month_name": "April",
+      "monthly_achievements": null,
+      "monthly_risk_assessment": {
+        "escalating_risks": null,
+        "overall_risk_level": "low",
+        "risk_explanation": null,
+        "risk_mitigation_recommendations": null,
+        "significant_risks": null
+      },
+      "monthly_summary": "summary 2025-4",
+      "period_end": "2025-04-30",
+      "period_start": "2025-04-01",
+      "progress_trends": {
+        "challenge_resolution_progress": null,
+        "performance_trend": "improving",
+        "risk_level_pattern": null,
+        "sentiment_trend": null
+      },
+      "recurring_challenges": null,
+      "strategic_recommendations": null,
+      "weekly_report_ids": null,
+      "year": 2025
+    }
+  ],
+  "q3_empty": []
+}

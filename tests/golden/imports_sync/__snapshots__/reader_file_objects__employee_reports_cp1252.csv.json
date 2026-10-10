@@ -1,0 +1,104 @@
+{
+  "bytesio": {
+    "ok": [
+      {
+        "Designation": "Analyst",
+        "Employee_ID": "301",
+        "From": "2024-02-01",
+        "Name": "José Muñoz",
+        "Tasks_Completed": "Reviewed café accounts",
+        "To": "2024-02-29"
+      },
+      {
+        "Designation": "Officer",
+        "Employee_ID": "302",
+        "From": "2024-02-01",
+        "Name": "Zoë Brontë",
+        "Tasks_Completed": "Résumé screening",
+        "To": "2024-02-29"
+      }
+    ]
+  },
+  "bytesio_state": {
+    "delimiter_attr": null,
+    "detected_delimiter": ",",
+    "detected_encoding": "windows-1252",
+    "headers": [
+      "Employee_ID",
+      "Name",
+      "Designation",
+      "From",
+      "To",
+      "Tasks_Completed"
+    ]
+  },
+  "bytesio_total_rows": {
+    "ok": 2
+  },
+  "raw_bytes": {
+    "ok": [
+      {
+        "Designation": "Analyst",
+        "Employee_ID": "301",
+        "From": "2024-02-01",
+        "Name": "José Muñoz",
+        "Tasks_Completed": "Reviewed café accounts",
+        "To": "2024-02-29"
+      },
+      {
+        "Designation": "Officer",
+        "Employee_ID": "302",
+        "From": "2024-02-01",
+        "Name": "Zoë Brontë",
+        "Tasks_Completed": "Résumé screening",
+        "To": "2024-02-29"
+      }
+    ]
+  },
+  "raw_bytes_state": {
+    "delimiter_attr": null,
+    "detected_delimiter": ",",
+    "detected_encoding": "windows-1252",
+    "headers": [
+      "Employee_ID",
+      "Name",
+      "Designation",
+      "From",
+      "To",
+      "Tasks_Completed"
+    ]
+  },
+  "stringio": {
+    "ok": [
+      {
+        "Designation": "Analyst",
+        "Employee_ID": "301",
+        "From": "2024-02-01",
+        "Name": "Jos� Mu�oz",
+        "Tasks_Completed": "Reviewed caf� accounts",
+        "To": "2024-02-29"
+      },
+      {
+        "Designation": "Officer",
+        "Employee_ID": "302",
+        "From": "2024-02-01",
+        "Name": "Zo� Bront�",
+        "Tasks_Completed": "R�sum� screening",
+        "To": "2024-02-29"
+      }
+    ]
+  },
+  "stringio_state": {
+    "delimiter_attr": null,
+    "detected_delimiter": ",",
+    "detected_encoding": null,
+    "headers": [
+      "Employee_ID",
+      "Name",
+      "Designation",
+      "From",
+      "To",
+      "Tasks_Completed"
+    ]
+  }
+}

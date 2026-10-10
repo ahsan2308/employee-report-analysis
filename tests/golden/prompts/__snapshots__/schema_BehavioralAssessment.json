@@ -1,0 +1,60 @@
+{
+  "$defs": {
+    "BehaviorAssessment": {
+      "properties": {
+        "evidence": {
+          "description": "Observable example of this behavior",
+          "title": "Evidence",
+          "type": "string"
+        },
+        "rating": {
+          "description": "Rating relative to expectations",
+          "enum": [
+            "below",
+            "meets",
+            "exceeds"
+          ],
+          "title": "Rating",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rating",
+        "evidence"
+      ],
+      "title": "BehaviorAssessment",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "collaboration": {
+      "$ref": "#/$defs/BehaviorAssessment",
+      "description": "Assessment of collaboration and teamwork"
+    },
+    "communication": {
+      "$ref": "#/$defs/BehaviorAssessment",
+      "description": "Assessment of communication effectiveness"
+    },
+    "ownership": {
+      "$ref": "#/$defs/BehaviorAssessment",
+      "description": "Assessment of ownership and accountability"
+    },
+    "problem_solving": {
+      "$ref": "#/$defs/BehaviorAssessment",
+      "description": "Assessment of problem-solving approach"
+    },
+    "quality_standards": {
+      "$ref": "#/$defs/BehaviorAssessment",
+      "description": "Assessment of quality standards and craft"
+    }
+  },
+  "required": [
+    "ownership",
+    "collaboration",
+    "communication",
+    "problem_solving",
+    "quality_standards"
+  ],
+  "title": "BehavioralAssessment",
+  "type": "object"
+}

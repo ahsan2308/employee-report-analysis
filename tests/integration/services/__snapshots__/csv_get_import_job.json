@@ -1,0 +1,104 @@
+{
+  "returned": {
+    "job_1_error_count_fixed": {
+      "completed_at": null,
+      "csv_type": "employee_report",
+      "error_count": 2,
+      "estimated_time_remaining": null,
+      "filename": "file1.csv",
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "metrics": {
+        "reports_created": 1
+      },
+      "percent_complete": 33.3,
+      "processed_rows": 1,
+      "started_at": null,
+      "status": "running",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 1,
+      "total_rows": 3
+    },
+    "job_2_error_count_fixed": {
+      "completed_at": null,
+      "csv_type": null,
+      "error_count": 1,
+      "estimated_time_remaining": null,
+      "filename": "file2.csv",
+      "job_id": "00000000-0000-0000-0000-000000000002",
+      "metrics": {},
+      "percent_complete": 0.0,
+      "processed_rows": 4,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 0,
+      "total_rows": 0
+    },
+    "job_3_nulls": {
+      "completed_at": null,
+      "csv_type": null,
+      "error_count": 0,
+      "estimated_time_remaining": null,
+      "filename": "file3.csv",
+      "job_id": "00000000-0000-0000-0000-000000000003",
+      "metrics": {},
+      "percent_complete": 0.0,
+      "processed_rows": 0,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 0,
+      "total_rows": 0
+    },
+    "missing": null
+  },
+  "rows": [
+    {
+      "completed_at": null,
+      "csv_type": "employee_report",
+      "error_count": 2,
+      "filename": "file1.csv",
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "metrics_json": {
+        "reports_created": 1
+      },
+      "options": null,
+      "processed_rows": 1,
+      "started_at": null,
+      "status": "running",
+      "submitted_at": "2025-01-02@08:00:00.000000",
+      "successful_rows": 1,
+      "total_rows": 3
+    },
+    {
+      "completed_at": null,
+      "csv_type": null,
+      "error_count": 1,
+      "filename": "file2.csv",
+      "job_id": "00000000-0000-0000-0000-000000000002",
+      "metrics_json": null,
+      "options": null,
+      "processed_rows": 4,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "2025-01-02@08:00:00.000000",
+      "successful_rows": 0,
+      "total_rows": 0
+    },
+    {
+      "completed_at": null,
+      "csv_type": null,
+      "error_count": 0,
+      "filename": "file3.csv",
+      "job_id": "00000000-0000-0000-0000-000000000003",
+      "metrics_json": null,
+      "options": null,
+      "processed_rows": 0,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "2025-01-02@08:00:00.000000",
+      "successful_rows": 0,
+      "total_rows": 0
+    }
+  ]
+}

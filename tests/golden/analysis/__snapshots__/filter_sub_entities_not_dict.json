@@ -1,0 +1,4 @@
+{
+  "message": "'list' object has no attribute 'items'",
+  "raised": "AttributeError"
+}

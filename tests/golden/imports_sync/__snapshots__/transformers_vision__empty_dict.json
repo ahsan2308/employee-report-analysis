@@ -1,0 +1,64 @@
+{
+  "key_order": [
+    "Employee_ID",
+    "From_Date",
+    "To_Date",
+    "Main_Entity",
+    "Sub_Entities",
+    "Sub_Entities_Content"
+  ],
+  "transformed": {
+    "Employee_ID": null,
+    "From_Date": null,
+    "Main_Entity": null,
+    "Sub_Entities": null,
+    "Sub_Entities_Content": null,
+    "To_Date": null
+  },
+  "validated": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Input should be a valid integer",
+        "type": "int_type"
+      },
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "To_Date"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "Main_Entity"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "Sub_Entities"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "Sub_Entities_Content"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  }
+}

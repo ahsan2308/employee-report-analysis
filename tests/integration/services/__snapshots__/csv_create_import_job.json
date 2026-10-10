@@ -1,0 +1,111 @@
+{
+  "returned": [
+    "CSVImportJobResponse",
+    {
+      "completed_at": null,
+      "csv_type": null,
+      "error_count": 0,
+      "estimated_time_remaining": null,
+      "filename": "reports.csv",
+      "job_id": "<uuid:1>",
+      "metrics": {},
+      "percent_complete": 0.0,
+      "processed_rows": 0,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 0,
+      "total_rows": 0
+    },
+    {
+      "completed_at": null,
+      "csv_type": "vision_data",
+      "error_count": 0,
+      "estimated_time_remaining": null,
+      "filename": "vision.txt",
+      "job_id": "<uuid:2>",
+      "metrics": {},
+      "percent_complete": 0.0,
+      "processed_rows": 0,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 0,
+      "total_rows": 0
+    },
+    {
+      "completed_at": null,
+      "csv_type": "not-a-type",
+      "error_count": 0,
+      "estimated_time_remaining": null,
+      "filename": "x.csv",
+      "job_id": "<uuid:3>",
+      "metrics": {},
+      "percent_complete": 0.0,
+      "processed_rows": 0,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 0,
+      "total_rows": 0
+    }
+  ],
+  "rows": [
+    {
+      "completed_at": null,
+      "csv_type": null,
+      "error_count": 0,
+      "filename": "reports.csv",
+      "job_id": "<uuid:1>",
+      "metrics_json": null,
+      "options": null,
+      "processed_rows": 0,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 0,
+      "total_rows": 0
+    },
+    {
+      "completed_at": null,
+      "csv_type": "vision_data",
+      "error_count": 0,
+      "filename": "vision.txt",
+      "job_id": "<uuid:2>",
+      "metrics_json": null,
+      "options": {
+        "auto_mode_selection": true,
+        "chunk_size": 5,
+        "delimiter": null,
+        "dry_run": false,
+        "encoding": null,
+        "error_threshold_percent": 10.0,
+        "file_format": "auto",
+        "file_size_threshold_mb": 10.0,
+        "processing_mode": "row_by_row",
+        "stop_on_error": true
+      },
+      "processed_rows": 0,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 0,
+      "total_rows": 0
+    },
+    {
+      "completed_at": null,
+      "csv_type": "not-a-type",
+      "error_count": 0,
+      "filename": "x.csv",
+      "job_id": "<uuid:3>",
+      "metrics_json": null,
+      "options": null,
+      "processed_rows": 0,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 0,
+      "total_rows": 0
+    }
+  ]
+}

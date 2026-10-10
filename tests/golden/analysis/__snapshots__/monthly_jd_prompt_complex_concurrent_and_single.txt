@@ -1,0 +1,30 @@
+
+## EMPLOYEE JOB DESCRIPTIONS
+
+The employee's role configuration changed during this month:
+
+### PERIOD 1: 2024-12-30 to 2025-01-12
+Job Description:
+Full month duties
+
+Reports from this period:
+- Report for week 2024-12-30 to 2025-01-05
+- Report for week 2025-01-06 to 2025-01-12
+
+### CONCURRENT PERIOD 2: 2025-01-13 to 2025-01-26
+Job Description #1:
+Full month duties
+
+Job Description #2:
+Team lead duties
+
+Reports from holding both roles:
+- Report for week 2025-01-13 to 2025-01-19
+- Report for week 2025-01-20 to 2025-01-26
+
+
+ANALYSIS GUIDANCE:
+- Evaluate workload management across all roles
+- Assess prioritization and time allocation
+- Consider cumulative expectations from all JDs
+- Identify potential conflicts or synergies between roles

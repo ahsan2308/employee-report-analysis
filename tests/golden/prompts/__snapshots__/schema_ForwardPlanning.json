@@ -1,0 +1,92 @@
+{
+  "$defs": {
+    "Recommendation": {
+      "properties": {
+        "action": {
+          "description": "The recommended action in clear, actionable language",
+          "title": "Action",
+          "type": "string"
+        },
+        "ownership": {
+          "description": "Who is responsible for implementing this recommendation: employee (independent action), manager (intervention/approval required), hr (HR resources/training/policy support), cross-team (coordination with other Wings/Sections)",
+          "enum": [
+            "employee",
+            "manager",
+            "hr",
+            "cross-team"
+          ],
+          "title": "Ownership",
+          "type": "string"
+        },
+        "priority": {
+          "description": "Priority level: high (immediate intervention needed), medium (address within next quarter), low (desirable improvements)",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Priority",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "priority",
+        "ownership"
+      ],
+      "title": "Recommendation",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "improve": {
+      "description": "Areas where the employee should focus on enhancement (with specific actions)",
+      "items": {
+        "$ref": "#/$defs/Recommendation"
+      },
+      "title": "Improve",
+      "type": "array"
+    },
+    "keep_doing": {
+      "description": "Activities the employee should continue (with rationale for value)",
+      "items": {
+        "$ref": "#/$defs/Recommendation"
+      },
+      "title": "Keep Doing",
+      "type": "array"
+    },
+    "start": {
+      "description": "New initiatives or activities the employee should begin (growth opportunities)",
+      "items": {
+        "$ref": "#/$defs/Recommendation"
+      },
+      "title": "Start",
+      "type": "array"
+    },
+    "stop": {
+      "description": "Activities the employee should discontinue (low value or ineffective, provide alternatives)",
+      "items": {
+        "$ref": "#/$defs/Recommendation"
+      },
+      "title": "Stop",
+      "type": "array"
+    },
+    "support_needed": {
+      "description": "Resources or support required for success (with justification and timeline context)",
+      "items": {
+        "$ref": "#/$defs/Recommendation"
+      },
+      "title": "Support Needed",
+      "type": "array"
+    }
+  },
+  "required": [
+    "keep_doing",
+    "improve",
+    "start",
+    "stop",
+    "support_needed"
+  ],
+  "title": "ForwardPlanning",
+  "type": "object"
+}

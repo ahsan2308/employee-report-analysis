@@ -1,0 +1,21 @@
+{
+  "detect_custom": {
+    "ok": {
+      "csv_type": "unknown",
+      "processor": "CustomProcessor"
+    }
+  },
+  "detect_vision_still_first": {
+    "ok": {
+      "csv_type": "vision_data",
+      "processor": "VisionDataProcessor"
+    }
+  },
+  "registry_order": [
+    "EmployeeReportProcessor",
+    "VisionDataProcessor",
+    "JobDescriptionProcessor",
+    "SupervisorFeedbackProcessor",
+    "CustomProcessor"
+  ]
+}

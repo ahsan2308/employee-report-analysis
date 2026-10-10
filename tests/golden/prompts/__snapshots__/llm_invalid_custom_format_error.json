@@ -1,0 +1,14 @@
+{
+  "monthly": {
+    "error": "'list' object has no attribute 'items'",
+    "status": "failed"
+  },
+  "quarterly": {
+    "error": "'list' object has no attribute 'items'",
+    "status": "failed"
+  },
+  "weekly": {
+    "error": "'list' object has no attribute 'items'",
+    "status": "failed"
+  }
+}

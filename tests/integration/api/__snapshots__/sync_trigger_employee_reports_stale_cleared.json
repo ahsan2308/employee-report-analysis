@@ -1,0 +1,64 @@
+{
+  "body": {
+    "is_full_sync": true,
+    "message": "Employee reports sync (full) started successfully",
+    "status": "pending",
+    "sync_id": "<uuid:1>",
+    "sync_type": "employee_reports",
+    "task_id": "celery-send-task-1",
+    "triggered_at": "<timestamp>"
+  },
+  "db": [
+    {
+      "completed_at": "<timestamp>",
+      "error_count": 0,
+      "error_details": null,
+      "error_message": "Sync timed out after 60 minutes",
+      "last_sync_timestamp": null,
+      "records_created": 0,
+      "records_queried": 0,
+      "records_skipped": 0,
+      "records_synced": 0,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "failed",
+      "sync_id": "<uuid:2>",
+      "sync_metadata": null,
+      "sync_options": null,
+      "sync_type": "employee_reports"
+    },
+    {
+      "completed_at": null,
+      "error_count": 0,
+      "error_details": null,
+      "error_message": null,
+      "last_sync_timestamp": null,
+      "records_created": 0,
+      "records_queried": 0,
+      "records_skipped": 0,
+      "records_synced": 0,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "pending",
+      "sync_id": "<uuid:1>",
+      "sync_metadata": null,
+      "sync_options": {
+        "is_full_sync": true
+      },
+      "sync_type": "employee_reports"
+    }
+  ],
+  "dispatch": [
+    {
+      "args": [],
+      "call": "celery_app.send_task",
+      "kwargs": {
+        "is_full_sync": true,
+        "sync_id": "<uuid:1>"
+      },
+      "name": "sync.employee_reports",
+      "options": {}
+    }
+  ],
+  "status": 202
+}

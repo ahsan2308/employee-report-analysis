@@ -1,0 +1,71 @@
+{
+  "body": {
+    "completed_at": null,
+    "csv_type": "vision_data",
+    "error_count": 0,
+    "estimated_time_remaining": null,
+    "filename": "file.csv",
+    "job_id": "<uuid:1>",
+    "metrics": {},
+    "percent_complete": 0.0,
+    "processed_rows": 0,
+    "started_at": null,
+    "status": "pending",
+    "submitted_at": "<timestamp>",
+    "successful_rows": 0,
+    "total_rows": 0
+  },
+  "db": [
+    {
+      "completed_at": null,
+      "csv_type": "vision_data",
+      "error_count": 0,
+      "filename": "file.csv",
+      "job_id": "<uuid:1>",
+      "metrics_json": null,
+      "options": {
+        "auto_mode_selection": true,
+        "chunk_size": 1000,
+        "delimiter": null,
+        "dry_run": false,
+        "encoding": null,
+        "error_threshold_percent": 10.0,
+        "file_format": "csv",
+        "file_size_threshold_mb": 10.0,
+        "processing_mode": "bulk",
+        "stop_on_error": false
+      },
+      "processed_rows": 0,
+      "started_at": null,
+      "status": "pending",
+      "submitted_at": "<timestamp>",
+      "successful_rows": 0,
+      "total_rows": 0
+    }
+  ],
+  "dispatch": [
+    {
+      "args": [],
+      "call": "process_csv_import.delay",
+      "kwargs": {
+        "csv_type": "vision_data",
+        "file_content": "Name,Wing,Position\nAlice,Engineering,Engineer\n",
+        "filename": "file.csv",
+        "job_id": "<uuid:1>",
+        "options": {
+          "auto_mode_selection": true,
+          "chunk_size": 1000,
+          "delimiter": null,
+          "dry_run": false,
+          "encoding": null,
+          "error_threshold_percent": 10.0,
+          "file_format": "csv",
+          "file_size_threshold_mb": 10.0,
+          "processing_mode": "bulk",
+          "stop_on_error": false
+        }
+      }
+    }
+  ],
+  "status": 200
+}

@@ -1,0 +1,34 @@
+{
+  "key_order": [
+    "Employee_ID",
+    "From_Date",
+    "To_Date",
+    "Main_Entity",
+    "Sub_Entities",
+    "Sub_Entities_Content"
+  ],
+  "transformed": {
+    "Employee_ID": "<Decimal 104>",
+    "From_Date": "2024-04-01",
+    "Main_Entity": "Tasks",
+    "Sub_Entities": "Tasks:1",
+    "Sub_Entities_Content": "Tasks:[{'a': 1,}]",
+    "To_Date": "2024-04-30"
+  },
+  "validated": {
+    "ok": {
+      "Employee_ID": 104,
+      "From_Date": "<date 2024-04-01>",
+      "Main_Entity": "Tasks",
+      "Sub_Entities": "{\"Tasks\": 1}",
+      "Sub_Entities_Content": {
+        "Tasks": [
+          {
+            "a": 1
+          }
+        ]
+      },
+      "To_Date": "<date 2024-04-30>"
+    }
+  }
+}

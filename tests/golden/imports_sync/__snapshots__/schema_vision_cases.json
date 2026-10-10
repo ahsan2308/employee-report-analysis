@@ -1,0 +1,562 @@
+{
+  "content_apostrophe_in_value": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Persons": [
+          {
+            "name": "O'Brien"
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "content_bad_json": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Sub_Entities_Content"
+        ],
+        "msg": "Value error, Invalid JSON list for 'Cases' in Sub_Entities_Content",
+        "type": "value_error"
+      }
+    ]
+  },
+  "content_commas_inside_strings": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Cases": [
+          {
+            "t": "a, b: c"
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "content_dict_input": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Sub_Entities_Content"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "content_duplicate_key": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Cases": []
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "content_empty": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {},
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "content_empty_lists": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Cases": [],
+        "Tasks": []
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "content_key_without_colon": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Sub_Entities_Content"
+        ],
+        "msg": "Value error, Invalid Sub_Entities_Content part: 'Cases[]'. Expected format 'Key:[...]'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "content_list_of_ints": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Sub_Entities_Content"
+        ],
+        "msg": "Value error, Each item in list for 'Events' must be a JSON object/dict",
+        "type": "value_error"
+      }
+    ]
+  },
+  "content_na": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Sub_Entities_Content"
+        ],
+        "msg": "Value error, Invalid Sub_Entities_Content part: 'N/A'. Expected format 'Key:[...]'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "content_nested_lists": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Cases": [
+          {
+            "tags": [
+              1,
+              2
+            ]
+          }
+        ],
+        "Tasks": [
+          {
+            "x": {
+              "y": 1
+            }
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "content_none": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Sub_Entities_Content"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "content_not_list": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Sub_Entities_Content"
+        ],
+        "msg": "Value error, Value for 'Cases' must be a list enclosed in []",
+        "type": "value_error"
+      }
+    ]
+  },
+  "content_single_quotes_trailing_comma": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Links": [
+          {
+            "url": "x"
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "employee_id_float": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "employee_id_float_fraction": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Input should be a valid integer, got a number with a fractional part",
+        "type": "int_from_float"
+      }
+    ]
+  },
+  "employee_id_int": {
+    "ok": {
+      "Employee_ID": 7,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "employee_id_negative": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee ID must be a positive integer",
+        "type": "value_error"
+      }
+    ]
+  },
+  "employee_id_none": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Input should be a valid integer",
+        "type": "int_type"
+      }
+    ]
+  },
+  "employee_id_text": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Input should be a valid integer, unable to parse string as an integer",
+        "type": "int_parsing"
+      }
+    ]
+  },
+  "employee_id_zero": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee ID must be a positive integer",
+        "type": "value_error"
+      }
+    ]
+  },
+  "empty_input": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "From_Date"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "To_Date"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Main_Entity"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Sub_Entities"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      },
+      {
+        "loc": [
+          "Sub_Entities_Content"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      }
+    ]
+  },
+  "from_after_to": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, From date (2024-06-01) cannot be after To date (2024-05-01)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "from_unparsed_vs_date": {
+    "message": "'>' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "main_entity_padded": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Persons",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "main_entity_spaces": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Main_Entity"
+        ],
+        "msg": "Value error, Main entity cannot be empty",
+        "type": "value_error"
+      }
+    ]
+  },
+  "main_entity_unknown": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Spaceships",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "sub_entities_duplicate_keys": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 5}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "sub_entities_empty": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "sub_entities_na": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Sub_Entities"
+        ],
+        "msg": "Value error, Invalid sub-entities format. Expected 'Name:Count, Name:Count, ...' but got 'N/A'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "sub_entities_no_count": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Sub_Entities"
+        ],
+        "msg": "Value error, Invalid sub-entities format. Expected 'Name:Count, Name:Count, ...' but got 'Cases, Activities'",
+        "type": "value_error"
+      }
+    ]
+  },
+  "sub_entities_none": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Sub_Entities"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "sub_entities_partial_garbage": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Links\": 3}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "sub_entities_zero": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Persons\": 0}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  },
+  "valid_base": {
+    "ok": {
+      "Employee_ID": 101,
+      "From_Date": "<date 2020-01-01>",
+      "Main_Entity": "Activities and Cases",
+      "Sub_Entities": "{\"Cases\": 2, \"Activities\": 1}",
+      "Sub_Entities_Content": {
+        "Activities": [
+          {
+            "type": "raid"
+          }
+        ],
+        "Cases": [
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "To_Date": "<date 2024-12-31>"
+    }
+  }
+}

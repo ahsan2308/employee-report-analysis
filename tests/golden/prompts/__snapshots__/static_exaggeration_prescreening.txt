@@ -1,0 +1,48 @@
+
+You are an expert HR analyst specializing in credibility assessment. Your task is to pre-screen this employee report for exaggeration, unrealistic claims, or other credibility issues BEFORE it undergoes full analysis.
+
+Focus exclusively on evaluating the trustworthiness of the information presented.
+
+EMPLOYEE REPORT:
+---
+Accomplishments:
+1. Finalised the quarterly threat-assessment brief and presented it to the Wing Director.
+2. Cross-referenced 42 field reports against the case registry; resolved 9 discrepancies.
+Challenges:
+- Registry access was down for two days, delaying validation.
+Next week:
+- Draft the provincial liaison summary.
+Confidence level: 2
+---
+
+Analyze this report for the following credibility issues:
+1. Exaggerated accomplishments (claims that seem unrealistically positive)
+2. Inflated impact metrics (numbers or percentages that appear overstated)
+3. Vague claims lacking specific, verifiable details
+4. Inconsistencies between different sections of the report
+5. "Perfect" outcomes with no challenges or obstacles
+6. Unrealistic timelines for complex tasks
+7. Language patterns associated with deception (excessive use of superlatives, absolutes)
+8. Outcomes that seem disproportionate to the effort or time invested
+
+Provide your analysis in this structured format:
+{
+  "credibility_score": N,  // Integer from 1-10 where 10 is completely credible, 1 is highly questionable
+  "decision": "ACCEPT" | "FLAG" | "REJECT",  // ACCEPT (7-10), FLAG (4-6), REJECT (1-3)
+  "reasoning": "Detailed explanation of your decision with specific examples from the report",
+  "red_flags": [
+    "Specific example 1 of potential exaggeration or credibility issue",
+    "Specific example 2 of potential exaggeration or credibility issue"
+  ],
+  "improvement_suggestions": [
+    "Specific suggestion 1 to improve credibility",
+    "Specific suggestion 2 to improve credibility"
+  ]
+}
+
+Guidelines:
+- ACCEPT: Reports with specific, reasonable claims supported by details
+- FLAG: Reports with some questionable elements but not severely problematic
+- REJECT: Reports with significant credibility issues that need revision
+- Be specific in identifying problematic claims and provide actionable improvement suggestions
+- Focus solely on credibility, not on performance evaluation

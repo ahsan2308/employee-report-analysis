@@ -1,0 +1,13 @@
+{
+  "db": {
+    "background_tasks": [],
+    "employee_analyses": [],
+    "monthly_analyses": [],
+    "quarterly_analyses": []
+  },
+  "external_calls": [],
+  "outcome": {
+    "exception": "ValueError('badly formed hexadecimal UUID string')",
+    "state": "FAILURE"
+  }
+}

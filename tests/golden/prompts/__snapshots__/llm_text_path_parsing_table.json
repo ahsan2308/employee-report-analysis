@@ -1,0 +1,80 @@
+{
+  "bare_number": {
+    "num_provider_calls": 1,
+    "result": 42
+  },
+  "empty_string": {
+    "num_provider_calls": 1,
+    "result": {}
+  },
+  "extra_text_around_braces": {
+    "num_provider_calls": 1,
+    "result": {
+      "risk_level": "low",
+      "sentiment": "positive",
+      "topics": [
+        "threat assessment"
+      ]
+    }
+  },
+  "fenced_json": {
+    "num_provider_calls": 1,
+    "result": {
+      "risk_level": "low",
+      "sentiment": "positive",
+      "topics": [
+        "threat assessment"
+      ]
+    }
+  },
+  "fenced_no_lang": {
+    "num_provider_calls": 1,
+    "result": {
+      "risk_level": "low",
+      "sentiment": "positive",
+      "topics": [
+        "threat assessment"
+      ]
+    }
+  },
+  "invalid_fence_valid_braces": {
+    "num_provider_calls": 1,
+    "result": {
+      "a": 1
+    }
+  },
+  "invalid_json": {
+    "num_provider_calls": 1,
+    "result": {}
+  },
+  "json_array": {
+    "num_provider_calls": 1,
+    "result": [
+      1,
+      2,
+      3
+    ]
+  },
+  "none": {
+    "num_provider_calls": 1,
+    "result": {}
+  },
+  "two_objects": {
+    "num_provider_calls": 1,
+    "result": {}
+  },
+  "valid_json": {
+    "num_provider_calls": 1,
+    "result": {
+      "risk_level": "low",
+      "sentiment": "positive",
+      "topics": [
+        "threat assessment"
+      ]
+    }
+  },
+  "whitespace": {
+    "num_provider_calls": 1,
+    "result": {}
+  }
+}

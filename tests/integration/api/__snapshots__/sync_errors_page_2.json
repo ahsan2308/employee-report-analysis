@@ -1,0 +1,27 @@
+{
+  "body": {
+    "errors": [
+      {
+        "error_category": null,
+        "error_message": "Unknown error",
+        "field_name": "BPS",
+        "row_data": null,
+        "row_number": 0
+      },
+      {
+        "error_category": null,
+        "error_message": "dup",
+        "field_name": null,
+        "row_data": {
+          "id": 9
+        },
+        "row_number": 9
+      }
+    ],
+    "page": 2,
+    "page_size": 2,
+    "sync_id": "<uuid:1>",
+    "total_errors": 5
+  },
+  "status": 200
+}

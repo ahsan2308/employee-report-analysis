@@ -1,0 +1,27 @@
+{
+  "body": {
+    "detail": "Job descriptions sync already in progress (sync_id: <uuid:1>)"
+  },
+  "db": [
+    {
+      "completed_at": null,
+      "error_count": 0,
+      "error_details": null,
+      "error_message": null,
+      "last_sync_timestamp": null,
+      "records_created": 0,
+      "records_queried": 0,
+      "records_skipped": 0,
+      "records_synced": 0,
+      "records_updated": 0,
+      "started_at": "<timestamp>",
+      "status": "pending",
+      "sync_id": "<uuid:1>",
+      "sync_metadata": null,
+      "sync_options": null,
+      "sync_type": "job_descriptions"
+    }
+  ],
+  "dispatch": [],
+  "status": 409
+}

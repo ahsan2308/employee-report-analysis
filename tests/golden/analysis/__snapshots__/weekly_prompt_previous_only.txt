@@ -1,0 +1,19 @@
+
+Historical Activity Data:
+
+- Time Period: 2024-12-30 to 2025-01-05
+  Main Activity: Tasks
+  Details:
+    - Number of Tasks: 1 (New Tasks created)
+      ---> name: Task 1, ref: R-1
+      ---> name: Task 2, ref: R-2
+      ---> name: Task 3, ref: R-3
+      ---> name: Task 4, ref: R-4
+      ---> name: Task 5, ref: R-5
+    - Number of Task Updates: -1 (Updates added with Tasks)
+
+- Time Period: 2024-12-23 to 2024-12-29
+  Main Activity: Events
+  Details:
+    - Number of Events: None (Event records created (Incidents, Protests, Strikes, Press conferences, etc.))
+    - Number of EOIs: 3 (Events marked as Event of Interest)

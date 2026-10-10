@@ -1,0 +1,14 @@
+{
+  "datetime_object_date": {
+    "message": "can't compare datetime.datetime to datetime.date",
+    "raised": "TypeError"
+  },
+  "jd_without_jd_id": {
+    "message": "'jd_id'",
+    "raised": "KeyError"
+  },
+  "report_id_none": {
+    "message": "'NoneType' object is not subscriptable",
+    "raised": "TypeError"
+  }
+}

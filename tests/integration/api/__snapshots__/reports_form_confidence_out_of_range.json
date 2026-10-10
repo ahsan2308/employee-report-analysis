@@ -1,0 +1,20 @@
+{
+  "body": {
+    "detail": [
+      {
+        "ctx": {
+          "le": 5
+        },
+        "input": 6,
+        "loc": [
+          "body",
+          "confidence_level"
+        ],
+        "msg": "Input should be less than or equal to 5",
+        "type": "less_than_equal"
+      }
+    ]
+  },
+  "db": [],
+  "status": 422
+}

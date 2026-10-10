@@ -1,0 +1,52 @@
+{
+  "properties": {
+    "escalating_risks": {
+      "description": "Risks that are escalating and require attention",
+      "items": {
+        "type": "string"
+      },
+      "title": "Escalating Risks",
+      "type": "array"
+    },
+    "overall_risk_level": {
+      "description": "Overall risk assessment for the month",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Overall Risk Level",
+      "type": "string"
+    },
+    "risk_explanation": {
+      "description": "Detailed explanation of the risk assessment and reasoning",
+      "title": "Risk Explanation",
+      "type": "string"
+    },
+    "risk_mitigation_recommendations": {
+      "description": "Recommendations for mitigating identified risks",
+      "items": {
+        "type": "string"
+      },
+      "title": "Risk Mitigation Recommendations",
+      "type": "array"
+    },
+    "significant_risks": {
+      "description": "Most significant risks identified across all weeks",
+      "items": {
+        "type": "string"
+      },
+      "title": "Significant Risks",
+      "type": "array"
+    }
+  },
+  "required": [
+    "overall_risk_level",
+    "risk_explanation",
+    "significant_risks",
+    "escalating_risks",
+    "risk_mitigation_recommendations"
+  ],
+  "title": "MonthlyRiskAssessment",
+  "type": "object"
+}

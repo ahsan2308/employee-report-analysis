@@ -1,0 +1,78 @@
+{
+  "after_60": [
+    [
+      "00000000-0000-0000-0000-000000000001",
+      "failed",
+      "Sync timed out after 60 minutes",
+      true
+    ],
+    [
+      "00000000-0000-0000-0000-000000000002",
+      "failed",
+      "Sync timed out after 60 minutes",
+      true
+    ],
+    [
+      "00000000-0000-0000-0000-000000000003",
+      "running",
+      null,
+      false
+    ],
+    [
+      "00000000-0000-0000-0000-000000000004",
+      "completed",
+      null,
+      false
+    ],
+    [
+      "00000000-0000-0000-0000-000000000005",
+      "partial",
+      null,
+      false
+    ],
+    [
+      "00000000-0000-0000-0000-000000000006",
+      "running",
+      null,
+      false
+    ]
+  ],
+  "final": [
+    [
+      "00000000-0000-0000-0000-000000000001",
+      "failed",
+      "Sync timed out after 60 minutes",
+      true
+    ],
+    [
+      "00000000-0000-0000-0000-000000000002",
+      "failed",
+      "Sync timed out after 60 minutes",
+      true
+    ],
+    [
+      "00000000-0000-0000-0000-000000000003",
+      "failed",
+      "Sync timed out after 0 minutes",
+      true
+    ],
+    [
+      "00000000-0000-0000-0000-000000000004",
+      "completed",
+      null,
+      false
+    ],
+    [
+      "00000000-0000-0000-0000-000000000005",
+      "partial",
+      null,
+      false
+    ],
+    [
+      "00000000-0000-0000-0000-000000000006",
+      "failed",
+      "Sync timed out after 5 minutes",
+      true
+    ]
+  ]
+}

@@ -1,0 +1,79 @@
+[
+  {
+    "completed_at": "<timestamp>",
+    "csv_type": null,
+    "error_count": 7,
+    "filename": "file1.csv",
+    "job_id": "00000000-0000-0000-0000-000000000001",
+    "metrics_json": null,
+    "options": null,
+    "processed_rows": 0,
+    "started_at": "<timestamp>",
+    "status": "completed",
+    "submitted_at": "2025-01-02@08:00:00.000000",
+    "successful_rows": 0,
+    "total_rows": 0
+  },
+  {
+    "completed_at": "<timestamp>",
+    "csv_type": "vision_data",
+    "error_count": 0,
+    "filename": "file2.csv",
+    "job_id": "00000000-0000-0000-0000-000000000002",
+    "metrics_json": {
+      "records": 9
+    },
+    "options": null,
+    "processed_rows": 10,
+    "started_at": null,
+    "status": "completed",
+    "submitted_at": "2025-01-02@08:00:00.000000",
+    "successful_rows": 9,
+    "total_rows": 0
+  },
+  {
+    "completed_at": "<timestamp>",
+    "csv_type": null,
+    "error_count": 2,
+    "filename": "file3.csv",
+    "job_id": "00000000-0000-0000-0000-000000000003",
+    "metrics_json": null,
+    "options": null,
+    "processed_rows": 0,
+    "started_at": null,
+    "status": "failed",
+    "submitted_at": "2025-01-02@08:00:00.000000",
+    "successful_rows": 0,
+    "total_rows": 0
+  },
+  {
+    "completed_at": "<timestamp>",
+    "csv_type": null,
+    "error_count": 1,
+    "filename": "file4.csv",
+    "job_id": "00000000-0000-0000-0000-000000000004",
+    "metrics_json": null,
+    "options": null,
+    "processed_rows": 0,
+    "started_at": null,
+    "status": "failed",
+    "submitted_at": "2025-01-02@08:00:00.000000",
+    "successful_rows": 0,
+    "total_rows": 0
+  },
+  {
+    "completed_at": null,
+    "csv_type": null,
+    "error_count": 0,
+    "filename": "file5.csv",
+    "job_id": "00000000-0000-0000-0000-000000000005",
+    "metrics_json": null,
+    "options": null,
+    "processed_rows": 0,
+    "started_at": "2025-01-02@08:30:00.000000",
+    "status": "running",
+    "submitted_at": "2025-01-02@08:00:00.000000",
+    "successful_rows": 0,
+    "total_rows": 0
+  }
+]

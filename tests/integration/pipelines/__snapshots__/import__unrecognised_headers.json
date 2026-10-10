@@ -1,0 +1,63 @@
+{
+  "external_calls": [],
+  "import": {
+    "csv_import_jobs": [
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": null,
+        "error_count": 1,
+        "filename": "employee_reports.csv",
+        "job_id": "<uuid:1>",
+        "metrics_json": null,
+        "options": {
+          "auto_mode_selection": true,
+          "chunk_size": 1000,
+          "delimiter": ";",
+          "dry_run": false,
+          "encoding": null,
+          "error_threshold_percent": 10.0,
+          "file_format": "auto",
+          "file_size_threshold_mb": 10.0,
+          "processing_mode": "row_by_row",
+          "stop_on_error": false
+        },
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "failed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 0,
+        "total_rows": 4
+      }
+    ],
+    "import_errors": []
+  },
+  "outcomes": [
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": null,
+        "error_count": 1,
+        "filename": "employee_reports.csv",
+        "job_id": "<uuid:1>",
+        "metrics": {},
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "failed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 0,
+        "total_rows": 4
+      },
+      "state": "SUCCESS"
+    }
+  ],
+  "tables": {
+    "employee_job_descriptions": [],
+    "employee_vision_data": [],
+    "employees": [],
+    "qdrant_mappings": [],
+    "reports": [],
+    "supervisor_feedback_forms": [],
+    "supervisor_feedback_metric_definitions": [],
+    "supervisor_feedback_responses": []
+  }
+}

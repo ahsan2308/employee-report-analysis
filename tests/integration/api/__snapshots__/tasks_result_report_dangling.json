@@ -1,0 +1,11 @@
+{
+  "body": {
+    "error_message": null,
+    "result": {
+      "analysis_id": 999
+    },
+    "status": "completed",
+    "task_id": "<uuid:1>"
+  },
+  "status": 200
+}

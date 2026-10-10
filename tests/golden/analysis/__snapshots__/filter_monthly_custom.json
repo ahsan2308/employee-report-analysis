@@ -1,0 +1,112 @@
+{
+  "current_data": [],
+  "date_context": {
+    "month": 2,
+    "period_end": "2025-02-28",
+    "period_start": "2025-02-01",
+    "year": 2025
+  },
+  "months_data": [],
+  "previous_data": [],
+  "weeks_data": [
+    {
+      "activities": [
+        {
+          "from_date": "2025-02-03",
+          "main_entity": "Persons",
+          "sub_entities": {
+            "Persons": {
+              "description": "P!",
+              "value": 2
+            }
+          },
+          "sub_entities_content": {
+            "Persons": [
+              {
+                "empty": "",
+                "name": "Name 1",
+                "ref": "R-1"
+              },
+              {
+                "empty": "",
+                "name": "Name 2",
+                "ref": "R-2"
+              },
+              {
+                "empty": "",
+                "name": "Name 3",
+                "ref": "R-3"
+              },
+              {
+                "empty": "",
+                "name": "Name 4",
+                "ref": "R-4"
+              },
+              {
+                "empty": "",
+                "name": "Name 5",
+                "ref": "R-5"
+              },
+              {
+                "empty": "",
+                "name": "Name 6",
+                "ref": "R-6"
+              }
+            ]
+          },
+          "to_date": "2025-02-09"
+        },
+        {
+          "from_date": "2025-02-03",
+          "main_entity": "Nadra",
+          "sub_entities": {
+            "Forwarded": {
+              "description": "",
+              "value": 4
+            },
+            "Notings": {
+              "description": "",
+              "value": 1
+            },
+            "Requests": {
+              "description": "",
+              "value": 10
+            }
+          },
+          "sub_entities_content": {
+            "Requests": [
+              {
+                "cnic": "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL",
+                "status": "ok"
+              }
+            ]
+          },
+          "to_date": "2025-02-09"
+        }
+      ],
+      "iso_week": "2025-W06",
+      "week_number": 1
+    },
+    {
+      "activities": [
+        {
+          "from_date": "2025-02-17",
+          "main_entity": "PER",
+          "sub_entities": {
+            "Initiated": {
+              "description": "",
+              "value": 1
+            },
+            "Recieved as CSO1": {
+              "description": "",
+              "value": 2
+            }
+          },
+          "to_date": "2025-02-23"
+        }
+      ],
+      "iso_week": null,
+      "week_number": 4
+    }
+  ]
+}

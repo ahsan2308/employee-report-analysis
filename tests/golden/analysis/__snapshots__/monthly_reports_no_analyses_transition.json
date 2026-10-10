@@ -1,0 +1,185 @@
+{
+  "calls": [
+    {
+      "args": [
+        42
+      ],
+      "fn": "get_employee_info",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        2
+      ],
+      "fn": "get_reports_for_month",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        2
+      ],
+      "fn": "get_analyses_for_month",
+      "kwargs": {}
+    },
+    {
+      "args": [],
+      "fn": "get_employee_job_descriptions_for_period",
+      "kwargs": {
+        "employee_id": 42,
+        "period_end": "2025-02-28",
+        "period_start": "2025-02-01"
+      }
+    }
+  ],
+  "result": {
+    "analyses": [],
+    "employee_id": 42,
+    "employee_info": {
+      "id": 42,
+      "name": "Test Employee",
+      "position": "Analyst",
+      "wing": "Ops"
+    },
+    "employee_jds": [
+      {
+        "assigned_date": "2025-02-01",
+        "effective_during_period": {
+          "end": "2025-02-14",
+          "start": "2025-02-01"
+        },
+        "end_date": null,
+        "is_current": true,
+        "jd_id": "JD_OLD",
+        "job_description": "Old"
+      },
+      {
+        "assigned_date": "2025-02-15",
+        "effective_during_period": {
+          "end": "2025-02-28",
+          "start": "2025-02-15"
+        },
+        "end_date": null,
+        "is_current": true,
+        "jd_id": "JD_NEW",
+        "job_description": "New"
+      }
+    ],
+    "jd_report_mapping": {
+      "jd_groups": [
+        {
+          "effective_dates": {
+            "end": "2025-02-09",
+            "start": "2025-01-27"
+          },
+          "jd_ids": [
+            "JD_OLD"
+          ],
+          "jd_texts": [
+            "Old"
+          ],
+          "reports": [
+            {
+              "date": "2025-02-02",
+              "report_id": "rep-2025-02-02",
+              "text": "weekly report",
+              "week_end_date": "2025-02-02",
+              "week_start_date": "2025-01-27"
+            },
+            {
+              "date": "2025-02-09",
+              "report_id": "rep-2025-02-09",
+              "text": "weekly report",
+              "week_end_date": "2025-02-09",
+              "week_start_date": "2025-02-03"
+            }
+          ]
+        },
+        {
+          "effective_dates": {
+            "end": "2025-02-16",
+            "start": "2025-02-10"
+          },
+          "jd_ids": [
+            "JD_NEW",
+            "JD_OLD"
+          ],
+          "jd_texts": [
+            "Old",
+            "New"
+          ],
+          "reports": [
+            {
+              "date": "2025-02-16",
+              "report_id": "rep-2025-02-16",
+              "text": "weekly report",
+              "week_end_date": "2025-02-16",
+              "week_start_date": "2025-02-10"
+            }
+          ]
+        },
+        {
+          "effective_dates": {
+            "end": "2025-02-23",
+            "start": "2025-02-17"
+          },
+          "jd_ids": [
+            "JD_NEW"
+          ],
+          "jd_texts": [
+            "New"
+          ],
+          "reports": [
+            {
+              "date": "2025-02-23",
+              "report_id": "rep-2025-02-23",
+              "text": "weekly report",
+              "week_end_date": "2025-02-23",
+              "week_start_date": "2025-02-17"
+            }
+          ]
+        }
+      ],
+      "unmapped_reports": []
+    },
+    "metrics": {
+      "achievement_count": 0,
+      "achievement_impact_avg": 0.0,
+      "avg_sentiment": 0.0,
+      "challenge_count": 0,
+      "recurring_topics": [],
+      "report_count": 4,
+      "risk_levels": {},
+      "sentiment_trend": "stable"
+    },
+    "month": 2,
+    "period_end": "2025-02-28",
+    "period_start": "2025-02-01",
+    "reports": [
+      {
+        "date": "2025-02-02",
+        "report_id": "rep-2025-02-02",
+        "text": "weekly report"
+      },
+      {
+        "date": "2025-02-09",
+        "report_id": "rep-2025-02-09",
+        "text": "weekly report"
+      },
+      {
+        "date": "2025-02-16",
+        "report_id": "rep-2025-02-16",
+        "text": "weekly report"
+      },
+      {
+        "date": "2025-02-23",
+        "report_id": "rep-2025-02-23",
+        "text": "weekly report"
+      }
+    ],
+    "year": 2025
+  }
+}

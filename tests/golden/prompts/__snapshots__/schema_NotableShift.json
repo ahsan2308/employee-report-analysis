@@ -1,0 +1,26 @@
+{
+  "properties": {
+    "description": {
+      "description": "Description of what changed in performance",
+      "title": "Description",
+      "type": "string"
+    },
+    "factors": {
+      "description": "Factors that contributed to this change",
+      "title": "Factors",
+      "type": "string"
+    },
+    "month": {
+      "description": "Month when a notable performance shift occurred",
+      "title": "Month",
+      "type": "string"
+    }
+  },
+  "required": [
+    "month",
+    "description",
+    "factors"
+  ],
+  "title": "NotableShift",
+  "type": "object"
+}

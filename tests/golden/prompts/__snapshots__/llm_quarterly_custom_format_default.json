@@ -1,0 +1,71 @@
+{
+  "provider_calls": [
+    {
+      "extra": {},
+      "json_schema": {
+        "properties": {
+          "achievement_themes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "behavioral_assessment": {
+            "type": "object"
+          },
+          "challenge_patterns": {
+            "type": "object"
+          },
+          "credibility_assessment": {
+            "type": "object"
+          },
+          "cross_functional_impact": {
+            "type": "object"
+          },
+          "forward_planning": {
+            "type": "object"
+          },
+          "performance_trajectory": {
+            "type": "object"
+          },
+          "quarterly_summary": {
+            "type": "string"
+          },
+          "risk_assessment": {
+            "type": "object"
+          },
+          "skill_development": {
+            "type": "object"
+          },
+          "strategic_alignment": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "max_tokens": 10000,
+      "method": "generate_structured_output",
+      "num_ctx": 40000,
+      "prompt_starts_with_task_prompt": true,
+      "prompt_suffix_after_task_prompt": "",
+      "temperature": 0
+    },
+    {
+      "extra": {},
+      "max_tokens": 10000,
+      "method": "generate_text",
+      "num_ctx": 40000,
+      "prompt_starts_with_task_prompt": true,
+      "prompt_suffix_after_task_prompt": "\n\n\nIMPORTANT: Your response must be valid JSON data conforming to the schema, not the schema itself. Do not include any explanatory text or code formatting markers like ```json or ```.\n\nFollow this exact format:\n{\n  \"strategic_alignment\": {\n    \"organizational_impact\": \"individual/team/department/organization\",\n    \"key_initiatives\": [\n      {\n        \"initiative\": \"Initiative name\",\n        \"alignment\": \"high/medium/low\",\n        \"outcomes\": \"Concrete business outcomes achieved\"\n      }\n    ]\n  },\n  \"achievement_themes\": [\n    {\n      \"theme\": \"Theme name\",\n      \"related_achievements\": [\n        \"Achievement 1\",\n        \"Achievement 2\"\n      ],\n      \"impact\": \"8 (Reason for high impact)\",\n      \"business_outcome\": \"Specific measurable results\",\n      \"vision_verified\": true\n    }\n  ],\n  \"performance_trajectory\": {\n    \"trend\": \"improving/stable/declining/mixed\",\n    \"consistency\": {\n      \"task_completion_reliability\": \"high/medium/low\",\n      \"work_quality_consistency\": \"high/medium/low\",\n      \"performance_stability\": \"high/medium/low\"\n    },\n    \"notable_shifts\": [\n      {\n        \"month\": \"Month name\",\n        \"description\": \"What changed\",\n        \"factors\": \"Why it changed\"\n      }\n    ]\n  },\n  \"challenge_patterns\": {\n    \"recurring_challenges\": [\n      {\n        \"description\": \"Challenge description\",\n        \"type\": \"internal/external\",\n        \"frequency\": \"constant/intermittent/decreasing/increasing\",\n        \"resolution_status\": \"resolved/ongoing\",\n        \"systemic\": true\n      }\n    ],\n    \"adaptation_effectiveness\": \"high/medium/low\"\n  },\n  \"cross_functional_impact\": {\n    \"collaboration_effectiveness\": \"high/medium/low\",\n    \"stakeholder_impacts\": [\n      {\n        \"stakeholder\": \"Team/department\",\n        \"impact\": \"Impact description\",\n        \"evidence\": \"Concrete example\"\n      }\n    ]\n  },\n  \"risk_assessment\": {\n    \"overall_risk_level\": \"low/medium/high\",\n    \"risk_trend\": \"increasing/stable/decreasing\",\n    \"key_risk_factors\": [\n      \"Risk factor 1\",\n      \"Risk factor 2\"\n    ],\n    \"mitigation_strategies\": [\n      \"Mitigation 1\",\n      \"Mitigation 2\"\n    ]\n  },\n  \"skill_development\": {\n    \"key_capabilities\": [\n      {\n        \"skill\": \"Skill name\",\n        \"proficiency\": \"developing/proficient/advanced\",\n        \"growth\": \"improved/stable/declined\"\n      }\n    ],\n    \"learning_agility\": \"high/medium/low\",\n    \"autonomy_level\": \"high/medium/low\",\n    \"development_focus\": \"Next capability to develop\"\n  },\n  \"behavioral_assessment\": {\n    \"ownership\": {\n      \"rating\": \"below/meets/exceeds\",\n      \"evidence\": \"Observable behavior example\"\n    },\n    \"collaboration\": {\n      \"rating\": \"below/meets/exceeds\",\n      \"evidence\": \"Observable behavior example\"\n    },\n    \"communication\": {\n      \"rating\": \"below/meets/exceeds\",\n      \"evidence\": \"Observable behavior example\"\n    },\n    \"problem_solving\": {\n      \"rating\": \"below/meets/exceeds\",\n      \"evidence\": \"Observable behavior example\"\n    },\n    \"quality_standards\": {\n      \"rating\": \"below/meets/exceeds\",\n      \"evidence\": \"Observable behavior example\"\n    }\n  },\n  \"credibility_assessment\": {\n    \"rating\": \"high/medium/low\",\n    \"explanation\": \"Assessment rationale\",\n    \"vision_data_alignment\": \"high/medium/low\",\n    \"impact_on_evaluation\": \"Description of how credibility affected overall assessment\"\n  },\n  \"forward_planning\": {\n    \"keep_doing\": [\n      \"Activity to continue\"\n    ],\n    \"improve\": [\n      \"Area to improve\"\n    ],\n    \"start\": [\n      \"New initiative to begin\"\n    ],\n    \"stop\": [\n      \"Activity to discontinue\"\n    ],\n    \"support_needed\": [\n      \"Resource/support required\"\n    ]\n  },\n  \"quarterly_summary\": \"Executive summary of quarterly performance\"\n}\n",
+      "temperature": 0
+    }
+  ],
+  "result": {
+    "risk_level": "low",
+    "sentiment": "positive",
+    "topics": [
+      "threat assessment"
+    ]
+  },
+  "sleeps": []
+}

@@ -1,0 +1,20 @@
+{
+  "body": {
+    "message": "Report added successfully",
+    "report": {
+      "employee_id": 2,
+      "report_date": "2025-03-11",
+      "report_id": "<uuid:1>",
+      "report_text": "ok"
+    }
+  },
+  "db": [
+    {
+      "employee_id": 2,
+      "report_date": "2025-03-11",
+      "report_id": "<uuid:1>",
+      "report_text": "ok"
+    }
+  ],
+  "status": 200
+}

@@ -1,0 +1,38 @@
+{
+  "datasets": [
+    {
+      "backgroundColor": "rgba(231, 76, 60, 0.2)",
+      "borderColor": "rgba(231, 76, 60, 1)",
+      "data": [],
+      "label": "Risk Level",
+      "metadata": {
+        "avg": 0,
+        "max": 0,
+        "min": 0
+      }
+    },
+    {
+      "backgroundColor": "rgba(52, 152, 219, 0.2)",
+      "borderColor": "rgba(52, 152, 219, 1)",
+      "data": [],
+      "label": "Sentiment Score",
+      "metadata": {
+        "avg": 0,
+        "max": 0,
+        "min": 0
+      }
+    },
+    {
+      "backgroundColor": "rgba(155, 89, 182, 0.2)",
+      "borderColor": "rgba(155, 89, 182, 1)",
+      "data": [],
+      "label": "Impact Score",
+      "metadata": {
+        "avg": 0,
+        "max": 0,
+        "min": 0
+      }
+    }
+  ],
+  "labels": []
+}

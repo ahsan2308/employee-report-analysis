@@ -1,0 +1,55 @@
+{
+  "bad_date_422": {
+    "body": {
+      "detail": [
+        {
+          "ctx": {
+            "error": "input is too short"
+          },
+          "input": "x",
+          "loc": [
+            "query",
+            "start_date"
+          ],
+          "msg": "Input should be a valid date or datetime, input is too short",
+          "type": "date_from_datetime_parsing"
+        }
+      ]
+    },
+    "status": 422
+  },
+  "empty_string_criterion_400": {
+    "body": {
+      "detail": "Invalid criterion ''. Allowed values are: sentiment, risk, credibility, consistency, performance, impact"
+    },
+    "status": 400
+  },
+  "interval_checked_first_400": {
+    "body": {
+      "detail": "Invalid interval. Allowed values are: day, week, month, quarter, year"
+    },
+    "status": 400
+  },
+  "missing_criteria_422": {
+    "body": {
+      "detail": [
+        {
+          "input": null,
+          "loc": [
+            "query",
+            "criteria"
+          ],
+          "msg": "Field required",
+          "type": "missing"
+        }
+      ]
+    },
+    "status": 422
+  },
+  "unknown_criterion_400": {
+    "body": {
+      "detail": "Invalid criterion 'mood'. Allowed values are: sentiment, risk, credibility, consistency, performance, impact"
+    },
+    "status": 400
+  }
+}

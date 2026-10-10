@@ -1,0 +1,82 @@
+{
+  "body": {
+    "analysis_id": 1,
+    "avg_sentiment_score": 0.71,
+    "consistency_assessment": {
+      "notable_strengths": [
+        "on time"
+      ],
+      "notable_weaknesses": [
+        "docs"
+      ],
+      "performance_stability": "high",
+      "task_completion_reliability": "high",
+      "work_quality_consistency": "medium"
+    },
+    "employee_id": 1,
+    "employee_name": "Alice Analyst",
+    "focus_areas": [
+      {
+        "priority_level": "high",
+        "project": "Billing",
+        "time_investment": "high"
+      }
+    ],
+    "growth_indicators": {
+      "approach_to_challenges": "more proactive",
+      "complexity_of_tasks": "increased",
+      "confidence_level_change": "increased",
+      "skill_development_evidence": "medium"
+    },
+    "month": 2,
+    "monthly_achievements": [
+      {
+        "description": "Release 1.2",
+        "impact_reason": "team",
+        "impact_score": 8,
+        "vision_verification": "supported"
+      },
+      {
+        "description": "Mentoring",
+        "impact_reason": "individual",
+        "impact_score": 6,
+        "vision_verification": "none"
+      }
+    ],
+    "monthly_risk_assessment": {
+      "escalating_risks": [],
+      "overall_risk_level": "low",
+      "risk_explanation": "Risks under control.",
+      "risk_mitigation_recommendations": [
+        "add buffer"
+      ],
+      "significant_risks": [
+        "vendor delay"
+      ]
+    },
+    "monthly_summary": "Solid month.",
+    "period_end": "2025-02-28",
+    "period_start": "2025-02-01",
+    "progress_trends": {
+      "challenge_resolution_progress": "improved",
+      "performance_trend": "stable",
+      "risk_level_pattern": "decreasing",
+      "sentiment_trend": "improving"
+    },
+    "recurring_challenges": [
+      {
+        "description": "Flaky CI",
+        "severity": "medium",
+        "status": "ongoing"
+      }
+    ],
+    "strategic_recommendations": [
+      {
+        "action": "Lead design review",
+        "priority": "medium"
+      }
+    ],
+    "year": 2025
+  },
+  "status": 200
+}

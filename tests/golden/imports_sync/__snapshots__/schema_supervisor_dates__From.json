@@ -1,0 +1,499 @@
+{
+  "compact_no_separator": {
+    "message": "'>=' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "dash_dd_mm_yyyy": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2024-02-13>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "dash_invalid": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: 31-31-2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "dash_iso_with_time": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: 2024-03-01 10:30:00. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "dash_mm_dd_yyyy": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2024-03-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "dash_token": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: -. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "date_obj": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2024-03-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "datetime_obj": {
+    "message": "can't compare datetime.datetime to datetime.date",
+    "raised": "TypeError"
+  },
+  "dd_mm_fallback": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2024-02-13>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "dotted": {
+    "message": "'>=' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "empty": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "future_dash": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: 01-01-2099. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "future_date_obj": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Date cannot be in the future: 2099-01-01",
+        "type": "value_error"
+      }
+    ]
+  },
+  "future_iso": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: 2099-01-01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "future_slash": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: 01/01/2099. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "int": {
+    "message": "can't compare datetime.datetime to datetime.date",
+    "raised": "TypeError"
+  },
+  "iso": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2024-03-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "iso_invalid_month": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: 2024-13-01. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "iso_single_digit_parts": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2024-03-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "iso_slashes_year_first": {
+    "message": "'>=' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "iso_t_time": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: 2024-03-01T10:30:00. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "iso_whitespace": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2024-03-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "mm_dd_unambiguous": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2024-02-13>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "na_token": {
+    "message": "'>=' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "none": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From",
+          "constrained-str"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      },
+      {
+        "loc": [
+          "From",
+          "date"
+        ],
+        "msg": "Input should be a valid date",
+        "type": "date_type"
+      },
+      {
+        "loc": [
+          "From",
+          "datetime"
+        ],
+        "msg": "Input should be a valid datetime",
+        "type": "datetime_type"
+      }
+    ]
+  },
+  "null_token": {
+    "message": "'>=' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "old_date_obj": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 1965-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "old_iso": {
+    "message": "'>=' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "old_slash": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 1965-01-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "slash_both_invalid": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: 31/31/2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "slash_feb_30": {
+    "validation_errors": [
+      {
+        "loc": [
+          "From"
+        ],
+        "msg": "Value error, Invalid date format: 02/30/2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "slash_two_digit_year": {
+    "message": "'>=' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "spaces_only": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "text_month": {
+    "message": "'>=' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  },
+  "us_mm_dd_ambiguous": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2024-03-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  },
+  "us_single_digits": {
+    "ok": {
+      "BPS": "BS-19",
+      "Designation": "Director",
+      "Employee_ID": 1012,
+      "Executive_Office": "PPHQ",
+      "From": "<date 2024-03-01>",
+      "Instructions": "Delivers accurate work",
+      "L_RO_Form_Metric_ID": 74,
+      "Metric_ID": 1,
+      "Metric_Title": "Quality",
+      "Metric_Type": "R",
+      "Name": "Nadeem Arif",
+      "Office_Hierarchy": "PPHQ>CI",
+      "Possible_Values": "Poor, Fair, Good, Excellent",
+      "RO_Form_ID": 15,
+      "Section": "Performance",
+      "Section_ID": 1,
+      "To": "<date 2024-11-30>",
+      "Value": "Good"
+    }
+  }
+}

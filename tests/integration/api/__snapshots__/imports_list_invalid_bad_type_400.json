@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Invalid CSV type. Must be one of: employee_report, vision_data, job_descriptions, supervisor_feedback"
+  },
+  "status": 400
+}

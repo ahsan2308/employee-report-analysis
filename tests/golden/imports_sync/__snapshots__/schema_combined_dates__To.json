@@ -1,0 +1,390 @@
+{
+  "compact_no_separator": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "dash_dd_mm_yyyy": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-02-13>",
+      "department": "Technical"
+    }
+  },
+  "dash_invalid": {
+    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
+    "raised": "TypeError"
+  },
+  "dash_iso_with_time": {
+    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
+    "raised": "TypeError"
+  },
+  "dash_mm_dd_yyyy": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-03-01>",
+      "department": "Technical"
+    }
+  },
+  "dash_token": {
+    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
+    "raised": "TypeError"
+  },
+  "date_obj": {
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "datetime_obj": {
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "dd_mm_fallback": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-02-13>",
+      "department": "Technical"
+    }
+  },
+  "dotted": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "empty": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "future_dash": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2099-01-01>",
+      "department": "Technical"
+    }
+  },
+  "future_date_obj": {
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "future_iso": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2099-01-01>",
+      "department": "Technical"
+    }
+  },
+  "future_slash": {
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: 01/01/2099. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "int": {
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "iso": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-03-01>",
+      "department": "Technical"
+    }
+  },
+  "iso_invalid_month": {
+    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
+    "raised": "TypeError"
+  },
+  "iso_single_digit_parts": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-03-01>",
+      "department": "Technical"
+    }
+  },
+  "iso_slashes_year_first": {
+    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
+    "raised": "TypeError"
+  },
+  "iso_t_time": {
+    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
+    "raised": "TypeError"
+  },
+  "iso_whitespace": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-03-01>",
+      "department": "Technical"
+    }
+  },
+  "mm_dd_unambiguous": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-02-13>",
+      "department": "Technical"
+    }
+  },
+  "na_token": {
+    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
+    "raised": "TypeError"
+  },
+  "none": {
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "null_token": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "old_date_obj": {
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Input should be a valid string",
+        "type": "string_type"
+      }
+    ]
+  },
+  "old_iso": {
+    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
+    "raised": "TypeError"
+  },
+  "old_slash": {
+    "validation_errors": [
+      {
+        "loc": [],
+        "msg": "Value error, From date (2020-01-01) cannot be after To date (1965-01-01)",
+        "type": "value_error"
+      }
+    ]
+  },
+  "slash_both_invalid": {
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: 31/31/2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "slash_feb_30": {
+    "validation_errors": [
+      {
+        "loc": [
+          "To"
+        ],
+        "msg": "Value error, Invalid date format: 02/30/2024. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
+        "type": "value_error"
+      }
+    ]
+  },
+  "slash_two_digit_year": {
+    "message": "'>' not supported between instances of 'datetime.date' and 'str'",
+    "raised": "TypeError"
+  },
+  "spaces_only": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "text_month": {
+    "message": "cannot access local variable 're' where it is not associated with a value",
+    "raised": "UnboundLocalError"
+  },
+  "us_mm_dd_ambiguous": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-03-01>",
+      "department": "Technical"
+    }
+  },
+  "us_single_digits": {
+    "ok": {
+      "BPS": "BS-18",
+      "Challenges": null,
+      "Confidence_Level": 4,
+      "Designation": "Deputy Director",
+      "Draft": null,
+      "Employee_ID": 101,
+      "From": "<date 2020-01-01>",
+      "Impact": "Faster turnaround",
+      "NTR": null,
+      "Name": "Ayesha Khan",
+      "Office_Hierarchy": "Technical>Tech-I>SOC",
+      "Support_Required": null,
+      "Tasks_Completed": "Reviewed 12 cases",
+      "Tasks_Planned": "Audit",
+      "To": "<date 2024-03-01>",
+      "department": "Technical"
+    }
+  }
+}

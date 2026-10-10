@@ -1,0 +1,25 @@
+{
+  "body": {
+    "datasets": [
+      {
+        "backgroundColor": null,
+        "borderColor": null,
+        "data": [
+          0.8,
+          0.4
+        ],
+        "label": "Average Risk Level",
+        "metadata": {
+          "avg": 0.6,
+          "max": 0.8,
+          "min": 0.4
+        }
+      }
+    ],
+    "labels": [
+      "2024",
+      "2025"
+    ]
+  },
+  "status": 200
+}

@@ -1,0 +1,61 @@
+{
+  "collections": {
+    "employee_reports": 1024
+  },
+  "external_calls": [
+    {
+      "call": "vs.get_collection_info",
+      "collection_name": "employee_reports"
+    },
+    {
+      "call": "embed",
+      "input": "Test text",
+      "is_query": false
+    },
+    {
+      "call": "vs.delete_collection",
+      "collection_name": "employee_reports",
+      "existed": true,
+      "points_lost": 0
+    },
+    {
+      "call": "vs.setup_collection",
+      "collection_name": "employee_reports",
+      "vector_size": 1024
+    },
+    {
+      "call": "embed",
+      "input": [
+        "Short report."
+      ],
+      "is_query": false
+    },
+    {
+      "call": "vs.add_documents_batch",
+      "collection_name": "employee_reports",
+      "points": [
+        {
+          "document_id": "<uuid:1>",
+          "payload": {
+            "chunk_index": 0,
+            "employee_id": 101,
+            "report_date": "2025-03-07",
+            "report_date_ts": 1741305600.0,
+            "report_id": "00000000-0000-4000-8000-0000000000a1",
+            "text": "Short report."
+          },
+          "vector": []
+        }
+      ]
+    }
+  ],
+  "outcome": true,
+  "qdrant_mappings": [
+    {
+      "chunk_index": 0,
+      "employee_id": 101,
+      "report_date": "2025-03-07",
+      "upserted_point_index": 0
+    }
+  ]
+}

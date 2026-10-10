@@ -1,0 +1,115 @@
+{
+  "app.database": {
+    "DB_HOST": "localhost",
+    "DB_NAME": "employee_reports",
+    "DB_PASSWORD": "mypassword",
+    "DB_PORT": "5432",
+    "DB_TYPE": "postgres",
+    "DB_USER": "myuser"
+  },
+  "app.database.postgres_database": {},
+  "app.model_host": {
+    "EMBEDDING_PROVIDER": "ollama",
+    "EMBEDDING_USE_PREFIX": false,
+    "LLM_PROVIDER": "ollama",
+    "OLLAMA_API_KEY": null,
+    "OLLAMA_BASE_URL": "http://localhost:11434",
+    "OLLAMA_EMBEDDING_API_KEY": null,
+    "OLLAMA_EMBEDDING_BASE_URL": "http://localhost:11434",
+    "OLLAMA_EMBEDDING_MODEL": "bge-m3",
+    "OLLAMA_MODEL": "llama3.1:8b",
+    "VLLM_API_KEY": null,
+    "VLLM_BASE_URL": "http://localhost:8000",
+    "VLLM_EMBEDDING_API_KEY": null,
+    "VLLM_EMBEDDING_BASE_URL": "http://localhost:8001",
+    "VLLM_EMBEDDING_MODEL": "BAAI/bge-m3",
+    "VLLM_MODEL": "meta-llama/Meta-Llama-3.1-8B-Instruct"
+  },
+  "app.models.base": {},
+  "app.services.llm_service": {
+    "DEFAULT_MODEL": "collides-model",
+    "LLM_PROVIDER": "ollama"
+  },
+  "app.services.vector_store_service": {
+    "COLLECTION_NAME": "other_collection",
+    "VECTOR_BATCH_MAX_RETRIES": 3,
+    "VECTOR_BATCH_MODE": false,
+    "VECTOR_EMBEDDING_BATCH_SIZE": 50,
+    "VECTOR_UPSERT_BATCH_SIZE": 100
+  },
+  "app.tasks.analysis_tasks": {
+    "MAX_CONTENT_ITEMS_PER_ENTITY_FOR_MONTHLY_ANALYSIS": 10,
+    "MAX_CONTENT_ITEMS_PER_ENTITY_FOR_QUARTERLY_ANALYSIS": 10,
+    "MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS": 10,
+    "MAX_CONTENT_ITEM_LENGTH_MONTHLY": 250,
+    "MAX_CONTENT_ITEM_LENGTH_QUARTERLY": 200,
+    "MAX_CONTENT_ITEM_LENGTH_WEEKLY": 300,
+    "VECTOR_SEARCH_HNSW_EF": 128
+  },
+  "app.vector_store": {
+    "VECTOR_STORE_HOST": "collides-host",
+    "VECTOR_STORE_MODE": "server",
+    "VECTOR_STORE_PATH": "/elsewhere",
+    "VECTOR_STORE_PORT": true,
+    "VECTOR_STORE_TYPE": "qdrant"
+  },
+  "app.worker.celery_app": {
+    "IS_WINDOWS": false,
+    "REDIS_HOST": "collides-host",
+    "SYNC_ENABLED": true
+  },
+  "celery": {
+    "beat_schedule": {
+      "sync-incremental-weekly": {
+        "options": "{'queue': 'sync'}",
+        "schedule": "<crontab: 0 2 * * 1 (m/h/dM/MY/d)>",
+        "task": "sync.incremental"
+      }
+    },
+    "broker_url": "redis://localhost:6379/0",
+    "result_backend": "redis://localhost:6379/0",
+    "settings": {
+      "accept_content": [
+        "json"
+      ],
+      "result_expires": 86400,
+      "result_serializer": "json",
+      "task_ignore_result": false,
+      "task_serializer": "json",
+      "task_time_limit": 300,
+      "task_track_started": true,
+      "worker_concurrency": 2
+    },
+    "task_packages": [
+      "app.tasks"
+    ]
+  },
+  "config_provider": {
+    "None:database": {
+      "host": "localhost",
+      "name": "employee_reports",
+      "password": "mypassword",
+      "port": 5432,
+      "url": "postgresql://myuser:mypassword@localhost:5432/employee_reports",
+      "user": "myuser"
+    },
+    "llm:model": "collides-model",
+    "no.such.section:missing_key": "fallback",
+    "redis:host": "collides-host",
+    "redis:port": true,
+    "vector_db.batch_processing.retry:max_attempts": 3,
+    "vector_db.batch_processing:enabled": false,
+    "vector_db.search:hnsw_ef": 128,
+    "vector_db:collection_name": "other_collection",
+    "vector_db:host": "collides-host",
+    "vector_db:missing_key": "fallback",
+    "vector_db:mode": "server",
+    "vector_db:port": true,
+    "vector_db:type": "qdrant"
+  },
+  "get_database": {
+    "class": "PostgresDatabase",
+    "schema_name": "public",
+    "url": "postgresql://myuser:mypassword@localhost:5432/employee_reports"
+  }
+}

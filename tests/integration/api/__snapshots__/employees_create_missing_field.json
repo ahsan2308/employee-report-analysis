@@ -1,0 +1,20 @@
+{
+  "body": {
+    "detail": [
+      {
+        "input": {
+          "name": "No Wing",
+          "position": "x"
+        },
+        "loc": [
+          "body",
+          "wing"
+        ],
+        "msg": "Field required",
+        "type": "missing"
+      }
+    ]
+  },
+  "db": [],
+  "status": 422
+}

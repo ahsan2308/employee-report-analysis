@@ -1,0 +1,14 @@
+{
+  "datasets": [
+    {
+      "data": [],
+      "label": "Average Impact Score",
+      "metadata": {
+        "avg": 0,
+        "max": 0,
+        "min": 0
+      }
+    }
+  ],
+  "labels": []
+}

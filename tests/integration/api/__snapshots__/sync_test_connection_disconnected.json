@@ -1,0 +1,12 @@
+{
+  "body": {
+    "available_tables": [],
+    "connection_time_ms": 250,
+    "database": "EmployeeTestDB",
+    "message": "Failed to connect to SQL Server",
+    "server": "sql.test.local\\SQLEXPRESS",
+    "status": "disconnected"
+  },
+  "get_allowed_tables_calls": 0,
+  "status": 200
+}

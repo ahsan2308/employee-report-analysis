@@ -1,0 +1,200 @@
+{
+  "bytesio": {
+    "ok": [
+      {
+        "Employee_ID": "101",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Activities and Cases",
+        "Sub_Entities": "Cases:2, Activities:1",
+        "Sub_Entities_Content": "Cases:[{\"id\": 1, \"title\": \"Smuggling, port\"}, {\"id\": 2}], Activities:[{\"type\": \"raid\"}]",
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "102",
+        "From_Date": "04/01/2024",
+        "Main_Entity": "Persons",
+        "Sub_Entities": "Persons:0",
+        "Sub_Entities_Content": "Persons:[]",
+        "To_Date": "04/30/2024"
+      },
+      {
+        "Employee_ID": "103",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Media",
+        "Sub_Entities": "N/A",
+        "Sub_Entities_Content": "N/A",
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "104",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Tasks",
+        "Sub_Entities": null,
+        "Sub_Entities_Content": null,
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "105",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Links",
+        "Sub_Entities": "Links:1",
+        "Sub_Entities_Content": "Links:[{'url': 'x',}]",
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "abc",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Events",
+        "Sub_Entities": "Events:1",
+        "Sub_Entities_Content": "Events:[1, 2]",
+        "To_Date": "2024-04-30"
+      }
+    ]
+  },
+  "bytesio_state": {
+    "delimiter_attr": null,
+    "detected_delimiter": "\t",
+    "detected_encoding": null,
+    "headers": [
+      "Employee_ID",
+      "From_Date",
+      "To_Date",
+      "Main_Entity",
+      "Sub_Entities",
+      "Sub_Entities_Content"
+    ]
+  },
+  "bytesio_total_rows": {
+    "ok": 6
+  },
+  "raw_bytes": {
+    "ok": [
+      {
+        "Employee_ID": "101",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Activities and Cases",
+        "Sub_Entities": "Cases:2, Activities:1",
+        "Sub_Entities_Content": "Cases:[{\"id\": 1, \"title\": \"Smuggling, port\"}, {\"id\": 2}], Activities:[{\"type\": \"raid\"}]",
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "102",
+        "From_Date": "04/01/2024",
+        "Main_Entity": "Persons",
+        "Sub_Entities": "Persons:0",
+        "Sub_Entities_Content": "Persons:[]",
+        "To_Date": "04/30/2024"
+      },
+      {
+        "Employee_ID": "103",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Media",
+        "Sub_Entities": "N/A",
+        "Sub_Entities_Content": "N/A",
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "104",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Tasks",
+        "Sub_Entities": null,
+        "Sub_Entities_Content": null,
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "105",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Links",
+        "Sub_Entities": "Links:1",
+        "Sub_Entities_Content": "Links:[{'url': 'x',}]",
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "abc",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Events",
+        "Sub_Entities": "Events:1",
+        "Sub_Entities_Content": "Events:[1, 2]",
+        "To_Date": "2024-04-30"
+      }
+    ]
+  },
+  "raw_bytes_state": {
+    "delimiter_attr": null,
+    "detected_delimiter": "\t",
+    "detected_encoding": null,
+    "headers": [
+      "Employee_ID",
+      "From_Date",
+      "To_Date",
+      "Main_Entity",
+      "Sub_Entities",
+      "Sub_Entities_Content"
+    ]
+  },
+  "stringio": {
+    "ok": [
+      {
+        "Employee_ID": "101",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Activities and Cases",
+        "Sub_Entities": "Cases:2, Activities:1",
+        "Sub_Entities_Content": "Cases:[{\"id\": 1, \"title\": \"Smuggling, port\"}, {\"id\": 2}], Activities:[{\"type\": \"raid\"}]",
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "102",
+        "From_Date": "04/01/2024",
+        "Main_Entity": "Persons",
+        "Sub_Entities": "Persons:0",
+        "Sub_Entities_Content": "Persons:[]",
+        "To_Date": "04/30/2024"
+      },
+      {
+        "Employee_ID": "103",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Media",
+        "Sub_Entities": "N/A",
+        "Sub_Entities_Content": "N/A",
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "104",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Tasks",
+        "Sub_Entities": null,
+        "Sub_Entities_Content": null,
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "105",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Links",
+        "Sub_Entities": "Links:1",
+        "Sub_Entities_Content": "Links:[{'url': 'x',}]",
+        "To_Date": "2024-04-30"
+      },
+      {
+        "Employee_ID": "abc",
+        "From_Date": "2024-04-01",
+        "Main_Entity": "Events",
+        "Sub_Entities": "Events:1",
+        "Sub_Entities_Content": "Events:[1, 2]",
+        "To_Date": "2024-04-30"
+      }
+    ]
+  },
+  "stringio_state": {
+    "delimiter_attr": null,
+    "detected_delimiter": "\t",
+    "detected_encoding": null,
+    "headers": [
+      "Employee_ID",
+      "From_Date",
+      "To_Date",
+      "Main_Entity",
+      "Sub_Entities",
+      "Sub_Entities_Content"
+    ]
+  }
+}

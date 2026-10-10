@@ -1,0 +1,23 @@
+{
+  "calls": [],
+  "result": {
+    "analyses": [],
+    "employee_id": 42,
+    "employee_info": null,
+    "metrics": {
+      "achievement_count": 0,
+      "achievement_impact_avg": 0.0,
+      "avg_sentiment": 0.0,
+      "challenge_count": 0,
+      "recurring_topics": [],
+      "report_count": 0,
+      "risk_levels": {},
+      "sentiment_trend": "stable"
+    },
+    "month": 13,
+    "period_end": null,
+    "period_start": null,
+    "reports": [],
+    "year": 2025
+  }
+}

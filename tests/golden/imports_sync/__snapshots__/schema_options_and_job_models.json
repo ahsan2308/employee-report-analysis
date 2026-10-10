@@ -1,0 +1,470 @@
+{
+  "import_error_response": {
+    "field_level": {
+      "ok": {
+        "error_message": "x",
+        "field_name": "Name",
+        "row_data": {
+          "Name": null
+        },
+        "row_number": 4
+      }
+    },
+    "missing_message": {
+      "validation_errors": [
+        {
+          "loc": [
+            "error_message"
+          ],
+          "msg": "Field required",
+          "type": "missing"
+        }
+      ]
+    },
+    "row_level": {
+      "ok": {
+        "error_message": "bad",
+        "field_name": null,
+        "row_data": null,
+        "row_number": 3
+      }
+    }
+  },
+  "import_errors_response": {
+    "ok": {
+      "errors": [
+        {
+          "error_message": "e",
+          "field_name": null,
+          "row_data": null,
+          "row_number": 1
+        }
+      ],
+      "page": 1,
+      "page_size": 50,
+      "total": 1
+    }
+  },
+  "job_create": {
+    "bad_options": {
+      "validation_errors": [
+        {
+          "loc": [
+            "options",
+            "processing_mode"
+          ],
+          "msg": "Input should be 'row_by_row' or 'bulk'",
+          "type": "literal_error"
+        }
+      ]
+    },
+    "csv": {
+      "ok": {
+        "filename": "reports.csv",
+        "options": null
+      }
+    },
+    "no_ext": {
+      "validation_errors": [
+        {
+          "loc": [
+            "filename"
+          ],
+          "msg": "Value error, File must have a .csv extension",
+          "type": "value_error"
+        }
+      ]
+    },
+    "tsv": {
+      "validation_errors": [
+        {
+          "loc": [
+            "filename"
+          ],
+          "msg": "Value error, File must have a .csv extension",
+          "type": "value_error"
+        }
+      ]
+    },
+    "txt": {
+      "validation_errors": [
+        {
+          "loc": [
+            "filename"
+          ],
+          "msg": "Value error, File must have a .csv extension",
+          "type": "value_error"
+        }
+      ]
+    },
+    "upper_csv": {
+      "ok": {
+        "filename": "REPORTS.CSV",
+        "options": null
+      }
+    },
+    "with_options": {
+      "ok": {
+        "filename": "a.csv",
+        "options": {
+          "auto_mode_selection": true,
+          "chunk_size": 10,
+          "delimiter": null,
+          "dry_run": false,
+          "encoding": null,
+          "error_threshold_percent": 10.0,
+          "file_format": "auto",
+          "file_size_threshold_mb": 10.0,
+          "processing_mode": "row_by_row",
+          "stop_on_error": false
+        }
+      }
+    }
+  },
+  "job_response": {
+    "computed_quarter": {
+      "ok": {
+        "completed_at": null,
+        "csv_type": null,
+        "error_count": 5,
+        "estimated_time_remaining": null,
+        "filename": "a.csv",
+        "job_id": "job-1",
+        "metrics": null,
+        "percent_complete": 25.0,
+        "processed_rows": 50,
+        "started_at": null,
+        "status": "processing",
+        "submitted_at": "<datetime 2024-01-01T09:00:00>",
+        "successful_rows": 45,
+        "total_rows": 200
+      }
+    },
+    "metrics_and_type": {
+      "ok": {
+        "completed_at": null,
+        "csv_type": "vision_data",
+        "error_count": 5,
+        "estimated_time_remaining": null,
+        "filename": "a.csv",
+        "job_id": "job-1",
+        "metrics": {
+          "vision_records_created": 3
+        },
+        "percent_complete": 25.0,
+        "processed_rows": 50,
+        "started_at": null,
+        "status": "processing",
+        "submitted_at": "<datetime 2024-01-01T09:00:00>",
+        "successful_rows": 45,
+        "total_rows": 200
+      }
+    },
+    "negative_total": {
+      "ok": {
+        "completed_at": null,
+        "csv_type": null,
+        "error_count": 5,
+        "estimated_time_remaining": null,
+        "filename": "a.csv",
+        "job_id": "job-1",
+        "metrics": null,
+        "percent_complete": 0.0,
+        "processed_rows": 50,
+        "started_at": null,
+        "status": "processing",
+        "submitted_at": "<datetime 2024-01-01T09:00:00>",
+        "successful_rows": 45,
+        "total_rows": -5
+      }
+    },
+    "percent_missing": {
+      "validation_errors": [
+        {
+          "loc": [
+            "percent_complete"
+          ],
+          "msg": "Field required",
+          "type": "missing"
+        }
+      ]
+    },
+    "percent_supplied_ignored": {
+      "ok": {
+        "completed_at": null,
+        "csv_type": null,
+        "error_count": 5,
+        "estimated_time_remaining": null,
+        "filename": "a.csv",
+        "job_id": "job-1",
+        "metrics": null,
+        "percent_complete": 25.0,
+        "processed_rows": 50,
+        "started_at": null,
+        "status": "processing",
+        "submitted_at": "<datetime 2024-01-01T09:00:00>",
+        "successful_rows": 45,
+        "total_rows": 200
+      }
+    },
+    "processed_exceeds_total": {
+      "ok": {
+        "completed_at": null,
+        "csv_type": null,
+        "error_count": 5,
+        "estimated_time_remaining": null,
+        "filename": "a.csv",
+        "job_id": "job-1",
+        "metrics": null,
+        "percent_complete": 150.0,
+        "processed_rows": 300,
+        "started_at": null,
+        "status": "processing",
+        "submitted_at": "<datetime 2024-01-01T09:00:00>",
+        "successful_rows": 45,
+        "total_rows": 200
+      }
+    },
+    "processed_rows_invalid": {
+      "validation_errors": [
+        {
+          "loc": [
+            "processed_rows"
+          ],
+          "msg": "Input should be a valid integer, unable to parse string as an integer",
+          "type": "int_parsing"
+        }
+      ]
+    },
+    "rounding": {
+      "ok": {
+        "completed_at": null,
+        "csv_type": null,
+        "error_count": 5,
+        "estimated_time_remaining": null,
+        "filename": "a.csv",
+        "job_id": "job-1",
+        "metrics": null,
+        "percent_complete": 33.3,
+        "processed_rows": 1,
+        "started_at": null,
+        "status": "processing",
+        "submitted_at": "<datetime 2024-01-01T09:00:00>",
+        "successful_rows": 45,
+        "total_rows": 3
+      }
+    },
+    "string_numbers": {
+      "ok": {
+        "completed_at": null,
+        "csv_type": null,
+        "error_count": 5,
+        "estimated_time_remaining": null,
+        "filename": "a.csv",
+        "job_id": "job-1",
+        "metrics": null,
+        "percent_complete": 40.0,
+        "processed_rows": 4,
+        "started_at": null,
+        "status": "processing",
+        "submitted_at": "<datetime 2024-01-01T09:00:00>",
+        "successful_rows": 45,
+        "total_rows": 10
+      }
+    },
+    "submitted_at_string": {
+      "ok": {
+        "completed_at": null,
+        "csv_type": null,
+        "error_count": 5,
+        "estimated_time_remaining": null,
+        "filename": "a.csv",
+        "job_id": "job-1",
+        "metrics": null,
+        "percent_complete": 25.0,
+        "processed_rows": 50,
+        "started_at": null,
+        "status": "processing",
+        "submitted_at": "<datetime 2024-01-01T09:00:00>",
+        "successful_rows": 45,
+        "total_rows": 200
+      }
+    },
+    "total_rows_invalid": {
+      "validation_errors": [
+        {
+          "loc": [
+            "total_rows"
+          ],
+          "msg": "Input should be a valid integer, unable to parse string as an integer",
+          "type": "int_parsing"
+        }
+      ]
+    },
+    "zero_total": {
+      "ok": {
+        "completed_at": null,
+        "csv_type": null,
+        "error_count": 5,
+        "estimated_time_remaining": null,
+        "filename": "a.csv",
+        "job_id": "job-1",
+        "metrics": null,
+        "percent_complete": 0.0,
+        "processed_rows": 50,
+        "started_at": null,
+        "status": "processing",
+        "submitted_at": "<datetime 2024-01-01T09:00:00>",
+        "successful_rows": 45,
+        "total_rows": 0
+      }
+    }
+  },
+  "options": {
+    "bad_format": {
+      "validation_errors": [
+        {
+          "loc": [
+            "file_format"
+          ],
+          "msg": "Input should be 'csv', 'txt', 'tsv' or 'auto'",
+          "type": "literal_error"
+        }
+      ]
+    },
+    "bad_mode": {
+      "validation_errors": [
+        {
+          "loc": [
+            "processing_mode"
+          ],
+          "msg": "Input should be 'row_by_row' or 'bulk'",
+          "type": "literal_error"
+        }
+      ]
+    },
+    "bulk_tsv": {
+      "ok": {
+        "auto_mode_selection": true,
+        "chunk_size": 1000,
+        "delimiter": "\t",
+        "dry_run": false,
+        "encoding": "utf-16",
+        "error_threshold_percent": 10.0,
+        "file_format": "tsv",
+        "file_size_threshold_mb": 10.0,
+        "processing_mode": "bulk",
+        "stop_on_error": false
+      }
+    },
+    "chunk_size_negative": {
+      "ok": {
+        "auto_mode_selection": true,
+        "chunk_size": -1,
+        "delimiter": null,
+        "dry_run": false,
+        "encoding": null,
+        "error_threshold_percent": 10.0,
+        "file_format": "auto",
+        "file_size_threshold_mb": 10.0,
+        "processing_mode": "row_by_row",
+        "stop_on_error": false
+      }
+    },
+    "chunk_size_string": {
+      "ok": {
+        "auto_mode_selection": true,
+        "chunk_size": 500,
+        "delimiter": null,
+        "dry_run": false,
+        "encoding": null,
+        "error_threshold_percent": 10.0,
+        "file_format": "auto",
+        "file_size_threshold_mb": 10.0,
+        "processing_mode": "row_by_row",
+        "stop_on_error": false
+      }
+    },
+    "chunk_size_text": {
+      "validation_errors": [
+        {
+          "loc": [
+            "chunk_size"
+          ],
+          "msg": "Input should be a valid integer, unable to parse string as an integer",
+          "type": "int_parsing"
+        }
+      ]
+    },
+    "defaults": {
+      "ok": {
+        "auto_mode_selection": true,
+        "chunk_size": 1000,
+        "delimiter": null,
+        "dry_run": false,
+        "encoding": null,
+        "error_threshold_percent": 10.0,
+        "file_format": "auto",
+        "file_size_threshold_mb": 10.0,
+        "processing_mode": "row_by_row",
+        "stop_on_error": false
+      }
+    },
+    "dry_run_strings": {
+      "ok": {
+        "auto_mode_selection": true,
+        "chunk_size": 1000,
+        "delimiter": null,
+        "dry_run": true,
+        "encoding": null,
+        "error_threshold_percent": 10.0,
+        "file_format": "auto",
+        "file_size_threshold_mb": 10.0,
+        "processing_mode": "row_by_row",
+        "stop_on_error": false
+      }
+    },
+    "multi_char_delimiter": {
+      "ok": {
+        "auto_mode_selection": true,
+        "chunk_size": 1000,
+        "delimiter": "::",
+        "dry_run": false,
+        "encoding": null,
+        "error_threshold_percent": 10.0,
+        "file_format": "auto",
+        "file_size_threshold_mb": 10.0,
+        "processing_mode": "row_by_row",
+        "stop_on_error": false
+      }
+    },
+    "threshold_string": {
+      "ok": {
+        "auto_mode_selection": true,
+        "chunk_size": 1000,
+        "delimiter": null,
+        "dry_run": false,
+        "encoding": null,
+        "error_threshold_percent": 12.5,
+        "file_format": "auto",
+        "file_size_threshold_mb": 10.0,
+        "processing_mode": "row_by_row",
+        "stop_on_error": false
+      }
+    },
+    "unknown_key": {
+      "ok": {
+        "auto_mode_selection": true,
+        "chunk_size": 1000,
+        "delimiter": null,
+        "dry_run": false,
+        "encoding": null,
+        "error_threshold_percent": 10.0,
+        "file_format": "auto",
+        "file_size_threshold_mb": 10.0,
+        "processing_mode": "row_by_row",
+        "stop_on_error": false
+      }
+    }
+  }
+}

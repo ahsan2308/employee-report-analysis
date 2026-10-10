@@ -1,0 +1,51 @@
+{
+  "found": {
+    "achievement_themes_json": null,
+    "adaptation_effectiveness": null,
+    "analysis_date": "<timestamp>",
+    "analysis_id": 1,
+    "autonomy_level": null,
+    "behavioral_assessment_json": null,
+    "challenge_patterns_json": null,
+    "collaboration_effectiveness": null,
+    "credibility_assessment_json": null,
+    "credibility_rating": null,
+    "cross_functional_impact_json": null,
+    "development_focus": null,
+    "employee_id": 1,
+    "forward_planning_json": {
+      "start": [
+        "s"
+      ]
+    },
+    "full_analysis_json": {
+      "quarter": 2
+    },
+    "learning_agility": null,
+    "monthly_analysis_ids": [
+      4,
+      5,
+      6
+    ],
+    "organizational_impact": null,
+    "performance_stability": null,
+    "performance_trajectory_json": null,
+    "performance_trend": "stable",
+    "period_end": "2025-06-30",
+    "period_start": "2025-04-01",
+    "quarter": 2,
+    "quarterly_summary": "Q2 2025",
+    "risk_assessment_json": null,
+    "risk_level": "medium",
+    "risk_trend": null,
+    "skill_development_json": null,
+    "stakeholder_count": 3,
+    "strategic_alignment_json": null,
+    "task_completion_reliability": null,
+    "vision_data_alignment": null,
+    "work_quality_consistency": null,
+    "year": 2025
+  },
+  "other_employee": null,
+  "other_quarter": null
+}

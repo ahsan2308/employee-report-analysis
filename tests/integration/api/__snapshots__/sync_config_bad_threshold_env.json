@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Error retrieving configuration: could not convert string to float: 'ten'"
+  },
+  "status": 500
+}

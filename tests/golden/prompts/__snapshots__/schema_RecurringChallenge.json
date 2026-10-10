@@ -1,0 +1,37 @@
+{
+  "properties": {
+    "description": {
+      "description": "Detailed description of a challenge that appeared multiple times",
+      "title": "Description",
+      "type": "string"
+    },
+    "severity": {
+      "default": "medium",
+      "description": "Overall severity of this recurring challenge",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "status": {
+      "description": "Current status of this challenge",
+      "enum": [
+        "addressed",
+        "ongoing",
+        "resolved",
+        "worsening"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "description",
+    "status"
+  ],
+  "title": "RecurringChallenge",
+  "type": "object"
+}

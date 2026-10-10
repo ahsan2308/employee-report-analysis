@@ -1,0 +1,68 @@
+[
+  {
+    "error_message": "plain",
+    "field_name": "Name",
+    "job_id": "job-123",
+    "row_data": {
+      "Name": "A",
+      "n": 1,
+      "none": null
+    },
+    "row_number": 1,
+    "type": "ImportError"
+  },
+  {
+    "error_message": "non-serializable",
+    "field_name": null,
+    "job_id": "job-123",
+    "row_data": {
+      "d": "2024-01-02",
+      "dec": "1.50",
+      "dt": "2024-01-02 03:04:05",
+      "nan": "<float nan>",
+      "none": null,
+      "obj": "opaque-object",
+      "ok": "fine",
+      "s": "{1}"
+    },
+    "row_number": 2,
+    "type": "ImportError"
+  },
+  {
+    "error_message": "no data",
+    "field_name": null,
+    "job_id": "job-123",
+    "row_data": null,
+    "row_number": 3,
+    "type": "ImportError"
+  },
+  {
+    "error_message": "empty dict",
+    "field_name": null,
+    "job_id": "job-123",
+    "row_data": {},
+    "row_number": 4,
+    "type": "ImportError"
+  },
+  {
+    "original_row_data_after": {
+      "d": "<date 2024-01-02>",
+      "dec": "<Decimal 1.50>",
+      "dt": "<datetime 2024-01-02T03:04:05>",
+      "nan": "<float nan>",
+      "none": null,
+      "obj": "<_Opaque Opaque()>",
+      "ok": "fine",
+      "s": {
+        "<set>": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "empty_handler": {
+      "ok": []
+    }
+  }
+]

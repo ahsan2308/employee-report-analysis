@@ -1,0 +1,43 @@
+{
+  "properties": {
+    "improvement_areas": {
+      "description": "Specific areas where performance could be enhanced",
+      "items": {
+        "type": "string"
+      },
+      "title": "Improvement Areas",
+      "type": "array"
+    },
+    "key_strengths": {
+      "description": "Notable strengths identified from the report",
+      "items": {
+        "type": "string"
+      },
+      "title": "Key Strengths",
+      "type": "array"
+    },
+    "rating": {
+      "description": "Overall performance rating of the employee based on the report",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Rating",
+      "type": "string"
+    },
+    "summary": {
+      "description": "Brief overall performance assessment summarizing the key findings",
+      "title": "Summary",
+      "type": "string"
+    }
+  },
+  "required": [
+    "rating",
+    "summary",
+    "key_strengths",
+    "improvement_areas"
+  ],
+  "title": "PerformanceAssessment",
+  "type": "object"
+}

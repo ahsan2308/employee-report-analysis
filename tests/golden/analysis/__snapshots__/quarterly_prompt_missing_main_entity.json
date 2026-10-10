@@ -1,0 +1,4 @@
+{
+  "message": "'<' not supported between instances of 'str' and 'NoneType'",
+  "raised": "TypeError"
+}

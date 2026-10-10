@@ -1,0 +1,43 @@
+{
+  "no_jds": {
+    "returned": {
+      "jd_groups": [],
+      "unmapped_reports": [
+        {
+          "date": "2025-01-05",
+          "report_id": "rep-2025-01-05",
+          "text": "weekly report"
+        },
+        {
+          "date": "2025-01-12",
+          "report_id": "rep-2025-01-12",
+          "text": "weekly report"
+        }
+      ]
+    }
+  },
+  "no_reports": {
+    "returned": {
+      "jd_groups": [],
+      "unmapped_reports": []
+    }
+  },
+  "none_jds": {
+    "returned": {
+      "jd_groups": [],
+      "unmapped_reports": [
+        {
+          "date": "2025-01-05",
+          "report_id": "rep-2025-01-05",
+          "text": "weekly report"
+        }
+      ]
+    }
+  },
+  "none_reports": {
+    "returned": {
+      "jd_groups": [],
+      "unmapped_reports": []
+    }
+  }
+}

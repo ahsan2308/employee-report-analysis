@@ -1,0 +1,9 @@
+--- base
++++ variant
+@@ -58,5 +58,5 @@
+ - Position: Unknown Position
+ - Wing/Department (Office Hierarchy): Unknown Department
+-- Analysis Period: None to None (March 2026)
++- Analysis Period: None to None (Month 13 2026)
+ 
+ ## MONTHLY SUMMARY METRICS

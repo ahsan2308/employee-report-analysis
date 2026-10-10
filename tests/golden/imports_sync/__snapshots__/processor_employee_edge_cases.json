@@ -1,0 +1,198 @@
+{
+  "default_index": {
+    "db_added": [
+      {
+        "columns": {
+          "id": 101,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (BS-18)",
+          "wing": "Technical>SOC"
+        },
+        "type": "Employee"
+      },
+      {
+        "columns": {
+          "id": 102,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (BS-18)",
+          "wing": "Technical>SOC"
+        },
+        "type": "Employee"
+      },
+      {
+        "columns": {
+          "id": 103,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (None)"
+        },
+        "type": "Employee"
+      }
+    ],
+    "errors": [],
+    "metrics": {
+      "employees_created": 3,
+      "employees_updated": 0,
+      "processed_rows": 0,
+      "reports_created": 2,
+      "reports_updated": 0,
+      "successful_rows": 4
+    },
+    "pg_insert_values": [
+      {
+        "table": "reports",
+        "values": [
+          {
+            "employee_id": 101,
+            "report_date": "<date 2024-03-31>",
+            "report_text": "Tasks Completed: second version\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31"
+          },
+          {
+            "employee_id": 103,
+            "report_date": "<date 2024-03-31>",
+            "report_text": "Tasks Completed: Reviewed cases\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        4,
+        4
+      ]
+    }
+  },
+  "empty_frame": {
+    "ok": [
+      0,
+      0
+    ]
+  },
+  "nan_values_not_precleaned": {
+    "db_added": [
+      {
+        "columns": {
+          "id": 101,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (BS-18)",
+          "wing": "Technical>SOC"
+        },
+        "type": "Employee"
+      },
+      {
+        "columns": {
+          "id": 102,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (BS-18)",
+          "wing": "Technical>SOC"
+        },
+        "type": "Employee"
+      },
+      {
+        "columns": {
+          "id": 103,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (None)"
+        },
+        "type": "Employee"
+      }
+    ],
+    "errors": [],
+    "metrics": {
+      "employees_created": 3,
+      "employees_updated": 0,
+      "processed_rows": 0,
+      "reports_created": 2,
+      "reports_updated": 0,
+      "successful_rows": 4
+    },
+    "pg_insert_values": [
+      {
+        "table": "reports",
+        "values": [
+          {
+            "employee_id": 101,
+            "report_date": "<date 2024-03-31>",
+            "report_text": "Tasks Completed: second version\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31"
+          },
+          {
+            "employee_id": 103,
+            "report_date": "<date 2024-03-31>",
+            "report_text": "Tasks Completed: Reviewed cases\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        4,
+        4
+      ]
+    }
+  },
+  "offset_index": {
+    "db_added": [
+      {
+        "columns": {
+          "id": 101,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (BS-18)",
+          "wing": "Technical>SOC"
+        },
+        "type": "Employee"
+      },
+      {
+        "columns": {
+          "id": 102,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (BS-18)",
+          "wing": "Technical>SOC"
+        },
+        "type": "Employee"
+      },
+      {
+        "columns": {
+          "id": 103,
+          "name": "Ayesha Khan",
+          "position": "Deputy Director (None)"
+        },
+        "type": "Employee"
+      }
+    ],
+    "errors": [],
+    "metrics": {
+      "employees_created": 3,
+      "employees_updated": 0,
+      "processed_rows": 0,
+      "reports_created": 2,
+      "reports_updated": 0,
+      "successful_rows": 4
+    },
+    "pg_insert_values": [
+      {
+        "table": "reports",
+        "values": [
+          {
+            "employee_id": 101,
+            "report_date": "<date 2024-03-31>",
+            "report_text": "Tasks Completed: second version\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31"
+          },
+          {
+            "employee_id": 103,
+            "report_date": "<date 2024-03-31>",
+            "report_text": "Tasks Completed: Reviewed cases\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: 4\n\nReport Period: 2024-03-01 to 2024-03-31"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        4,
+        4
+      ]
+    }
+  },
+  "type_error_escapes": {
+    "message": "'>' not supported between instances of 'str' and 'datetime.date'",
+    "raised": "TypeError"
+  }
+}

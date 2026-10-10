@@ -1,0 +1,737 @@
+{
+  "date_window": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 34.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 7,
+          "records_synced": 7,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:6>",
+          "sync_type": "job_descriptions"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 33.0,
+          "error_count": 10,
+          "is_full_sync": true,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 200,
+          "records_synced": 190,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:2>",
+          "sync_type": "vision_data"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 32.0,
+          "error_count": 5,
+          "is_full_sync": true,
+          "last_sync_timestamp": null,
+          "records_queried": 5,
+          "records_synced": 0,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:4>",
+          "sync_type": "employee_reports"
+        }
+      ],
+      "page": 1,
+      "page_size": 20,
+      "pages": 1,
+      "total": 3
+    },
+    "status": 200
+  },
+  "end_date": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 32.0,
+          "error_count": 5,
+          "is_full_sync": true,
+          "last_sync_timestamp": null,
+          "records_queried": 5,
+          "records_synced": 0,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:4>",
+          "sync_type": "employee_reports"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 31.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 10,
+          "records_synced": 10,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:5>",
+          "sync_type": "employee_reports"
+        }
+      ],
+      "page": 1,
+      "page_size": 20,
+      "pages": 1,
+      "total": 2
+    },
+    "status": 200
+  },
+  "page1_size2": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 36.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 50,
+          "records_synced": 50,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:1>",
+          "sync_type": "vision_data"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 35.0,
+          "error_count": 2,
+          "is_full_sync": false,
+          "last_sync_timestamp": null,
+          "records_queried": 3,
+          "records_synced": 1,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:3>",
+          "sync_type": "supervisor_feedback"
+        }
+      ],
+      "page": 1,
+      "page_size": 2,
+      "pages": 3,
+      "total": 6
+    },
+    "status": 200
+  },
+  "page3_size2": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 32.0,
+          "error_count": 5,
+          "is_full_sync": true,
+          "last_sync_timestamp": null,
+          "records_queried": 5,
+          "records_synced": 0,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:4>",
+          "sync_type": "employee_reports"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 31.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 10,
+          "records_synced": 10,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:5>",
+          "sync_type": "employee_reports"
+        }
+      ],
+      "page": 3,
+      "page_size": 2,
+      "pages": 3,
+      "total": 6
+    },
+    "status": 200
+  },
+  "page_past_end": {
+    "body": {
+      "items": [],
+      "page": 9,
+      "page_size": 2,
+      "pages": 3,
+      "total": 6
+    },
+    "status": 200
+  },
+  "sort_asc": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 31.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 10,
+          "records_synced": 10,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:5>",
+          "sync_type": "employee_reports"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 32.0,
+          "error_count": 5,
+          "is_full_sync": true,
+          "last_sync_timestamp": null,
+          "records_queried": 5,
+          "records_synced": 0,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:4>",
+          "sync_type": "employee_reports"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 33.0,
+          "error_count": 10,
+          "is_full_sync": true,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 200,
+          "records_synced": 190,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:2>",
+          "sync_type": "vision_data"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 34.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 7,
+          "records_synced": 7,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:6>",
+          "sync_type": "job_descriptions"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 35.0,
+          "error_count": 2,
+          "is_full_sync": false,
+          "last_sync_timestamp": null,
+          "records_queried": 3,
+          "records_synced": 1,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:3>",
+          "sync_type": "supervisor_feedback"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 36.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 50,
+          "records_synced": 50,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:1>",
+          "sync_type": "vision_data"
+        }
+      ],
+      "page": 1,
+      "page_size": 20,
+      "pages": 1,
+      "total": 6
+    },
+    "status": 200
+  },
+  "sort_desc_uppercase": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 36.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 50,
+          "records_synced": 50,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:1>",
+          "sync_type": "vision_data"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 35.0,
+          "error_count": 2,
+          "is_full_sync": false,
+          "last_sync_timestamp": null,
+          "records_queried": 3,
+          "records_synced": 1,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:3>",
+          "sync_type": "supervisor_feedback"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 34.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 7,
+          "records_synced": 7,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:6>",
+          "sync_type": "job_descriptions"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 33.0,
+          "error_count": 10,
+          "is_full_sync": true,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 200,
+          "records_synced": 190,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:2>",
+          "sync_type": "vision_data"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 32.0,
+          "error_count": 5,
+          "is_full_sync": true,
+          "last_sync_timestamp": null,
+          "records_queried": 5,
+          "records_synced": 0,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:4>",
+          "sync_type": "employee_reports"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 31.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 10,
+          "records_synced": 10,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:5>",
+          "sync_type": "employee_reports"
+        }
+      ],
+      "page": 1,
+      "page_size": 20,
+      "pages": 1,
+      "total": 6
+    },
+    "status": 200
+  },
+  "sort_records_queried_asc_page2": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 31.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 10,
+          "records_synced": 10,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:5>",
+          "sync_type": "employee_reports"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 36.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 50,
+          "records_synced": 50,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:1>",
+          "sync_type": "vision_data"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 33.0,
+          "error_count": 10,
+          "is_full_sync": true,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 200,
+          "records_synced": 190,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:2>",
+          "sync_type": "vision_data"
+        }
+      ],
+      "page": 2,
+      "page_size": 3,
+      "pages": 2,
+      "total": 6
+    },
+    "status": 200
+  },
+  "sort_records_synced_desc": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 33.0,
+          "error_count": 10,
+          "is_full_sync": true,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 200,
+          "records_synced": 190,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:2>",
+          "sync_type": "vision_data"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 36.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 50,
+          "records_synced": 50,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:1>",
+          "sync_type": "vision_data"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 31.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 10,
+          "records_synced": 10,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:5>",
+          "sync_type": "employee_reports"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 34.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 7,
+          "records_synced": 7,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:6>",
+          "sync_type": "job_descriptions"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 35.0,
+          "error_count": 2,
+          "is_full_sync": false,
+          "last_sync_timestamp": null,
+          "records_queried": 3,
+          "records_synced": 1,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:3>",
+          "sync_type": "supervisor_feedback"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 32.0,
+          "error_count": 5,
+          "is_full_sync": true,
+          "last_sync_timestamp": null,
+          "records_queried": 5,
+          "records_synced": 0,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:4>",
+          "sync_type": "employee_reports"
+        }
+      ],
+      "page": 1,
+      "page_size": 20,
+      "pages": 1,
+      "total": 6
+    },
+    "status": 200
+  },
+  "sort_unknown_order_is_asc": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 31.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 10,
+          "records_synced": 10,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:5>",
+          "sync_type": "employee_reports"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 32.0,
+          "error_count": 5,
+          "is_full_sync": true,
+          "last_sync_timestamp": null,
+          "records_queried": 5,
+          "records_synced": 0,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:4>",
+          "sync_type": "employee_reports"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 33.0,
+          "error_count": 10,
+          "is_full_sync": true,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 200,
+          "records_synced": 190,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:2>",
+          "sync_type": "vision_data"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 34.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 7,
+          "records_synced": 7,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:6>",
+          "sync_type": "job_descriptions"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 35.0,
+          "error_count": 2,
+          "is_full_sync": false,
+          "last_sync_timestamp": null,
+          "records_queried": 3,
+          "records_synced": 1,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:3>",
+          "sync_type": "supervisor_feedback"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 36.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 50,
+          "records_synced": 50,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:1>",
+          "sync_type": "vision_data"
+        }
+      ],
+      "page": 1,
+      "page_size": 20,
+      "pages": 1,
+      "total": 6
+    },
+    "status": 200
+  },
+  "start_date": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 36.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 50,
+          "records_synced": 50,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:1>",
+          "sync_type": "vision_data"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 35.0,
+          "error_count": 2,
+          "is_full_sync": false,
+          "last_sync_timestamp": null,
+          "records_queried": 3,
+          "records_synced": 1,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:3>",
+          "sync_type": "supervisor_feedback"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 34.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 7,
+          "records_synced": 7,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:6>",
+          "sync_type": "job_descriptions"
+        }
+      ],
+      "page": 1,
+      "page_size": 20,
+      "pages": 1,
+      "total": 3
+    },
+    "status": 200
+  },
+  "status_failed": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 35.0,
+          "error_count": 2,
+          "is_full_sync": false,
+          "last_sync_timestamp": null,
+          "records_queried": 3,
+          "records_synced": 1,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:3>",
+          "sync_type": "supervisor_feedback"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 32.0,
+          "error_count": 5,
+          "is_full_sync": true,
+          "last_sync_timestamp": null,
+          "records_queried": 5,
+          "records_synced": 0,
+          "started_at": "<timestamp>",
+          "status": "failed",
+          "sync_id": "<uuid:4>",
+          "sync_type": "employee_reports"
+        }
+      ],
+      "page": 1,
+      "page_size": 20,
+      "pages": 1,
+      "total": 2
+    },
+    "status": 200
+  },
+  "status_running_none": {
+    "body": {
+      "items": [],
+      "page": 1,
+      "page_size": 20,
+      "pages": 0,
+      "total": 0
+    },
+    "status": 200
+  },
+  "type_and_status": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 31.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 10,
+          "records_synced": 10,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:5>",
+          "sync_type": "employee_reports"
+        }
+      ],
+      "page": 1,
+      "page_size": 20,
+      "pages": 1,
+      "total": 1
+    },
+    "status": 200
+  },
+  "type_vision_data": {
+    "body": {
+      "items": [
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 36.0,
+          "error_count": 0,
+          "is_full_sync": false,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 50,
+          "records_synced": 50,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:1>",
+          "sync_type": "vision_data"
+        },
+        {
+          "completed_at": "<timestamp>",
+          "duration_seconds": 33.0,
+          "error_count": 10,
+          "is_full_sync": true,
+          "last_sync_timestamp": "<timestamp>",
+          "records_queried": 200,
+          "records_synced": 190,
+          "started_at": "<timestamp>",
+          "status": "completed",
+          "sync_id": "<uuid:2>",
+          "sync_type": "vision_data"
+        }
+      ],
+      "page": 1,
+      "page_size": 20,
+      "pages": 1,
+      "total": 2
+    },
+    "status": 200
+  }
+}

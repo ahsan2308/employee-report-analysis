@@ -1,0 +1,18 @@
+{
+  "body": {
+    "errors": [
+      {
+        "error_message": "bad row 9",
+        "field_name": "F9",
+        "row_data": {
+          "row": 9
+        },
+        "row_number": 9
+      }
+    ],
+    "page": 3,
+    "page_size": 2,
+    "total": 5
+  },
+  "status": 200
+}

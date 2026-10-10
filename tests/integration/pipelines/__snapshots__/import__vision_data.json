@@ -1,0 +1,338 @@
+{
+  "external_calls": [],
+  "import": {
+    "csv_import_jobs": [
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": "vision_data",
+        "error_count": 1,
+        "filename": "vision_data.csv",
+        "job_id": "<uuid:1>",
+        "metrics_json": {
+          "processed_rows": 0,
+          "successful_rows": 2,
+          "vision_records_created": 2,
+          "vision_records_updated": 0
+        },
+        "options": null,
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 2,
+        "total_rows": 3
+      },
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": "vision_data",
+        "error_count": 7,
+        "filename": "vision_data_bad.csv",
+        "job_id": "<uuid:2>",
+        "metrics_json": {
+          "processed_rows": 0,
+          "successful_rows": 1,
+          "vision_records_created": 0,
+          "vision_records_updated": 1
+        },
+        "options": null,
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 1,
+        "total_rows": 6
+      },
+      {
+        "completed_at": "<timestamp>",
+        "csv_type": "vision_data",
+        "error_count": 1,
+        "filename": "vision_data.csv",
+        "job_id": "<uuid:3>",
+        "metrics_json": {
+          "processed_rows": 0,
+          "successful_rows": 2,
+          "vision_records_created": 0,
+          "vision_records_updated": 2
+        },
+        "options": null,
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 2,
+        "total_rows": 3
+      }
+    ],
+    "import_errors": [
+      {
+        "error_id": 1,
+        "error_message": "Input should be a valid string",
+        "field_name": "Sub_Entities_Content",
+        "job_id": "<uuid:1>",
+        "row_data": {
+          "Employee_ID": "202",
+          "From_Date": "03/01/2025",
+          "Main_Entity": "Activities and Cases",
+          "Sub_Entities": "Cases:1, Activities:0",
+          "Sub_Entities_Content": null,
+          "To_Date": "03/07/2025"
+        },
+        "row_number": 3
+      },
+      {
+        "error_id": 2,
+        "error_message": "Input should be a valid string",
+        "field_name": "Sub_Entities_Content",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Employee_ID": "999",
+          "From_Date": "2025-03-01",
+          "Main_Entity": "Persons",
+          "Sub_Entities": "Persons:1",
+          "Sub_Entities_Content": null,
+          "To_Date": "2025-03-07"
+        },
+        "row_number": 2
+      },
+      {
+        "error_id": 3,
+        "error_message": "Value error, Invalid sub-entities format. Expected 'Name:Count, Name:Count, ...' but got 'Events=3'",
+        "field_name": "Sub_Entities",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Employee_ID": "201",
+          "From_Date": "2025-03-01",
+          "Main_Entity": "Events",
+          "Sub_Entities": "Events=3",
+          "Sub_Entities_Content": null,
+          "To_Date": "2025-03-07"
+        },
+        "row_number": 3
+      },
+      {
+        "error_id": 4,
+        "error_message": "Input should be a valid string",
+        "field_name": "Sub_Entities_Content",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Employee_ID": "201",
+          "From_Date": "2025-03-01",
+          "Main_Entity": "Events",
+          "Sub_Entities": "Events=3",
+          "Sub_Entities_Content": null,
+          "To_Date": "2025-03-07"
+        },
+        "row_number": 3
+      },
+      {
+        "error_id": 5,
+        "error_message": "Value error, Value for 'Links' must be a list enclosed in []",
+        "field_name": "Sub_Entities_Content",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Employee_ID": "201",
+          "From_Date": "2025-03-01",
+          "Main_Entity": "Links",
+          "Sub_Entities": "Links:1",
+          "Sub_Entities_Content": "Links:{\"a\": 1}",
+          "To_Date": "2025-03-07"
+        },
+        "row_number": 4
+      },
+      {
+        "error_id": 6,
+        "error_message": "Input should be a valid string",
+        "field_name": "Sub_Entities_Content",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Employee_ID": "201",
+          "From_Date": "2025-03-10",
+          "Main_Entity": "Media",
+          "Sub_Entities": "Media:1",
+          "Sub_Entities_Content": null,
+          "To_Date": "2025-03-03"
+        },
+        "row_number": 5
+      },
+      {
+        "error_id": 7,
+        "error_message": "Input should be a valid integer, unable to parse string as an integer",
+        "field_name": "Employee_ID",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Employee_ID": "abc",
+          "From_Date": "2025-03-01",
+          "Main_Entity": "Media",
+          "Sub_Entities": "Media:1",
+          "Sub_Entities_Content": null,
+          "To_Date": "2025-03-07"
+        },
+        "row_number": 6
+      },
+      {
+        "error_id": 8,
+        "error_message": "Input should be a valid string",
+        "field_name": "Sub_Entities_Content",
+        "job_id": "<uuid:2>",
+        "row_data": {
+          "Employee_ID": "abc",
+          "From_Date": "2025-03-01",
+          "Main_Entity": "Media",
+          "Sub_Entities": "Media:1",
+          "Sub_Entities_Content": null,
+          "To_Date": "2025-03-07"
+        },
+        "row_number": 6
+      },
+      {
+        "error_id": 9,
+        "error_message": "Input should be a valid string",
+        "field_name": "Sub_Entities_Content",
+        "job_id": "<uuid:3>",
+        "row_data": {
+          "Employee_ID": "202",
+          "From_Date": "03/01/2025",
+          "Main_Entity": "Activities and Cases",
+          "Sub_Entities": "Cases:1, Activities:0",
+          "Sub_Entities_Content": null,
+          "To_Date": "03/07/2025"
+        },
+        "row_number": 3
+      }
+    ]
+  },
+  "outcomes": [
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": "vision_data",
+        "error_count": 1,
+        "filename": "vision_data.csv",
+        "job_id": "<uuid:1>",
+        "metrics": {
+          "processed_rows": 0,
+          "successful_rows": 2,
+          "vision_records_created": 2,
+          "vision_records_updated": 0
+        },
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 2,
+        "total_rows": 3
+      },
+      "state": "SUCCESS"
+    },
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": "vision_data",
+        "error_count": 7,
+        "filename": "vision_data_bad.csv",
+        "job_id": "<uuid:2>",
+        "metrics": {
+          "processed_rows": 0,
+          "successful_rows": 1,
+          "vision_records_created": 0,
+          "vision_records_updated": 1
+        },
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 1,
+        "total_rows": 6
+      },
+      "state": "SUCCESS"
+    },
+    {
+      "return": {
+        "completed_at": "<timestamp>",
+        "csv_type": "vision_data",
+        "error_count": 1,
+        "filename": "vision_data.csv",
+        "job_id": "<uuid:3>",
+        "metrics": {
+          "processed_rows": 0,
+          "successful_rows": 2,
+          "vision_records_created": 0,
+          "vision_records_updated": 2
+        },
+        "processed_rows": 0,
+        "started_at": "<timestamp>",
+        "status": "completed",
+        "submitted_at": "<timestamp>",
+        "successful_rows": 2,
+        "total_rows": 3
+      },
+      "state": "SUCCESS"
+    }
+  ],
+  "tables": {
+    "employee_job_descriptions": [],
+    "employee_vision_data": [
+      {
+        "created_at": "<timestamp>",
+        "employee_id": 201,
+        "from_date": "2025-03-01",
+        "main_entity": "Persons",
+        "sub_entities": {
+          "Persons": 3,
+          "Pictures": 1
+        },
+        "sub_entities_content": {
+          "Persons": [
+            {
+              "name": "Person A"
+            },
+            {
+              "name": "Person B"
+            }
+          ],
+          "Pictures": []
+        },
+        "to_date": "2025-03-07",
+        "updated_at": "<timestamp>"
+      },
+      {
+        "created_at": "<timestamp>",
+        "employee_id": 201,
+        "from_date": "2025-03-08",
+        "main_entity": "Tasks",
+        "sub_entities": {
+          "Task Updates": 5,
+          "Tasks": 2
+        },
+        "sub_entities_content": {
+          "Tasks": [
+            {
+              "title": "Archive audit"
+            }
+          ]
+        },
+        "to_date": "2025-03-14",
+        "updated_at": "<timestamp>"
+      }
+    ],
+    "employees": [
+      {
+        "id": 201,
+        "name": "Sana Malik",
+        "position": "Analyst (BS-17)",
+        "wing": "Technical>Tech-I>SOC"
+      },
+      {
+        "id": 202,
+        "name": "Omar Farooq",
+        "position": "Officer (BS-16)",
+        "wing": "Operations>Ops-II"
+      }
+    ],
+    "qdrant_mappings": [],
+    "reports": [],
+    "supervisor_feedback_forms": [],
+    "supervisor_feedback_metric_definitions": [],
+    "supervisor_feedback_responses": []
+  }
+}

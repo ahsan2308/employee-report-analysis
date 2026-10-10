@@ -1,0 +1,68 @@
+{
+  "provider_calls": [
+    {
+      "extra": {},
+      "json_schema": {
+        "properties": {
+          "achievements": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "action_items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "challenges": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "risk_explanation": {
+            "type": "string"
+          },
+          "risk_level": {
+            "type": "string"
+          },
+          "sentiment": {
+            "type": "string"
+          },
+          "topics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "max_tokens": 10000,
+      "method": "generate_structured_output",
+      "num_ctx": 8192,
+      "prompt_starts_with_task_prompt": true,
+      "prompt_suffix_after_task_prompt": "",
+      "temperature": 0
+    },
+    {
+      "extra": {},
+      "max_tokens": 10000,
+      "method": "generate_text",
+      "num_ctx": 8192,
+      "prompt_starts_with_task_prompt": true,
+      "prompt_suffix_after_task_prompt": "\n\n\nIMPORTANT: Your response must be valid JSON data conforming to the schema, not the schema itself. Do not include any explanatory text or code formatting markers like ```json or ```.\n\nFollow this exact format:\n{\n  \"achievements\": [\n    {\n      \"description\": \"Detailed description of the achievement\",\n      \"impact\": \"The measurable impact or result (1-10 scale)\"\n    }\n  ],\n  \"challenges\": [\n    {\n      \"description\": \"Detailed description of the challenge faced\",\n      \"severity\": \"low/medium/high\"\n    }\n  ],\n  \"sentiment\": \"positive/negative/neutral\",\n  \"topics\": [\n    \"topic1\",\n    \"topic2\"\n  ],\n  \"action_items\": [\n    \"Recommended action item 1\",\n    \"Recommended action item 2\"\n  ],\n  \"risk_level\": \"low/medium/high\",\n  \"risk_explanation\": \"Detailed explanation of risk assessment\"\n}\n",
+      "temperature": 0
+    }
+  ],
+  "result": {
+    "risk_level": "low",
+    "sentiment": "positive",
+    "topics": [
+      "threat assessment"
+    ]
+  },
+  "sleeps": []
+}

@@ -1,0 +1,18 @@
+{
+  "body": {
+    "detail": [
+      {
+        "input": "maybe",
+        "loc": [
+          "query",
+          "is_full_sync"
+        ],
+        "msg": "Input should be a valid boolean, unable to interpret input",
+        "type": "bool_parsing"
+      }
+    ]
+  },
+  "db": [],
+  "dispatch": [],
+  "status": 422
+}

@@ -1,0 +1,50 @@
+{
+  "properties": {
+    "explanation": {
+      "description": "Rationale for the credibility assessment",
+      "title": "Explanation",
+      "type": "string"
+    },
+    "impact_on_evaluation": {
+      "description": "How credibility concerns affected the overall assessment",
+      "title": "Impact On Evaluation",
+      "type": "string"
+    },
+    "rating": {
+      "description": "Overall credibility rating of the employee's reporting",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Rating",
+      "type": "string"
+    },
+    "vision_data_alignment": {
+      "anyOf": [
+        {
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "none"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Alignment between self-reported activities and vision system data. Set to 'high' if vision data strongly validates claims, 'medium' if partially validates, 'low' if contradicts or shows significant discrepancies. If NO vision data exists for this employee, either OMIT this key entirely OR set to 'none' (both are acceptable).",
+      "title": "Vision Data Alignment"
+    }
+  },
+  "required": [
+    "rating",
+    "explanation",
+    "vision_data_alignment",
+    "impact_on_evaluation"
+  ],
+  "title": "QuarterlyCredibilityAssessment",
+  "type": "object"
+}

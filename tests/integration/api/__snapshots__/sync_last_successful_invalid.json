@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Invalid sync_type. Must be 'employee_reports', 'vision_data', 'job_descriptions', or 'supervisor_feedback'"
+  },
+  "status": 400
+}

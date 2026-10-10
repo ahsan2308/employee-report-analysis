@@ -1,0 +1,33 @@
+{
+  "above_minimum_rows": {
+    "error_count": 50,
+    "max_modified": {},
+    "result": {
+      "message": "Sync aborted: Error threshold exceeded: 20.0% > 10.0%",
+      "raised": "ValueError"
+    }
+  },
+  "below_minimum_rows": {
+    "error_count": 40,
+    "max_modified": {
+      "_max_modified_date_vision": "<datetime 2024-05-01T09:00:00.001000>"
+    },
+    "result": {
+      "ok": [
+        199,
+        199
+      ]
+    }
+  },
+  "no_timestamps": {
+    "max_modified": {
+      "_max_modified_date": null
+    },
+    "result": {
+      "ok": [
+        0,
+        1
+      ]
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "calls": [
+    {
+      "args": [
+        42
+      ],
+      "fn": "get_employee_info",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        1
+      ],
+      "fn": "get_reports_for_month",
+      "kwargs": {}
+    },
+    {
+      "args": [
+        42,
+        2025,
+        1
+      ],
+      "fn": "get_analyses_for_month",
+      "kwargs": {}
+    },
+    {
+      "args": [],
+      "fn": "get_employee_job_descriptions_for_period",
+      "kwargs": {
+        "employee_id": 42,
+        "period_end": "2025-01-31",
+        "period_start": "2025-01-01"
+      }
+    }
+  ],
+  "result": {
+    "analyses": [],
+    "employee_id": 42,
+    "employee_info": {
+      "id": 42
+    },
+    "employee_jds": [],
+    "jd_report_mapping": {
+      "jd_groups": [],
+      "unmapped_reports": []
+    },
+    "metrics": {
+      "achievement_count": 0,
+      "achievement_impact_avg": 0.0,
+      "avg_sentiment": 0.0,
+      "challenge_count": 0,
+      "recurring_topics": [],
+      "report_count": 0,
+      "risk_levels": {},
+      "sentiment_trend": "stable"
+    },
+    "month": 1,
+    "period_end": "2025-01-31",
+    "period_start": "2025-01-01",
+    "reports": [],
+    "year": 2025
+  }
+}

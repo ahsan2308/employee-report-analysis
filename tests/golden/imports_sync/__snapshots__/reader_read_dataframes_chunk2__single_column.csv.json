@@ -1,0 +1,34 @@
+{
+  "chunks": {
+    "ok": [
+      {
+        "columns": [
+          "Name"
+        ],
+        "dtypes": {
+          "Name": "object"
+        },
+        "index": [
+          0,
+          1
+        ],
+        "records": [
+          {
+            "Name": "Ali"
+          },
+          {
+            "Name": "Hina"
+          }
+        ]
+      }
+    ]
+  },
+  "state": {
+    "delimiter_attr": null,
+    "detected_delimiter": null,
+    "detected_encoding": "ascii",
+    "headers": [
+      "Name"
+    ]
+  }
+}

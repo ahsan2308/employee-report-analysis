@@ -1,0 +1,273 @@
+{
+  "all_filters": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": null,
+          "borderColor": null,
+          "data": [
+            0.5,
+            0.8,
+            0.8
+          ],
+          "label": "Average Consistency",
+          "metadata": {
+            "avg": 0.7,
+            "max": 0.8,
+            "min": 0.5
+          }
+        }
+      ],
+      "labels": [
+        "2025-01",
+        "2025-02",
+        "2025-03"
+      ]
+    },
+    "status": 200
+  },
+  "date_range_week": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": null,
+          "borderColor": null,
+          "data": [
+            0.5,
+            0.8,
+            0.8
+          ],
+          "label": "Average Consistency",
+          "metadata": {
+            "avg": 0.7,
+            "max": 0.8,
+            "min": 0.5
+          }
+        }
+      ],
+      "labels": [
+        "2025-W2",
+        "2025-W9",
+        "2025-W10"
+      ]
+    },
+    "status": 200
+  },
+  "department_engineering": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": null,
+          "borderColor": null,
+          "data": [
+            0.2,
+            0.5,
+            0.8,
+            0.8,
+            0.5
+          ],
+          "label": "Average Consistency",
+          "metadata": {
+            "avg": 0.56,
+            "max": 0.8,
+            "min": 0.2
+          }
+        }
+      ],
+      "labels": [
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03",
+        "2025-04"
+      ]
+    },
+    "status": 200
+  },
+  "department_finance_day": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": null,
+          "borderColor": null,
+          "data": [
+            0.5
+          ],
+          "label": "Average Consistency",
+          "metadata": {
+            "avg": 0.5,
+            "max": 0.5,
+            "min": 0.5
+          }
+        }
+      ],
+      "labels": [
+        "2025-01-06"
+      ]
+    },
+    "status": 200
+  },
+  "department_unknown": {
+    "body": {
+      "datasets": [],
+      "labels": []
+    },
+    "status": 200
+  },
+  "employee_1": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": null,
+          "borderColor": null,
+          "data": [
+            0.2,
+            0.5,
+            0.8,
+            0.8
+          ],
+          "label": "Average Consistency",
+          "metadata": {
+            "avg": 0.58,
+            "max": 0.8,
+            "min": 0.2
+          }
+        }
+      ],
+      "labels": [
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03"
+      ]
+    },
+    "status": 200
+  },
+  "employee_2_quarter": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": null,
+          "borderColor": null,
+          "data": [
+            0.5
+          ],
+          "label": "Average Consistency",
+          "metadata": {
+            "avg": 0.5,
+            "max": 0.5,
+            "min": 0.5
+          }
+        }
+      ],
+      "labels": [
+        "2025-Q1"
+      ]
+    },
+    "status": 200
+  },
+  "employee_department_mismatch": {
+    "body": {
+      "datasets": [],
+      "labels": []
+    },
+    "status": 200
+  },
+  "employee_unknown": {
+    "body": {
+      "datasets": [],
+      "labels": []
+    },
+    "status": 200
+  },
+  "employee_zero_ignored": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": null,
+          "borderColor": null,
+          "data": [
+            0.2,
+            0.5,
+            0.8,
+            0.8,
+            0.5
+          ],
+          "label": "Average Consistency",
+          "metadata": {
+            "avg": 0.56,
+            "max": 0.8,
+            "min": 0.2
+          }
+        }
+      ],
+      "labels": [
+        "2024-12",
+        "2025-01",
+        "2025-02",
+        "2025-03",
+        "2025-04"
+      ]
+    },
+    "status": 200
+  },
+  "end_date": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": null,
+          "borderColor": null,
+          "data": [
+            0.2,
+            0.5
+          ],
+          "label": "Average Consistency",
+          "metadata": {
+            "avg": 0.35,
+            "max": 0.5,
+            "min": 0.2
+          }
+        }
+      ],
+      "labels": [
+        "2024-12",
+        "2025-01"
+      ]
+    },
+    "status": 200
+  },
+  "inverted_range": {
+    "body": {
+      "datasets": [],
+      "labels": []
+    },
+    "status": 200
+  },
+  "start_date": {
+    "body": {
+      "datasets": [
+        {
+          "backgroundColor": null,
+          "borderColor": null,
+          "data": [
+            0.8,
+            0.8,
+            0.5
+          ],
+          "label": "Average Consistency",
+          "metadata": {
+            "avg": 0.7,
+            "max": 0.8,
+            "min": 0.5
+          }
+        }
+      ],
+      "labels": [
+        "2025-02",
+        "2025-03",
+        "2025-04"
+      ]
+    },
+    "status": 200
+  }
+}

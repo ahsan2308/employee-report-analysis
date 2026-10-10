@@ -1,0 +1,36 @@
+{
+  "key_order": [
+    "Employee_ID",
+    "JD_ID",
+    "Job_Description",
+    "Assigned_Date",
+    "Is_Current",
+    "End_Date"
+  ],
+  "transformed": {
+    "Assigned_Date": "<date 2023-01-01>",
+    "Employee_ID": "<Decimal 103>",
+    "End_Date": null,
+    "Is_Current": 0,
+    "JD_ID": "<Decimal 1003>",
+    "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+  },
+  "validated": {
+    "validation_errors": [
+      {
+        "loc": [
+          "Employee_ID"
+        ],
+        "msg": "Value error, Employee_ID must be a valid integer or numeric string. Received: '103'",
+        "type": "value_error"
+      },
+      {
+        "loc": [
+          "JD_ID"
+        ],
+        "msg": "Value error, JD_ID must be an integer or numeric string, got Decimal",
+        "type": "value_error"
+      }
+    ]
+  }
+}

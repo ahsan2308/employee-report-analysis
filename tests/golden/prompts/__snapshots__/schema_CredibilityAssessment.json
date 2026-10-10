@@ -1,0 +1,45 @@
+{
+  "properties": {
+    "consistency_score": {
+      "description": "How well the various sections of the report align with each other",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Consistency Score",
+      "type": "string"
+    },
+    "exaggeration_flags": {
+      "description": "Specific claims that appear to be exaggerated",
+      "items": {
+        "type": "string"
+      },
+      "title": "Exaggeration Flags",
+      "type": "array"
+    },
+    "explanation": {
+      "description": "Assessment of the report's credibility, focusing on potential exaggeration",
+      "title": "Explanation",
+      "type": "string"
+    },
+    "rating": {
+      "description": "Overall credibility rating of the report",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "Rating",
+      "type": "string"
+    }
+  },
+  "required": [
+    "rating",
+    "explanation",
+    "exaggeration_flags",
+    "consistency_score"
+  ],
+  "title": "CredibilityAssessment",
+  "type": "object"
+}

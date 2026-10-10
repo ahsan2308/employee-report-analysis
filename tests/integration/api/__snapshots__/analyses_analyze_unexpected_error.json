@@ -1,0 +1,8 @@
+{
+  "body": {
+    "detail": "Error submitting analysis: broker down"
+  },
+  "db": [],
+  "dispatch": [],
+  "status": 500
+}
