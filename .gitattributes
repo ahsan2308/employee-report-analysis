@@ -12,3 +12,6 @@ Dockerfile text eol=lf
 # Windows-specific scripts can keep CRLF
 *.bat text eol=crlf
 *.ps1 text eol=crlf
+
+# Test fixture data must stay byte-exact (CRLF, BOMs, legacy encodings)
+tests/**/data/** -text
