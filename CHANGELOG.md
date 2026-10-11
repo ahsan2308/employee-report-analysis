@@ -6,6 +6,13 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased - Restructuring and bug fixes
 
+### Changed: OpenAPI enum names
+
+The sync enums in the OpenAPI schema are now named `SyncType` and
+`SyncStatus` (were `SyncTypeEnum` and `SyncStatusEnum`): the API uses the
+enums the database models define instead of copies. Their values are
+unchanged, so requests and responses are the same.
+
 ### Changed: date and scoring rules in one place
 
 The calendar and scoring rules that were copied across services, prompts,

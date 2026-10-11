@@ -790,7 +790,7 @@
             "type": "string"
           },
           "status": {
-            "$ref": "#/components/schemas/SyncStatusEnum"
+            "$ref": "#/components/schemas/SyncStatus"
           },
           "supervisor_feedback_sync_id": {
             "format": "uuid4",
@@ -1127,7 +1127,7 @@
             "title": "Records Synced"
           },
           "sync_type": {
-            "$ref": "#/components/schemas/SyncTypeEnum"
+            "$ref": "#/components/schemas/SyncType"
           }
         },
         "required": [
@@ -2359,7 +2359,7 @@
             "type": "string"
           },
           "status": {
-            "$ref": "#/components/schemas/SyncStatusEnum"
+            "$ref": "#/components/schemas/SyncStatus"
           },
           "sync_id": {
             "format": "uuid4",
@@ -2367,7 +2367,7 @@
             "type": "string"
           },
           "sync_type": {
-            "$ref": "#/components/schemas/SyncTypeEnum"
+            "$ref": "#/components/schemas/SyncType"
           }
         },
         "required": [
@@ -2495,8 +2495,8 @@
         "title": "SyncProgressMetrics",
         "type": "object"
       },
-      "SyncStatusEnum": {
-        "description": "Valid sync statuses.",
+      "SyncStatus": {
+        "description": "Status of a sync operation.",
         "enum": [
           "pending",
           "running",
@@ -2504,7 +2504,7 @@
           "failed",
           "partial"
         ],
-        "title": "SyncStatusEnum",
+        "title": "SyncStatus",
         "type": "string"
       },
       "SyncStatusResponse": {
@@ -2600,7 +2600,7 @@
             "type": "string"
           },
           "status": {
-            "$ref": "#/components/schemas/SyncStatusEnum"
+            "$ref": "#/components/schemas/SyncStatus"
           },
           "sync_id": {
             "format": "uuid4",
@@ -2608,7 +2608,7 @@
             "type": "string"
           },
           "sync_type": {
-            "$ref": "#/components/schemas/SyncTypeEnum"
+            "$ref": "#/components/schemas/SyncType"
           }
         },
         "required": [
@@ -2643,7 +2643,7 @@
             "type": "string"
           },
           "status": {
-            "$ref": "#/components/schemas/SyncStatusEnum"
+            "$ref": "#/components/schemas/SyncStatus"
           },
           "sync_id": {
             "format": "uuid4",
@@ -2651,7 +2651,7 @@
             "type": "string"
           },
           "sync_type": {
-            "$ref": "#/components/schemas/SyncTypeEnum"
+            "$ref": "#/components/schemas/SyncType"
           },
           "task_id": {
             "title": "Task Id",
@@ -2675,15 +2675,15 @@
         "title": "SyncTriggerResponse",
         "type": "object"
       },
-      "SyncTypeEnum": {
-        "description": "Valid sync types.",
+      "SyncType": {
+        "description": "Types of data that can be synced.",
         "enum": [
           "employee_reports",
           "vision_data",
           "job_descriptions",
           "supervisor_feedback"
         ],
-        "title": "SyncTypeEnum",
+        "title": "SyncType",
         "type": "string"
       },
       "TaskResultResponse": {
@@ -2728,7 +2728,7 @@
         "type": "object"
       },
       "TaskStatus": {
-        "description": "Task status enum for API schemas",
+        "description": "Status of a background task (stored as its value).",
         "enum": [
           "pending",
           "running",

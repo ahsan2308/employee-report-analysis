@@ -35,6 +35,7 @@ class Report(Base):
     
     # Relationships
     analyses = relationship("EmployeeAnalysis", back_populates="report", cascade="all, delete-orphan")
+    tasks = relationship("BackgroundTask", back_populates="report", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Report(id={self.report_id}, employee_id={self.employee_id}, report_date={self.report_date})>"

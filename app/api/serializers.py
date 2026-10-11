@@ -1,16 +1,94 @@
-"""Response builders shared by the analyses routes."""
-from app.models.task_models import TaskStatus
+"""Response builders: how the API shapes ORM rows (one builder per response shape)."""
 
 
-def task_status_response(task):
-    return {
+def task_status_response(task, with_duration: bool = False):
+    """A task's status; GET /tasks/{id} also reports how long it ran (with_duration)."""
+    response = {
         "task_id": task.task_id,
         "celery_task_id": task.celery_task_id,
         "status": task.status,
         "created_at": task.created_at,
         "started_at": task.started_at,
         "completed_at": task.completed_at,
-        "is_complete": task.status in (TaskStatus.COMPLETED.value, TaskStatus.FAILED.value)
+        "is_complete": task.is_complete
+    }
+    if with_duration:
+        response["duration"] = task.duration
+    return response
+
+
+def weekly_analysis_list_item(analysis, report):
+    """One weekly analysis in an employee's list."""
+    return {
+        "analysis_id": analysis.analysis_id,
+        "report_id": str(analysis.report_id),
+        "report_date": report.report_date,
+        "sentiment_score": analysis.sentiment_score,
+        "risk_level": analysis.risk_level,
+        "performance_rating": analysis.performance_rating
+    }
+
+
+def monthly_analysis_summary(analysis):
+    """One monthly analysis in an employee's list."""
+    return {
+        "analysis_id": analysis.analysis_id,
+        "employee_id": analysis.employee_id,
+        "year": analysis.year,
+        "month": analysis.month,
+        "period_start": analysis.period_start,
+        "period_end": analysis.period_end,
+        "performance_trend": analysis.performance_trend,
+        "sentiment_trend": analysis.sentiment_trend,
+        "risk_level": analysis.risk_level,
+        "achievement_count": len(analysis.monthly_achievements) if analysis.monthly_achievements else 0,
+        "challenge_count": len(analysis.recurring_challenges) if analysis.recurring_challenges else 0,
+        "monthly_summary": analysis.monthly_summary
+    }
+
+
+def sync_status_response(sync_job):
+    """GET /sync/status/{id}: a sync job with its progress."""
+    percent_complete = 0.0
+    if sync_job.records_queried and sync_job.records_queried > 0:
+        percent_complete = round((sync_job.records_synced / sync_job.records_queried) * 100, 1)
+    return {
+        "sync_id": sync_job.sync_id,
+        "sync_type": sync_job.sync_type,
+        "status": sync_job.status,
+        "is_full_sync": sync_job.is_full_sync,
+        "started_at": sync_job.started_at,
+        "completed_at": sync_job.completed_at,
+        "duration_seconds": sync_job.duration_seconds,
+        "progress": {
+            "records_queried": sync_job.records_queried or 0,
+            "records_synced": sync_job.records_synced or 0,
+            "records_created": sync_job.records_created or 0,
+            "records_updated": sync_job.records_updated or 0,
+            "records_skipped": sync_job.records_skipped or 0,
+            "error_count": sync_job.error_count or 0,
+            "percent_complete": percent_complete
+        },
+        "metrics": sync_job.sync_metadata or {},
+        "last_sync_timestamp": sync_job.last_sync_timestamp,
+        "error_message": sync_job.error_message
+    }
+
+
+def sync_history_item(sync_job):
+    """One sync job in the history list."""
+    return {
+        "sync_id": sync_job.sync_id,
+        "sync_type": sync_job.sync_type,
+        "status": sync_job.status,
+        "is_full_sync": sync_job.is_full_sync,
+        "started_at": sync_job.started_at,
+        "completed_at": sync_job.completed_at,
+        "duration_seconds": sync_job.duration_seconds,
+        "records_synced": sync_job.records_synced or 0,
+        "records_queried": sync_job.records_queried or 0,
+        "error_count": sync_job.error_count or 0,
+        "last_sync_timestamp": sync_job.last_sync_timestamp
     }
 
 

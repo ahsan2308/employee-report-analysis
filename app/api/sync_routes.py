@@ -10,6 +10,7 @@ from datetime import datetime
 from uuid import UUID
 
 from app.api.deps import get_db
+from app.api.serializers import sync_history_item, sync_status_response
 from app.models.sync_models import SyncStatus, SyncType
 from app.schemas.sync_schema import (
     SyncTriggerResponse,
@@ -21,8 +22,7 @@ from app.schemas.sync_schema import (
     SyncErrorsResponse,
     SyncErrorItem,
     SyncConfigResponse,
-    ConnectionTestResponse,
-    SyncProgressMetrics
+    ConnectionTestResponse
 )
 from app.repositories import sync_history
 from app.services.sync import source as sync_source
@@ -170,45 +170,7 @@ def get_sync_status(
         if not sync_job:
             raise HTTPException(status_code=404, detail=f"Sync job {sync_id} not found")
         
-        # Calculate duration
-        duration = None
-        if sync_job.started_at and sync_job.completed_at:
-            duration = (sync_job.completed_at - sync_job.started_at).total_seconds()
-        
-        # Calculate percent complete
-        percent_complete = 0.0
-        if sync_job.records_queried and sync_job.records_queried > 0:
-            percent_complete = round((sync_job.records_synced / sync_job.records_queried) * 100, 1)
-        
-        # Build progress metrics
-        progress = SyncProgressMetrics(
-            records_queried=sync_job.records_queried or 0,
-            records_synced=sync_job.records_synced or 0,
-            records_created=sync_job.records_created or 0,
-            records_updated=sync_job.records_updated or 0,
-            records_skipped=sync_job.records_skipped or 0,
-            error_count=sync_job.error_count or 0,
-            percent_complete=percent_complete
-        )
-        
-        # Extract is_full_sync from sync_options
-        is_full_sync = False
-        if sync_job.sync_options and isinstance(sync_job.sync_options, dict):
-            is_full_sync = sync_job.sync_options.get('is_full_sync', False)
-        
-        return SyncStatusResponse(
-            sync_id=sync_job.sync_id,
-            sync_type=sync_job.sync_type,
-            status=sync_job.status,
-            is_full_sync=is_full_sync,
-            started_at=sync_job.started_at,
-            completed_at=sync_job.completed_at,
-            duration_seconds=duration,
-            progress=progress,
-            metrics=sync_job.sync_metadata or {},
-            last_sync_timestamp=sync_job.last_sync_timestamp,
-            error_message=sync_job.error_message
-        )
+        return SyncStatusResponse(**sync_status_response(sync_job))
         
     except HTTPException:
         raise
@@ -322,32 +284,7 @@ def list_sync_history(
         # Calculate total pages
         pages = (total + page_size - 1) // page_size
         
-        # Build response items
-        history_items = []
-        for sync_job in items:
-            # Calculate duration
-            duration = None
-            if sync_job.started_at and sync_job.completed_at:
-                duration = (sync_job.completed_at - sync_job.started_at).total_seconds()
-            
-            # Extract is_full_sync
-            is_full = False
-            if sync_job.sync_options and isinstance(sync_job.sync_options, dict):
-                is_full = sync_job.sync_options.get('is_full_sync', False)
-            
-            history_items.append(SyncHistoryItem(
-                sync_id=sync_job.sync_id,
-                sync_type=sync_job.sync_type,
-                status=sync_job.status,
-                is_full_sync=is_full,
-                started_at=sync_job.started_at,
-                completed_at=sync_job.completed_at,
-                duration_seconds=duration,
-                records_synced=sync_job.records_synced or 0,
-                records_queried=sync_job.records_queried or 0,
-                error_count=sync_job.error_count or 0,
-                last_sync_timestamp=sync_job.last_sync_timestamp
-            ))
+        history_items = [SyncHistoryItem(**sync_history_item(sync_job)) for sync_job in items]
         
         return SyncHistoryListResponse(
             total=total,

@@ -7,32 +7,16 @@ ensuring type safety and automatic validation.
 from pydantic import BaseModel, ConfigDict, Field, UUID4
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from enum import Enum
 
-
-class SyncTypeEnum(str, Enum):
-    """Valid sync types."""
-    EMPLOYEE_REPORTS = "employee_reports"
-    VISION_DATA = "vision_data"
-    JOB_DESCRIPTIONS = "job_descriptions"
-    SUPERVISOR_FEEDBACK = "supervisor_feedback"
-
-
-class SyncStatusEnum(str, Enum):
-    """Valid sync statuses."""
-    PENDING = "pending"
-    RUNNING = "running"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    PARTIAL = "partial"
+from app.models.sync_models import SyncStatus, SyncType
 
 
 class SyncTriggerResponse(BaseModel):
     """Response when triggering a sync operation."""
     sync_id: UUID4
     task_id: str
-    sync_type: SyncTypeEnum
-    status: SyncStatusEnum
+    sync_type: SyncType
+    status: SyncStatus
     is_full_sync: bool
     triggered_at: datetime
     message: str
@@ -58,7 +42,7 @@ class FullSyncTriggerResponse(BaseModel):
     job_descriptions_sync_id: UUID4
     supervisor_feedback_sync_id: UUID4
     task_id: str
-    status: SyncStatusEnum
+    status: SyncStatus
     triggered_at: datetime
     message: str
     
@@ -103,8 +87,8 @@ class SyncProgressMetrics(BaseModel):
 class SyncStatusResponse(BaseModel):
     """Detailed status of a sync job."""
     sync_id: UUID4
-    sync_type: SyncTypeEnum
-    status: SyncStatusEnum
+    sync_type: SyncType
+    status: SyncStatus
     is_full_sync: bool
     started_at: datetime
     completed_at: Optional[datetime] = None
@@ -146,7 +130,7 @@ class SyncStatusResponse(BaseModel):
 
 class LastSyncResponse(BaseModel):
     """Information about the last successful sync."""
-    sync_type: SyncTypeEnum
+    sync_type: SyncType
     last_successful_sync_id: Optional[UUID4] = None
     last_sync_timestamp: Optional[datetime] = None
     records_synced: Optional[int] = None
@@ -166,8 +150,8 @@ class LastSyncResponse(BaseModel):
 class SyncHistoryItem(BaseModel):
     """Summary item for sync history list."""
     sync_id: UUID4
-    sync_type: SyncTypeEnum
-    status: SyncStatusEnum
+    sync_type: SyncType
+    status: SyncStatus
     is_full_sync: bool
     started_at: datetime
     completed_at: Optional[datetime] = None

@@ -2,19 +2,8 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional, Dict, Any
 from datetime import datetime
 from uuid import UUID
-from enum import Enum
 
-class TaskStatus(str, Enum):
-    """Task status enum for API schemas"""
-    PENDING = "pending"
-    RUNNING = "running"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    
-    @property
-    def is_terminal(self) -> bool:
-        """Return True if this is a terminal state (completed or failed)"""
-        return self in (TaskStatus.COMPLETED, TaskStatus.FAILED)
+from app.models.task_models import TaskStatus
 
 class TaskStatusResponse(BaseModel):
     """Schema for returning task status information"""
