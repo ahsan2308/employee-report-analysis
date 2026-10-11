@@ -18,6 +18,8 @@ class ErrorCategory(str, Enum):
     VALIDATION = "validation"
     PROCESSING = "processing"
     DATABASE = "database"
+    # The row refers to an employee not in the database (yet): a sync reads it again later
+    MISSING_EMPLOYEE = "missing_employee"
     SYSTEM = "system"
     OTHER = "other"
 
@@ -108,6 +110,19 @@ class ImportErrorHandler:
             exception=exception
         )
         
+    def add_missing_employee_error(self,
+                                   row_number: int,
+                                   error_message: str,
+                                   row_data: Optional[Dict[str, Any]] = None) -> None:
+        """Add an error for a row whose Employee_ID is not in the database."""
+        self.add_error(
+            row_number=row_number,
+            error_message=error_message,
+            field_name="Employee_ID",
+            row_data=row_data,
+            category=ErrorCategory.MISSING_EMPLOYEE
+        )
+
     def add_database_error(self, 
                          row_number: int, 
                          error_message: str,

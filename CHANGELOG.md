@@ -6,6 +6,16 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased
 
+### Fixed: synced rows for a new employee are no longer skipped
+
+Employees are created from their reports, so a vision, job description or
+supervisor feedback row for someone whose first report has not been synced yet
+was rejected, and the next incremental sync started after it: the row was never
+saved unless it changed at the source. Such a row is now read again by later
+syncs until its employee exists, for as long as its source timestamp is less
+than `SYNC_MISSING_EMPLOYEE_RETRY_DAYS` (default 14) days old. Older rows are
+given up on, so an employee who never appears cannot hold syncs back for good.
+
 ### Changed: one way to add reports to the vector store
 
 `add_report_to_vector_store` adds a single report and a list of reports the

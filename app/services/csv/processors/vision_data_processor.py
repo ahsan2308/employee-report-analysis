@@ -42,10 +42,9 @@ class VisionDataProcessor(BaseCSVProcessor):
             return False
         employee_id = validated.model_dump().get('Employee_ID')
         if employee_id not in self._get_existing_employee_ids():
-            self.error_handler.add_validation_error(
+            self.error_handler.add_missing_employee_error(
                 row_number=row_number,
                 error_message=f"Employee ID {employee_id} does not exist in the database",
-                field_name="Employee_ID",
                 row_data=row_data
             )
             return False
@@ -72,10 +71,9 @@ class VisionDataProcessor(BaseCSVProcessor):
             # Check if employee exists
             employee_id = row_dict.get('Employee_ID')
             if employee_id not in self._get_existing_employee_ids():
-                self.error_handler.add_validation_error(
+                self.error_handler.add_missing_employee_error(
                     row_number=row_number,
                     error_message=f"Employee ID {employee_id} does not exist in the database",
-                    field_name="Employee_ID",
                     row_data=row_data
                 )
                 return False
@@ -234,10 +232,9 @@ class VisionDataProcessor(BaseCSVProcessor):
                 employee_id = row_dict.get('Employee_ID')
                 if employee_id not in existing_employees:
                     # Add error for non-existent employee
-                    self.error_handler.add_validation_error(
+                    self.error_handler.add_missing_employee_error(
                         row_number=row_number,
                         error_message=f"Employee ID {employee_id} does not exist in the database. Please ensure the employee is created before importing Vision data.",
-                        field_name="Employee_ID",
                         row_data=row_dict
                     )
                     logger.warning(f"Row {row_number}: Employee ID {employee_id} not found in database")

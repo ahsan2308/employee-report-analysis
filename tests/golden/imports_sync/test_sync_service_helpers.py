@@ -3,7 +3,7 @@
 The SQL Server connector, the PostgreSQL database and the row processor are all
 mocks; SyncService is built with __new__ so get_database() is never called.
 """
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from unittest.mock import MagicMock
 
@@ -183,6 +183,8 @@ class OutcomeProcessor:
                 self.handler.add_validation_error(start_row_number + offset, "bad value")
             elif kind == "database":
                 self.handler.add_database_error(start_row_number + offset, "write failed")
+            elif kind == "missing_employee":
+                self.handler.add_missing_employee_error(start_row_number + offset, "no such employee")
             elif kind is None:
                 saved += 1
         return saved, len(df)
@@ -212,6 +214,25 @@ def test_next_sync_from(failures, expected):
         batches, sync_module._VISION_DATA.transformer, OutcomeProcessor(handler, failures), handler, "ModifiedDate")
     assert total == 4
     assert next_sync_from == expected
+
+
+def test_rows_waiting_for_their_employee_are_read_again_while_recent(monkeypatch):
+    monkeypatch.setattr(sync_module.settings, "SYNC_MISSING_EMPLOYEE_RETRY_DAYS", 14)
+    now = datetime.now().replace(microsecond=0)
+    recent, old, newest = now - timedelta(days=3), now - timedelta(days=30), now - timedelta(days=1)
+    rows = [dict(VISION_ROW, Employee_ID=1, ModifiedDate=old), dict(VISION_ROW, Employee_ID=2, ModifiedDate=recent),
+            dict(VISION_ROW, Employee_ID=3, ModifiedDate=newest)]
+
+    def run(failures):
+        handler = ImportErrorHandler()
+        return _service(threshold=100.0)._process_batches(
+            [rows], sync_module._VISION_DATA.transformer, OutcomeProcessor(handler, failures), handler,
+            "ModifiedDate")[2]
+
+    # A recent row waits for its employee: the next sync starts from it
+    assert run({2: "missing_employee"}) == recent
+    # An old one has waited long enough: the sync moves on, as for invalid data
+    assert run({1: "missing_employee"}) == newest + timedelta(milliseconds=1)
 
 
 def test_row_numbers_follow_source_order():

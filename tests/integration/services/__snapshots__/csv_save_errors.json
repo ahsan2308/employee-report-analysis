@@ -145,6 +145,7 @@
   "summary": {
     "by_category": {
       "database": 1,
+      "missing_employee": 0,
       "other": 1,
       "processing": 1,
       "system": 0,

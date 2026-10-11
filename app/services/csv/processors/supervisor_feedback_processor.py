@@ -68,10 +68,9 @@ class SupervisorFeedbackProcessor(BaseCSVProcessor):
             return False
         employee_id = validated.model_dump().get('Employee_ID')
         if employee_id not in self._get_existing_employee_ids():
-            self.error_handler.add_validation_error(
+            self.error_handler.add_missing_employee_error(
                 row_number=row_number,
                 error_message=f"Employee ID {employee_id} does not exist",
-                field_name="Employee_ID",
                 row_data=row_data
             )
             return False
@@ -101,10 +100,9 @@ class SupervisorFeedbackProcessor(BaseCSVProcessor):
             # Check if employee exists
             employee_id = row_dict.get('Employee_ID')
             if employee_id not in self._get_existing_employee_ids():
-                self.error_handler.add_validation_error(
+                self.error_handler.add_missing_employee_error(
                     row_number=row_number,
                     error_message=f"Employee ID {employee_id} does not exist",
-                    field_name="Employee_ID",
                     row_data=row_data
                 )
                 return False
@@ -207,10 +205,9 @@ class SupervisorFeedbackProcessor(BaseCSVProcessor):
             for row_number, row_dict in validated_rows:
                 employee_id = row_dict.get('Employee_ID')
                 if employee_id not in existing_employees:
-                    self.error_handler.add_validation_error(
+                    self.error_handler.add_missing_employee_error(
                         row_number=row_number,
                         error_message=f"Employee ID {employee_id} does not exist in database",
-                        field_name="Employee_ID",
                         row_data=row_dict
                     )
                     invalid_rows.append(row_number)

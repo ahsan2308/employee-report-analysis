@@ -406,6 +406,10 @@ class SyncService:
         - otherwise the oldest timestamp of the batches that left rows unsaved
           for another reason (a failed database or vector store write), so those
           rows are read again instead of being skipped for good;
+        - or earlier still, the timestamp of a row for an employee who is not in
+          the database yet, so the row is saved once the employee's first report
+          is synced; such a row is given up on once its timestamp is
+          SYNC_MISSING_EMPLOYEE_RETRY_DAYS old;
         - None when no row had a timestamp.
         """
         successful = 0
@@ -413,6 +417,7 @@ class SyncService:
         start_row = 1
         newest = None
         retry_from = None
+        retry_missing_employees_after = datetime.now() - timedelta(days=settings.SYNC_MISSING_EMPLOYEE_RETRY_DAYS)
 
         for batch in batches:
             if not batch:
@@ -459,11 +464,22 @@ class SyncService:
 
             # Rows neither saved nor rejected as invalid data are read again by the next sync
             batch_errors = error_handler.errors[errors_before:]
-            invalid_rows = {err.row_number for err in batch_errors if err.category == ErrorCategory.VALIDATION}
-            left_unsaved = (any(err.category != ErrorCategory.VALIDATION for err in batch_errors)
-                            or batch_successful + len(invalid_rows) < len(batch))
-            if left_unsaved and timestamps:
-                retry_from = min(timestamps) if retry_from is None else min(retry_from, *timestamps)
+            explained = (ErrorCategory.VALIDATION, ErrorCategory.MISSING_EMPLOYEE)
+            explained_rows = {err.row_number for err in batch_errors if err.category in explained}
+            left_unsaved = (any(err.category not in explained for err in batch_errors)
+                            or batch_successful + len(explained_rows) < len(batch))
+            retry_timestamps = list(timestamps) if left_unsaved else []
+            # Rows waiting for their employee are read again too, while they are recent enough
+            for err in batch_errors:
+                if err.category != ErrorCategory.MISSING_EMPLOYEE:
+                    continue
+                position = err.row_number - start_row
+                sql_row = batch[position] if 0 <= position < len(batch) else None
+                row_timestamp = sql_row.get(timestamp_column) if isinstance(sql_row, dict) else None
+                if row_timestamp and row_timestamp >= retry_missing_employees_after:
+                    retry_timestamps.append(row_timestamp)
+            if retry_timestamps:
+                retry_from = min(retry_timestamps) if retry_from is None else min(retry_from, *retry_timestamps)
 
             successful += batch_successful
             total += len(batch)
@@ -481,7 +497,8 @@ class SyncService:
 
         logger.info(f"Bulk processing completed: {successful}/{total} records synced")
         if retry_from is not None:
-            logger.warning(f"Some rows were not saved; the next incremental sync starts again from {retry_from}")
+            logger.warning(f"Some rows were not saved or are waiting for their employee; "
+                           f"the next incremental sync starts again from {retry_from}")
             return successful, total, retry_from
         # 1 millisecond past the newest row: SQL Server datetime precision
         return successful, total, (newest + timedelta(milliseconds=1) if newest else None)
