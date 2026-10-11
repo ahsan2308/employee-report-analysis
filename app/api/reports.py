@@ -3,12 +3,13 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.models.db_models import Report
 from app.schemas.reports_schema import ReportCreate
-from app.models.db_models import Employee
 from app.schemas.reports_schema import ReportForm
 from datetime import date
 from app.services.vector_store_service import add_report_to_vector_store  
 from app.core.logger import logger  # Import the existing logger
 from app.domain.reports import compose_report_text
+from app.repositories.employees import get_employee
+from app.repositories.reports import add_report, list_reports_for_employee
 
 # Initialize Router
 router = APIRouter(prefix="/reports", tags=["Reports"])
@@ -20,7 +21,7 @@ def create_report(report: ReportCreate, db: Session = Depends(get_db)):
     logger.info("Request received at /reports/create")
     try:
         # Check if the employee exists
-        employee = db.query(Employee).filter(Employee.id == report.employee_id).first()
+        employee = get_employee(db, report.employee_id)
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found.")
             
@@ -29,9 +30,7 @@ def create_report(report: ReportCreate, db: Session = Depends(get_db)):
             report_date=report.report_date,
             report_text=report.report_text,
         )
-        db.add(new_report)
-        db.commit()
-        db.refresh(new_report)
+        add_report(db, new_report)
         
         try:
             # Add the report to vector store for semantic search
@@ -61,7 +60,7 @@ def submit_report_form(report: ReportForm, db: Session = Depends(get_db)):
     logger.info("Request received at /reports/form")
     try:
         # Check if the employee exists
-        employee = db.query(Employee).filter(Employee.id == report.employee_id).first()
+        employee = get_employee(db, report.employee_id)
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found.")
 
@@ -82,9 +81,7 @@ def submit_report_form(report: ReportForm, db: Session = Depends(get_db)):
             report_date=date.today(),
             report_text=report_text
         )
-        db.add(new_report)
-        db.commit()
-        db.refresh(new_report)
+        add_report(db, new_report)
         
         try:
             # Add the report to vector store for semantic search
@@ -113,12 +110,12 @@ def get_employee_reports(employee_id: int, db: Session = Depends(get_db)):
     """Retrieve all reports for a given employee ID."""
     
     # Check if employee exists
-    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    employee = get_employee(db, employee_id)
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found.")
 
     # Fetch reports for this employee
-    reports = db.query(Report).filter(Report.employee_id == employee_id).all()
+    reports = list_reports_for_employee(db, employee_id)
     
     if not reports:
         return {"message": "No reports found for this employee.", "employee_id": employee_id}

@@ -4,12 +4,11 @@ Celery tasks for asynchronous report analysis.
 import uuid
 
 from celery.exceptions import SoftTimeLimitExceeded
-from datetime import datetime
 
 from app.worker.celery_app import celery_app
 from app.db.database import get_database
-from app.models.task_models import BackgroundTask, TaskStatus, TaskType
-from app.models.db_models import Report, Employee, EmployeeAnalysis
+from app.models.task_models import TaskType
+from app.models.db_models import EmployeeAnalysis
 from app.services.vector_store_service import search_reports
 from app.repositories.reports import get_reports_for_vector_results, get_recent_employee_reports
 from app.repositories.vision_data import get_employee_vision_data
@@ -36,34 +35,28 @@ from app.core.settings import (
 )
 from app.domain.periods import report_week_start as week_start_of
 from app.domain.scoring import average_impact, sentiment_score as score_sentiment
+from app.repositories import tasks as task_repo
+from app.repositories.analyses import save_weekly_analysis
+from app.repositories.employees import get_employee
+from app.repositories.reports import get_report
 
 def _mark_task_failed(db, task_id: str, message: str) -> None:
     """Mark the BackgroundTask as FAILED with message, if the row exists."""
     with db.create_session() as session:
-        task = session.query(BackgroundTask).filter(
-            BackgroundTask.task_id == uuid.UUID(task_id)
-        ).first()
+        task = task_repo.get_task(session, uuid.UUID(task_id))
 
         if task:
-            task.status = TaskStatus.FAILED.value
-            task.completed_at = datetime.now()
-            task.error_message = message
-            session.commit()
+            task_repo.mark_failed(session, task, message)
 
 
 def _mark_task_failed_after_error(db, task_id: str, message: str) -> None:
     """Same, for the outer exception handlers: a failure to update is logged, not raised."""
     with db.create_session() as session:
         try:
-            task = session.query(BackgroundTask).filter(
-                BackgroundTask.task_id == uuid.UUID(task_id)
-            ).first()
+            task = task_repo.get_task(session, uuid.UUID(task_id))
 
             if task:
-                task.status = TaskStatus.FAILED.value
-                task.completed_at = datetime.now()
-                task.error_message = message
-                session.commit()
+                task_repo.mark_failed(session, task, message)
         except Exception as update_error:
             logger.error(f"Failed to update task status: {str(update_error)}")
 
@@ -89,31 +82,24 @@ def analyze_report_task(self, task_id: str):
         # Update task status to RUNNING
         with db.create_session() as session:
             # Get the task record and associated report
-            task = session.query(BackgroundTask).filter(
-                BackgroundTask.task_id == uuid.UUID(task_id)
-            ).first()
+            task = task_repo.get_task(session, uuid.UUID(task_id))
             
             if not task:
                 logger.error(f"Task {task_id} not found")
                 return {"error": "Task not found"}
             
             # Update celery_task_id and status
-            task.celery_task_id = celery_task_id
-            task.status = TaskStatus.RUNNING.value
-            task.started_at = datetime.now()
-            session.commit()
+            task_repo.mark_running(session, task, celery_task_id)
             
             report_id = task.report_id
         
         # Get report data outside transaction to avoid holding connection
         with db.create_session() as session:
-            report = session.query(Report).filter(Report.report_id == report_id).first()
+            report = get_report(session, report_id)
             if not report:
                 raise ValueError(f"Report {report_id} not found")
             
-            employee = session.query(Employee).filter(
-                Employee.id == report.employee_id
-            ).first()
+            employee = get_employee(session, report.employee_id)
             if not employee:
                 raise ValueError(f"Employee {report.employee_id} not found")
         
@@ -256,9 +242,7 @@ def analyze_report_task(self, task_id: str):
                 performance_improvement_areas=performance_improvement_areas
             )
             
-            session.add(new_analysis)
-            session.commit()
-            session.refresh(new_analysis)
+            save_weekly_analysis(session, new_analysis)
             
             # Prepare task result
             result_data = {
@@ -291,14 +275,9 @@ def analyze_report_task(self, task_id: str):
             
             
             # Update task as completed with result
-            task = session.query(BackgroundTask).filter(
-                BackgroundTask.task_id == uuid.UUID(task_id)
-            ).first()
+            task = task_repo.get_task(session, uuid.UUID(task_id))
             
-            task.status = TaskStatus.COMPLETED.value
-            task.completed_at = datetime.now()
-            task.result_data = result_data
-            session.commit()
+            task_repo.mark_completed(session, task, result_data)
             
             logger.info(f"Analysis task {task_id} completed successfully")
             return result_data
@@ -337,9 +316,7 @@ def analyze_monthly_reports_task(self, task_id: str):
         # Update task status to RUNNING
         with db.create_session() as session:
             # Get the task record and associated parameters
-            task = session.query(BackgroundTask).filter(
-                BackgroundTask.task_id == uuid.UUID(task_id)
-            ).first()
+            task = task_repo.get_task(session, uuid.UUID(task_id))
             
             if not task:
                 logger.error(f"Task {task_id} not found")
@@ -349,17 +326,11 @@ def analyze_monthly_reports_task(self, task_id: str):
             if task.task_type != TaskType.MONTHLY_ANALYSIS.value:
                 logger.error(f"Task {task_id} is not a monthly analysis task")
                 # Record the outcome, or the row would stay PENDING forever
-                task.status = TaskStatus.FAILED.value
-                task.error_message = f"Incorrect task type {task.task_type} for a monthly analysis"
-                task.completed_at = datetime.now()
-                session.commit()
+                task_repo.mark_failed(session, task, f"Incorrect task type {task.task_type} for a monthly analysis")
                 return {"error": "Incorrect task type"}
             
             # Update celery_task_id and status
-            task.celery_task_id = celery_task_id
-            task.status = TaskStatus.RUNNING.value
-            task.started_at = datetime.now()
-            session.commit()
+            task_repo.mark_running(session, task, celery_task_id)
             
             # Extract parameters
             employee_id = task.employee_id
@@ -371,7 +342,7 @@ def analyze_monthly_reports_task(self, task_id: str):
         
         # Get employee data outside transaction to avoid holding connection
         with db.create_session() as session:
-            employee = session.query(Employee).filter(Employee.id == employee_id).first()
+            employee = get_employee(session, employee_id)
             if not employee:
                 raise ValueError(f"Employee {employee_id} not found")
         
@@ -382,21 +353,16 @@ def analyze_monthly_reports_task(self, task_id: str):
             
             # Update task as completed with reference to existing analysis
             with db.create_session() as session:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
+                task = task_repo.get_task(session, uuid.UUID(task_id))
                 
                 if task:
-                    task.status = TaskStatus.COMPLETED.value
-                    task.completed_at = datetime.now()
-                    task.result_data = {
+                    task_repo.mark_completed(session, task, {
                         "analysis_id": existing_analysis["analysis_id"],
                         "employee_id": employee_id,
                         "year": year,
                         "month": month,
                         "message": "Analysis already exists"
-                    }
-                    session.commit()
+                    })
                     
             return {
                 "analysis_id": existing_analysis["analysis_id"],
@@ -595,15 +561,10 @@ def analyze_monthly_reports_task(self, task_id: str):
             
             # Update task as completed with result
             with db.create_session() as session:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
+                task = task_repo.get_task(session, uuid.UUID(task_id))
                 
                 if task:
-                    task.status = TaskStatus.COMPLETED.value
-                    task.completed_at = datetime.now()
-                    task.result_data = result_data
-                    session.commit()
+                    task_repo.mark_completed(session, task, result_data)
                     
                     logger.info(f"Monthly analysis task {task_id} completed successfully")
                     return result_data
@@ -651,9 +612,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
         # Update task status to RUNNING
         with db.create_session() as session:
             # Get the task record and associated parameters
-            task = session.query(BackgroundTask).filter(
-                BackgroundTask.task_id == uuid.UUID(task_id)
-            ).first()
+            task = task_repo.get_task(session, uuid.UUID(task_id))
             
             if not task:
                 logger.error(f"Task {task_id} not found")
@@ -663,17 +622,11 @@ def analyze_quarterly_reports_task(self, task_id: str):
             if task.task_type != TaskType.QUARTERLY_ANALYSIS.value:
                 logger.error(f"Task {task_id} is not a quarterly analysis task")
                 # Record the outcome, or the row would stay PENDING forever
-                task.status = TaskStatus.FAILED.value
-                task.error_message = f"Incorrect task type {task.task_type} for a quarterly analysis"
-                task.completed_at = datetime.now()
-                session.commit()
+                task_repo.mark_failed(session, task, f"Incorrect task type {task.task_type} for a quarterly analysis")
                 return {"error": "Incorrect task type"}
             
             # Update celery_task_id and status
-            task.celery_task_id = celery_task_id
-            task.status = TaskStatus.RUNNING.value
-            task.started_at = datetime.now()
-            session.commit()
+            task_repo.mark_running(session, task, celery_task_id)
             
             # Extract parameters
             employee_id = task.employee_id
@@ -685,7 +638,7 @@ def analyze_quarterly_reports_task(self, task_id: str):
         
         # Get employee data outside transaction to avoid holding connection
         with db.create_session() as session:
-            employee = session.query(Employee).filter(Employee.id == employee_id).first()
+            employee = get_employee(session, employee_id)
             if not employee:
                 raise ValueError(f"Employee {employee_id} not found")
         
@@ -696,21 +649,16 @@ def analyze_quarterly_reports_task(self, task_id: str):
             
             # Update task as completed with reference to existing analysis
             with db.create_session() as session:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
+                task = task_repo.get_task(session, uuid.UUID(task_id))
                 
                 if task:
-                    task.status = TaskStatus.COMPLETED.value
-                    task.completed_at = datetime.now()
-                    task.result_data = {
+                    task_repo.mark_completed(session, task, {
                         "analysis_id": existing_analysis["analysis_id"],
                         "employee_id": employee_id,
                         "year": year,
                         "quarter": quarter,
                         "message": "Analysis already exists"
-                    }
-                    session.commit()
+                    })
                     
             return {
                 "analysis_id": existing_analysis["analysis_id"],
@@ -914,15 +862,10 @@ def analyze_quarterly_reports_task(self, task_id: str):
             
             # Update task as completed with result
             with db.create_session() as session:
-                task = session.query(BackgroundTask).filter(
-                    BackgroundTask.task_id == uuid.UUID(task_id)
-                ).first()
+                task = task_repo.get_task(session, uuid.UUID(task_id))
                 
                 if task:
-                    task.status = TaskStatus.COMPLETED.value
-                    task.completed_at = datetime.now()
-                    task.result_data = result_data
-                    session.commit()
+                    task_repo.mark_completed(session, task, result_data)
                     
                     logger.info(f"Quarterly analysis task {task_id} completed successfully")
                     return result_data

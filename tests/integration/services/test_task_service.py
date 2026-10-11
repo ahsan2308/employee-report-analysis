@@ -1,9 +1,11 @@
 """Characterization of app/services/task_service.py (real Postgres, Celery dispatch mocked)."""
 from datetime import date, datetime
+from types import SimpleNamespace
 from unittest import mock
 
 import pytest
 
+from app.models.db_models import Employee, Report
 from app.models.task_models import BackgroundTask
 from app.api.serializers import task_result_response
 from app.services import task_service
@@ -72,7 +74,7 @@ def _task_view(task):
 # ------------------------------------------------------------ report analysis
 
 def test_create_task_for_analysis_new_task_dispatches(seeded, database, dispatch, snapshot):
-    employee = seeded.get(task_service.Employee, 1)
+    employee = seeded.get(Employee, 1)
     task = task_service.create_task_for_analysis(seeded, uid(1), employee)
     assert dispatch == [{"task": "analyze_report_task", "args": [str(task.task_id)], "kwargs": {}}]
     snapshot("create_task_for_analysis_new", normalize({
@@ -80,20 +82,20 @@ def test_create_task_for_analysis_new_task_dispatches(seeded, database, dispatch
 
 
 def test_create_task_for_analysis_with_existing_analysis(seeded, database, dispatch, snapshot):
-    analysis = make_analysis(seeded, seeded.get(task_service.Report, uid(1)))
+    analysis = make_analysis(seeded, seeded.get(Report, uid(1)))
     seeded.commit()
-    employee = seeded.get(task_service.Employee, 1)
+    employee = seeded.get(Employee, 1)
     task = task_service.create_task_for_analysis(seeded, uid(1), employee, existing_analysis=analysis)
     snapshot("create_task_for_analysis_existing", normalize({
         "returned": _task_view(task), "dispatch": dispatch, "rows": _tasks(database)}))
 
 
 def test_create_task_for_analysis_reuses_active_task_when_analysis_exists(seeded, database, dispatch, snapshot):
-    report = seeded.get(task_service.Report, uid(1))
+    report = seeded.get(Report, uid(1))
     make_analysis(seeded, report)
     make_task(seeded, 50, report_id=uid(1), status="running", task_type="REPORT_ANALYSIS")
     seeded.commit()
-    task = task_service.create_task_for_analysis(seeded, uid(1), seeded.get(task_service.Employee, 1))
+    task = task_service.create_task_for_analysis(seeded, uid(1), seeded.get(Employee, 1))
     assert task.task_id == uid(50)
     snapshot("create_task_for_analysis_reuse_active", normalize({
         "returned": _task_view(task), "dispatch": dispatch, "rows": _tasks(database)}))
@@ -103,7 +105,7 @@ def test_create_task_for_analysis_reuses_in_flight_task(seeded, database, dispat
     """A queued task is returned instead of creating and dispatching a duplicate (B1 fixed)."""
     make_task(seeded, 51, report_id=uid(1), status="pending", task_type="REPORT_ANALYSIS")
     seeded.commit()
-    task = task_service.create_task_for_analysis(seeded, uid(1), seeded.get(task_service.Employee, 1))
+    task = task_service.create_task_for_analysis(seeded, uid(1), seeded.get(Employee, 1))
     assert task.task_id == uid(51)
     assert dispatch == []
     snapshot("create_task_for_analysis_reuse_in_flight", normalize({
@@ -115,7 +117,7 @@ def test_create_task_for_analysis_replaces_stale_task(seeded, database, dispatch
     make_task(seeded, 52, report_id=uid(1), status="running", task_type="REPORT_ANALYSIS",
               created_at=STALE, started_at=STALE)
     seeded.commit()
-    task = task_service.create_task_for_analysis(seeded, uid(1), seeded.get(task_service.Employee, 1))
+    task = task_service.create_task_for_analysis(seeded, uid(1), seeded.get(Employee, 1))
     assert task.task_id != uid(52)
     assert seeded.get(BackgroundTask, uid(52)).status == "failed"
     snapshot("create_task_for_analysis_replace_stale", normalize({
@@ -176,7 +178,7 @@ def test_create_task_for_monthly_analysis(seeded, database, dispatch, snapshot):
     s = seeded
     new = task_service.create_task_for_monthly_analysis(s, 1, 2025, 3)
     existing = task_service.create_task_for_monthly_analysis(
-        s, 2, 2025, 3, existing_analysis={"analysis_id": 42, "other": "ignored"})
+        s, 2, 2025, 3, existing_analysis=SimpleNamespace(analysis_id=42))
     with pytest.raises(ValueError) as exc:
         task_service.create_task_for_monthly_analysis(s, 99, 2025, 3)
     # A second call while the first is PENDING returns it.
@@ -205,7 +207,7 @@ def test_create_task_for_quarterly_analysis(seeded, database, dispatch, snapshot
     s = seeded
     new = task_service.create_task_for_quarterly_analysis(s, 1, 2025, 1)
     existing = task_service.create_task_for_quarterly_analysis(
-        s, 2, 2025, 1, existing_analysis={"analysis_id": 7})
+        s, 2, 2025, 1, existing_analysis=SimpleNamespace(analysis_id=7))
     with pytest.raises(ValueError) as exc:
         task_service.create_task_for_quarterly_analysis(s, 99, 2025, 1)
     make_quarterly(s, 1, 2025, 1)
@@ -241,10 +243,10 @@ def test_get_task_status(seeded, snapshot):
 @pytest.fixture
 def result_seed(seeded):
     s = seeded
-    report = s.get(task_service.Report, uid(1))
+    report = s.get(Report, uid(1))
     bare = make_analysis(s, report, sentiment_score=0.3, risk_level="medium")
     full = make_analysis(
-        s, s.get(task_service.Report, uid(2)), sentiment_score=0.8, risk_level="low",
+        s, s.get(Report, uid(2)), sentiment_score=0.8, risk_level="low",
         risk_explanation="r", achievements_json=[{"a": 1}], challenges_json=[{"c": 1}],
         topics=["t"], action_items=["x"], credibility_rating="high", credibility_explanation="ce",
         exaggeration_flags=["e"], consistency_score="high", performance_rating="high",

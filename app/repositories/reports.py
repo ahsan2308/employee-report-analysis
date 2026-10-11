@@ -1,5 +1,6 @@
 """Report queries."""
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+from sqlalchemy.orm import Session
 from uuid import UUID
 from datetime import date, timedelta
 from app.db.database import get_database
@@ -187,3 +188,19 @@ def get_reports_for_month(employee_id: int, year: int, month: int) -> List[Dict[
     except Exception as e:
         logger.error(f"Error fetching reports for month: {e}")
         return []
+
+
+def get_report(session: Session, report_id: UUID) -> Optional[Report]:
+    """The report row, in the caller's session."""
+    return session.query(Report).filter(Report.report_id == report_id).first()
+
+
+def list_reports_for_employee(session: Session, employee_id: int) -> List[Report]:
+    return session.query(Report).filter(Report.employee_id == employee_id).all()
+
+
+def add_report(session: Session, report: Report) -> Report:
+    session.add(report)
+    session.commit()
+    session.refresh(report)
+    return report

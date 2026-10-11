@@ -1,10 +1,50 @@
 """Weekly, monthly and quarterly analysis queries and storage."""
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Tuple
 from app.db.database import get_database
 from app.models.db_models import Report, EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
 from app.core.logger import logger
 from app.domain.periods import get_month_date_range, get_quarter_date_range, month_name, months_in_quarter
 from sqlalchemy.orm import Session
+
+
+def get_weekly_analysis(session: Session, analysis_id: int) -> Optional[EmployeeAnalysis]:
+    return session.query(EmployeeAnalysis).filter(EmployeeAnalysis.analysis_id == analysis_id).first()
+
+
+def find_weekly_analysis(session: Session, report_id) -> Optional[EmployeeAnalysis]:
+    """The weekly analysis of a report, if it has one."""
+    return session.query(EmployeeAnalysis).filter(EmployeeAnalysis.report_id == report_id).first()
+
+
+def list_weekly_analyses_with_reports(session: Session, employee_id: int) -> List[Tuple[EmployeeAnalysis, Report]]:
+    """An employee's weekly analyses with their reports, oldest analysis first."""
+    return session.query(EmployeeAnalysis, Report).join(
+        Report, Report.report_id == EmployeeAnalysis.report_id
+    ).filter(
+        EmployeeAnalysis.employee_id == employee_id
+    ).order_by(EmployeeAnalysis.analysis_id).all()
+
+
+def save_weekly_analysis(session: Session, analysis: EmployeeAnalysis) -> EmployeeAnalysis:
+    session.add(analysis)
+    session.commit()
+    session.refresh(analysis)
+    return analysis
+
+
+def get_monthly_analysis(session: Session, analysis_id: int) -> Optional[MonthlyAnalysis]:
+    return session.query(MonthlyAnalysis).filter(MonthlyAnalysis.analysis_id == analysis_id).first()
+
+
+def list_monthly_analyses(session: Session, employee_id: int) -> List[MonthlyAnalysis]:
+    """An employee's monthly analyses, newest period first."""
+    return session.query(MonthlyAnalysis).filter(
+        MonthlyAnalysis.employee_id == employee_id
+    ).order_by(MonthlyAnalysis.year.desc(), MonthlyAnalysis.month.desc()).all()
+
+
+def get_quarterly_analysis(session: Session, analysis_id: int) -> Optional[QuarterlyAnalysis]:
+    return session.query(QuarterlyAnalysis).filter(QuarterlyAnalysis.analysis_id == analysis_id).first()
 
 
 def find_monthly_analysis(session: Session, employee_id: int, year: int, month: int) -> Optional[MonthlyAnalysis]:
