@@ -4,7 +4,16 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ---
 
-## Unreleased - Restructuring and bug fixes
+## Unreleased
+
+---
+
+## [4.0.0] - 2026-10-11 - Restructuring and bug fixes
+
+### Added: version in the API
+
+The OpenAPI schema and `/docs` now show the release (`4.0.0`; was FastAPI's
+default `0.1.0`). It is set once, as `__version__` in `app/__init__.py`.
 
 ### Changed: OpenAPI enum names
 
@@ -102,7 +111,7 @@ re-exports. Update imports as follows:
 | `app.services.analysis.vision_formatting` (`filter_vision_data`) | `app.domain.vision_catalog` |
 | `app.services.analysis.vision_formatting` (`format_vision_data_for_*`) | `app.prompts.vision` |
 | `app.services.db_service` | `app.repositories.reports`, `.vision_data`, `.analyses`, `.employees`, `.job_descriptions`, and `app.domain.periods` |
-| `app.services.additional_services` | `app.services.analysis.vision_formatting`, `.jd_mapping`, `.jd_formatting` |
+| `app.services.additional_services` | `app.services.analysis.jd_mapping`, `app.prompts.vision`, `app.prompts.job_descriptions` and `app.domain.vision_catalog` |
 | CSV row models in `app.schemas.csv_import_schema` | `app.services.csv.row_models` |
 
 Celery task names, API routes, environment variables and `config/config.yaml`
