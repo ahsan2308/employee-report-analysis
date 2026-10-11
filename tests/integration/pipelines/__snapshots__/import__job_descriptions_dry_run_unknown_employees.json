@@ -4,11 +4,16 @@
     "csv_import_jobs": [
       {
         "completed_at": "<timestamp>",
-        "csv_type": null,
+        "csv_type": "job_descriptions",
         "error_count": 3,
         "filename": "job_descriptions.csv",
         "job_id": "<uuid:1>",
-        "metrics_json": {},
+        "metrics_json": {
+          "jd_records_created": 0,
+          "jd_records_updated": 0,
+          "processed_rows": 0,
+          "successful_rows": 0
+        },
         "options": {
           "auto_mode_selection": true,
           "chunk_size": 1000,
@@ -81,11 +86,16 @@
     {
       "return": {
         "completed_at": "<timestamp>",
-        "csv_type": null,
+        "csv_type": "job_descriptions",
         "error_count": 3,
         "filename": "job_descriptions.csv",
         "job_id": "<uuid:1>",
-        "metrics": {},
+        "metrics": {
+          "jd_records_created": 0,
+          "jd_records_updated": 0,
+          "processed_rows": 0,
+          "successful_rows": 0
+        },
         "processed_rows": 3,
         "started_at": "<timestamp>",
         "status": "failed",
