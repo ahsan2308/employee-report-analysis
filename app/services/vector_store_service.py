@@ -11,8 +11,7 @@ from app.services.embedding_service import get_embedding, get_embeddings
 from app.core.logger import logger
 from app.integrations.vector_store import get_vector_store
 from app.db.database import get_database
-from app.db.base import schema_name
-from sqlalchemy.sql import text
+from app.repositories import vector_mappings
 
 from app.core.settings import COLLECTION_NAME
 
@@ -125,17 +124,7 @@ def store_mapping(document_id: str, report_id: str, chunk_index: int, session=No
         close_session = True  # Flag to close the session after use
 
     try:
-        session.execute(
-            text(f"""
-            INSERT INTO {schema_name}.qdrant_mappings (qdrant_id, report_id, chunk_index)
-            VALUES (:qdrant_id, :report_id, :chunk_index)
-            """),
-            {
-                "qdrant_id": document_id,
-                "report_id": report_id,
-                "chunk_index": chunk_index,  
-            }
-        )
+        vector_mappings.insert_mapping(session, document_id, report_id, chunk_index)
         
         # Only commit if we created the session
         if close_session:
@@ -180,10 +169,7 @@ def store_mappings_batch(mappings: List[Dict], session=None) -> bool:
         
         # Execute bulk insert if we have any mappings
         if insert_values:
-            session.execute(
-                text(f"INSERT INTO {schema_name}.qdrant_mappings (qdrant_id, report_id, chunk_index) VALUES (:qdrant_id, :report_id, :chunk_index) ON CONFLICT (qdrant_id) DO NOTHING"),
-                insert_values
-            )
+            vector_mappings.insert_mappings(session, insert_values)
         
         # Only commit if we created the session
         if close_session:
@@ -221,20 +207,14 @@ def _remove_stale_report_vectors(vector_store, report_ids, keep_ids, session=Non
     if close_session:
         session = get_database().create_session()
     try:
-        rows = session.execute(
-            text(f"SELECT qdrant_id FROM {schema_name}.qdrant_mappings WHERE CAST(report_id AS text) = ANY(:report_ids)"),
-            {"report_ids": [str(report_id) for report_id in report_ids]},
-        ).fetchall()
-        stale = [str(row[0]) for row in rows if str(row[0]) not in keep_ids]
+        stale = [point_id for point_id in vector_mappings.point_ids_for_reports(session, report_ids)
+                 if point_id not in keep_ids]
         if not stale:
             return True
         if not vector_store.delete_document(collection_name=COLLECTION_NAME, points_selector=stale):
             logger.error(f"Failed to delete {len(stale)} stale vectors")
             return False
-        session.execute(
-            text(f"DELETE FROM {schema_name}.qdrant_mappings WHERE CAST(qdrant_id AS text) = ANY(:ids)"),
-            {"ids": stale},
-        )
+        vector_mappings.delete_mappings(session, stale)
         if close_session:
             session.commit()
         logger.info(f"Removed {len(stale)} stale vectors for {len(report_ids)} reports")
@@ -725,15 +705,7 @@ def get_report_chunks(report_id: str) -> List[str]:
             
             with db_instance.create_session() as session:
                 # Get document IDs from mappings table
-                result = session.execute(
-                    text(f"""
-                    SELECT qdrant_id, chunk_index
-                    FROM {schema_name}.qdrant_mappings
-                    WHERE report_id = :report_id
-                    ORDER BY chunk_index
-                    """),
-                    {"report_id": report_id}
-                ).fetchall()
+                result = vector_mappings.report_chunk_points(session, report_id)
                 
                 # Retrieve chunks from vector store
                 chunks = []
