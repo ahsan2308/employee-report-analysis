@@ -4,6 +4,7 @@ import json
 import platform
 import socket
 
+from app.core import settings
 from app.core.config_provider import get_config_provider
 from app.core.logger import logger  # Use the application's logger
 from celery.schedules import crontab
@@ -108,7 +109,7 @@ celery_settings = {
     'accept_content': parse_accept_content(),
     'result_serializer': os.getenv('CELERY_RESULT_SERIALIZER') or config.get('result_serializer', 'json', section='celery'),
     'task_track_started': os.getenv('CELERY_TASK_TRACK_STARTED', 'true').lower() == 'true',
-    'task_time_limit': int(os.getenv('CELERY_TASK_TIME_LIMIT') or config.get('task_time_limit', 1800, section='celery')),
+    'task_time_limit': settings.CELERY_TASK_TIME_LIMIT,
     'worker_concurrency': int(os.getenv('CELERY_WORKER_CONCURRENCY') or config.get('worker_concurrency', 2, section='celery')),
     
     # task_ignore_result: When True, no results are stored. When False, results are stored in result backend
@@ -168,7 +169,7 @@ celery_app.autodiscover_tasks(
 )
 
 # Check if sync is enabled from environment variable
-SYNC_ENABLED = os.getenv('SYNC_ENABLED', 'true').lower() == 'true'
+SYNC_ENABLED = settings.sync_enabled()
 
 # Configure beat schedule
 beat_schedule = {
@@ -179,10 +180,12 @@ beat_schedule = {
 if SYNC_ENABLED:
     logger.info("SYNC_ENABLED=true: Adding scheduled sync tasks to beat schedule")
     
-    # PRODUCTION: Weekly schedule (Monday 2:00 AM)
+    # PRODUCTION: Weekly schedule (settings.SYNC_SCHEDULE_DESCRIPTION, Monday 2:00 AM by default)
     beat_schedule['sync-incremental-weekly'] = {
         'task': 'sync.incremental',
-        'schedule': crontab(day_of_week=1, hour=2, minute=0),  # Monday 2:00 AM
+        'schedule': crontab(day_of_week=settings.SYNC_SCHEDULE_DAY_OF_WEEK,
+                            hour=settings.SYNC_SCHEDULE_HOUR,
+                            minute=settings.SYNC_SCHEDULE_MINUTE),
         'options': {'queue': 'sync'}
     }
     

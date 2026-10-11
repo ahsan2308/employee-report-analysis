@@ -16,6 +16,7 @@ from app.api.tasks import router as tasks_router
 from app.api.imports import router as imports_router 
 from app.api.sync_routes import router as sync_router 
 
+from app.core import settings
 from app.core.logger import logger
 
 
@@ -33,7 +34,7 @@ app = FastAPI(title="Employee Report Analysis API", lifespan=lifespan)
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=settings.CORS_ALLOW_ORIGINS,  # CORS_ALLOW_ORIGINS; "*" by default
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

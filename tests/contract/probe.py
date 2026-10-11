@@ -21,6 +21,7 @@ env_loader.load_dotenv = lambda *args, **kwargs: False
 env_loader.load_env_from_file()
 
 CONFIG_MODULES = [
+    "app.core.settings",
     "app.db.postgres",
     "app.db.base",
     "app.integrations.providers",

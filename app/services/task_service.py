@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from app.models.task_models import BackgroundTask, TaskStatus, TaskType
 from app.models.db_models import Employee, Report, EmployeeAnalysis
 from app.tasks.analysis_tasks import analyze_report_task
-from app.worker.celery_app import celery_app
+from app.core import settings
 from app.core.logger import logger
 from app.repositories.analyses import find_monthly_analysis, find_quarterly_analysis
 
@@ -27,7 +27,7 @@ def _stale_after() -> timedelta:
     Twice the Celery hard time limit (at least an hour): a task still active
     after that was killed or lost, and no worker will ever finish it.
     """
-    time_limit = celery_app.conf.task_time_limit or 0
+    time_limit = settings.CELERY_TASK_TIME_LIMIT or 0
     return timedelta(seconds=max(2 * time_limit, 3600))
 
 

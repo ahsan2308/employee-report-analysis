@@ -6,6 +6,15 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased - Restructuring and bug fixes
 
+### Changed: settings in one place
+
+Settings that several modules read separately now come from
+`app/core/settings.py`: `SYNC_ENABLED`, `SYNC_ERROR_THRESHOLD_PERCENT`, the
+Celery task time limit, the sync batch size, the 60-minute stale-sync timeout
+and the weekly sync schedule (which `GET /sync/config` now describes from the
+same values Celery beat uses). New: `CORS_ALLOW_ORIGINS`, a comma-separated
+list of origins for CORS, default `*` as before.
+
 ### Changed: log level
 
 The log level is now set by the `LOG_LEVEL` environment variable and defaults

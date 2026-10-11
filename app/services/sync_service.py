@@ -6,7 +6,6 @@ Coordinates SQL Server queries, data transformation, and processing through exis
 """
 from typing import Any, Callable, Dict, NamedTuple, Optional
 from contextlib import contextmanager
-import os
 import pandas as pd
 from datetime import timedelta  # Add to imports at top
 
@@ -16,6 +15,7 @@ from app.services.sync.sync_tracker import SyncTracker
 from app.services.csv.row_processor import RowProcessor
 from app.services.csv.error_handler import ImportErrorHandler
 from app.models.sync_models import SyncHistory, SyncType, SyncStatus
+from app.core import settings
 from app.core.logger import logger
 from app.db.database import get_database
 
@@ -290,7 +290,7 @@ class SyncService:
                 if is_full_sync:
                     batches = self.sqlserver_connector.get_all_records(
                         table_name=table_name,
-                        batch_size=1000,
+                        batch_size=settings.SYNC_BATCH_SIZE,
                         order_by=order_by
                     )
                 else:
@@ -298,7 +298,7 @@ class SyncService:
                         table_name=table_name,
                         timestamp_column=timestamp_col,
                         since_timestamp=last_sync_timestamp,
-                        batch_size=1000,
+                        batch_size=settings.SYNC_BATCH_SIZE,
                         order_by=order_by
                     )
                 
@@ -869,6 +869,6 @@ def create_sync_service(error_threshold_percent: float = None) -> SyncService:
     
     # Read from environment variable if not provided
     if error_threshold_percent is None:
-        error_threshold_percent = float(os.getenv("SYNC_ERROR_THRESHOLD_PERCENT", "10.0"))
+        error_threshold_percent = settings.sync_error_threshold_percent()
     
     return SyncService(sqlserver_connector, error_threshold_percent=error_threshold_percent)

@@ -20,7 +20,7 @@ FULL_OVERRIDES = {
     "CELERY_TASK_TRACK_STARTED": "false", "CELERY_TASK_TIME_LIMIT": "900",
     "CELERY_WORKER_CONCURRENCY": "8", "CELERY_TASK_IGNORE_RESULT": "true",
     "CELERY_RESULT_EXPIRES": "60", "CELERY_TASK_PACKAGES": "app.tasks, app.extra",
-    "SYNC_ENABLED": "false",
+    "SYNC_ENABLED": "false", "CORS_ALLOW_ORIGINS": "http://a.example, http://b.example",
 }
 
 
