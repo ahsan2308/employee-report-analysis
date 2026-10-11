@@ -16,6 +16,7 @@ from app.api.tasks import router as tasks_router
 from app.api.imports import router as imports_router 
 from app.api.sync_routes import router as sync_router 
 
+from app import __version__
 from app.core import settings
 from app.core.logger import logger
 
@@ -29,7 +30,7 @@ async def lifespan(app: FastAPI):
 
 
 # Initialize FastAPI app
-app = FastAPI(title="Employee Report Analysis API", lifespan=lifespan)
+app = FastAPI(title="Employee Report Analysis API", version=__version__, lifespan=lifespan)
 
 # Configure CORS
 app.add_middleware(
