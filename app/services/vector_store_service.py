@@ -10,6 +10,7 @@ from app.services.embedding_service import get_embedding, get_embeddings
 
 from app.core.logger import logger
 from app.integrations.vector_store import get_vector_store
+from app.integrations.vector_store import payload_fields as fields
 from app.db.database import get_database
 from app.repositories import vector_mappings
 
@@ -333,12 +334,12 @@ def add_report_to_vector_store(report_id=None, employee_id=None, report_date=Non
                     
                     # Create payload - convert date to timestamp
                     payload = {
-                        "report_id": str(meta["report_id"]),
-                        "employee_id": meta["employee_id"],
-                        "chunk_index": meta["chunk_idx"],
-                        "report_date": meta["report_date"],  # Keep original date for display
-                        "report_date_ts": date_to_timestamp(meta["report_date"]),  # Add timestamp for filtering
-                        "text": chunk
+                        fields.REPORT_ID: str(meta["report_id"]),
+                        fields.EMPLOYEE_ID: meta["employee_id"],
+                        fields.CHUNK_INDEX: meta["chunk_idx"],
+                        fields.REPORT_DATE: meta["report_date"],  # Keep original date for display
+                        fields.REPORT_DATE_TS: date_to_timestamp(meta["report_date"]),  # Add timestamp for filtering
+                        fields.TEXT: chunk
                     }
                     
                     # Add to points batch
@@ -440,12 +441,12 @@ def add_report_to_vector_store(report_id=None, employee_id=None, report_date=Non
                         
                         # Create payload with timestamp for filtering
                         payload = {
-                            "report_id": str(report_id),
-                            "employee_id": employee_id,
-                            "chunk_index": chunk_index,
-                            "report_date": report_date,  # Keep original date for display
-                            "report_date_ts": date_to_timestamp(report_date),  # Add timestamp for filtering
-                            "text": chunk
+                            fields.REPORT_ID: str(report_id),
+                            fields.EMPLOYEE_ID: employee_id,
+                            fields.CHUNK_INDEX: chunk_index,
+                            fields.REPORT_DATE: report_date,  # Keep original date for display
+                            fields.REPORT_DATE_TS: date_to_timestamp(report_date),  # Add timestamp for filtering
+                            fields.TEXT: chunk
                         }
                         
                         # Add to points batch
@@ -509,12 +510,12 @@ def add_report_to_vector_store(report_id=None, employee_id=None, report_date=Non
                         
                         # Create payload with timestamp for filtering
                         payload = {
-                            "report_id": str(report_id),
-                            "employee_id": employee_id,
-                            "chunk_index": chunk_index,
-                            "report_date": report_date,  # Keep original date for display
-                            "report_date_ts": date_to_timestamp(report_date),  # Add timestamp for filtering
-                            "text": chunk
+                            fields.REPORT_ID: str(report_id),
+                            fields.EMPLOYEE_ID: employee_id,
+                            fields.CHUNK_INDEX: chunk_index,
+                            fields.REPORT_DATE: report_date,  # Keep original date for display
+                            fields.REPORT_DATE_TS: date_to_timestamp(report_date),  # Add timestamp for filtering
+                            fields.TEXT: chunk
                         }
                         
                         # Add to vector store
@@ -597,7 +598,7 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
             filter_params = {
                 "must": [
                     {
-                        "key": "employee_id",
+                        "key": fields.EMPLOYEE_ID,
                         "match": {"value": employee_id}
                     }
                 ]
@@ -621,7 +622,7 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
                 # Use timestamp field for filtering
                 if cutoff_ts:
                     filter_params["must"].append({
-                        "key": "report_date_ts",
+                        "key": fields.REPORT_DATE_TS,
                         "range": {"lt": cutoff_ts}
                     })
                 
@@ -640,7 +641,7 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
             
             # Add group_by parameter if enabled - corrected to match Qdrant API (v1.11.0+)
             if group_by_report:
-                search_params_dict["group_by"] = "report_id"  # String field name, not a dict
+                search_params_dict["group_by"] = fields.REPORT_ID  # String field name, not a dict
                 search_params_dict["group_size"] = 1  # Get only the top-scoring chunk per report
                 logger.debug("Using group_by='report_id', group_size=1 to deduplicate results by report")
             
@@ -670,7 +671,7 @@ def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold
             try:
                 sorted_results = sorted(
                     filtered_results,
-                    key=lambda hit: datetime.strptime(hit.get("report_date", "1900-01-01"), "%Y-%m-%d"),
+                    key=lambda hit: datetime.strptime(hit.get(fields.REPORT_DATE, "1900-01-01"), "%Y-%m-%d"),
                     reverse=True
                 )
                 logger.info(f"Search for '{query}' found {len(sorted_results)} results")
@@ -712,8 +713,8 @@ def get_report_chunks(report_id: str) -> List[str]:
                 for row in result:
                     document_id = str(row[0])
                     document = vector_store.retrieve_document(COLLECTION_NAME, document_id)
-                    if document and "text" in document:
-                        chunks.append(document["text"])
+                    if document and fields.TEXT in document:
+                        chunks.append(document[fields.TEXT])
                 
                 logger.info(f"Retrieved {len(chunks)} chunks for report {report_id}")
                 return chunks

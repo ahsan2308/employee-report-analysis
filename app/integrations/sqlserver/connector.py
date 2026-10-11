@@ -13,6 +13,7 @@ import re
 from datetime import datetime
 from contextlib import contextmanager
 
+from app.core import settings
 from app.core.logger import logger
 
 
@@ -55,8 +56,13 @@ class SQLServerConnector:
     - Configurable query whitelisting via environment variables
     """
     
-    # Default whitelists (used as fallback if env vars not set)
-    DEFAULT_ALLOWED_TABLES = {'EmployeeReports', 'VisionEmployeeData', 'EmployeeJobDescriptions', 'SupervisorFeedback'}
+    # Default whitelists (used as fallback if env vars not set): the tables the syncs read
+    DEFAULT_ALLOWED_TABLES = {
+        settings.SQLSERVER_TABLE_EMPLOYEE_REPORTS,
+        settings.SQLSERVER_TABLE_VISION_DATA,
+        settings.SQLSERVER_TABLE_JOB_DESCRIPTIONS,
+        settings.SQLSERVER_TABLE_SUPERVISOR_FEEDBACK,
+    }
     DEFAULT_ALLOWED_TIMESTAMP_COLUMNS = {'LastModifiedDate', 'ModifiedDate', 'UpdatedAt'}
     DEFAULT_MAX_BATCH_SIZE = 10000
     

@@ -33,7 +33,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 from app.models.db_models import Employee, EmployeeJobDescription
 from app.models.sync_models import SyncHistory, SyncType, SyncStatus
-from app.services.sync_service import create_sync_service, SyncService
+from app.services.sync_service import create_sync_service, SyncService, _JOB_DESCRIPTIONS
 from app.db.database import get_database
 from app.integrations.sqlserver.connector import create_sqlserver_connector
 from app.core.logger import logger
@@ -168,7 +168,7 @@ class TestPhase1SQLServerConnection:
     def test_jd_table_schema(self, sqlserver_connector, sync_service):
         """Verify JD table has required columns."""
         # Get table name
-        jd_table = sync_service._get_job_descriptions_table_name()
+        jd_table = sync_service._source_table(_JOB_DESCRIPTIONS)
         
         # Get schema
         schema = sqlserver_connector.get_table_schema(jd_table)
@@ -187,7 +187,7 @@ class TestPhase1SQLServerConnection:
     
     def test_timestamp_column_detection(self, sqlserver_connector, sync_service):
         """Verify timestamp column can be detected for incremental sync."""
-        jd_table = sync_service._get_job_descriptions_table_name()
+        jd_table = sync_service._source_table(_JOB_DESCRIPTIONS)
         schema = sqlserver_connector.get_table_schema(jd_table)
         
         timestamp_col = sync_service._find_timestamp_column(schema)
@@ -197,7 +197,7 @@ class TestPhase1SQLServerConnection:
     
     def test_query_jd_records(self, sqlserver_connector, sync_service):
         """Test querying JD records from SQL Server."""
-        jd_table = sync_service._get_job_descriptions_table_name()
+        jd_table = sync_service._source_table(_JOB_DESCRIPTIONS)
         schema = sqlserver_connector.get_table_schema(jd_table)
         timestamp_col = sync_service._find_timestamp_column(schema)
         

@@ -354,8 +354,14 @@ The pre-restructuring import paths (for example `app.database`, `app.model_host`
      SQLSERVER_DRIVER=auto
      SQLSERVER_USE_ENCRYPTION=true
      
-     # Sync Security Configuration
-     SQLSERVER_ALLOWED_TABLES=EmployeeReports,VisionEmployeeData,EmployeeJobDescriptions
+     # Source tables (defaults shown)
+     SQLSERVER_TABLE_EMPLOYEE_REPORTS=EmployeeReports
+     SQLSERVER_TABLE_VISION_DATA=VisionEmployeeData
+     SQLSERVER_TABLE_JOB_DESCRIPTIONS=EmployeeJobDescriptions
+     SQLSERVER_TABLE_SUPERVISOR_FEEDBACK=SupervisorFeedback
+
+     # Sync Security Configuration (defaults to the four source tables)
+     SQLSERVER_ALLOWED_TABLES=EmployeeReports,VisionEmployeeData,EmployeeJobDescriptions,SupervisorFeedback
      SQLSERVER_ALLOWED_TIMESTAMP_COLUMNS=LastModifiedDate,ModifiedDate,UpdatedAt
      SQLSERVER_MAX_BATCH_SIZE=10000
      

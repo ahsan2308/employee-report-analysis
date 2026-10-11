@@ -17,11 +17,22 @@
 - `SQLSERVER_CONNECTION_TIMEOUT`: Connection timeout in seconds (default: `30`)
 - `SQLSERVER_QUERY_TIMEOUT`: Query timeout in seconds (default: `300`)
 
+### Source Tables
+
+The table each sync type reads. Each must also be in `SQLSERVER_ALLOWED_TABLES`
+(any letter case); a sync whose table is not allowed fails with an error naming
+the setting.
+
+- `SQLSERVER_TABLE_EMPLOYEE_REPORTS` (default: `EmployeeReports`)
+- `SQLSERVER_TABLE_VISION_DATA` (default: `VisionEmployeeData`)
+- `SQLSERVER_TABLE_JOB_DESCRIPTIONS` (default: `EmployeeJobDescriptions`)
+- `SQLSERVER_TABLE_SUPERVISOR_FEEDBACK` (default: `SupervisorFeedback`)
+
 ### Access Control (Whitelists)
 
 - `SQLSERVER_ALLOWED_TABLES`: Comma-separated list of allowed table names
   - Example: `EmployeeReports,VisionEmployeeData,AnotherTable`
-  - Default: `EmployeeReports,VisionEmployeeData`
+  - Default: the four source tables above
 
 - `SQLSERVER_ALLOWED_TIMESTAMP_COLUMNS`: Comma-separated list of allowed timestamp column names
   - Example: `LastModifiedDate,ModifiedDate,UpdatedAt,CreatedDate`

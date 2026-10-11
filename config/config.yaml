@@ -24,6 +24,11 @@ vector_db:
   search:
     hnsw_ef: 128  # Controls search depth (higher = more accurate but slower)
 
+  # Index build parameters (used only when a collection is created)
+  index:
+    hnsw_m: 32              # Links per node in the HNSW graph
+    hnsw_ef_construct: 256  # Search depth while building the graph
+
   batch_processing:
     enabled: true
     embedding_batch_size: 50     # Maximum number of chunks to embed in one call
