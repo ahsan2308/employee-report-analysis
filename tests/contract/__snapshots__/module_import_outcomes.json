@@ -18,6 +18,7 @@
   "app.db.base": "ok",
   "app.db.base_database": "ok",
   "app.db.database": "ok",
+  "app.db.migrate": "ok",
   "app.db.mssql": "ok",
   "app.db.postgres": "ok",
   "app.domain": "ok",

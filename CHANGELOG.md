@@ -6,6 +6,17 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased
 
+### Added: database migrations run on start
+
+The Docker image now runs `python -m app.db.migrate` before starting the API
+(`docker/start-api.sh`), so a deploy applies new migrations, such as the one
+`partial` import statuses need, without a manual step. It migrates the schema
+the app uses (`SCHEMA_NAME`), builds an empty database at the current schema,
+and waits up to about 30 seconds for the database to accept connections. A
+failed migration stops the start. A database with tables but no Alembic
+version record is left alone, with a message on how to start tracking it. Set
+`RUN_MIGRATIONS=false` to skip the step.
+
 ### Changed: embedding batch size is applied; unused settings removed
 
 `vector_db.batch_processing.embedding_batch_size` (50) was never read: every
