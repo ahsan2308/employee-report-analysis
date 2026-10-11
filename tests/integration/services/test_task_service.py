@@ -34,10 +34,10 @@ def dispatch():
             {"task": name, "args": list(args), "kwargs": kwargs})
         return fake
 
-    with mock.patch.object(task_service, "analyze_report_task", recorder("analyze_report_task")), \
-         mock.patch("app.tasks.analysis_tasks.analyze_monthly_reports_task",
+    with mock.patch("app.tasks.dispatch.analyze_report_task", recorder("analyze_report_task")), \
+         mock.patch("app.tasks.dispatch.analyze_monthly_reports_task",
                     recorder("analyze_monthly_reports_task")), \
-         mock.patch("app.tasks.analysis_tasks.analyze_quarterly_reports_task",
+         mock.patch("app.tasks.dispatch.analyze_quarterly_reports_task",
                     recorder("analyze_quarterly_reports_task")):
         yield calls
 

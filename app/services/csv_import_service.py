@@ -664,6 +664,27 @@ class CSVImportService:
         
         logger.info(f"Saved {len(error_models)} errors for job {job_id}")
 
+    def submit_import(self, filename: str, file_content: bytes, options: CSVImportOptions,
+                      csv_type: Optional[str] = None) -> CSVImportJobResponse:
+        """Record an import job and queue its processing; a job whose task cannot be queued is marked FAILED."""
+        # Imported here: the import task module imports this service
+        from app.tasks import dispatch
+
+        job = self.create_import_job(filename=filename, options=options, csv_type=csv_type)
+        try:
+            dispatch.queue_csv_import(
+                job_id=str(job.job_id),
+                file_content=file_content,
+                filename=filename,
+                options=options.model_dump(),
+                csv_type=csv_type
+            )
+        except Exception as dispatch_error:
+            # Without this the job would stay PENDING forever
+            self.mark_job_failed(str(job.job_id), f"Could not queue the import task: {dispatch_error}")
+            raise
+        return job
+
     def mark_job_failed(self, job_id: str, message: str) -> None:
         """Mark a job FAILED with one job-level error (row 0), e.g. when its task could not be queued."""
         with self._transaction_context() as session:

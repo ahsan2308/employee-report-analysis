@@ -87,7 +87,7 @@ def test_trigger_get_method_not_allowed(api, snap):
 
 
 def test_trigger_dispatch_failure_marks_row_failed(api, db_session, snap, dispatch):
-    with mock.patch("app.api.sync_routes.celery_app") as broken:
+    with mock.patch("app.tasks.dispatch.celery_app") as broken:
         broken.send_task.side_effect = RuntimeError("broker unreachable")
         resp = api.post("/sync/trigger/vision_data")
     snap("sync_trigger_dispatch_failure", resp, db=_history(db_session))
@@ -101,7 +101,7 @@ def test_trigger_full(api, db_session, snap, dispatch):
 
 
 def test_trigger_full_dispatch_failure_marks_rows_failed(api, db_session):
-    with mock.patch("app.api.sync_routes.celery_app") as broken:
+    with mock.patch("app.tasks.dispatch.celery_app") as broken:
         broken.send_task.side_effect = RuntimeError("broker unreachable")
         resp = api.post("/sync/trigger/full")
     assert resp.status_code == 500
@@ -365,7 +365,7 @@ def no_sync_env(monkeypatch):
 
 
 def test_config_connected(api, snapshot, no_sync_env):
-    with mock.patch("app.api.sync_routes.create_sqlserver_connector", return_value=_connector(True)):
+    with mock.patch("app.services.sync.source.create_sqlserver_connector", return_value=_connector(True)):
         resp = api.get("/sync/config")
     snapshot("sync_config_connected", scrub({"status": resp.status_code, "body": _sorted_lists(resp.json())}))
 
@@ -373,19 +373,19 @@ def test_config_connected(api, snapshot, no_sync_env):
 def test_config_disconnected_and_env_overrides(api, snapshot, monkeypatch):
     monkeypatch.setenv("SYNC_ENABLED", "FALSE")
     monkeypatch.setenv("SYNC_ERROR_THRESHOLD_PERCENT", "2.5")
-    with mock.patch("app.api.sync_routes.create_sqlserver_connector", return_value=_connector(False)):
+    with mock.patch("app.services.sync.source.create_sqlserver_connector", return_value=_connector(False)):
         resp = api.get("/sync/config")
     snapshot("sync_config_disconnected_env", scrub({"status": resp.status_code, "body": _sorted_lists(resp.json())}))
 
 
 def test_config_connector_raises_500(api, snap, no_sync_env):
-    with mock.patch("app.api.sync_routes.create_sqlserver_connector", side_effect=RuntimeError("ODBC driver missing")):
+    with mock.patch("app.services.sync.source.create_sqlserver_connector", side_effect=RuntimeError("ODBC driver missing")):
         snap("sync_config_error", api.get("/sync/config"))
 
 
 def test_config_invalid_threshold_env_500(api, snap, monkeypatch):
     monkeypatch.setenv("SYNC_ERROR_THRESHOLD_PERCENT", "ten")
-    with mock.patch("app.api.sync_routes.create_sqlserver_connector", return_value=_connector(True)):
+    with mock.patch("app.services.sync.source.create_sqlserver_connector", return_value=_connector(True)):
         snap("sync_config_bad_threshold_env", api.get("/sync/config"))
 
 
@@ -397,8 +397,8 @@ def _fake_clock():
 
 def test_test_connection_success(api, snapshot):
     connector = _connector(True)
-    with mock.patch("app.api.sync_routes.create_sqlserver_connector", return_value=connector), \
-            mock.patch("app.api.sync_routes.time", _fake_clock()):
+    with mock.patch("app.services.sync.source.create_sqlserver_connector", return_value=connector), \
+            mock.patch("app.services.sync.source.time", _fake_clock()):
         resp = api.get("/sync/test-connection")
     snapshot("sync_test_connection_success",
              scrub({"status": resp.status_code, "body": _sorted_lists(resp.json()),
@@ -407,8 +407,8 @@ def test_test_connection_success(api, snapshot):
 
 def test_test_connection_failed(api, snapshot):
     connector = _connector(False)
-    with mock.patch("app.api.sync_routes.create_sqlserver_connector", return_value=connector), \
-            mock.patch("app.api.sync_routes.time", _fake_clock()):
+    with mock.patch("app.services.sync.source.create_sqlserver_connector", return_value=connector), \
+            mock.patch("app.services.sync.source.time", _fake_clock()):
         resp = api.get("/sync/test-connection")
     snapshot("sync_test_connection_disconnected",
              scrub({"status": resp.status_code, "body": resp.json(),
@@ -416,12 +416,12 @@ def test_test_connection_failed(api, snapshot):
 
 
 def test_test_connection_factory_raises_returns_200(api, snap):
-    with mock.patch("app.api.sync_routes.create_sqlserver_connector", side_effect=RuntimeError("ODBC driver missing")):
+    with mock.patch("app.services.sync.source.create_sqlserver_connector", side_effect=RuntimeError("ODBC driver missing")):
         snap("sync_test_connection_factory_error", api.get("/sync/test-connection"))
 
 
 def test_test_connection_probe_raises_returns_200(api, snap):
     connector = _connector(True)
     connector.test_connection.side_effect = TimeoutError("login timeout")
-    with mock.patch("app.api.sync_routes.create_sqlserver_connector", return_value=connector):
+    with mock.patch("app.services.sync.source.create_sqlserver_connector", return_value=connector):
         snap("sync_test_connection_probe_error", api.get("/sync/test-connection"))

@@ -14,5 +14,6 @@ markers = [
 extend-exclude = ["scripts/manual", "migrations/versions"]
 
 [tool.ruff.lint]
-# Deliberately narrow: unused imports and undefined names only. No reformatting.
-select = ["F401", "F821"]
+# Deliberately narrow: unused imports, undefined names, and a name redefined before
+# use (e.g. an endpoint shadowing the function it imports). No reformatting.
+select = ["F401", "F811", "F821"]
