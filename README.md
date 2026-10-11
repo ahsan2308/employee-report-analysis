@@ -802,7 +802,7 @@ TEST_DATABASE_URL=postgresql://user:pass@localhost:5432/scratch_db python -m pyt
 ruff check .                          # unused imports and undefined names
 ```
 
-Use a throwaway database for `TEST_DATABASE_URL`. See [tests/README.md](tests/README.md) for the test layout and how to update snapshots, and [tests/KNOWN_BUGS.md](tests/KNOWN_BUGS.md) for behaviours the tests record as they are.
+Use a throwaway database for `TEST_DATABASE_URL`. See [tests/README.md](tests/README.md) for the test layout and how to update snapshots, and [tests/KNOWN_BUGS.md](tests/KNOWN_BUGS.md) for behaviours the tests record as they are. Open follow-ups after the refactor are listed in [docs/REMAINING_WORK.md](docs/REMAINING_WORK.md).
 
 ---
 
