@@ -8,11 +8,10 @@ import copy
 from typing import Dict, List, Optional, Any
 from datetime import datetime, date
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
-from app.models.db_models import Employee, Report, EmployeeAnalysis
 from app.core.logger import logger
 from app.domain.periods import quarter_of_month
+from app.repositories import visualizations as viz_repo
 from app.domain.scoring import level_fraction, parse_impact
 
 # Simple in-memory cache for expensive calculations
@@ -87,50 +86,6 @@ def _format_time_period(report_date: date, interval: str) -> str:
         return f"{report_date.year}-Q{quarter_of_month(report_date.month)}"
     else:  # year
         return str(report_date.year)
-
-def _apply_common_filters(query, employee_id, department, start_date, end_date):
-    """Apply common filters to a query."""
-    # Filter by employee
-    if employee_id:
-        try:
-            employee_id = int(employee_id) if not isinstance(employee_id, int) else employee_id
-            query = query.filter(Report.employee_id == employee_id)
-        except (ValueError, TypeError):
-            logger.warning(f"Invalid employee_id format: {employee_id}, ignoring filter")
-    
-    # Filter by department
-    if department:
-        query = query.filter(Employee.wing == department)
-    
-    # Filter by date range
-    if start_date:
-        query = query.filter(Report.report_date >= start_date)
-    
-    if end_date:
-        query = query.filter(Report.report_date <= end_date)
-    
-    return query
-
-def _group_by_time_interval(query, interval: str, date_column_name: str):
-    """
-    Group query results by a specified time interval.
-    
-    Args:
-        query: SQLAlchemy query to apply grouping to
-        interval: Time interval to group by ('day', 'week', 'month', 'quarter', 'year')
-        date_column_name: Name of the date column to use for grouping
-        
-    Returns:
-        List of (period, average sentiment) rows
-    """
-    date_column = getattr(Report, date_column_name)
-    unit = interval if interval in ('day', 'week', 'month', 'quarter') else 'year'
-    period = func.date_trunc(unit, date_column)
-    # Ordered by period, so the trend reads chronologically
-    return query.group_by(period).order_by(period).with_entities(
-        period,
-        func.avg(EmployeeAnalysis.sentiment_score)
-    ).all()
 
 def _build_trend_response(labels: List[str], data: List[float], dataset_label: str) -> Dict[str, Any]:
     """Build a standardized trend response object."""
@@ -212,23 +167,8 @@ def get_sentiment_trends(
     start_date = _parse_date(start_date)
     end_date = _parse_date(end_date)
     
-    # Base query
-    query = db.query(  
-        Report.report_date.label('report_date'),  
-        EmployeeAnalysis.sentiment_score,
-        Report.employee_id,
-        Employee.wing
-    ).join(
-        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id 
-    ).join(
-        Employee, Report.employee_id == Employee.id
-    )
-    
-    # Apply filters
-    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
-    
-    # Group by time interval
-    results = _group_by_time_interval(query, interval, "report_date")
+    # Average sentiment per period, oldest first
+    results = viz_repo.sentiment_by_period(db, interval, employee_id=employee_id, department=department, start_date=start_date, end_date=end_date)
     
     # Process results
     time_periods = []
@@ -247,6 +187,66 @@ def get_sentiment_trends(
     
     return trend_data
 
+def _rating_trends(
+    db: Session,
+    column_name: str,
+    cache_prefix: str,
+    dataset_label: str,
+    employee_id: Optional[int] = None,
+    department: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    interval: str = "month",
+    cache_ttl: int = DEFAULT_CACHE_SECONDS
+) -> Dict[str, Any]:
+    """
+    Trend of a low/medium/high analysis rating over time, optionally filtered by employee,
+    department, and date range. Ratings are converted to numeric scores (0.2, 0.5, 0.8).
+    """
+    # Generate cache key
+    cache_key = f"{cache_prefix}_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
+    
+    # Check cache first
+    cached_data = _get_from_cache(cache_key)
+    if cached_data:
+        return cached_data
+    
+    logger.info(f"Calculating {cache_prefix.replace('_', ' ')} with interval={interval}")
+    
+    # Parse dates
+    start_date = _parse_date(start_date)
+    end_date = _parse_date(end_date)
+    
+    # Group by time interval and collect data
+    results_by_period = {}
+    
+    for report_date, rating, _, _ in viz_repo.trend_rows(db, column_name, employee_id=employee_id, department=department, start_date=start_date, end_date=end_date):
+        # Skip if no rating
+        if not rating:
+            continue
+        
+        # Determine period based on interval
+        period = _format_time_period(report_date, interval)
+        results_by_period.setdefault(period, []).append(_convert_rating_to_score(rating))
+    
+    # Calculate averages and prepare results
+    time_periods = []
+    values = []
+    
+    # Sort periods chronologically
+    for period in _sort_time_periods(list(results_by_period.keys()), interval):
+        scores = results_by_period[period]
+        time_periods.append(period)
+        values.append(round(sum(scores) / len(scores), 2) if scores else 0)
+    
+    # Build response
+    trend_data = _build_trend_response(time_periods, values, dataset_label)
+    
+    # Cache result
+    _store_in_cache(cache_key, trend_data, cache_ttl)
+    
+    return trend_data
+
 def get_risk_level_trends(
     db: Session,
     employee_id: Optional[int] = None,
@@ -256,77 +256,9 @@ def get_risk_level_trends(
     interval: str = "month",
     cache_ttl: int = DEFAULT_CACHE_SECONDS
 ) -> Dict[str, Any]:
-    """
-    Get risk level trends over time, optionally filtered by employee, department, and date range.
-    Risk levels (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.
-    """
-    # Generate cache key
-    cache_key = f"risk_level_trends_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
-    
-    # Check cache first
-    cached_data = _get_from_cache(cache_key)
-    if cached_data:
-        return cached_data
-    
-    logger.info(f"Calculating risk level trends with interval={interval}")
-    
-    # Parse dates
-    start_date = _parse_date(start_date)
-    end_date = _parse_date(end_date)
-    
-    # Base query
-    query = db.query(  
-        Report.report_date.label('report_date'),  
-        EmployeeAnalysis.risk_level,
-        Report.employee_id,
-        Employee.wing
-    ).join(
-        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id 
-    ).join(
-        Employee, Report.employee_id == Employee.id
-    )
-    
-    # Apply filters
-    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
-    
-    # Group by time interval and collect data
-    results_by_period = {}
-    
-    for report_date, risk_level, _, _ in query.all():
-        # Skip if no risk level
-        if not risk_level:
-            continue
-            
-        # Convert string risk level to numeric score
-        risk_score = _convert_rating_to_score(risk_level)
-        
-        # Determine period based on interval
-        period = _format_time_period(report_date, interval)
-        
-        # Add to period data
-        if period not in results_by_period:
-            results_by_period[period] = []
-        results_by_period[period].append(risk_score)
-    
-    # Calculate averages and prepare results
-    time_periods = []
-    risk_values = []
-    
-    # Sort periods chronologically
-    for period in _sort_time_periods(list(results_by_period.keys()), interval):
-        scores = results_by_period[period]
-        avg_risk = round(sum(scores) / len(scores), 2) if scores else 0
-        
-        time_periods.append(period)
-        risk_values.append(avg_risk)
-    
-    # Build response
-    trend_data = _build_trend_response(time_periods, risk_values, "Average Risk Level")
-    
-    # Cache result
-    _store_in_cache(cache_key, trend_data, cache_ttl)
-    
-    return trend_data
+    """Risk level trend over time (low/medium/high as 0.2/0.5/0.8)."""
+    return _rating_trends(db, "risk_level", "risk_level_trends", "Average Risk Level", employee_id, department,
+                          start_date, end_date, interval, cache_ttl)
 
 def get_credibility_trends(
     db: Session,
@@ -337,77 +269,9 @@ def get_credibility_trends(
     interval: str = "month",
     cache_ttl: int = DEFAULT_CACHE_SECONDS
 ) -> Dict[str, Any]:
-    """
-    Get credibility rating trends over time, optionally filtered by employee, department, and date range.
-    Credibility ratings (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.
-    """
-    # Generate cache key
-    cache_key = f"credibility_trends_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
-    
-    # Check cache first
-    cached_data = _get_from_cache(cache_key)
-    if cached_data:
-        return cached_data
-    
-    logger.info(f"Calculating credibility trends with interval={interval}")
-    
-    # Parse dates
-    start_date = _parse_date(start_date)
-    end_date = _parse_date(end_date)
-    
-    # Base query
-    query = db.query(  
-        Report.report_date.label('report_date'),  
-        EmployeeAnalysis.credibility_rating,
-        Report.employee_id,
-        Employee.wing
-    ).join(
-        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id 
-    ).join(
-        Employee, Report.employee_id == Employee.id
-    )
-    
-    # Apply filters
-    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
-    
-    # Group by time interval and collect data
-    results_by_period = {}
-    
-    for report_date, credibility_rating, _, _ in query.all():
-        # Skip if no credibility rating
-        if not credibility_rating:
-            continue
-            
-        # Convert string credibility rating to numeric score
-        credibility_score = _convert_rating_to_score(credibility_rating)
-        
-        # Determine period based on interval
-        period = _format_time_period(report_date, interval)
-        
-        # Add to period data
-        if period not in results_by_period:
-            results_by_period[period] = []
-        results_by_period[period].append(credibility_score)
-    
-    # Calculate averages and prepare results
-    time_periods = []
-    credibility_values = []
-    
-    # Sort periods chronologically
-    for period in _sort_time_periods(list(results_by_period.keys()), interval):
-        scores = results_by_period[period]
-        avg_credibility = round(sum(scores) / len(scores), 2) if scores else 0
-        
-        time_periods.append(period)
-        credibility_values.append(avg_credibility)
-    
-    # Build response
-    trend_data = _build_trend_response(time_periods, credibility_values, "Average Credibility")
-    
-    # Cache result
-    _store_in_cache(cache_key, trend_data, cache_ttl)
-    
-    return trend_data
+    """Credibility rating trend over time (low/medium/high as 0.2/0.5/0.8)."""
+    return _rating_trends(db, "credibility_rating", "credibility_trends", "Average Credibility", employee_id, department,
+                          start_date, end_date, interval, cache_ttl)
 
 def get_consistency_trends(
     db: Session,
@@ -418,77 +282,9 @@ def get_consistency_trends(
     interval: str = "month",
     cache_ttl: int = DEFAULT_CACHE_SECONDS
 ) -> Dict[str, Any]:
-    """
-    Get consistency score trends over time, optionally filtered by employee, department, and date range.
-    Consistency scores (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.
-    """
-    # Generate cache key
-    cache_key = f"consistency_trends_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
-    
-    # Check cache first
-    cached_data = _get_from_cache(cache_key)
-    if cached_data:
-        return cached_data
-    
-    logger.info(f"Calculating consistency trends with interval={interval}")
-    
-    # Parse dates
-    start_date = _parse_date(start_date)
-    end_date = _parse_date(end_date)
-    
-    # Base query
-    query = db.query(  
-        Report.report_date.label('report_date'),  
-        EmployeeAnalysis.consistency_score,
-        Report.employee_id,
-        Employee.wing
-    ).join(
-        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id 
-    ).join(
-        Employee, Report.employee_id == Employee.id
-    )
-    
-    # Apply filters
-    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
-    
-    # Group by time interval and collect data
-    results_by_period = {}
-    
-    for report_date, consistency_score, _, _ in query.all():
-        # Skip if no consistency score
-        if not consistency_score:
-            continue
-            
-        # Convert string consistency score to numeric score
-        numeric_score = _convert_rating_to_score(consistency_score)
-        
-        # Determine period based on interval
-        period = _format_time_period(report_date, interval)
-        
-        # Add to period data
-        if period not in results_by_period:
-            results_by_period[period] = []
-        results_by_period[period].append(numeric_score)
-    
-    # Calculate averages and prepare results
-    time_periods = []
-    consistency_values = []
-    
-    # Sort periods chronologically
-    for period in _sort_time_periods(list(results_by_period.keys()), interval):
-        scores = results_by_period[period]
-        avg_consistency = round(sum(scores) / len(scores), 2) if scores else 0
-        
-        time_periods.append(period)
-        consistency_values.append(avg_consistency)
-    
-    # Build response
-    trend_data = _build_trend_response(time_periods, consistency_values, "Average Consistency")
-    
-    # Cache result
-    _store_in_cache(cache_key, trend_data, cache_ttl)
-    
-    return trend_data
+    """Consistency score trend over time (low/medium/high as 0.2/0.5/0.8)."""
+    return _rating_trends(db, "consistency_score", "consistency_trends", "Average Consistency", employee_id, department,
+                          start_date, end_date, interval, cache_ttl)
 
 def get_performance_trends(
     db: Session,
@@ -499,77 +295,9 @@ def get_performance_trends(
     interval: str = "month",
     cache_ttl: int = DEFAULT_CACHE_SECONDS
 ) -> Dict[str, Any]:
-    """
-    Get performance rating trends over time, optionally filtered by employee, department, and date range.
-    Performance ratings (low, medium, high) are converted to numeric scores (0.2, 0.5, 0.8) for visualization.
-    """
-    # Generate cache key
-    cache_key = f"performance_trends_{employee_id}_{department}_{start_date}_{end_date}_{interval}"
-    
-    # Check cache first
-    cached_data = _get_from_cache(cache_key)
-    if cached_data:
-        return cached_data
-    
-    logger.info(f"Calculating performance trends with interval={interval}")
-    
-    # Parse dates
-    start_date = _parse_date(start_date)
-    end_date = _parse_date(end_date)
-    
-    # Base query
-    query = db.query(  
-        Report.report_date.label('report_date'),  
-        EmployeeAnalysis.performance_rating,
-        Report.employee_id,
-        Employee.wing
-    ).join(
-        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id 
-    ).join(
-        Employee, Report.employee_id == Employee.id
-    )
-    
-    # Apply filters
-    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
-    
-    # Group by time interval and collect data
-    results_by_period = {}
-    
-    for report_date, performance_rating, _, _ in query.all():
-        # Skip if no performance rating
-        if not performance_rating:
-            continue
-            
-        # Convert string performance rating to numeric score
-        performance_score = _convert_rating_to_score(performance_rating)
-        
-        # Determine period based on interval
-        period = _format_time_period(report_date, interval)
-        
-        # Add to period data
-        if period not in results_by_period:
-            results_by_period[period] = []
-        results_by_period[period].append(performance_score)
-    
-    # Calculate averages and prepare results
-    time_periods = []
-    performance_values = []
-    
-    # Sort periods chronologically
-    for period in _sort_time_periods(list(results_by_period.keys()), interval):
-        scores = results_by_period[period]
-        avg_performance = round(sum(scores) / len(scores), 2) if scores else 0
-        
-        time_periods.append(period)
-        performance_values.append(avg_performance)
-    
-    # Build response
-    trend_data = _build_trend_response(time_periods, performance_values, "Average Performance")
-    
-    # Cache result
-    _store_in_cache(cache_key, trend_data, cache_ttl)
-    
-    return trend_data
+    """Performance rating trend over time (low/medium/high as 0.2/0.5/0.8)."""
+    return _rating_trends(db, "performance_rating", "performance_trends", "Average Performance", employee_id, department,
+                          start_date, end_date, interval, cache_ttl)
 
 def extract_impact_score(impact_str: str) -> Optional[float]:
     """Extract numeric impact score from differently formatted impact strings."""
@@ -606,24 +334,10 @@ def get_impact_score_trends(
     start_date = _parse_date(start_date)
     end_date = _parse_date(end_date)
     
-    # Base query
-    query = db.query(
-        Report.report_date.label('report_date'),
-        EmployeeAnalysis.achievements_json,
-        Report.employee_id,
-        Employee.wing
-    ).join(
-        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id
-    ).join(
-        Employee, Report.employee_id == Employee.id
-    ).filter(EmployeeAnalysis.achievements_json.isnot(None))
-    
-    # Apply filters
-    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
-    
     # Calculate average impact score per time period
     results_by_period = {}
-    for report_date, achievements_json, _, _ in query.all():
+    for report_date, achievements_json, _, _ in viz_repo.trend_rows(
+            db, "achievements_json", require_value=True, employee_id=employee_id, department=department, start_date=start_date, end_date=end_date):
         # Skip if no achievements
         if not achievements_json:
             continue
@@ -709,29 +423,13 @@ def get_sentiment_heatmap(
     start_date = _parse_date(start_date)
     end_date = _parse_date(end_date)
     
-    # Base query
-    query = db.query(
-        Report.report_date,
-        EmployeeAnalysis.sentiment_score,
-        Employee.wing.label('department'),
-        Employee.id.label('employee_id'),
-        Employee.name.label('employee_name')
-    ).join(
-        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id
-    ).join(
-        Employee, Report.employee_id == Employee.id
-    )
-    
-    # Apply filters; a fixed row order keeps the output stable
-    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
-    query = query.order_by(Report.report_date, Employee.id)
-    
     # Collect data organized by time period and dimension
     data_points = {}
     time_periods = set()
     dimension_values = set()
     
-    for report_date, sentiment, department, employee_id, employee_name in query.all():
+    rows = viz_repo.heatmap_rows(db, "sentiment_score", employee_id=employee_id, department=department, start_date=start_date, end_date=end_date)
+    for report_date, sentiment, department, employee_id, employee_name in rows:
         # Format time period
         period = _format_time_period(report_date, interval)
         time_periods.add(period)
@@ -843,29 +541,13 @@ def get_impact_score_heatmap(
     start_date = _parse_date(start_date)
     end_date = _parse_date(end_date)
     
-    # Base query
-    query = db.query(
-        Report.report_date,
-        EmployeeAnalysis.achievements_json,
-        Employee.wing.label('department'),
-        Employee.id.label('employee_id'),
-        Employee.name.label('employee_name')
-    ).join(
-        EmployeeAnalysis, Report.report_id == EmployeeAnalysis.report_id
-    ).join(
-        Employee, Report.employee_id == Employee.id
-    ).filter(EmployeeAnalysis.achievements_json.isnot(None))
-    
-    # Apply filters; a fixed row order keeps the output stable
-    query = _apply_common_filters(query, employee_id, department, start_date, end_date)
-    query = query.order_by(Report.report_date, Employee.id)
-    
     # Collect data organized by time period and dimension
     data_points = {}
     time_periods = set()
     dimension_values = set()
     
-    for report_date, achievements_json, department, employee_id, employee_name in query.all():
+    rows = viz_repo.heatmap_rows(db, "achievements_json", require_value=True, employee_id=employee_id, department=department, start_date=start_date, end_date=end_date)
+    for report_date, achievements_json, department, employee_id, employee_name in rows:
         # Skip if no achievements
         if not achievements_json:
             continue

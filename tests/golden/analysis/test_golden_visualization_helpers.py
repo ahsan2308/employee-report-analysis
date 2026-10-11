@@ -4,6 +4,7 @@ from datetime import date, datetime
 import pytest
 from sqlalchemy.dialects import postgresql
 
+from app.repositories import visualizations as viz_repo
 from app.services import visualization_service as vis
 
 
@@ -179,7 +180,7 @@ class RecordingQuery:
 ])
 def test_apply_common_filters(snapshot, name, args):
     query = RecordingQuery()
-    returned = vis._apply_common_filters(query, *args)
+    returned = viz_repo.apply_report_filters(query, *args)
     snapshot(f"apply_common_filters_{name}", {"same_query": returned is query, "ops": query.ops})
 
 
@@ -187,7 +188,7 @@ def test_group_by_time_interval(snapshot):
     table = {}
     for interval in ("day", "week", "month", "quarter", "year", "bogus"):
         query = RecordingQuery()
-        vis._group_by_time_interval(query, interval, "report_date")
+        viz_repo.average_sentiment_by_period(query, interval, "report_date")
         table[interval] = query.ops
-    table["bad_column"] = outcome(vis._group_by_time_interval, RecordingQuery(), "day", "no_such_column")
+    table["bad_column"] = outcome(viz_repo.average_sentiment_by_period, RecordingQuery(), "day", "no_such_column")
     snapshot("group_by_time_interval", table)
