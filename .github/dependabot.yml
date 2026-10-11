@@ -23,3 +23,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # Only patch releases of the Python base image: CI tests on Python 3.12,
+    # so a move to a newer Python starts in CI, not in the Dockerfile.
+    ignore:
+      - dependency-name: python
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
