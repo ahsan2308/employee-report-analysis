@@ -20,6 +20,24 @@ from app.services.csv.error_handler import ImportErrorHandler
 from app.models.import_models import CSVImportJob, ImportStatus, ImportError
 from app.schemas.csv_import_schema import CSVImportOptions, CSVImportJobResponse
 
+def _job_summary(job: CSVImportJob) -> Dict[str, Any]:
+    """What the import task returns: the job's state as plain values (no session needed)."""
+    return {
+        "job_id": str(job.job_id),
+        "filename": job.filename,
+        "status": job.status,
+        "csv_type": job.csv_type,
+        "submitted_at": job.submitted_at,
+        "started_at": job.started_at,
+        "completed_at": job.completed_at,
+        "total_rows": job.total_rows,
+        "processed_rows": job.processed_rows,
+        "successful_rows": job.successful_rows,
+        "error_count": job.error_count,
+        "metrics": job.metrics_json or {}
+    }
+
+
 def import_job_response(job: CSVImportJob, error_count: int) -> Dict[str, Any]:
     """The API view of an import job; error_count is the number of stored ImportError rows."""
     total_rows = job.total_rows or 0
@@ -334,20 +352,7 @@ class CSVImportService:
                         raise ValueError(f"Cannot process file {job.filename}: {str(ude)}")
                                 
                 # Convert job to dictionary before returning
-                return {
-                    "job_id": str(job_result.job_id),
-                    "filename": job_result.filename,
-                    "status": job_result.status,
-                    "csv_type": job_result.csv_type,
-                    "submitted_at": job_result.submitted_at,
-                    "started_at": job_result.started_at,
-                    "completed_at": job_result.completed_at,
-                    "total_rows": job_result.total_rows,
-                    "processed_rows": job_result.processed_rows,
-                    "successful_rows": job_result.successful_rows,
-                    "error_count": job_result.error_count,
-                    "metrics": job_result.metrics_json or {}
-                }
+                return _job_summary(job_result)
                 
             except Exception as e:
                 logger.error(f"Error processing CSV file: {str(e)}\n{traceback.format_exc()}")
@@ -364,20 +369,7 @@ class CSVImportService:
                     self._save_errors(session, job.job_id, error_handler)
                 
                 # Return dictionary for failed job too
-                return {
-                    "job_id": str(job.job_id),
-                    "filename": job.filename,
-                    "status": job.status,
-                    "csv_type": job.csv_type,
-                    "submitted_at": job.submitted_at,
-                    "started_at": job.started_at,
-                    "completed_at": job.completed_at,
-                    "total_rows": job.total_rows,
-                    "processed_rows": job.processed_rows,
-                    "successful_rows": job.successful_rows, 
-                    "error_count": job.error_count,
-                    "metrics": job.metrics_json or {}
-                }
+                return _job_summary(job)
     
     def _calculate_processing_rate(self, processed_rows: int, total_time: float) -> float:
         """Calculate processing rate in rows per second.""" 

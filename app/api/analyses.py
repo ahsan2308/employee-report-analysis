@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
-from app.api.serializers import monthly_analysis_response, quarterly_analysis_response, task_status_response, weekly_analysis_response
+from app.api.serializers import (
+    monthly_analysis_response, monthly_analysis_summary, quarterly_analysis_response, task_status_response,
+    weekly_analysis_list_item, weekly_analysis_response,
+)
 from app.schemas.analysis_schema import AnalysisResponse, MonthlyAnalysisResponse, MonthlyAnalysisSummary, QuarterlyAnalysisResponse
 from app.repositories import analyses as analysis_repo
 from app.repositories.employees import get_employee
@@ -98,14 +101,7 @@ def get_employee_analyses(employee_id: int, db: Session = Depends(get_db)):
             
         # Analyses with their reports (an analysis whose report is gone is left out)
         analyses_list = [
-            {
-                "analysis_id": analysis.analysis_id,
-                "report_id": str(analysis.report_id),
-                "report_date": report.report_date,
-                "sentiment_score": analysis.sentiment_score,
-                "risk_level": analysis.risk_level,
-                "performance_rating": analysis.performance_rating
-            }
+            weekly_analysis_list_item(analysis, report)
             for analysis, report in analysis_repo.list_weekly_analyses_with_reports(db, employee_id)
         ]
             
@@ -219,22 +215,7 @@ def get_employee_monthly_analyses(employee_id: int, db: Session = Depends(get_db
         # Get all monthly analyses for this employee
         analyses = analysis_repo.list_monthly_analyses(db, employee_id)
         
-        return [
-            {
-                "analysis_id": analysis.analysis_id,
-                "employee_id": analysis.employee_id,
-                "year": analysis.year,
-                "month": analysis.month,
-                "period_start": analysis.period_start,
-                "period_end": analysis.period_end,
-                "performance_trend": analysis.performance_trend,
-                "sentiment_trend": analysis.sentiment_trend,
-                "risk_level": analysis.risk_level,
-                "achievement_count": len(analysis.monthly_achievements) if analysis.monthly_achievements else 0,
-                "challenge_count": len(analysis.recurring_challenges) if analysis.recurring_challenges else 0,
-                "monthly_summary": analysis.monthly_summary
-            } for analysis in analyses
-        ]
+        return [monthly_analysis_summary(analysis) for analysis in analyses]
         
     except HTTPException:
         raise

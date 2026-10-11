@@ -331,7 +331,7 @@ def get_task_result(db: Session, task_id: UUID) -> TaskResult:
     if not task:
         raise TaskNotFoundError(f"Task with ID {task_id} not found")
         
-    if task.status not in (TaskStatus.COMPLETED.value, TaskStatus.FAILED.value):
+    if not task.is_complete:
         raise ValueError(f"Task is not complete: {task.status}")
     
     if task.status == TaskStatus.FAILED.value:

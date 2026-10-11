@@ -97,6 +97,20 @@ class SyncHistory(Base):
     def __repr__(self):
         return f"<SyncHistory(id={self.sync_id}, type={self.sync_type}, status={self.status}, records={self.records_synced})>"
     
+    @property
+    def duration_seconds(self):
+        """How long the sync ran, once it has finished."""
+        if self.started_at and self.completed_at:
+            return (self.completed_at - self.started_at).total_seconds()
+        return None
+
+    @property
+    def is_full_sync(self) -> bool:
+        """Whether this was a full sync; a missing flag means incremental."""
+        if self.sync_options and isinstance(self.sync_options, dict):
+            return self.sync_options.get('is_full_sync', False)
+        return False
+
     def to_dict(self):
         """Convert to dictionary for API responses."""
         return {
@@ -114,12 +128,5 @@ class SyncHistory(Base):
             "error_count": self.error_count,
             "error_message": self.error_message,
             "sync_options": self.sync_options,
-            "duration_seconds": self._calculate_duration()
+            "duration_seconds": self.duration_seconds
         }
-    
-    def _calculate_duration(self):
-        """Calculate sync duration in seconds."""
-        if self.started_at and self.completed_at:
-            delta = self.completed_at - self.started_at
-            return delta.total_seconds()
-        return None

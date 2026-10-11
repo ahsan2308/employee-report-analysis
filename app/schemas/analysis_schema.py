@@ -1,18 +1,16 @@
+"""API response models for weekly, monthly and quarterly analyses.
+
+Each nested model mirrors the model of the same name in
+app/models/structured_models_llm.py (RiskAssessment mirrors
+QuarterlyRiskAssessment), field for field. The two are kept apart on purpose:
+the LLM models are strict (Literal choices, prompt-oriented descriptions) to
+validate what the LLM returns, while these describe stored analyses for API
+clients and accept any value, so analyses stored before a choice changed still
+load. tests/contract/test_analysis_models.py checks the fields stay the same.
+"""
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, Dict, Any, List
 from datetime import date
-
-class Achievement(BaseModel):
-    """Schema for achievement in analysis."""
-    description: str = Field(description="Detailed description of the achievement")
-    impact_score: int = Field(description="Impact rating from 1 to 10")
-    impact_reason: str = Field(description="Brief reason for the impact rating, explaining which organizational level was impacted")
-    vision_verification: str = Field(description="Vision data verification status: supported/contradicted/none")
-
-class Challenge(BaseModel):
-    """Schema for challenge in analysis."""
-    description: str = Field(description="Detailed description of the challenge faced")
-    severity: str = Field(description="How severe the challenge is (low, medium, high)")
 
 class CredibilityAssessment(BaseModel):
     """Schema for credibility assessment in analysis."""

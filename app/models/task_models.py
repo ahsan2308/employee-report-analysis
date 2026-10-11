@@ -8,14 +8,19 @@ import uuid
 from app.db.base import Base
 from app.db.base import schema_name
 
-class TaskStatus(Enum):
-    """Enum for task status values."""
+class TaskStatus(str, Enum):
+    """Status of a background task (stored as its value)."""
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
 
-class TaskType(Enum):
+    @property
+    def is_terminal(self) -> bool:
+        """True for COMPLETED and FAILED: the task will not change again."""
+        return self in (TaskStatus.COMPLETED, TaskStatus.FAILED)
+
+class TaskType(str, Enum):
     """Enum for task types."""
     REPORT_ANALYSIS = "REPORT_ANALYSIS"
     MONTHLY_ANALYSIS = "MONTHLY_ANALYSIS"
@@ -67,13 +72,9 @@ class BackgroundTask(Base):
     @property
     def is_complete(self):
         """Check if task has completed (successfully or with failure)"""
-        return self.status in (TaskStatus.COMPLETED.value, TaskStatus.FAILED.value)
+        return TaskStatus(self.status).is_terminal
     
     @property
     def is_active(self):
         """Check if task is still active"""
         return self.status in (TaskStatus.PENDING.value, TaskStatus.RUNNING.value)
-
-# Add a relationship from Report to BackgroundTask
-from app.models.db_models import Report
-Report.tasks = relationship("BackgroundTask", back_populates="report", cascade="all, delete-orphan")

@@ -3,10 +3,9 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 
 from app.api.deps import get_db
-from app.api.serializers import task_result_response
+from app.api.serializers import task_result_response, task_status_response
 from app.schemas.task_schema import TaskStatusResponse, TaskResultResponse 
 from app.services.task_service import TaskNotFoundError, get_task_status, get_task_result
-from app.models.task_models import TaskStatus
 from app.core.logger import logger
 
 # Initialize router
@@ -26,21 +25,7 @@ def get_task_status_endpoint(task_id: UUID, db: Session = Depends(get_db)):
         if not task:
             raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
         
-        # Calculate duration if applicable
-        duration = None
-        if task.started_at and task.completed_at:
-            duration = (task.completed_at - task.started_at).total_seconds()
-        
-        return {
-            "task_id": task.task_id,
-            "celery_task_id": task.celery_task_id,
-            "status": task.status,
-            "created_at": task.created_at,
-            "started_at": task.started_at,
-            "completed_at": task.completed_at,
-            "duration": duration,
-            "is_complete": task.status in (TaskStatus.COMPLETED.value, TaskStatus.FAILED.value)
-        }
+        return task_status_response(task, with_duration=True)
     except HTTPException:
         raise
     except Exception as e:
