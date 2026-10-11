@@ -119,7 +119,8 @@
   },
   "app.services.embedding_service": {
     "DEFAULT_MODEL": "e",
-    "EMBEDDING_PROVIDER": "vllm"
+    "EMBEDDING_PROVIDER": "vllm",
+    "VECTOR_EMBEDDING_BATCH_SIZE": 50
   },
   "app.services.llm_service": {
     "DEFAULT_MODEL": "m",

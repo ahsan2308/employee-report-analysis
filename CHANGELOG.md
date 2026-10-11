@@ -6,6 +6,22 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased
 
+### Changed: embedding batch size is applied; unused settings removed
+
+`vector_db.batch_processing.embedding_batch_size` (50) was never read: every
+chunk of an import went to the embedding provider in one call. Chunks are now
+embedded in calls of at most that many. A failed call fails the whole batch of
+reports, as before; a provider error no longer returns empty vectors.
+`split_on_failure` and `min_batch_size`, which nothing implemented, are removed
+from `config/config.yaml`.
+
+### Changed: faster dry-run imports
+
+A dry run validated each row with a new database session and processor, which
+also re-read the existing employee IDs for every supervisor feedback row. It now
+validates with the import's own processor, and the job records the detected CSV
+type and metrics as a real import does.
+
 ### Changed: imports with some failed rows end as `partial`
 
 An import job that imported some rows but had errors on others now ends with

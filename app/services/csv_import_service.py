@@ -357,52 +357,30 @@ class CSVImportService:
         """Calculate processing rate in rows per second.""" 
         return processed_rows / total_time if total_time > 0 else 0
         
-    def _validate_row(self, row_data: Dict[str, Any], row_number: int, error_handler: ImportErrorHandler,
-                      csv_type: Optional[str] = None) -> bool:
+    def _validate_row(self, row_processor: RowProcessor, row_data: Dict[str, Any], row_number: int,
+                      error_handler: ImportErrorHandler) -> bool:
         """
-        Validate a single row without processing it.
-        
-        Uses the factory pattern to determine which validator to use based on the CSV headers.
+        Validate a single row without processing it (dry runs).
+
+        Uses the import's row processor, so the CSV type is detected once and a
+        processor's lookups (such as the existing employee IDs) are read once.
         """
         try:
-            # Create a temporary row processor just for validation
-            # Uses the job's CSV type, or detects it from the headers when none was chosen
-            temp_processor = RowProcessor(self.db_instance.create_session(), error_handler, csv_type=csv_type)
-            
-            # Get the correct processor based on the headers in this row
-            processor = temp_processor._get_processor(row_data=row_data)
-            
-            # Debug logging
-            headers = list(row_data.keys())
-            logger.debug(f"Validating row {row_number} with processor: {processor.__class__.__name__}")
-            logger.debug(f"Row headers: {headers}")
-            
-            # Use a very simple check - just try to instantiate the model without DB operations
-            # This is mimicking what the processor would do internally but without DB access
+            processor = row_processor._get_processor(row_data=row_data)
+            # Blank values are missing values, as in a real import
             for field_name, value in row_data.items():
-                if pd.isna(value):
+                if pd.isna(value) or value == '':
                     row_data[field_name] = None
-                if value == '':
-                    row_data[field_name] = None
-                logger.debug(f"  Field '{field_name}': '{value}' (type: {type(value).__name__})")
-            
             # Validate only: process_row would write to the database and the vector store
             return processor.validate_row(row_data, row_number)
-            
         except Exception as e:
-            # Log detailed error
             logger.warning(f"Validation error in row {row_number}: {str(e)}")
-            
             error_handler.add_validation_error(
                 row_number=row_number,
                 error_message=str(e),
                 row_data=row_data
             )
             return False
-        finally:
-            # Close the temporary session
-            if 'temp_processor' in locals() and hasattr(temp_processor, 'db'):
-                temp_processor.db.close()
         
     def _log_completion_info(self, job_id: str, successful_rows: int, processed_rows: int, rate: float) -> None:
         """Log standard completion information."""
@@ -431,7 +409,7 @@ class CSVImportService:
                     success = row_processor.process_row(row_data, processed_rows)
                 else:
                     # In dry run mode, just validate the data without processing
-                    success = self._validate_row(row_data, processed_rows, error_handler, csv_type=job.csv_type)
+                    success = self._validate_row(row_processor, row_data, processed_rows, error_handler)
                 if success:
                     successful_rows += 1
                 
@@ -486,7 +464,7 @@ class CSVImportService:
                     # In dry run mode, use shared validation helper
                     for position, (_, row) in enumerate(chunk_df.iterrows()):
                         row_number = processed_rows + position + 1
-                        if self._validate_row(row.to_dict(), row_number, error_handler, csv_type=job.csv_type):
+                        if self._validate_row(row_processor, row.to_dict(), row_number, error_handler):
                             successful_rows += 1
                 
                 processed_rows += len(chunk_df)

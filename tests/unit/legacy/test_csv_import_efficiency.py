@@ -106,7 +106,8 @@ class TestUtilityFunctions:
             'Impact': 'High impact'
         }
         
-        result = csv_import_service._validate_row(valid_row, 1, error_handler)
+        row_processor = RowProcessor(MagicMock(spec=Session), error_handler)
+        result = csv_import_service._validate_row(row_processor, valid_row, 1, error_handler)
         assert result is True, "Valid row should validate successfully"
         
         # Invalid row (missing required field)
@@ -119,7 +120,7 @@ class TestUtilityFunctions:
             'Employee_ID': 1001
         }
         
-        result = csv_import_service._validate_row(invalid_row, 2, error_handler)
+        result = csv_import_service._validate_row(row_processor, invalid_row, 2, error_handler)
         assert result is False, "Invalid row should fail validation"
         
         # Check that error was recorded
