@@ -1,6 +1,9 @@
 """Job description queries."""
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set, Tuple
 from datetime import date
+from sqlalchemy import tuple_
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.orm import Session
 from app.db.database import get_database
 from app.models.db_models import EmployeeJobDescription
 from app.core.logger import logger
@@ -96,3 +99,52 @@ def get_employee_job_descriptions_for_period(
         import traceback
         logger.error(traceback.format_exc())
         return []
+
+
+def upsert_job_description(session: Session, employee_id: int, jd_id: str, job_description: str,
+                           assigned_date, is_current: bool, end_date) -> bool:
+    """Update the employee's assignment of a JD, or create it. Returns True when created (not flushed)."""
+    existing = session.query(EmployeeJobDescription).filter(
+        EmployeeJobDescription.employee_id == employee_id,
+        EmployeeJobDescription.jd_id == jd_id
+    ).first()
+    if existing:
+        existing.job_description = job_description
+        existing.assigned_date = assigned_date
+        existing.is_current = is_current
+        existing.end_date = end_date
+        return False
+    session.add(EmployeeJobDescription(
+        employee_id=employee_id,
+        jd_id=jd_id,
+        job_description=job_description,
+        assigned_date=assigned_date,
+        is_current=is_current,
+        end_date=end_date
+    ))
+    return True
+
+
+def existing_job_description_keys(session: Session, keys: List[Tuple[int, str]]) -> Set[Tuple[int, str]]:
+    """The (employee_id, jd_id) pairs among keys that are already assigned."""
+    rows = session.query(EmployeeJobDescription.employee_id, EmployeeJobDescription.jd_id).filter(
+        tuple_(EmployeeJobDescription.employee_id, EmployeeJobDescription.jd_id).in_(keys)
+    ).all()
+    return {(employee_id, jd_id) for employee_id, jd_id in rows}
+
+
+def bulk_upsert_job_descriptions(session: Session, jd_data: List[Dict[str, Any]]) -> None:
+    """Insert JD assignments, updating those that exist (one per employee and JD); flushed."""
+    stmt = pg_insert(EmployeeJobDescription.__table__).values(jd_data)
+    stmt = stmt.on_conflict_do_update(
+        index_elements=['employee_id', 'jd_id'],
+        set_={
+            'job_description': stmt.excluded.job_description,
+            'assigned_date': stmt.excluded.assigned_date,
+            'is_current': stmt.excluded.is_current,
+            'end_date': stmt.excluded.end_date,
+            'updated_at': stmt.excluded.updated_at
+        }
+    )
+    session.execute(stmt)
+    session.flush()

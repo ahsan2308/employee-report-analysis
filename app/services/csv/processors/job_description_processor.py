@@ -4,16 +4,18 @@ Job Description Processor
 Handles the transformation and processing of Job Description CSV rows into database operations.
 Supports both manual CSV imports and SQL Server sync operations.
 """
-from typing import Dict, Any, Tuple, List, Set
+from typing import Dict, Any, Tuple, List
 import pandas as pd
 from sqlalchemy.orm import Session
 from pydantic import ValidationError
 
 from app.services.csv.processors.base import BaseCSVProcessor
 from app.services.csv.row_models import JobDescriptionCSVRow
-from app.models.db_models import Employee, EmployeeJobDescription
 from app.services.csv.error_handler import ImportErrorHandler
 from app.core.logger import logger
+from app.repositories.job_descriptions import (
+    bulk_upsert_job_descriptions, existing_job_description_keys, upsert_job_description,
+)
 
 
 class JobDescriptionProcessor(BaseCSVProcessor):
@@ -57,26 +59,6 @@ class JobDescriptionProcessor(BaseCSVProcessor):
             return False
         return True
 
-    def _get_existing_employee_ids(self) -> Set[int]:
-        """
-        Get a set of existing employee IDs for validation.
-        
-        Caches results to avoid repeated queries within the same import.
-        Pattern copied from VisionDataProcessor.
-        
-        Returns:
-            Set of existing employee IDs
-        """
-        if self._existing_employee_ids is None:
-            self._existing_employee_ids = set()
-            
-            # Query all employee IDs
-            employee_ids = self.db.query(Employee.id).all()
-            self._existing_employee_ids = {emp_id[0] for emp_id in employee_ids}
-            
-            logger.info(f"Cached {len(self._existing_employee_ids)} existing employee IDs for JD validation")
-                
-        return self._existing_employee_ids
     
     def process_row(self, row_data: Dict[str, Any], row_number: int) -> bool:
         """
@@ -107,30 +89,19 @@ class JobDescriptionProcessor(BaseCSVProcessor):
                 return False
             
             # Check for existing JD assignment (employee_id, jd_id combination)
-            existing_jd = self.db.query(EmployeeJobDescription).filter(
-                EmployeeJobDescription.employee_id == employee_id,
-                EmployeeJobDescription.jd_id == row_dict.get('JD_ID')
-            ).first()
-            
-            if existing_jd:
-                # Update existing JD assignment
-                existing_jd.job_description = row_dict.get('Job_Description')
-                existing_jd.assigned_date = row_dict.get('Assigned_Date')
-                existing_jd.is_current = row_dict.get('Is_Current')  
-                existing_jd.end_date = row_dict.get('End_Date')      
-                self.jd_records_updated += 1
-            else:
-                # Create new JD assignment
-                new_jd = EmployeeJobDescription(
-                    employee_id=employee_id,
-                    jd_id=row_dict.get('JD_ID'),
-                    job_description=row_dict.get('Job_Description'),
-                    assigned_date=row_dict.get('Assigned_Date'),
-                    is_current=row_dict.get('Is_Current'),  
-                    end_date=row_dict.get('End_Date')       
-                )
-                self.db.add(new_jd)
+            created = upsert_job_description(
+                self.db,
+                employee_id=employee_id,
+                jd_id=row_dict.get('JD_ID'),
+                job_description=row_dict.get('Job_Description'),
+                assigned_date=row_dict.get('Assigned_Date'),
+                is_current=row_dict.get('Is_Current'),
+                end_date=row_dict.get('End_Date')
+            )
+            if created:
                 self.jd_records_created += 1
+            else:
+                self.jd_records_updated += 1
             
             self.db.commit()
             self.successful_rows += 1
@@ -258,8 +229,6 @@ class JobDescriptionProcessor(BaseCSVProcessor):
             True if successful, False otherwise
         """
         try:
-            from sqlalchemy.dialects.postgresql import insert as pg_insert
-            from sqlalchemy import tuple_
             
             # Prepare data for bulk insert
             jd_data = []
@@ -280,35 +249,13 @@ class JobDescriptionProcessor(BaseCSVProcessor):
             
             # Query for existing JD assignments BEFORE upsert
             jd_keys = [(jd['employee_id'], jd['jd_id']) for jd in jd_data]
-            existing_jds = self.db.query(
-                EmployeeJobDescription.employee_id,
-                EmployeeJobDescription.jd_id
-            ).filter(
-                tuple_(EmployeeJobDescription.employee_id, EmployeeJobDescription.jd_id).in_(jd_keys)
-            ).all()
-            
-            # Convert to set for fast lookup
-            existing_set = {(emp_id, jd_id) for emp_id, jd_id in existing_jds}
-            existing_count = len(existing_set)
+            existing_count = len(existing_job_description_keys(self.db, jd_keys))
             new_count = len(jd_data) - existing_count
             
             logger.info(f"Pre-upsert check: {existing_count} existing JD assignments, {new_count} new JD assignments")
             
             # Perform bulk upsert using PostgreSQL-specific INSERT ... ON CONFLICT
-            stmt = pg_insert(EmployeeJobDescription.__table__).values(jd_data)
-            stmt = stmt.on_conflict_do_update(
-                index_elements=['employee_id', 'jd_id'],
-                set_={
-                    'job_description': stmt.excluded.job_description,
-                    'assigned_date': stmt.excluded.assigned_date,
-                    'is_current': stmt.excluded.is_current,
-                    'end_date': stmt.excluded.end_date,
-                    'updated_at': stmt.excluded.updated_at
-                }
-            )
-            
-            result = self.db.execute(stmt)
-            self.db.flush()
+            bulk_upsert_job_descriptions(self.db, jd_data)
             
             # Accurately track created vs updated
             self.jd_records_created += new_count

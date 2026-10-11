@@ -5,12 +5,14 @@ This module defines the abstract base class that all CSV processors must impleme
 The Strategy Pattern allows for different CSV formats to be processed using the same interface.
 """
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Tuple, List
+from typing import Dict, Any, Tuple, List, Set
 import pandas as pd
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.services.csv.error_handler import ImportErrorHandler
+from app.repositories.employees import all_employee_ids
+from app.core.logger import logger
 
 
 class BaseCSVProcessor(ABC):
@@ -33,6 +35,13 @@ class BaseCSVProcessor(ABC):
         self.error_handler = error_handler
         self._initialize_metrics()
     
+    def _get_existing_employee_ids(self) -> Set[int]:
+        """IDs of all employees, read once per processor; rows for other employees are rejected."""
+        if getattr(self, "_existing_employee_ids", None) is None:
+            self._existing_employee_ids = all_employee_ids(self.db)
+            logger.info(f"Cached {len(self._existing_employee_ids)} existing employee IDs for {self.__class__.__name__}")
+        return self._existing_employee_ids
+
     def _initialize_metrics(self):
         """Initialize processing metrics. Override as needed in subclasses."""
         # Base metrics that all processors should track

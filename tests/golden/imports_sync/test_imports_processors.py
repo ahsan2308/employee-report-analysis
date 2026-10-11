@@ -12,6 +12,10 @@ import pytest
 from sqlalchemy.orm import Session
 
 import sqlalchemy.dialects.postgresql as pg_dialect
+
+from app.repositories import job_descriptions as job_descriptions_repo
+from app.repositories import reports as reports_repo
+from app.repositories import vision_data as vision_data_repo
 from app.services.csv.csv_reader import PandasCSVReader
 from app.services.csv.error_handler import ImportErrorHandler
 from app.services.csv.processors import employee_report_processor as erp_module
@@ -138,6 +142,9 @@ class InsertRecorder:
 def pg_insert(monkeypatch):
     recorder = InsertRecorder()
     monkeypatch.setattr(pg_dialect, "insert", recorder)
+    # The bulk upserts live in the repositories, which import insert at load time
+    for module in (reports_repo, job_descriptions_repo, vision_data_repo):
+        monkeypatch.setattr(module, "pg_insert", recorder)
     return recorder
 
 
