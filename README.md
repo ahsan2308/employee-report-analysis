@@ -481,6 +481,15 @@ The pre-restructuring import paths (for example `app.database`, `app.model_host`
 
 6. **Start the Application**
 
+   - **Bring the database schema up to date** (after pulling new code):
+     ```bash
+     python -m app.db.migrate
+     ```
+     The Docker image does this on every start, before the API (set
+     `RUN_MIGRATIONS=false` to skip it). A database whose tables were created
+     by the app but never tracked by Alembic is left alone; the command says
+     how to start tracking it with `alembic stamp`.
+
    - **Start the backend server**:
      ```bash
      uvicorn app.api.main:app --reload

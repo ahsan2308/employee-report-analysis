@@ -97,3 +97,80 @@ def test_models_match_migration_head(scratch_database):
     check = run([sys.executable, "-m", "alembic", "check"], scratch_database)
     assert check.returncode == 0, check.stderr[-2000:]
     assert "No new upgrade operations detected." in check.stdout + check.stderr
+
+
+# --------------------------------------------------------------------------- python -m app.db.migrate (run by the API's start script)
+
+def _migrate(env):
+    return run([sys.executable, "-m", "app.db.migrate"], env)
+
+
+def _engine(env):
+    return create_engine(make_url(os.environ["TEST_DATABASE_URL"]).set(database=env["DB_NAME"]))
+
+
+def _version(env, schema="employee_reports"):
+    engine = _engine(env)
+    try:
+        with engine.connect() as connection:
+            return connection.execute(text(f'SELECT version_num FROM "{schema}".alembic_version')).scalar()
+    finally:
+        engine.dispose()
+
+
+def _head(env):
+    return run([sys.executable, "-m", "alembic", "heads"], env).stdout.split()[0]
+
+
+def test_migrate_builds_an_empty_database_at_head(scratch_database):
+    result = _migrate(scratch_database)
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert "Migrating schema 'employee_reports' (empty) to head" in result.stdout
+    assert _version(scratch_database) == _head(scratch_database)
+    assert "csv_import_jobs" in _tables(scratch_database)
+
+
+def test_migrate_upgrades_a_tracked_database(scratch_database):
+    """A database at the 4.0.0 head gets the partial import status migration."""
+    built = _migrate(scratch_database)
+    assert built.returncode == 0, built.stderr[-2000:]
+    downgrade = run([sys.executable, "-m", "alembic", "downgrade", "3379963e0751"], scratch_database)
+    assert downgrade.returncode == 0, downgrade.stderr[-2000:]
+
+    result = _migrate(scratch_database)
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert "(tracked)" in result.stdout
+    assert _version(scratch_database) == _head(scratch_database)
+
+
+def test_migrate_leaves_an_untracked_database_alone(scratch_database):
+    """Tables built by the app itself (create_all) and never stamped: no guessing, the API still starts."""
+    engine = _engine(scratch_database)
+    with engine.begin() as connection:
+        connection.execute(text("CREATE SCHEMA employee_reports"))
+    engine.dispose()
+    create = run([sys.executable, "-c", "from app.db.database import get_database; get_database().create_tables()"],
+                 scratch_database)
+    assert create.returncode == 0, create.stderr[-2000:]
+
+    result = _migrate(scratch_database)
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert "has tables but no alembic_version" in result.stderr
+    assert "alembic_version" not in _tables(scratch_database)
+
+
+def test_migrate_uses_the_schema_the_app_uses(scratch_database):
+    """migrations/env.py alone defaults to employee_reports; the app (and so migrate) defaults to public."""
+    env = {k: v for k, v in scratch_database.items() if k != "SCHEMA_NAME"}
+    result = _migrate(env)
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert "Migrating schema 'public' (empty) to head" in result.stdout
+    assert _version(env, schema="public") == _head(scratch_database)
+
+
+def test_migrate_fails_when_the_database_is_unreachable(scratch_database):
+    env = dict(scratch_database, DB_PORT="1")
+    result = run([sys.executable, "-c",
+                  "import app.db.migrate as m; m.CONNECT_ATTEMPTS = 1; raise SystemExit(m.main())"], env)
+    assert result.returncode == 1
+    assert "Cannot reach the database" in result.stderr

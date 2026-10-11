@@ -22,5 +22,5 @@ RUN apt-get update && apt-get install -y \
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Default command (for API)
-CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Default command (for API): apply database migrations, then start uvicorn
+CMD ["sh", "docker/start-api.sh"]
