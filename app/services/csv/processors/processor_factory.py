@@ -52,13 +52,20 @@ class ProcessorFactory:
         Returns:
             Tuple of (processor_instance, csv_type_string)
         """
-        # If explicit type is provided, use that
+        # An explicit type (a CSVImportType value such as "vision_data", or a
+        # processor class name) wins over header detection, but the file must
+        # still have that type's columns.
         if processor_type:
-            for processor_cls in cls._processors:
-                if processor_cls.__name__ == processor_type:
-                    logger.info(f"Using explicitly specified processor: {processor_type}")
-                    csv_type = cls._get_csv_type_for_processor(processor_cls.__name__)
-                    return processor_cls(db, error_handler), csv_type
+            processor_cls = cls._find_processor(processor_type)
+            if processor_cls is not None:
+                csv_type = cls._get_csv_type_for_processor(processor_cls.__name__)
+                if not processor_cls.can_process(headers):
+                    raise ValueError(
+                        f"The file's columns do not match the selected CSV type '{csv_type}'. "
+                        f"CSV headers: {', '.join(headers)}"
+                    )
+                logger.info(f"Using explicitly specified processor: {processor_cls.__name__}")
+                return processor_cls(db, error_handler), csv_type
             
             # If explicit type is not found, fall back to header detection
             logger.warning(f"Specified processor type '{processor_type}' not found. Falling back to header detection.")
@@ -77,6 +84,14 @@ class ProcessorFactory:
             f"Available processor types: {', '.join(available_types)}. "
             f"CSV headers: {', '.join(headers)}"
         )
+    
+    @classmethod
+    def _find_processor(cls, processor_type: str) -> Optional[Type[BaseCSVProcessor]]:
+        """Look up a processor by CSVImportType value or by class name."""
+        for processor_cls in cls._processors:
+            if processor_type in (processor_cls.__name__, cls._get_csv_type_for_processor(processor_cls.__name__)):
+                return processor_cls
+        return None
     
     @classmethod
     def _get_csv_type_for_processor(cls, processor_name: str) -> str:

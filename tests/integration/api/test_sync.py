@@ -193,7 +193,8 @@ def test_last_successful_picks_latest_watermark(api, db_session, snap):
     add_sync(db_session, sync_id=fixed_uuid(6), status="completed", sync_type="vision_data",
              last_sync_timestamp=datetime(2025, 5, 1))
     resp = api.get("/sync/last-successful/employee_reports")
-    snap("sync_last_successful_latest", resp, expected_sync_id=str(fixed_uuid(2)))
+    # Partial syncs count, as they do for the incremental sync's starting point
+    snap("sync_last_successful_latest", resp, expected_sync_id=str(fixed_uuid(4)))
 
 
 def test_last_successful_invalid_type_400(api, snap):

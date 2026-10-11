@@ -7,6 +7,16 @@
     "SupervisorFeedbackProcessor": "supervisor_feedback",
     "VisionDataProcessor": "vision_data"
   },
+  "explicit_csv_type_value": {
+    "ok": {
+      "csv_type": "vision_data",
+      "processor": "VisionDataProcessor"
+    }
+  },
+  "explicit_csv_type_value_wrong_headers": {
+    "message": "The file's columns do not match the selected CSV type 'vision_data'. CSV headers: L_RO_Form_Metric_ID, RO_Form_ID, Employee_ID, Name, From, To, Section_ID, Section, Metric_ID, Metric_Title, Instructions, Metric_Type, Possible_Values, Value",
+    "raised": "ValueError"
+  },
   "explicit_empty_string": {
     "ok": {
       "csv_type": "vision_data",
@@ -19,12 +29,6 @@
       "processor": "SupervisorFeedbackProcessor"
     }
   },
-  "explicit_overrides_headers": {
-    "ok": {
-      "csv_type": "vision_data",
-      "processor": "VisionDataProcessor"
-    }
-  },
   "explicit_unknown_falls_back": {
     "ok": {
       "csv_type": "vision_data",
@@ -33,6 +37,10 @@
   },
   "explicit_unknown_unmatched_headers": {
     "message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers: x",
+    "raised": "ValueError"
+  },
+  "explicit_with_wrong_headers_raises": {
+    "message": "The file's columns do not match the selected CSV type 'vision_data'. CSV headers: anything",
     "raised": "ValueError"
   },
   "explicit_wrong_case": {

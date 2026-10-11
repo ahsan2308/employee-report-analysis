@@ -4,6 +4,25 @@ from app.db.database import get_database
 from app.models.db_models import Report, EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
 from app.core.logger import logger
 from app.domain.periods import get_month_date_range, get_quarter_date_range
+from sqlalchemy.orm import Session
+
+
+def find_monthly_analysis(session: Session, employee_id: int, year: int, month: int) -> Optional[MonthlyAnalysis]:
+    """The monthly analysis row for an employee's month, in the caller's session."""
+    return session.query(MonthlyAnalysis).filter(
+        MonthlyAnalysis.employee_id == employee_id,
+        MonthlyAnalysis.year == year,
+        MonthlyAnalysis.month == month
+    ).first()
+
+
+def find_quarterly_analysis(session: Session, employee_id: int, year: int, quarter: int) -> Optional[QuarterlyAnalysis]:
+    """The quarterly analysis row for an employee's quarter, in the caller's session."""
+    return session.query(QuarterlyAnalysis).filter(
+        QuarterlyAnalysis.employee_id == employee_id,
+        QuarterlyAnalysis.year == year,
+        QuarterlyAnalysis.quarter == quarter
+    ).first()
 
 
 def get_analyses_for_month(employee_id: int, year: int, month: int) -> List[Dict[str, Any]]:

@@ -3,13 +3,13 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from app.api.deps import get_db
-from app.models.import_models import CSVImportJob, ImportStatus, CSVImportType
+from app.models.import_models import ImportStatus, CSVImportType
 from app.schemas.csv_import_schema import (
     CSVImportOptions, 
     CSVImportJobResponse, 
     ImportErrorsResponse
 )
-from app.services.csv_import_service import get_csv_import_service
+from app.services.csv_import_service import get_csv_import_service, list_import_jobs as list_jobs
 from app.tasks.import_tasks import process_csv_import
 from app.core.logger import logger
 
@@ -222,48 +222,7 @@ def list_import_jobs(
                 detail=f"Invalid CSV type. Must be one of: {', '.join(valid_types)}"
             )
         
-        # Query jobs
-        query = db.query(CSVImportJob)
-        if status:
-            query = query.filter(CSVImportJob.status == status)
-        if csv_type:
-            query = query.filter(CSVImportJob.csv_type == csv_type)
-            
-        # Get total first
-        total = query.count()
-        
-        # Apply pagination and ordering (newest first)
-        jobs = query.order_by(CSVImportJob.submitted_at.desc()).offset(offset).limit(limit).all()
-        
-        # Convert to response format
-        response = []
-        for job in jobs:
-            # Calculate percent complete
-            total_rows = job.total_rows or 0
-            processed_rows = job.processed_rows or 0
-            percent_complete = 0.0
-            if total_rows > 0:
-                percent_complete = round((processed_rows / total_rows) * 100, 1)
-                
-            job_dict = {
-                "job_id": str(job.job_id),
-                "filename": job.filename,
-                "status": job.status,
-                "csv_type": job.csv_type,
-                "submitted_at": job.submitted_at,
-                "started_at": job.started_at,
-                "completed_at": job.completed_at,
-                "total_rows": job.total_rows or 0,
-                "processed_rows": job.processed_rows or 0,
-                "successful_rows": job.successful_rows or 0,
-                "error_count": job.error_count or 0,
-                "metrics": job.metrics_json or {},
-                "percent_complete": percent_complete,
-                "estimated_time_remaining": None
-            }
-            response.append(job_dict)
-            
-        return response
+        return list_jobs(db, status=status, csv_type=csv_type, limit=limit, offset=offset)
     
     except HTTPException as he:
         raise he

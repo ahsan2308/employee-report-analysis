@@ -8,6 +8,7 @@ from datetime import datetime
 import traceback
 from contextlib import contextmanager
 import pandas as pd
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -18,6 +19,51 @@ from app.services.csv.row_processor import RowProcessor
 from app.services.csv.error_handler import ImportErrorHandler
 from app.models.import_models import CSVImportJob, ImportStatus, ImportError
 from app.schemas.csv_import_schema import CSVImportOptions, CSVImportJobResponse
+
+def import_job_response(job: CSVImportJob, error_count: int) -> Dict[str, Any]:
+    """The API view of an import job; error_count is the number of stored ImportError rows."""
+    total_rows = job.total_rows or 0
+    processed_rows = job.processed_rows or 0
+    percent_complete = round((processed_rows / total_rows) * 100, 1) if total_rows > 0 else 0.0
+    return {
+        "job_id": str(job.job_id),
+        "filename": job.filename,
+        "status": job.status,
+        "csv_type": job.csv_type,
+        "submitted_at": job.submitted_at,
+        "started_at": job.started_at,
+        "completed_at": job.completed_at,
+        "total_rows": total_rows,
+        "processed_rows": processed_rows,
+        "successful_rows": job.successful_rows or 0,
+        "error_count": error_count,
+        "metrics": job.metrics_json or {},
+        "percent_complete": percent_complete,
+        "estimated_time_remaining": None
+    }
+
+
+def list_import_jobs(session: Session,
+                     status: Optional[str] = None,
+                     csv_type: Optional[str] = None,
+                     limit: int = 50,
+                     offset: int = 0) -> List[Dict[str, Any]]:
+    """Import jobs, newest first, counting errors the same way as get_import_job."""
+    query = session.query(CSVImportJob)
+    if status:
+        query = query.filter(CSVImportJob.status == status)
+    if csv_type:
+        query = query.filter(CSVImportJob.csv_type == csv_type)
+    jobs = query.order_by(CSVImportJob.submitted_at.desc()).offset(offset).limit(limit).all()
+
+    error_counts = dict(
+        session.query(ImportError.job_id, func.count(ImportError.error_id))
+        .filter(ImportError.job_id.in_([job.job_id for job in jobs]))
+        .group_by(ImportError.job_id)
+        .all()
+    ) if jobs else {}
+    return [import_job_response(job, error_counts.get(job.job_id, 0)) for job in jobs]
+
 
 class CSVImportService:
     """
@@ -120,33 +166,7 @@ class CSVImportService:
             
             logger.info(f"Created import job {job.job_id} for file {filename}, type: {csv_type or 'auto-detect'}")
             
-            # Calculate percent_complete
-            total_rows = job.total_rows or 0
-            processed_rows = job.processed_rows or 0
-            percent_complete = 0.0
-            if total_rows > 0:
-                percent_complete = round((processed_rows / total_rows) * 100, 1)
-            
-            # Create response with metrics that are dynamically calculated if available
-            metrics = job.metrics_json or {}
-            
-            # Convert to dictionary with explicit string conversions
-            job_dict = {
-                "job_id": str(job.job_id),
-                "filename": job.filename,
-                "status": job.status,
-                "submitted_at": job.submitted_at,
-                "started_at": job.started_at,
-                "completed_at": job.completed_at,
-                "total_rows": job.total_rows or 0,
-                "processed_rows": job.processed_rows or 0,
-                "successful_rows": job.successful_rows or 0,
-                "error_count": job.error_count or 0,
-                "csv_type": job.csv_type,
-                "metrics": metrics,
-                "percent_complete": percent_complete,
-                "estimated_time_remaining": None
-            }
+            job_dict = import_job_response(job, job.error_count or 0)
             
             # Create the Pydantic model from our dictionary
             return CSVImportJobResponse.model_validate(job_dict)
@@ -376,7 +396,8 @@ class CSVImportService:
         """Calculate processing rate in rows per second.""" 
         return processed_rows / total_time if total_time > 0 else 0
         
-    def _validate_row(self, row_data: Dict[str, Any], row_number: int, error_handler: ImportErrorHandler) -> bool:
+    def _validate_row(self, row_data: Dict[str, Any], row_number: int, error_handler: ImportErrorHandler,
+                      csv_type: Optional[str] = None) -> bool:
         """
         Validate a single row without processing it.
         
@@ -384,8 +405,8 @@ class CSVImportService:
         """
         try:
             # Create a temporary row processor just for validation
-            # This will auto-detect the CSV type from the headers
-            temp_processor = RowProcessor(self.db_instance.create_session(), error_handler)
+            # Uses the job's CSV type, or detects it from the headers when none was chosen
+            temp_processor = RowProcessor(self.db_instance.create_session(), error_handler, csv_type=csv_type)
             
             # Get the correct processor based on the headers in this row
             processor = temp_processor._get_processor(row_data=row_data)
@@ -440,7 +461,7 @@ class CSVImportService:
         successful_rows = 0
         last_update_time = time.time()
         update_interval = 1.0  # Update status every 1 second
-        row_processor = RowProcessor(session, error_handler)
+        row_processor = RowProcessor(session, error_handler, csv_type=job.csv_type)
         start_time = time.time()
         
         try:
@@ -453,7 +474,7 @@ class CSVImportService:
                         successful_rows += 1
                 else:
                     # In dry run mode, just validate the data without processing
-                    if self._validate_row(row_data, processed_rows, error_handler):
+                    if self._validate_row(row_data, processed_rows, error_handler, csv_type=job.csv_type):
                         successful_rows += 1
                 
                 # Check if we should abort based on errors
@@ -511,10 +532,7 @@ class CSVImportService:
             )
             return job
         except Exception as e:
-            if error_handler.get_error_count() > 0:
-                self._save_errors(session, job.job_id, error_handler)
-            self._update_job_status(session, job, ImportStatus.FAILED)
-            logger.error(f"Import failed: {str(e)}\n{traceback.format_exc()}")
+            self._fail_job(session, job, error_handler, e)
             return job
     
     def _process_with_pandas(self,
@@ -530,7 +548,7 @@ class CSVImportService:
         processed_rows = 0
         successful_rows = 0
         current_chunk = 0
-        row_processor = RowProcessor(session, error_handler)
+        row_processor = RowProcessor(session, error_handler, csv_type=job.csv_type)
         start_time = time.time()
         
         try:
@@ -556,7 +574,7 @@ class CSVImportService:
                     # In dry run mode, use shared validation helper
                     for position, (_, row) in enumerate(chunk_df.iterrows()):
                         row_number = processed_rows + position + 1
-                        if self._validate_row(row.to_dict(), row_number, error_handler):
+                        if self._validate_row(row.to_dict(), row_number, error_handler, csv_type=job.csv_type):
                             successful_rows += 1
                 
                 processed_rows += len(chunk_df)
@@ -624,12 +642,22 @@ class CSVImportService:
             )
             return job
         except Exception as e:
-            if error_handler.get_error_count() > 0:
-                self._save_errors(session, job.job_id, error_handler)
-            self._update_job_status(session, job, ImportStatus.FAILED)
-            logger.error(f"Import failed: {str(e)}\n{traceback.format_exc()}")
+            self._fail_job(session, job, error_handler, e)
             return job
     
+    def _fail_job(self, session: Session, job: CSVImportJob, error_handler: ImportErrorHandler, exc: Exception) -> None:
+        """
+        Mark the job FAILED and save its errors.
+        
+        A failure with no row errors (e.g. the file's columns match no CSV type) is
+        saved as one job-level error (row 0), so the job always says why it failed.
+        """
+        logger.error(f"Import failed: {str(exc)}\n{traceback.format_exc()}")
+        if error_handler.get_error_count() == 0:
+            error_handler.add_processing_error(row_number=0, error_message=str(exc), exception=exc)
+        self._save_errors(session, job.job_id, error_handler)
+        self._update_job_status(session, job, ImportStatus.FAILED)
+
     def _save_errors(self, session: Session, job_id: str, error_handler: ImportErrorHandler) -> None:
         """
         Save errors to the database and update job's error count.
@@ -676,30 +704,7 @@ class CSVImportService:
             # Report the stored errors; reading a job never writes to it
             actual_error_count = session.query(ImportError).filter(ImportError.job_id == job_id).count()
             
-            # Calculate percent_complete:
-            total_rows = job.total_rows or 0
-            processed_rows = job.processed_rows or 0
-            percent_complete = 0.0
-            if total_rows > 0:
-                percent_complete = round((processed_rows / total_rows) * 100, 1)
-            
-            # Return a dictionary instead of the SQLAlchemy model
-            return {
-                "job_id": str(job.job_id),
-                "filename": job.filename,
-                "status": job.status, 
-                "csv_type": job.csv_type,
-                "submitted_at": job.submitted_at,
-                "started_at": job.started_at,
-                "completed_at": job.completed_at,
-                "total_rows": job.total_rows or 0,
-                "processed_rows": job.processed_rows or 0,
-                "successful_rows": job.successful_rows or 0,
-                "error_count": actual_error_count,
-                "metrics": job.metrics_json or {},
-                "percent_complete": percent_complete,
-                "estimated_time_remaining": None
-            }
+            return import_job_response(job, actual_error_count)
         
     def get_job_errors(self, 
                      job_id: str, 

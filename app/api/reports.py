@@ -8,6 +8,7 @@ from app.schemas.reports_schema import ReportForm
 from datetime import date
 from app.services.vector_store_service import add_report_to_vector_store  
 from app.core.logger import logger  # Import the existing logger
+from app.domain.reports import compose_report_text
 
 # Initialize Router
 router = APIRouter(prefix="/reports", tags=["Reports"])
@@ -64,15 +65,15 @@ def submit_report_form(report: ReportForm, db: Session = Depends(get_db)):
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found.")
 
-        # Format report text
-        report_text = (
-            f"Key Tasks: {report.key_tasks_completed}\n"
-            f"Impact: {report.impact_outcome}\n"
-            f"Challenges: {report.challenges_faced}\n"
-            f"Support: {report.support_required}\n"
-            f"Planned Tasks: {report.tasks_planned_next_week}\n"
-            f"Confidence Level: {report.confidence_level}\n"
-            f"Nothing to Report Reason: {report.nothing_to_report_reason}"
+        # Same text format as reports imported from CSV or synced
+        report_text = compose_report_text(
+            tasks_completed=report.key_tasks_completed,
+            impact=report.impact_outcome,
+            challenges=report.challenges_faced,
+            support_required=report.support_required,
+            tasks_planned=report.tasks_planned_next_week,
+            confidence_level=report.confidence_level,
+            nothing_to_report_reason=report.nothing_to_report_reason
         )
         
         # Create a new report

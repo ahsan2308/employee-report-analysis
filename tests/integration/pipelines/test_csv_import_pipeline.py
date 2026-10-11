@@ -114,6 +114,18 @@ def test_import_unknown_format(db_session, ext, snapshot):
     snapshot_world(snapshot, "import__unrecognised_headers", db_session, ext, outcomes)
 
 
+def test_selected_type_must_match_columns(db_session, ext, snapshot):
+    """A CSV type chosen at upload is used, not overridden by header detection; a file without its columns fails."""
+    outcomes = [run_import("employee_reports.csv", csv_type="vision_data")]
+    snapshot_world(snapshot, "import__selected_type_mismatch", db_session, ext, outcomes)
+
+
+def test_job_descriptions_dry_run_checks_employees(db_session, ext, snapshot):
+    """A dry run reports unknown employees, as a real job description import does."""
+    outcomes = [run_import("job_descriptions.csv", options={"dry_run": True})]
+    snapshot_world(snapshot, "import__job_descriptions_dry_run_unknown_employees", db_session, ext, outcomes)
+
+
 def test_error_row_numbers_do_not_depend_on_chunk_size(db_session, ext):
     """Rows are numbered from the file's first data row, whatever the chunking (duplicates dropped included)."""
     def error_rows(options):

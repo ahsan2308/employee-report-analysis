@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 
 from app.api.deps import get_db
+from app.api.serializers import task_result_response
 from app.schemas.task_schema import TaskStatusResponse, TaskResultResponse 
 from app.services.task_service import TaskNotFoundError, get_task_status, get_task_result
 from app.models.task_models import TaskStatus
@@ -54,13 +55,7 @@ def get_task_result_endpoint(task_id: UUID, db: Session = Depends(get_db)):
     This endpoint returns 404 for an unknown task and 422 if the task is not yet complete.
     """
     try:
-        result = get_task_result(db, task_id)
-        return {
-            "task_id": task_id,
-            "status": result["status"],
-            "result": result.get("result"),
-            "error_message": result.get("error_message")
-        }
+        return task_result_response(task_id, get_task_result(db, task_id))
     except TaskNotFoundError as nf:
         raise HTTPException(status_code=404, detail=str(nf))
     except ValueError as ve:

@@ -9,7 +9,7 @@ from collections import Counter
 
 from app.core.logger import logger
 from app.domain.periods import get_quarter_date_range
-from app.domain.scoring import consistency_level_score
+from app.domain.scoring import rating_score, score_level
 from app.repositories.analyses import get_monthly_analyses_for_quarter, get_weekly_analyses_for_quarter
 from app.repositories.employees import get_employee_info
 
@@ -317,16 +317,16 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
             consistency = monthly_analysis.get("consistency_assessment", {})
             
             task_reliability = consistency.get("task_completion_reliability")
-            if task_reliability:
-                task_reliability_by_month[month_num] = consistency_level_score(task_reliability)
+            if rating_score(task_reliability) is not None:
+                task_reliability_by_month[month_num] = rating_score(task_reliability)
             
             work_quality = consistency.get("work_quality_consistency")
-            if work_quality:
-                work_quality_by_month[month_num] = consistency_level_score(work_quality)
+            if rating_score(work_quality) is not None:
+                work_quality_by_month[month_num] = rating_score(work_quality)
             
             performance_stability = consistency.get("performance_stability")
-            if performance_stability:
-                performance_stability_by_month[month_num] = consistency_level_score(performance_stability)
+            if rating_score(performance_stability) is not None:
+                performance_stability_by_month[month_num] = rating_score(performance_stability)
 
         # Apply standardized trend analysis to consistency metrics
         if task_reliability_by_month and len(task_reliability_by_month) >= 2:
@@ -340,12 +340,7 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
         # Calculate overall performance stability from monthly values
         if performance_stability_by_month:
             avg_stability = sum(performance_stability_by_month.values()) / len(performance_stability_by_month)
-            if avg_stability > 2.5:
-                result["metrics"]["performance_stability"] = "high"
-            elif avg_stability > 1.5:
-                result["metrics"]["performance_stability"] = "medium"
-            else:
-                result["metrics"]["performance_stability"] = "low"
+            result["metrics"]["performance_stability"] = score_level(avg_stability)
         
         # Aggregate monthly progress trends into quarterly trends
         if result["metrics"]["monthly_progress_trends"] and len(result["metrics"]["monthly_progress_trends"]) >= 2:
@@ -410,37 +405,18 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
             # Calculate credibility metrics
             if credibility_ratings:
                 # Map textual ratings to numeric values
-                numeric_ratings = []
-                for rating in credibility_ratings:
-                    if rating == "high":
-                        numeric_ratings.append(3)
-                    elif rating == "medium":
-                        numeric_ratings.append(2)
-                    elif rating == "low":
-                        numeric_ratings.append(1)
+                numeric_ratings = [score for score in map(rating_score, credibility_ratings) if score is not None]
                 
                 if numeric_ratings:
                     avg_rating = sum(numeric_ratings) / len(numeric_ratings)
-                    if avg_rating > 2.5:
-                        result["metrics"]["weekly_credibility_data"]["avg_credibility_rating"] = "high"
-                    elif avg_rating > 1.5:
-                        result["metrics"]["weekly_credibility_data"]["avg_credibility_rating"] = "medium"
-                    else:
-                        result["metrics"]["weekly_credibility_data"]["avg_credibility_rating"] = "low"
+                    result["metrics"]["weekly_credibility_data"]["avg_credibility_rating"] = score_level(avg_rating)
             
             # Calculate credibility trend
             if credibility_by_month and len(credibility_by_month) >= 2:
                 # Convert textual ratings to numeric for trend analysis
                 monthly_avg_credibility = {}
                 for month, ratings in credibility_by_month.items():
-                    numeric_vals = []
-                    for r in ratings:
-                        if r == "high":
-                            numeric_vals.append(3)
-                        elif r == "medium":
-                            numeric_vals.append(2)
-                        elif r == "low":
-                            numeric_vals.append(1)
+                    numeric_vals = [score for score in map(rating_score, ratings) if score is not None]
                     
                     if numeric_vals:
                         monthly_avg_credibility[month] = sum(numeric_vals) / len(numeric_vals)
@@ -481,18 +457,9 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
                     # Convert ratings to numeric values
                     rating_values = []
                     for entry in sorted_ratings:
-                        rating = entry.get("rating")
-                        if rating:
-                            # Performance rating scale: high, medium, low
-                            if rating == "high":
-                                rating_values.append(3)
-                            elif rating == "medium":
-                                rating_values.append(2)
-                            elif rating == "low":
-                                rating_values.append(1)
-                            else:
-                                # Use a neutral value for unrecognized ratings
-                                rating_values.append(2)
+                        score = rating_score(entry.get("rating"))
+                        if score is not None:
+                            rating_values.append(score)
                     
                     # Use the standardized trend analysis function
                     if rating_values:
