@@ -4,7 +4,7 @@ Celery tasks for asynchronous report analysis.
 import uuid
 
 from celery.exceptions import SoftTimeLimitExceeded
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from app.worker.celery_app import celery_app
 from app.db.database import get_database
@@ -34,6 +34,8 @@ from app.core.settings import (
     MAX_CONTENT_ITEM_LENGTH_MONTHLY,
     MAX_CONTENT_ITEM_LENGTH_QUARTERLY,
 )
+from app.domain.periods import report_week_start as week_start_of
+from app.domain.scoring import average_impact, sentiment_score as score_sentiment
 
 def _mark_task_failed(db, task_id: str, message: str) -> None:
     """Mark the BackgroundTask as FAILED with message, if the row exists."""
@@ -169,7 +171,7 @@ def analyze_report_task(self, task_id: str):
             max_content_item_length=MAX_CONTENT_ITEM_LENGTH_WEEKLY
         )
         
-        report_week_start = report.report_date - timedelta(days=6)
+        report_week_start = week_start_of(report.report_date)
         report_week_end = report.report_date
 
         employee_jds = get_employee_job_descriptions_for_period(
@@ -228,14 +230,7 @@ def analyze_report_task(self, task_id: str):
         performance_strengths = performance_assessment.get("key_strengths", [])
         performance_improvement_areas = performance_assessment.get("improvement_areas", [])
         
-        # Calculate sentiment score
-        sentiment_score = 0.0
-        if sentiment == "positive":
-            sentiment_score = 0.8
-        elif sentiment == "negative":
-            sentiment_score = 0.2
-        elif sentiment == "neutral":
-            sentiment_score = 0.5
+        sentiment_score = score_sentiment(sentiment)
         
         # Store analysis in the database
         with db.create_session() as session:
@@ -512,20 +507,9 @@ def analyze_monthly_reports_task(self, task_id: str):
             
             # If no pre-calculated value, calculate it from the LLM-generated achievements
             if achievement_impact_avg == 0.0:
-                impact_count = 0
-                impact_sum = 0.0
-                
-                for achievement in monthly_achievements:
-                    impact_score = achievement.get("impact_score", 0)
-                    try:
-                        impact_value = int(impact_score)
-                        impact_sum += impact_value
-                        impact_count += 1
-                    except (ValueError, IndexError):
-                        pass
-                
-                if impact_count > 0:
-                    achievement_impact_avg = round(impact_sum / impact_count, 2)
+                llm_impact_avg = average_impact(monthly_achievements)
+                if llm_impact_avg is not None:
+                    achievement_impact_avg = llm_impact_avg
                     logger.info(f"Calculated achievement impact average from LLM results: {achievement_impact_avg}")
             else:
                 logger.info(f"Using pre-calculated achievement impact average: {achievement_impact_avg}")

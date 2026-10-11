@@ -2,6 +2,7 @@
 from typing import Dict, Any, List
 from datetime import date
 from app.core.logger import logger
+from app.domain.periods import report_week_start
 
 
 def map_reports_to_jds(
@@ -30,7 +31,6 @@ def map_reports_to_jds(
         >>> result = map_reports_to_jds(reports, jds)
         >>> # Returns grouped reports with their applicable JDs
     """
-    from datetime import timedelta
     
     # Input validation - return empty structure if no data
     if not reports:
@@ -70,8 +70,8 @@ def map_reports_to_jds(
                 continue
         
         # Calculate the week period for this report
-        # report_date is the END of the week, so start is 6 days before (7-day week)
-        week_start_date = report_date - timedelta(days=6)
+        # report_date is the END of the week
+        week_start_date = report_week_start(report_date)
         week_end_date = report_date
         
         logger.debug(f"Report {report.get('report_id', 'unknown')[:8]} covers week: {week_start_date} to {week_end_date}")

@@ -1,6 +1,8 @@
 """Quarterly analysis prompt."""
 from typing import Dict, Any
 from datetime import date
+from app.domain.periods import month_name as month_label, report_week_start
+from app.domain.scoring import sentiment_label
 
 
 def quarterly_analysis_prompt(quarterly_data: Dict[str, Any]) -> str:
@@ -194,13 +196,11 @@ Strategic Recommendations:
                 
                 # The week is the 7 days ending on the report date (as in the weekly prompt)
                 if isinstance(week_end, date):
-                    from datetime import timedelta
-                    week_start = (week_end - timedelta(days=6)).isoformat()
+                    week_start = report_week_start(week_end).isoformat()
                     week_end = week_end.isoformat()
                 elif hasattr(week_end, 'isoformat'):
-                    from datetime import timedelta
                     try:
-                        week_start = (week_end - timedelta(days=6)).isoformat()
+                        week_start = report_week_start(week_end).isoformat()
                         week_end = week_end.isoformat()
                     except:
                         week_start = "Unknown"
@@ -210,17 +210,7 @@ Strategic Recommendations:
                     week_end = str(week_end) if week_end != "Unknown" else "Unknown"
                 
                 # Extract sentiment (numeric score, convert to categorical)
-                week_sentiment_score = weekly_analysis.get("sentiment_score", 0.5)
-                try:
-                    sentiment_numeric = float(week_sentiment_score)
-                    if sentiment_numeric < 0.5:
-                        week_sentiment = "negative"
-                    elif sentiment_numeric > 0.5:
-                        week_sentiment = "positive"
-                    else:
-                        week_sentiment = "neutral"
-                except (ValueError, TypeError):
-                    week_sentiment = "neutral"
+                week_sentiment = sentiment_label(weekly_analysis.get("sentiment_score", 0.5))
 
                 # Extract risk assessment
                 week_risk = weekly_analysis.get("risk_level", "medium")
@@ -387,11 +377,9 @@ Performance Assessment:
     # Build monthly progress trends text
     progress_trends_text = ""
     if monthly_progress_trends:
-        month_names = ["January", "February", "March", "April", "May", "June", 
-                      "July", "August", "September", "October", "November", "December"]
         for trend_data in monthly_progress_trends:
             month_num = trend_data.get("month", 0)
-            month_name = month_names[month_num-1] if 1 <= month_num <= 12 else f"Month {month_num}"
+            month_name = month_label(month_num)
             
             perf_trend = trend_data.get("performance_trend", "stable")
             sent_trend = trend_data.get("sentiment_trend", "stable")

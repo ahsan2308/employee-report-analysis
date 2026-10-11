@@ -108,9 +108,9 @@ def test_quarterly_rating_distribution_requires_numbers():
         build({"metrics": {"performance_rating_aggregation": {"rating_distribution": {"high": "60%"}}}})
 
 
-def test_quarterly_progress_trend_month_must_be_int():
-    with pytest.raises(TypeError):
-        build({"metrics": {"monthly_progress_trends": [{"month": "January"}]}})
+def test_quarterly_progress_trend_month_not_a_number_is_labelled_as_given():
+    prompt = build({"metrics": {"monthly_progress_trends": [{"month": "January"}]}})
+    assert "Month January:" in prompt
 
 
 def test_quarterly_has_no_side_effects(_isolated_cwd, capsys, snapshot):

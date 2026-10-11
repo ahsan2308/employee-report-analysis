@@ -1,6 +1,7 @@
 """Format job descriptions for weekly, monthly and quarterly analysis prompts."""
 from typing import Dict, Any, List
 from datetime import date
+from app.domain.periods import quarter_of_month
 
 
 def format_job_descriptions_for_weekly_prompt(
@@ -381,7 +382,7 @@ def format_job_descriptions_for_quarterly_prompt(
         # Extract quarter info from dates
         quarter_num = "Q1"
         if hasattr(start, "month"):
-            quarter_num = f"Q{(start.month - 1) // 3 + 1}"
+            quarter_num = f"Q{quarter_of_month(start.month)}"
         year_num = start.year if hasattr(start, "year") else "Unknown"
         
         # Single JD - simple format

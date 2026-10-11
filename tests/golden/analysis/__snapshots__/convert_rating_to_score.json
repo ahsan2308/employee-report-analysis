@@ -27,7 +27,6 @@
     "returned": 0.5
   },
   "int_3": {
-    "message": "'int' object has no attribute 'lower'",
-    "raised": "AttributeError"
+    "returned": 0.5
   }
 }

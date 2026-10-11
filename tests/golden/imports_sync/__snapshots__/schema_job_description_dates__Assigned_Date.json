@@ -32,15 +32,14 @@
     ]
   },
   "dash_iso_with_time": {
-    "validation_errors": [
-      {
-        "loc": [
-          "Assigned_Date"
-        ],
-        "msg": "Value error, Invalid date format: 2024-03-01 10:30:00. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
-        "type": "value_error"
-      }
-    ]
+    "ok": {
+      "Assigned_Date": "2024-03-01",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
   },
   "dash_mm_dd_yyyy": {
     "ok": {
@@ -212,15 +211,14 @@
     ]
   },
   "iso_t_time": {
-    "validation_errors": [
-      {
-        "loc": [
-          "Assigned_Date"
-        ],
-        "msg": "Value error, Invalid date format: 2024-03-01T10:30:00. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.",
-        "type": "value_error"
-      }
-    ]
+    "ok": {
+      "Assigned_Date": "2024-03-01",
+      "Employee_ID": 101,
+      "End_Date": null,
+      "Is_Current": true,
+      "JD_ID": "1001",
+      "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates with wings."
+    }
   },
   "iso_whitespace": {
     "ok": {

@@ -1,6 +1,7 @@
 """Monthly analysis prompt."""
 from typing import Dict, Any
 from datetime import date
+from app.domain.scoring import sentiment_label
 
 
 def monthly_analysis_prompt(monthly_data: Dict[str, Any]) -> str:
@@ -49,14 +50,7 @@ def monthly_analysis_prompt(monthly_data: Dict[str, Any]) -> str:
             analysis_date = analysis_date.isoformat()
             
         # Extract key details from the analysis
-        sentiment = analysis.get("sentiment_score", 0.5)
-        # Convert numeric sentiment to categorical
-        if sentiment < 0.5:
-          sentiment = "negative"
-        elif sentiment > 0.5:
-          sentiment = "positive"
-        else:
-          sentiment = "neutral"
+        sentiment = sentiment_label(analysis.get("sentiment_score", 0.5))
         risk = analysis.get("risk_level", "medium")
         risk_explanation = analysis.get("risk_explanation", "No explanation provided")
         achievements = analysis.get("achievements", [])

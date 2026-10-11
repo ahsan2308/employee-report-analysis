@@ -1,6 +1,7 @@
 """Weekly report analysis prompt."""
 from typing import Dict, Any, List
 from datetime import date
+from app.domain.periods import report_week_start
 
 
 def employee_analysis_prompt(report_text: str, formatted_vision_data: str = None, 
@@ -46,8 +47,7 @@ def employee_analysis_prompt(report_text: str, formatted_vision_data: str = None
             end_date = report['date']
             # Calculate week start (7 days before end date)
             if isinstance(end_date, date):
-                from datetime import timedelta
-                start_date = end_date - timedelta(days=6)
+                start_date = report_week_start(end_date)
                 date_range = f"{start_date.isoformat()} to {end_date.isoformat()}"
             else:
                 date_range = f"{end_date.isoformat()}"

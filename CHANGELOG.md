@@ -6,6 +6,23 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased - Restructuring and bug fixes
 
+### Changed: date and scoring rules in one place
+
+The calendar and scoring rules that were copied across services, prompts,
+repositories and tasks now live once in `app/domain` (`periods.py`,
+`scoring.py`, `trends.py`). Where the copies disagreed, the shared version
+keeps the more complete behaviour:
+
+- Job description `Assigned_Date` / `End_Date` accept a trailing time
+  ("2024-03-01 00:00:00"), as report dates already did.
+- The monthly achievement impact average reads every impact format the
+  charts read ("8/10", "7.5 (good)", a plain number) and leaves out
+  achievements without an impact; they used to count as 0.
+- An `impact_score` stored as text ("8") is read instead of stopping the
+  monthly data gathering, a `None` weekly sentiment reads as neutral in the
+  monthly prompt instead of failing, and a non-numeric month in quarterly
+  progress trends is labelled as given instead of failing.
+
 ### Changed: settings in one place
 
 Settings that several modules read separately now come from

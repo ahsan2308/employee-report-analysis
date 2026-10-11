@@ -7,6 +7,7 @@ This service acts as a layer between the database and analysis tasks.
 from typing import Dict, Any
 
 from app.core.logger import logger
+from app.domain.scoring import average_impact
 from app.domain.periods import get_month_date_range
 from app.repositories.reports import get_reports_for_month
 from app.repositories.analyses import get_analyses_for_month
@@ -136,30 +137,11 @@ def get_monthly_data_for_analysis(employee_id: int, year: int, month: int) -> Di
                 if achievements:
                     total_achievements.extend(achievements)
             
-            # Calculate achievement impact average
-            achievement_impact_avg = 0.0
-            impact_count = 0
-            
-            for achievement in total_achievements:
-                # Try new format first (impact_score), fall back to old format (impact string)
-                impact_score = achievement.get("impact_score")
-                if impact_score is not None:
-                    achievement_impact_avg += impact_score
-                    impact_count += 1
-                else:
-                    # Legacy format: parse "8 (reason)" string
-                    impact_str = achievement.get("impact", "0")
-                    if impact_str and isinstance(impact_str, str):
-                        try:
-                            impact_value = int(impact_str.split(" ")[0])
-                            achievement_impact_avg += impact_value
-                            impact_count += 1
-                        except (ValueError, IndexError):
-                            pass
-            
-            if impact_count > 0:
-                result["metrics"]["achievement_impact_avg"] = round(achievement_impact_avg / impact_count, 2)
-                logger.info(f"Calculated average achievement impact: {result['metrics']['achievement_impact_avg']} from {impact_count} achievements")
+            # Average achievement impact (impact_score, or the legacy "8 (reason)" impact text)
+            impact_avg = average_impact(total_achievements)
+            if impact_avg is not None:
+                result["metrics"]["achievement_impact_avg"] = impact_avg
+                logger.info(f"Calculated average achievement impact: {impact_avg}")
         
         # Retrieve job descriptions that overlap with the monthly period
         employee_jds = get_employee_job_descriptions_for_period(
