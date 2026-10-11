@@ -25,6 +25,7 @@ from app.schemas.csv_import_schema import CSVImportOptions
 
 class TestRunner:
     """Simple test runner."""
+    __test__ = False  # a helper, not a test class
     
     def __init__(self):
         self.passed = 0
