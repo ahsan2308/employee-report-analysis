@@ -20,6 +20,22 @@ from app.services.csv.error_handler import ImportErrorHandler
 from app.models.import_models import CSVImportJob, ImportStatus, ImportError
 from app.schemas.csv_import_schema import CSVImportOptions, CSVImportJobResponse
 
+def _file_size_mb(file_path: Optional[str], file_obj) -> Optional[float]:
+    """The file's size in MB, or None when it cannot be told."""
+    try:
+        if file_path:
+            return os.path.getsize(file_path) / (1024 * 1024)
+        if hasattr(file_obj, 'seek') and hasattr(file_obj, 'tell'):
+            current_pos = file_obj.tell()
+            file_obj.seek(0, 2)  # end of file
+            size = file_obj.tell()
+            file_obj.seek(current_pos)
+            return size / (1024 * 1024)
+    except Exception as e:
+        logger.info(f"Error detecting file size: {str(e)}")
+    return None
+
+
 def _job_summary(job: CSVImportJob) -> Dict[str, Any]:
     """What the import task returns: the job's state as plain values (no session needed)."""
     return {
@@ -218,50 +234,16 @@ class CSVImportService:
             
             # Auto-select processing mode based on file size if enabled
             processing_mode = getattr(job_options, 'processing_mode', 'row_by_row')
-            
-            if hasattr(job_options, 'auto_mode_selection') and getattr(job_options, 'auto_mode_selection', False):
+            if getattr(job_options, 'auto_mode_selection', False):
                 threshold_mb = getattr(job_options, 'file_size_threshold_mb', 10.0)
-                
-                # For file paths, we can get the size directly
-                if file_path:
-                    file_size_mb = os.path.getsize(file_path) / (1024 * 1024)
-                    if file_size_mb > threshold_mb:
-                        processing_mode = "row_by_row"
-                        logger.info(f"Auto-selected row_by_row mode for large file ({file_size_mb:.1f} MB)")
-                    else:
-                        processing_mode = "bulk"
-                        logger.info(f"Auto-selected bulk mode for smaller file ({file_size_mb:.1f} MB)")
-                
-                # For file objects, we need to estimate size if possible
-                elif file_obj:
-                    # Try to determine file size if file object supports it
-                    try:
-                        if hasattr(file_obj, 'seek') and hasattr(file_obj, 'tell'):
-                            # Save current position
-                            current_pos = file_obj.tell()
-                            # Go to end of file
-                            file_obj.seek(0, 2)  # 2 means end of file
-                            # Get size
-                            size = file_obj.tell()
-                            # Go back to original position
-                            file_obj.seek(current_pos)
-                            
-                            file_size_mb = size / (1024 * 1024)
-                            
-                            if file_size_mb > threshold_mb:
-                                processing_mode = "row_by_row"
-                                logger.info(f"Auto-selected row_by_row mode for large file object ({file_size_mb:.1f} MB)")
-                            else:
-                                processing_mode = "bulk"
-                                logger.info(f"Auto-selected bulk mode for smaller file object ({file_size_mb:.1f} MB)")
-                        else:
-                            # Default to row_by_row for safety with unknown file objects
-                            processing_mode = "row_by_row"
-                            logger.info("Auto-selected row_by_row mode for file object of unknown size")
-                    except Exception as e:
-                        # If any error occurs during size detection, default to row_by_row
-                        processing_mode = "row_by_row"
-                        logger.info(f"Error detecting file object size: {str(e)}. Using row_by_row mode.")
+                file_size_mb = _file_size_mb(file_path, file_obj)
+                if file_size_mb is None:
+                    # Row by row is the safe choice for a file of unknown size
+                    processing_mode = "row_by_row"
+                    logger.info("Auto-selected row_by_row mode for a file of unknown size")
+                else:
+                    processing_mode = "row_by_row" if file_size_mb > threshold_mb else "bulk"
+                    logger.info(f"Auto-selected {processing_mode} mode for a {file_size_mb:.1f} MB file")
             
             # Update job status to running
             self._update_job_status(session, job, ImportStatus.RUNNING)
@@ -435,8 +417,7 @@ class CSVImportService:
         """
         Process CSV rows one at a time using the generator approach.
         """
-        dry_run = options.dry_run
-        processed_rows = 0  
+        processed_rows = 0
         successful_rows = 0
         last_update_time = time.time()
         update_interval = 1.0  # Update status every 1 second
@@ -444,71 +425,24 @@ class CSVImportService:
         start_time = time.time()
         
         try:
-            # Process rows one by one
             for row_data in csv_generator:
                 processed_rows += 1
-                if not dry_run:
+                if not options.dry_run:
                     success = row_processor.process_row(row_data, processed_rows)
-                    if success:
-                        successful_rows += 1
                 else:
                     # In dry run mode, just validate the data without processing
-                    if self._validate_row(row_data, processed_rows, error_handler, csv_type=job.csv_type):
-                        successful_rows += 1
+                    success = self._validate_row(row_data, processed_rows, error_handler, csv_type=job.csv_type)
+                if success:
+                    successful_rows += 1
                 
-                # Check if we should abort based on errors
-                should_abort, reason = error_handler.should_abort(
-                    processed_rows, options.error_threshold_percent, options.stop_on_error
-                )
-                if should_abort:
-                    logger.warning(f"Aborting import: {reason}")
-                    raise ValueError(f"Import aborted: {reason}")
+                self._check_abort(error_handler, processed_rows, options)
                 
-                # Update metrics periodically to avoid excessive database updates
-                current_time = time.time()
-                if current_time - last_update_time > update_interval:
-                    metrics = row_processor.get_metrics()
-                    job.processed_rows = processed_rows
-                    job.successful_rows = successful_rows
-                    job.error_count = error_handler.get_error_count()
-                    
-                    # Set CSV type if determined
-                    if 'csv_type' in metrics and metrics['csv_type']:
-                        job.csv_type = metrics['csv_type']
-                    
-                    # Store type-specific metrics
-                    if 'metrics' in metrics:
-                        job.metrics_json = metrics['metrics']
-                        
-                    session.commit()
-                    last_update_time = current_time
+                # Update progress periodically to avoid excessive database updates
+                if time.time() - last_update_time > update_interval:
+                    self._record_progress(session, job, row_processor, error_handler, processed_rows, successful_rows)
+                    last_update_time = time.time()
             
-            total_time = time.time() - start_time
-            rate = self._calculate_processing_rate(processed_rows, total_time)
-            self._log_completion_info(job.job_id, successful_rows, processed_rows, rate)
-            
-            if error_handler.get_error_count() > 0:
-                self._save_errors(session, job.job_id, error_handler)
-            
-            if error_handler.get_error_count() > 0 and successful_rows == 0:
-                status = ImportStatus.FAILED
-            else:
-                status = ImportStatus.COMPLETED
-            
-            metrics = {
-                **row_processor.get_metrics(),
-                # The service counts rows itself; most processors do not
-                "processed_rows": processed_rows,
-                "successful_rows": successful_rows,
-            }
-            
-            self._update_job_status(
-                session=session,
-                job=job,
-                status=status,
-                metrics=metrics,
-                error_count=error_handler.get_error_count()
-            )
+            self._finish_job(session, job, row_processor, error_handler, processed_rows, successful_rows, start_time)
             return job
         except Exception as e:
             self._fail_job(session, job, error_handler, e)
@@ -523,7 +457,6 @@ class CSVImportService:
         """
         Process CSV data using pandas chunks with bulk operations.
         """
-        dry_run = options.dry_run
         processed_rows = 0
         successful_rows = 0
         current_chunk = 0
@@ -541,9 +474,9 @@ class CSVImportService:
                     logger.info(f"Chunk columns: {list(chunk_df.columns)}")
                     logger.debug(f"First row of first chunk: {chunk_df.iloc[0].to_dict() if len(chunk_df) > 0 else 'empty'}")
                 
-                if not dry_run:
+                if not options.dry_run:
                     # Use bulk processing with pre-cleaned DataFrames
-                    chunk_successful, chunk_total = row_processor.process_dataframe(
+                    chunk_successful, _ = row_processor.process_dataframe(
                         df=chunk_df,
                         start_row_number=chunk_start_row,
                         pre_cleaned=True
@@ -557,72 +490,66 @@ class CSVImportService:
                             successful_rows += 1
                 
                 processed_rows += len(chunk_df)
-                
-                # Check if we should abort
-                should_abort, reason = error_handler.should_abort(
-                    processed_rows, options.error_threshold_percent, options.stop_on_error
-                )
-                if should_abort:
-                    # Add detailed error reporting before aborting
-                    logger.warning(f"Aborting import: {reason}")
-                    
-                    # Better error diagnostics for early failures
-                    if processed_rows <= 10:
-                        logger.error(f"Import failed on or before row {processed_rows}. This suggests a fundamental format issue.")
-                        errors = error_handler.get_errors()[:3]
-                        for i, err in enumerate(errors):
-                            logger.error(f"Error {i+1} (row {err.row_number}): {err.error_message}")
-                            if hasattr(err, 'row_data') and err.row_data:
-                                logger.error(f"  Row data fields: {list(err.row_data.keys())}")
-                    
-                    raise ValueError(f"Import aborted: {reason}")
-                
-                # Update job metrics
-                metrics = row_processor.get_metrics()
-                job.processed_rows = processed_rows
-                job.successful_rows = successful_rows
-                job.error_count = error_handler.get_error_count()
-                
-                # Set CSV type if determined
-                if 'csv_type' in metrics and metrics['csv_type']:
-                    job.csv_type = metrics['csv_type']
-                
-                # Store type-specific metrics
-                if 'metrics' in metrics:
-                    job.metrics_json = metrics['metrics']
-                    
-                session.commit()
+                self._check_abort(error_handler, processed_rows, options)
+                self._record_progress(session, job, row_processor, error_handler, processed_rows, successful_rows)
             
-            total_time = time.time() - start_time
-            rate = self._calculate_processing_rate(processed_rows, total_time)
-            self._log_completion_info(job.job_id, successful_rows, processed_rows, rate)
-            
-            if error_handler.get_error_count() > 0:
-                self._save_errors(session, job.job_id, error_handler)
-            
-            if error_handler.get_error_count() > 0 and successful_rows == 0:
-                status = ImportStatus.FAILED    
-            else:
-                status = ImportStatus.COMPLETED
-            
-            metrics = {
-                **row_processor.get_metrics(),
-                # The service counts rows itself; most processors do not
-                "processed_rows": processed_rows,
-                "successful_rows": successful_rows,
-            }
-            
-            self._update_job_status(
-                session=session,
-                job=job,
-                status=status,
-                metrics=metrics,
-                error_count=error_handler.get_error_count()
-            )
+            self._finish_job(session, job, row_processor, error_handler, processed_rows, successful_rows, start_time)
             return job
         except Exception as e:
             self._fail_job(session, job, error_handler, e)
             return job
+
+    def _check_abort(self, error_handler: ImportErrorHandler, processed_rows: int, options: CSVImportOptions) -> None:
+        """Raise when the errors so far exceed the import's threshold (or any error, with stop_on_error)."""
+        should_abort, reason = error_handler.should_abort(
+            processed_rows, options.error_threshold_percent, options.stop_on_error
+        )
+        if not should_abort:
+            return
+        logger.warning(f"Aborting import: {reason}")
+        # Errors on the first rows usually mean the file's format is wrong
+        if processed_rows <= 10:
+            logger.error(f"Import failed on or before row {processed_rows}. This suggests a fundamental format issue.")
+            for i, err in enumerate(error_handler.get_errors()[:3]):
+                logger.error(f"Error {i+1} (row {err.row_number}): {err.error_message}")
+                if err.row_data:
+                    logger.error(f"  Row data fields: {list(err.row_data.keys())}")
+        raise ValueError(f"Import aborted: {reason}")
+
+    def _record_progress(self, session: Session, job: CSVImportJob, row_processor: RowProcessor,
+                         error_handler: ImportErrorHandler, processed_rows: int, successful_rows: int) -> None:
+        """Write the import's progress so far to its job."""
+        metrics = row_processor.get_metrics()
+        job.processed_rows = processed_rows
+        job.successful_rows = successful_rows
+        job.error_count = error_handler.get_error_count()
+        # Set CSV type if determined
+        if metrics.get('csv_type'):
+            job.csv_type = metrics['csv_type']
+        # Store type-specific metrics
+        if 'metrics' in metrics:
+            job.metrics_json = metrics['metrics']
+        session.commit()
+
+    def _finish_job(self, session: Session, job: CSVImportJob, row_processor: RowProcessor,
+                    error_handler: ImportErrorHandler, processed_rows: int, successful_rows: int,
+                    start_time: float) -> None:
+        """Save the import's errors and its final status and metrics."""
+        rate = self._calculate_processing_rate(processed_rows, time.time() - start_time)
+        self._log_completion_info(job.job_id, successful_rows, processed_rows, rate)
+        
+        error_count = error_handler.get_error_count()
+        if error_count > 0:
+            self._save_errors(session, job.job_id, error_handler)
+        status = ImportStatus.FAILED if error_count > 0 and successful_rows == 0 else ImportStatus.COMPLETED
+        
+        metrics = {
+            **row_processor.get_metrics(),
+            # The service counts rows itself; most processors do not
+            "processed_rows": processed_rows,
+            "successful_rows": successful_rows,
+        }
+        self._update_job_status(session=session, job=job, status=status, metrics=metrics, error_count=error_count)
     
     def _fail_job(self, session: Session, job: CSVImportJob, error_handler: ImportErrorHandler, exc: Exception) -> None:
         """
