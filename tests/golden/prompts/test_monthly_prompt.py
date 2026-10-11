@@ -57,12 +57,11 @@ def test_monthly_analysis_with_all_defaults(snapshot):
     snapshot("monthly_analysis_defaults.diff_vs_minimal", prompt_diff(minimal_prompt(), variant))
 
 
-def test_monthly_sentiment_none_raises():
-    """An explicit None sentiment_score is not defaulted (only a missing key is)."""
+def test_monthly_sentiment_none_reads_neutral():
+    """An explicit None sentiment_score reads as neutral, like an unreadable score."""
     data = monthly_minimal_data()
     data["analyses"] = [{"sentiment_score": None}]
-    with pytest.raises(TypeError):
-        build(data)
+    assert "Sentiment: neutral" in build(data)
 
 
 def test_monthly_vision_only(snapshot):

@@ -4,32 +4,37 @@ from typing import Optional, Any, Union
 from datetime import date, datetime
 import re
 from app.core.logger import logger
+from app.domain.periods import parse_period_date
 import json
 
 
-def parse_period_date(value: str) -> date:
-    """Parse a report-period date string.
+def _assignment_date(v, label: str, format_label: str) -> str:
+    """Check a job description Assigned_Date / End_Date and return it as YYYY-MM-DD.
 
-    Accepts MM/DD/YYYY (DD/MM/YYYY when that is not a valid date), YYYY-MM-DD,
-    and MM-DD-YYYY (DD-MM-YYYY when that is not a valid date). A trailing time,
-    as spreadsheet exports write it ("2024-03-01 00:00:00", "2024-03-01T10:30"),
-    is ignored. Raises ValueError for anything else.
+    Accepts a date, a datetime, or a string in a format parse_period_date reads;
+    the date must be between 1970-01-01 and today.
     """
-    value = re.sub(r"[ T]\d{1,2}:\d{2}(:\d{2}(\.\d+)?)?$", "", value.strip())
-    if re.fullmatch(r"\d{1,2}/\d{1,2}/\d{4}", value):
-        formats = ("%m/%d/%Y", "%d/%m/%Y")
-    elif re.fullmatch(r"\d{4}-\d{1,2}-\d{1,2}", value):
-        formats = ("%Y-%m-%d",)
-    elif re.fullmatch(r"\d{1,2}-\d{1,2}-\d{4}", value):
-        formats = ("%m-%d-%Y", "%d-%m-%Y")
-    else:
-        raise ValueError(f"Unrecognised date: {value}")
-    for date_format in formats:
+    today = date.today()
+    if isinstance(v, datetime):
+        parsed, shown = v.date(), v.date().isoformat()
+    elif isinstance(v, date):
+        parsed, shown = v, v.isoformat()
+    elif isinstance(v, str):
+        shown = v.strip()
         try:
-            return datetime.strptime(value, date_format).date()
+            parsed = parse_period_date(shown)
         except ValueError:
-            continue
-    raise ValueError(f"Invalid date: {value}")
+            raise ValueError(
+                f"Invalid {format_label} format: {shown}. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format."
+            )
+    else:
+        raise ValueError(f"{label} must be a date object or string, got {type(v).__name__}")
+
+    if parsed > today:
+        raise ValueError(f"{label} cannot be in the future. Received: {shown} (Today is {today.isoformat()})")
+    if parsed < date(1970, 1, 1):
+        raise ValueError(f"{label} appears unreasonably old ({shown}). Dates before 1970-01-01 are not accepted.")
+    return parsed.isoformat()
 
 
 def check_period_date(v):
@@ -753,101 +758,9 @@ class JobDescriptionCSVRow(BaseModel):
         
         Checks date is not in future and not unreasonably old.
         """
-        from datetime import datetime, date as date_class
-        
-        if v is None:
+        if v is None or (isinstance(v, str) and not v.strip()):
             raise ValueError("Assigned_Date is required and cannot be empty")
-        
-        today = date_class.today()
-        
-        # CASE 1: datetime.datetime object
-        if isinstance(v, datetime):
-            v_date = v.date()
-            
-            if v_date > today:
-                raise ValueError(
-                    f"Assigned_Date cannot be in the future. "
-                    f"Received: {v_date.isoformat()} (Today is {today.isoformat()})"
-                )
-            
-            min_date = date_class(1970, 1, 1)
-            if v_date < min_date:
-                raise ValueError(
-                    f"Assigned_Date appears unreasonably old ({v_date.isoformat()}). "
-                    f"Dates before 1970-01-01 are not accepted."
-                )
-            
-            return v_date.isoformat()
-        
-        # CASE 2: datetime.date object
-        if isinstance(v, date_class):
-            if v > today:
-                raise ValueError(
-                    f"Assigned_Date cannot be in the future. "
-                    f"Received: {v.isoformat()} (Today is {today.isoformat()})"
-                )
-            
-            min_date = date_class(1970, 1, 1)
-            if v < min_date:
-                raise ValueError(
-                    f"Assigned_Date appears unreasonably old ({v.isoformat()}). "
-                    f"Dates before 1970-01-01 are not accepted."
-                )
-            
-            return v.isoformat()
-        
-        # CASE 3: String date
-        if isinstance(v, str):
-            v = v.strip()
-            
-            if not v:
-                raise ValueError("Assigned_Date is required and cannot be empty")
-            
-            try:
-                # Try to parse different date formats
-                if '/' in v:
-                    if re.match(r'^\d{1,2}/\d{1,2}/\d{4}$', v):
-                        try:
-                            parsed_date = datetime.strptime(v, '%m/%d/%Y').date()
-                        except ValueError:
-                            parsed_date = datetime.strptime(v, '%d/%m/%Y').date()
-                    else:
-                        raise ValueError(f"Invalid date format: {v}")
-                    
-                elif '-' in v:
-                    try:
-                        parsed_date = datetime.strptime(v, '%m-%d-%Y').date()
-                    except ValueError:
-                        try:
-                            parsed_date = datetime.strptime(v, '%d-%m-%Y').date()
-                        except ValueError:
-                            parsed_date = datetime.strptime(v, '%Y-%m-%d').date()
-                else:
-                    raise ValueError(f"Invalid date format: {v}")
-                
-                if parsed_date > today:
-                    raise ValueError(
-                        f"Assigned_Date cannot be in the future. "
-                        f"Received: {v} (Today is {today.isoformat()})"
-                    )
-                
-                min_date = date_class(1970, 1, 1)
-                if parsed_date < min_date:
-                    raise ValueError(
-                        f"Assigned_Date appears unreasonably old ({v}). "
-                        f"Dates before 1970-01-01 are not accepted."
-                    )
-                
-                return parsed_date.isoformat()
-                
-            except ValueError as e:
-                if "cannot be in the future" in str(e) or "unreasonably old" in str(e):
-                    raise
-                raise ValueError(
-                    f"Invalid date format: {v}. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format."
-                )
-        
-        raise ValueError(f"Assigned_Date must be a date object or string, got {type(v).__name__}")
+        return _assignment_date(v, "Assigned_Date", "date")
     
     # NEW Validator 4: end_date - Format validation (same as Assigned_Date)
     @field_validator('End_Date')
@@ -867,103 +780,10 @@ class JobDescriptionCSVRow(BaseModel):
         
         Can be NULL (for current roles).
         """
-        from datetime import datetime, date as date_class
-        
-        # NULL is valid for current roles
-        if v is None:
+        # NULL (or an empty string) is valid for current roles
+        if v is None or (isinstance(v, str) and not v.strip()):
             return None
-        
-        today = date_class.today()
-        
-        # CASE 1: datetime.datetime object
-        if isinstance(v, datetime):
-            v_date = v.date()
-            
-            if v_date > today:
-                raise ValueError(
-                    f"end_date cannot be in the future. "
-                    f"Received: {v_date.isoformat()} (Today is {today.isoformat()})"
-                )
-            
-            min_date = date_class(1970, 1, 1)
-            if v_date < min_date:
-                raise ValueError(
-                    f"end_date appears unreasonably old ({v_date.isoformat()}). "
-                    f"Dates before 1970-01-01 are not accepted."
-                )
-            
-            return v_date.isoformat()
-        
-        # CASE 2: datetime.date object
-        if isinstance(v, date_class):
-            if v > today:
-                raise ValueError(
-                    f"end_date cannot be in the future. "
-                    f"Received: {v.isoformat()} (Today is {today.isoformat()})"
-                )
-            
-            min_date = date_class(1970, 1, 1)
-            if v < min_date:
-                raise ValueError(
-                    f"end_date appears unreasonably old ({v.isoformat()}). "
-                    f"Dates before 1970-01-01 are not accepted."
-                )
-            
-            return v.isoformat()
-        
-        # CASE 3: String date
-        if isinstance(v, str):
-            v = v.strip()
-            
-            if not v:
-                # Empty string treated as None
-                return None
-            
-            try:
-                # Try to parse different date formats (same as Assigned_Date)
-                if '/' in v:
-                    if re.match(r'^\d{1,2}/\d{1,2}/\d{4}$', v):
-                        try:
-                            parsed_date = datetime.strptime(v, '%m/%d/%Y').date()
-                        except ValueError:
-                            parsed_date = datetime.strptime(v, '%d/%m/%Y').date()
-                    else:
-                        raise ValueError(f"Invalid date format: {v}")
-                    
-                elif '-' in v:
-                    try:
-                        parsed_date = datetime.strptime(v, '%m-%d-%Y').date()
-                    except ValueError:
-                        try:
-                            parsed_date = datetime.strptime(v, '%d-%m-%Y').date()
-                        except ValueError:
-                            parsed_date = datetime.strptime(v, '%Y-%m-%d').date()
-                else:
-                    raise ValueError(f"Invalid date format: {v}")
-                
-                if parsed_date > today:
-                    raise ValueError(
-                        f"end_date cannot be in the future. "
-                        f"Received: {v} (Today is {today.isoformat()})"
-                    )
-                
-                min_date = date_class(1970, 1, 1)
-                if parsed_date < min_date:
-                    raise ValueError(
-                        f"end_date appears unreasonably old ({v}). "
-                        f"Dates before 1970-01-01 are not accepted."
-                    )
-                
-                return parsed_date.isoformat()
-                
-            except ValueError as e:
-                if "cannot be in the future" in str(e) or "unreasonably old" in str(e):
-                    raise
-                raise ValueError(
-                    f"Invalid end_date format: {v}. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format."
-                )
-        
-        raise ValueError(f"end_date must be a date object or string, got {type(v).__name__}")
+        return _assignment_date(v, "end_date", "end_date")
     
     # NEW Validator 5: Consistency between is_current and end_date
     @model_validator(mode='after')

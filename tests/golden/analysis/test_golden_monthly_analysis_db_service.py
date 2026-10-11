@@ -142,7 +142,7 @@ def test_achievement_impact_no_scorable(snapshot):
     snapshot("monthly_impact_none_scorable", run(analyses=analyses, month=5)["result"]["metrics"])
 
 
-def test_impact_score_as_string_aborts(snapshot):
+def test_impact_score_as_string_is_read(snapshot):
     analyses = [weekly_analysis(date(2025, 5, 4), achievements=[{"impact_score": "8"}])]
     snapshot("monthly_impact_score_string", run(analyses=analyses, reports=[report(date(2025, 5, 4))],
                                                 jds=[JAN_JD], month=5))

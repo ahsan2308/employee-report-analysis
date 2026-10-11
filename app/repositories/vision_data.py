@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from app.db.database import get_database
 from app.models.vision_data_models import EmployeeVisionData
 from app.core.logger import logger
-from app.domain.periods import get_month_date_range, get_quarter_date_range
+from app.domain.periods import get_month_date_range, get_quarter_date_range, month_name, months_in_quarter
 
 
 def get_employee_vision_data(employee_id: int, report_date: date, num_previous_weeks: int = 4) -> Dict[str, Any]:
@@ -165,20 +165,13 @@ def get_employee_vision_data_for_quarter(employee_id: int, year: int, quarter: i
 
     try:
         # Get the three months in this quarter
-        months_in_quarter = [(quarter - 1) * 3 + i + 1 for i in range(3)]
-        
         # Get vision data for each month in the quarter
-        for month in months_in_quarter:
+        for month in months_in_quarter(quarter):
             month_vision_data = get_employee_vision_data_for_month(employee_id, year, month)
             
             if month_vision_data and month_vision_data.get("weeks_data"):
-                month_name = {
-                    1: "January", 2: "February", 3: "March", 4: "April", 5: "May", 6: "June",
-                    7: "July", 8: "August", 9: "September", 10: "October", 11: "November", 12: "December"
-                }.get(month, f"Month {month}")
-                
                 # Add month name to the month data
-                month_vision_data["month_name"] = month_name
+                month_vision_data["month_name"] = month_name(month)
                 result["months_data"].append(month_vision_data)
 
         logger.info(f"Retrieved vision data for employee {employee_id} for {year}-Q{quarter}: {len(result['months_data'])} months")

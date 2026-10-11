@@ -3,7 +3,7 @@ from typing import List, Dict, Optional, Any
 from app.db.database import get_database
 from app.models.db_models import Report, EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
 from app.core.logger import logger
-from app.domain.periods import get_month_date_range, get_quarter_date_range
+from app.domain.periods import get_month_date_range, get_quarter_date_range, month_name, months_in_quarter
 from sqlalchemy.orm import Session
 
 
@@ -325,28 +325,20 @@ def get_monthly_analyses_for_quarter(employee_id: int, year: int, quarter: int) 
     
     try:
         with db_instance.create_session() as session:
-            # Get months in this quarter
-            months_in_quarter = [(quarter - 1) * 3 + i + 1 for i in range(3)]
-            
             # Query monthly analyses for the specified quarter
             query = session.query(MonthlyAnalysis).filter(
                 MonthlyAnalysis.employee_id == employee_id,
                 MonthlyAnalysis.year == year,
-                MonthlyAnalysis.month.in_(months_in_quarter)
+                MonthlyAnalysis.month.in_(months_in_quarter(quarter))
             ).order_by(MonthlyAnalysis.month)
             
             # Format results
             for analysis in query.all():
                 if analysis:
-                    month_name = {
-                        1: "January", 2: "February", 3: "March", 4: "April", 5: "May", 6: "June",
-                        7: "July", 8: "August", 9: "September", 10: "October", 11: "November", 12: "December"
-                    }.get(analysis.month, f"Month {analysis.month}")
-                    
                     analyses.append({
                         "analysis_id": analysis.analysis_id,
                         "month": analysis.month,
-                        "month_name": month_name,
+                        "month_name": month_name(analysis.month),
                         "year": analysis.year,
                         "period_start": analysis.period_start,
                         "period_end": analysis.period_end,

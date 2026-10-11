@@ -24,6 +24,7 @@
   "app.domain.periods": "ok",
   "app.domain.reports": "ok",
   "app.domain.scoring": "ok",
+  "app.domain.trends": "ok",
   "app.domain.vision_catalog": "ok",
   "app.integrations": "ok",
   "app.integrations.embeddings": "ok",

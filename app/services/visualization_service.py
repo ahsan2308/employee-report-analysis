@@ -9,10 +9,11 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime, date
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-import re
 
 from app.models.db_models import Employee, Report, EmployeeAnalysis
 from app.core.logger import logger
+from app.domain.periods import quarter_of_month
+from app.domain.scoring import level_fraction, parse_impact
 
 # Simple in-memory cache for expensive calculations
 _cache = {}
@@ -33,18 +34,11 @@ def _convert_rating_to_score(rating: Optional[str]) -> float:
     if rating is None:
         logger.debug("Rating is None, defaulting to medium (0.5)")
         return 0.5
-        
-    rating_lower = rating.lower().strip()
-    
-    if rating_lower == 'low':
-        return 0.2
-    elif rating_lower == 'medium':
-        return 0.5
-    elif rating_lower == 'high':
-        return 0.8
-    else:
+    score = level_fraction(rating)
+    if score is None:
         logger.warning(f"Unknown rating value: '{rating}', defaulting to medium (0.5)")
         return 0.5
+    return score
 
 def _get_from_cache(cache_key: str) -> Optional[Dict[str, Any]]:
     """Get data from cache if available and not expired."""
@@ -90,8 +84,7 @@ def _format_time_period(report_date: date, interval: str) -> str:
     elif interval == 'month':
         return report_date.strftime('%Y-%m')
     elif interval == 'quarter':
-        quarter = (report_date.month - 1) // 3 + 1
-        return f"{report_date.year}-Q{quarter}"
+        return f"{report_date.year}-Q{quarter_of_month(report_date.month)}"
     else:  # year
         return str(report_date.year)
 
@@ -582,35 +575,10 @@ def extract_impact_score(impact_str: str) -> Optional[float]:
     """Extract numeric impact score from differently formatted impact strings."""
     if not impact_str or not isinstance(impact_str, str):
         return None
-    
-    # Case 1: Extract number before parenthesis (e.g., "8 (Good impact)")
-    parenthesis_match = re.match(r'^(\d+(\.\d+)?)\s*\(', impact_str)
-    if parenthesis_match:
-        return float(parenthesis_match.group(1))
-    
-    # Case 2: Extract number before slash (e.g., "9/10")
-    slash_match = re.match(r'^(\d+(\.\d+)?)/\d+', impact_str)
-    if slash_match:
-        return float(slash_match.group(1))
-    
-    # Case 3: Just a number (e.g., "9")
-    number_match = re.match(r'^(\d+(\.\d+)?)$', impact_str)
-    if number_match:
-        return float(number_match.group(1))
-    
-    # Case 4: Number inside parentheses within text (e.g., "It has a high impact (8) on the team")
-    embedded_parentheses_match = re.search(r'\((\d+(\.\d+)?)\)', impact_str)
-    if embedded_parentheses_match:
-        return float(embedded_parentheses_match.group(1))
-    
-    # Case 5: Number after "Impact rating:" or similar label
-    rating_label_match = re.search(r'Impact rating:\s*(\d+(\.\d+)?)', impact_str, re.IGNORECASE)
-    if rating_label_match:
-        return float(rating_label_match.group(1))
-    
-    # Failed to extract
-    logger.warning(f"Could not extract impact score from: '{impact_str}'")
-    return None
+    score = parse_impact(impact_str)
+    if score is None:
+        logger.warning(f"Could not extract impact score from: '{impact_str}'")
+    return score
 
 def get_impact_score_trends(
     db: Session,
