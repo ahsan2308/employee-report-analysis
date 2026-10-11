@@ -49,6 +49,9 @@ def check_period_date(v):
     A date must not be in the future; a string must also be in a format
     parse_period_date reads, and is returned as that date.
     """
+    if isinstance(v, datetime):
+        # A timestamp (e.g. a SQL Server DATETIME) is checked and stored as its day
+        v = v.date()
     if isinstance(v, date):
         if v > date.today():
             raise ValueError(f"Date cannot be in the future: {v}")

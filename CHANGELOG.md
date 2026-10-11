@@ -6,6 +6,14 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased
 
+### Fixed: dates given as timestamps
+
+A supervisor feedback row whose `From` or `To` was a timestamp (as a SQL Server
+`DATETIME` column returns) failed with an internal comparison error instead of
+being read; it is now checked and stored as its day. The same error stopped
+job descriptions from being matched to a report whose date was a timestamp.
+CI now also runs the tests on Python 3.13, where the error's wording differed.
+
 ### Added: database migrations run on start
 
 The Docker image now runs `python -m app.db.migrate` before starting the API

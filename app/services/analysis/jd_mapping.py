@@ -1,6 +1,6 @@
 """Map employee reports to the job descriptions in effect for their period."""
 from typing import Dict, Any, List
-from datetime import date
+from datetime import date, datetime
 from app.core.logger import logger
 from app.domain.periods import report_week_start
 
@@ -62,12 +62,14 @@ def map_reports_to_jds(
         # Convert date to date object if it's a string
         if isinstance(report_date, str):
             try:
-                from datetime import datetime
                 report_date = datetime.fromisoformat(report_date).date()
             except (ValueError, AttributeError):
                 logger.warning(f"Could not parse date '{report_date}' for report {report.get('report_id', 'unknown')}")
                 unmapped_reports.append(report)
                 continue
+        elif isinstance(report_date, datetime):
+            # A timestamp is compared as its day, like the JD periods
+            report_date = report_date.date()
         
         # Calculate the week period for this report
         # report_date is the END of the week

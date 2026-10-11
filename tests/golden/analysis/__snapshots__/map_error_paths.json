@@ -1,7 +1,30 @@
 {
   "datetime_object_date": {
-    "message": "can't compare datetime.datetime to datetime.date",
-    "raised": "TypeError"
+    "returned": {
+      "jd_groups": [
+        {
+          "effective_dates": {
+            "end": "2025-01-05",
+            "start": "2024-12-30"
+          },
+          "jd_ids": [
+            "JD_FULL"
+          ],
+          "jd_texts": [
+            "Full month duties"
+          ],
+          "reports": [
+            {
+              "date": "2025-01-05 09:00:00",
+              "report_id": "r",
+              "week_end_date": "2025-01-05",
+              "week_start_date": "2024-12-30"
+            }
+          ]
+        }
+      ],
+      "unmapped_reports": []
+    }
   },
   "jd_without_jd_id": {
     "message": "'jd_id'",
