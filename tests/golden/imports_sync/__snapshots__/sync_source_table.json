@@ -1,0 +1,78 @@
+{
+  "decoys_alongside_defaults": {
+    "employee_reports": {
+      "ok": "EmployeeReports"
+    },
+    "job_descriptions": {
+      "ok": "EmployeeJobDescriptions"
+    },
+    "supervisor_feedback": {
+      "ok": "SupervisorFeedback"
+    },
+    "vision_data": {
+      "ok": "VisionEmployeeData"
+    }
+  },
+  "defaults": {
+    "employee_reports": {
+      "ok": "EmployeeReports"
+    },
+    "job_descriptions": {
+      "ok": "EmployeeJobDescriptions"
+    },
+    "supervisor_feedback": {
+      "ok": "SupervisorFeedback"
+    },
+    "vision_data": {
+      "ok": "VisionEmployeeData"
+    }
+  },
+  "empty": {
+    "employee_reports": {
+      "message": "The employee reports table 'EmployeeReports' (SQLSERVER_TABLE_EMPLOYEE_REPORTS) is not in SQLSERVER_ALLOWED_TABLES: []",
+      "raised": "ValueError"
+    },
+    "job_descriptions": {
+      "message": "The job descriptions table 'EmployeeJobDescriptions' (SQLSERVER_TABLE_JOB_DESCRIPTIONS) is not in SQLSERVER_ALLOWED_TABLES: []",
+      "raised": "ValueError"
+    },
+    "supervisor_feedback": {
+      "message": "The supervisor feedback table 'SupervisorFeedback' (SQLSERVER_TABLE_SUPERVISOR_FEEDBACK) is not in SQLSERVER_ALLOWED_TABLES: []",
+      "raised": "ValueError"
+    },
+    "vision_data": {
+      "message": "The vision data table 'VisionEmployeeData' (SQLSERVER_TABLE_VISION_DATA) is not in SQLSERVER_ALLOWED_TABLES: []",
+      "raised": "ValueError"
+    }
+  },
+  "lowercase": {
+    "employee_reports": {
+      "ok": "employeereports"
+    },
+    "job_descriptions": {
+      "ok": "employeejobdescriptions"
+    },
+    "supervisor_feedback": {
+      "ok": "supervisorfeedback"
+    },
+    "vision_data": {
+      "ok": "visionemployeedata"
+    }
+  },
+  "partial": {
+    "employee_reports": {
+      "ok": "EmployeeReports"
+    },
+    "job_descriptions": {
+      "message": "The job descriptions table 'EmployeeJobDescriptions' (SQLSERVER_TABLE_JOB_DESCRIPTIONS) is not in SQLSERVER_ALLOWED_TABLES: ['EmployeeReports', 'VisionEmployeeData']",
+      "raised": "ValueError"
+    },
+    "supervisor_feedback": {
+      "message": "The supervisor feedback table 'SupervisorFeedback' (SQLSERVER_TABLE_SUPERVISOR_FEEDBACK) is not in SQLSERVER_ALLOWED_TABLES: ['EmployeeReports', 'VisionEmployeeData']",
+      "raised": "ValueError"
+    },
+    "vision_data": {
+      "ok": "VisionEmployeeData"
+    }
+  }
+}

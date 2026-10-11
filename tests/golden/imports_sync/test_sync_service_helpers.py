@@ -26,36 +26,42 @@ def _service(tables=None, ts_columns=None, threshold=10.0):
     return svc
 
 
-FINDERS = ["_get_employee_reports_table_name", "_get_vision_data_table_name",
-           "_get_job_descriptions_table_name", "_get_supervisor_feedback_table_name"]
+SPECS = {
+    "employee_reports": sync_module._EMPLOYEE_REPORTS,
+    "vision_data": sync_module._VISION_DATA,
+    "job_descriptions": sync_module._JOB_DESCRIPTIONS,
+    "supervisor_feedback": sync_module._SUPERVISOR_FEEDBACK,
+}
 
-# Lists (not sets) so that the first-match order is deterministic in the snapshot.
+# Lists (not sets) so that the error message's table order is deterministic.
 TABLE_LISTS = {
-    "defaults_sorted": ["EmployeeJobDescriptions", "EmployeeReports", "SupervisorFeedback", "VisionEmployeeData"],
-    "defaults_reversed": ["VisionEmployeeData", "SupervisorFeedback", "EmployeeReports", "EmployeeJobDescriptions"],
-    "lowercase_schema_qualified": ["dbo.employeereports", "dbo.visionemployeedata", "dbo.jobdescriptions",
-                                   "dbo.supervisorfeedback"],
-    "feedback_report_first": ["SupervisorFeedbackReport", "EmployeeReports", "VisionEmployeeData", "JD_Table"],
-    "jd_substring_traps": ["AdjustedReports", "Vision", "Feedback"],
-    "vision_job_combo_first": ["VisionJobData", "EmployeeReports"],
-    "reporting_word": ["Reporting_Staging", "EmployeeReports"],
+    "defaults": ["EmployeeJobDescriptions", "EmployeeReports", "SupervisorFeedback", "VisionEmployeeData"],
+    # Names the old substring search could confuse: each sync still gets its configured table
+    "decoys_alongside_defaults": ["JobReports", "SupervisorFeedbackReport", "VisionJobData", "EmployeeReports",
+                                  "VisionEmployeeData", "EmployeeJobDescriptions", "SupervisorFeedback"],
+    "lowercase": ["employeereports", "visionemployeedata", "employeejobdescriptions", "supervisorfeedback"],
+    "partial": ["EmployeeReports", "VisionEmployeeData"],
     "empty": [],
-    "unrelated": ["Users", "Audit"],
 }
 
 
-def test_table_name_discovery(snapshot):
+def test_source_table(snapshot):
     out = {}
     for name, tables in TABLE_LISTS.items():
         svc = _service(tables=tables)
-        out[name] = {finder: outcome(getattr(svc, finder)) for finder in FINDERS}
-    snapshot("sync_table_name_discovery", out)
+        out[name] = {label: outcome(lambda spec=spec: svc._source_table(spec)) for label, spec in SPECS.items()}
+    snapshot("sync_source_table", out)
 
 
-def test_table_name_discovery_with_real_default_set(snapshot):
-    # The real connector returns a set; with the defaults each finder has exactly one match.
-    svc = _service(tables=set(connector_module.SQLServerConnector.DEFAULT_ALLOWED_TABLES))
-    snapshot("sync_table_name_discovery_default_set", {f: outcome(getattr(svc, f)) for f in FINDERS})
+def test_source_table_follows_settings(monkeypatch):
+    monkeypatch.setattr(sync_module.settings, "SQLSERVER_TABLE_JOB_DESCRIPTIONS", "JD_Table")
+    svc = _service(tables={"JD_Table", "EmployeeJobDescriptions"})
+    assert svc._source_table(sync_module._JOB_DESCRIPTIONS) == "JD_Table"
+
+
+def test_default_allowed_tables_are_the_source_tables():
+    assert connector_module.SQLServerConnector.DEFAULT_ALLOWED_TABLES == {
+        "EmployeeReports", "VisionEmployeeData", "EmployeeJobDescriptions", "SupervisorFeedback"}
 
 
 def test_find_timestamp_column(snapshot):

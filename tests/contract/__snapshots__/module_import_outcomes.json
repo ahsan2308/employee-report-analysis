@@ -41,6 +41,7 @@
   "app.integrations.sqlserver.connector": "ok",
   "app.integrations.vector_store": "ok",
   "app.integrations.vector_store.base": "ok",
+  "app.integrations.vector_store.payload_fields": "ok",
   "app.integrations.vector_store.qdrant": "ok",
   "app.models": "ok",
   "app.models.db_models": "ok",

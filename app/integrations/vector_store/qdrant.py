@@ -8,7 +8,9 @@ from qdrant_client.models import FieldCondition, MatchValue, Range
 from qdrant_client.models import PayloadSchemaType, HnswConfigDiff, SearchParams
 from qdrant_client.models import KeywordIndexParams, TextIndexParams
 
+from app.integrations.vector_store import payload_fields as fields
 from app.integrations.vector_store.base import BaseVectorStore
+from app.core import settings
 from app.core.logger import logger
 
 class QdrantProvider(BaseVectorStore):
@@ -191,8 +193,8 @@ class QdrantProvider(BaseVectorStore):
                         size=vector_size, 
                         distance=Distance.COSINE,
                         hnsw_config=HnswConfigDiff(
-                            m=32,
-                            ef_construct=256
+                            m=settings.VECTOR_HNSW_M,
+                            ef_construct=settings.VECTOR_HNSW_EF_CONSTRUCT
                         )
                     )
                 )
@@ -204,7 +206,7 @@ class QdrantProvider(BaseVectorStore):
                 # ------------- employee_id (tenant-aware keyword) -------------
                 self.client.create_payload_index(
                     collection_name=collection_name,
-                    field_name="employee_id",
+                    field_name=fields.EMPLOYEE_ID,
                     field_schema=KeywordIndexParams(
                         type=PayloadSchemaType.KEYWORD,
                         is_tenant=True  
@@ -214,21 +216,21 @@ class QdrantProvider(BaseVectorStore):
                 # ------------- report_id (plain keyword) -----------------------
                 self.client.create_payload_index(
                     collection_name=collection_name,
-                    field_name="report_id",
+                    field_name=fields.REPORT_ID,
                     field_schema=PayloadSchemaType.KEYWORD
                 )
                 
                 # ------------- report_date_ts (numeric) ------------------------
                 self.client.create_payload_index(
                     collection_name=collection_name,
-                    field_name="report_date_ts",
+                    field_name=fields.REPORT_DATE_TS,
                     field_schema=PayloadSchemaType.FLOAT
                 )
                 
                 # ------------- text (full-text BM25 index) ---------------------
                 self.client.create_payload_index(
                     collection_name=collection_name,
-                    field_name="text",
+                    field_name=fields.TEXT,
                     field_schema=TextIndexParams(
                         type="text",
                         tokenizer="word" 

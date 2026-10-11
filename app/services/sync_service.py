@@ -25,7 +25,7 @@ class _SyncSpec(NamedTuple):
     """What differs between the sync_* methods."""
     sync_type: SyncType
     label: str
-    table_name_method: str
+    table_setting: str  # the app.core.settings name holding the source table
     process_batches_method: str
     max_modified_date_attribute: str  # set by the batch processor
     order_by: Callable[[str], str]  # timestamp column -> ORDER BY
@@ -35,7 +35,7 @@ class _SyncSpec(NamedTuple):
 _EMPLOYEE_REPORTS = _SyncSpec(
     sync_type=SyncType.EMPLOYEE_REPORTS,
     label="employee reports",
-    table_name_method="_get_employee_reports_table_name",
+    table_setting="SQLSERVER_TABLE_EMPLOYEE_REPORTS",
     process_batches_method="_process_employee_report_batches_bulk",
     max_modified_date_attribute="_max_modified_date",
     order_by=lambda timestamp_col: timestamp_col,
@@ -47,7 +47,7 @@ _EMPLOYEE_REPORTS = _SyncSpec(
 _VISION_DATA = _SyncSpec(
     sync_type=SyncType.VISION_DATA,
     label="vision data",
-    table_name_method="_get_vision_data_table_name",
+    table_setting="SQLSERVER_TABLE_VISION_DATA",
     process_batches_method="_process_vision_data_batches_bulk",
     max_modified_date_attribute="_max_modified_date_vision",
     order_by=lambda timestamp_col: timestamp_col,
@@ -59,7 +59,7 @@ _VISION_DATA = _SyncSpec(
 _JOB_DESCRIPTIONS = _SyncSpec(
     sync_type=SyncType.JOB_DESCRIPTIONS,
     label="job descriptions",
-    table_name_method="_get_job_descriptions_table_name",
+    table_setting="SQLSERVER_TABLE_JOB_DESCRIPTIONS",
     process_batches_method="_process_job_description_batches_bulk",
     max_modified_date_attribute="_max_modified_date_jd",
     order_by=lambda timestamp_col: timestamp_col,
@@ -68,14 +68,17 @@ _JOB_DESCRIPTIONS = _SyncSpec(
         "records_updated": m.get('jd_records_updated', 0),
     },
 )
+# The supervisor feedback column that identifies a form
+_FEEDBACK_FORM_ID_COLUMN = "RO_Form_ID"
+
 _SUPERVISOR_FEEDBACK = _SyncSpec(
     sync_type=SyncType.SUPERVISOR_FEEDBACK,
     label="supervisor feedback",
-    table_name_method="_get_supervisor_feedback_table_name",
+    table_setting="SQLSERVER_TABLE_SUPERVISOR_FEEDBACK",
     process_batches_method="_process_supervisor_feedback_batches_bulk",
     max_modified_date_attribute="_max_modified_date_sf",
     # Rows of one form must stay in one batch, so order by form first
-    order_by=lambda timestamp_col: 'RO_Form_ID, ' + timestamp_col,
+    order_by=lambda timestamp_col: f"{_FEEDBACK_FORM_ID_COLUMN}, {timestamp_col}",
     status_metrics=lambda m: {
         "forms_created": m.get('forms_created', 0),
         "forms_updated": m.get('forms_updated', 0),
@@ -125,85 +128,24 @@ class SyncService:
         finally:
             session.close()
     
-    def _get_employee_reports_table_name(self) -> str:
+    def _source_table(self, spec: "_SyncSpec") -> str:
         """
-        Dynamically find the employee reports table name from allowed tables.
-        
-        Returns:
-            Table name for employee reports
-            
-        Raises:
-            ValueError: If no suitable table is found
-        """
-        allowed_tables = self.sqlserver_connector.get_allowed_tables()
-        
-        # Look for table containing "EmployeeReports" (case-insensitive)
-        for table in allowed_tables:
-            if 'employeereports' in table.lower() or 'report' in table.lower():
-                return table
-        
-        raise ValueError(f"No employee reports table found in allowed tables: {allowed_tables}")
-    
-    def _get_vision_data_table_name(self) -> str:
-        """
-        Dynamically find the vision data table name from allowed tables.
-        
-        Returns:
-            Table name for vision data
-            
-        Raises:
-            ValueError: If no suitable table is found
-        """
-        allowed_tables = self.sqlserver_connector.get_allowed_tables()
-        
-        # Look for table containing "VisionEmployeeData" or "Vision" (case-insensitive)
-        for table in allowed_tables:
-            table_lower = table.lower()
-            if 'visionemployeedata' in table_lower or 'vision' in table_lower:
-                return table
-        
-        raise ValueError(f"No vision data table found in allowed tables: {allowed_tables}")
+        The SQL Server table a sync type reads, as configured in settings.
 
-    def _get_job_descriptions_table_name(self) -> str:
+        SQL Server table names are case-insensitive, so the configured name
+        matches an allowed table in any case; the allowed spelling is returned
+        because the connector checks names exactly.
         """
-        Dynamically find the job descriptions table name from allowed tables.
-        
-        Returns:
-            Table name for job descriptions
-            
-        Raises:
-            ValueError: If no suitable table is found
-        """
+        table_name = getattr(settings, spec.table_setting)
         allowed_tables = self.sqlserver_connector.get_allowed_tables()
-        
-        # Look for table containing "JobDescriptions" or "JD" (case-insensitive)
-        for table in allowed_tables:
-            table_lower = table.lower()
-            if 'jobdescriptions' in table_lower or 'jobdescription' in table_lower or 'jd' in table_lower or 'job' in table_lower:
-                return table
-        
-        raise ValueError(f"No job descriptions table found in allowed tables: {allowed_tables}")
-    
-    def _get_supervisor_feedback_table_name(self) -> str:
-        """
-        Dynamically find the supervisor feedback table name from allowed tables.
-        
-        Returns:
-            Table name for supervisor feedback
-            
-        Raises:
-            ValueError: If no suitable table is found
-        """
-        allowed_tables = self.sqlserver_connector.get_allowed_tables()
-        
-        # Look for table containing "SupervisorFeedback" or "Supervisor" (case-insensitive)
-        for table in allowed_tables:
-            table_lower = table.lower()
-            if 'supervisorfeedback' in table_lower or 'supervisor' in table_lower or 'feedback' in table_lower:
-                return table
-        
-        raise ValueError(f"No supervisor feedback table found in allowed tables: {allowed_tables}")
-    
+        for allowed in allowed_tables:
+            if allowed.lower() == table_name.lower():
+                return allowed
+        raise ValueError(
+            f"The {spec.label} table '{table_name}' ({spec.table_setting}) is not in "
+            f"SQLSERVER_ALLOWED_TABLES: {sorted(allowed_tables)}"
+        )
+
     def _save_collected_errors(self, sync_id, error_handler, session) -> None:
         """Store the row errors an ImportErrorHandler collected, if there are any."""
         if error_handler.get_error_count() > 0:
@@ -230,7 +172,7 @@ class SyncService:
         5. Track progress and errors
         6. Update sync status (COMPLETED/FAILED/PARTIAL)
         """
-        table_name = getattr(self, spec.table_name_method)()
+        table_name = self._source_table(spec)
         logger.info(f"Using table '{table_name}' for {spec.label} sync")
         
         with self._sync_session_context() as session:

@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from app.models.db_models import Employee, EmployeeJobDescription
 from app.models.sync_models import SyncType, SyncStatus
 from app.services.sync.transformers import JobDescriptionTransformer
-from app.services.sync_service import SyncService
+from app.services.sync_service import SyncService, _JOB_DESCRIPTIONS
 from app.integrations.sqlserver.connector import SQLServerConnector
 from app.db.database import get_database
 
@@ -110,10 +110,10 @@ def mock_sqlserver_connector():
 # ============================================================================
 
 class TestTableNameDetection:
-    """Test _get_job_descriptions_table_name() method."""
+    """Test _source_table() for the job descriptions sync."""
     
     def test_detect_exact_match(self, mock_sqlserver_connector):
-        """Test detection with exact table name."""
+        """The configured table is used when it is allowed."""
         mock_sqlserver_connector.get_allowed_tables.return_value = {
             'EmployeeReports',
             'EmployeeJobDescriptions',
@@ -121,24 +121,24 @@ class TestTableNameDetection:
         }
         
         sync_service = SyncService(mock_sqlserver_connector)
-        table_name = sync_service._get_job_descriptions_table_name()
+        table_name = sync_service._source_table(_JOB_DESCRIPTIONS)
         
         assert table_name == 'EmployeeJobDescriptions'
     
     def test_detect_case_insensitive(self, mock_sqlserver_connector):
-        """Test case-insensitive detection."""
+        """The allowed spelling is returned when only the case differs."""
         mock_sqlserver_connector.get_allowed_tables.return_value = {
             'employeejobdescriptions',
             'EmployeeReports'
         }
         
         sync_service = SyncService(mock_sqlserver_connector)
-        table_name = sync_service._get_job_descriptions_table_name()
+        table_name = sync_service._source_table(_JOB_DESCRIPTIONS)
         
-        assert table_name.lower() == 'employeejobdescriptions'
+        assert table_name == 'employeejobdescriptions'
     
     def test_no_match_raises_error(self, mock_sqlserver_connector):
-        """Test error when no matching table found."""
+        """Test error when the configured table is not allowed."""
         mock_sqlserver_connector.get_allowed_tables.return_value = {
             'EmployeeReports',
             'VisionEmployeeData'
@@ -147,9 +147,9 @@ class TestTableNameDetection:
         sync_service = SyncService(mock_sqlserver_connector)
         
         with pytest.raises(ValueError) as exc_info:
-            sync_service._get_job_descriptions_table_name()
+            sync_service._source_table(_JOB_DESCRIPTIONS)
         
-        assert "No job descriptions table found" in str(exc_info.value)
+        assert "is not in SQLSERVER_ALLOWED_TABLES" in str(exc_info.value)
 
 
 # ============================================================================

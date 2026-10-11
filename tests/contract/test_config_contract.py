@@ -21,6 +21,7 @@ FULL_OVERRIDES = {
     "CELERY_WORKER_CONCURRENCY": "8", "CELERY_TASK_IGNORE_RESULT": "true",
     "CELERY_RESULT_EXPIRES": "60", "CELERY_TASK_PACKAGES": "app.tasks, app.extra",
     "SYNC_ENABLED": "false", "CORS_ALLOW_ORIGINS": "http://a.example, http://b.example",
+    "SQLSERVER_TABLE_EMPLOYEE_REPORTS": "dbo.WeeklyReports", "SQLSERVER_TABLE_SUPERVISOR_FEEDBACK": "RO_Feedback",
 }
 
 

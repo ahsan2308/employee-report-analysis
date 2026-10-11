@@ -7,8 +7,9 @@ re-export them under their original names.
 
 Celery settings stay in app/worker/celery_app.py (except the task time
 limit, which other modules need), and the SQL Server connector reads its
-SQLSERVER_* variables when a connection is created. The sync_* functions read
-their variables on each call, as their callers always have.
+connection and allow-list SQLSERVER_* variables when a connection is created
+(the source table names below are read here). The sync_* functions read their
+variables on each call, as their callers always have.
 """
 import os
 
@@ -72,6 +73,10 @@ VECTOR_EMBEDDING_BATCH_SIZE = config.get("embedding_batch_size", 256, section="v
 VECTOR_UPSERT_BATCH_SIZE = config.get("upsert_batch_size", 1000, section="vector_db.batch_processing")
 VECTOR_BATCH_MAX_RETRIES = config.get("max_attempts", 3, section="vector_db.batch_processing.retry")
 
+# Index build parameters, applied when a collection is created (not to existing ones)
+VECTOR_HNSW_M = config.get("hnsw_m", 32, section="vector_db.index")
+VECTOR_HNSW_EF_CONSTRUCT = config.get("hnsw_ef_construct", 256, section="vector_db.index")
+
 # --- Analysis context limits (app.tasks.analysis_tasks) ---
 VECTOR_SEARCH_HNSW_EF = config.get("hnsw_ef", 128, section="vector_db.search")
 MAX_CONTENT_ITEMS_PER_ENTITY_FOR_WEEKLY_ANALYSIS = config.get("max_content_items_per_entity_for_weekly_analysis", 10, section="vector_db.search")
@@ -85,6 +90,13 @@ MAX_CONTENT_ITEM_LENGTH_QUARTERLY = config.get("max_content_item_length_quarterl
 CELERY_TASK_TIME_LIMIT = int(os.getenv("CELERY_TASK_TIME_LIMIT") or config.get("task_time_limit", 1800, section="celery"))
 
 # --- Sync (app.services.sync_service, app.api.sync_routes, app.worker.celery_app) ---
+# The SQL Server table each sync type reads. Each must also be allowed by
+# SQLSERVER_ALLOWED_TABLES, which defaults to these four.
+SQLSERVER_TABLE_EMPLOYEE_REPORTS = os.getenv("SQLSERVER_TABLE_EMPLOYEE_REPORTS", "EmployeeReports")
+SQLSERVER_TABLE_VISION_DATA = os.getenv("SQLSERVER_TABLE_VISION_DATA", "VisionEmployeeData")
+SQLSERVER_TABLE_JOB_DESCRIPTIONS = os.getenv("SQLSERVER_TABLE_JOB_DESCRIPTIONS", "EmployeeJobDescriptions")
+SQLSERVER_TABLE_SUPERVISOR_FEEDBACK = os.getenv("SQLSERVER_TABLE_SUPERVISOR_FEEDBACK", "SupervisorFeedback")
+
 SYNC_BATCH_SIZE = 1000  # rows read from SQL Server per batch
 SYNC_STALE_AFTER_MINUTES = 60  # a sync PENDING/RUNNING longer than this is marked failed
 

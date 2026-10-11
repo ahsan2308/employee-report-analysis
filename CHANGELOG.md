@@ -6,6 +6,26 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased
 
+### Changed: SQL Server source tables are settings
+
+Each sync reads the table named by its own setting:
+`SQLSERVER_TABLE_EMPLOYEE_REPORTS`, `SQLSERVER_TABLE_VISION_DATA`,
+`SQLSERVER_TABLE_JOB_DESCRIPTIONS` and `SQLSERVER_TABLE_SUPERVISOR_FEEDBACK`.
+The defaults are the table names used so far. Before, each sync took the first
+allowed table whose name contained a keyword ("report", "job", "feedback"...),
+so adding a table such as `JobReports` to `SQLSERVER_ALLOWED_TABLES` could make
+a sync read the wrong one. A configured table must be in
+`SQLSERVER_ALLOWED_TABLES` (any letter case), which now defaults to the four
+configured tables.
+
+### Changed: vector index parameters in config
+
+The HNSW parameters used when the Qdrant collection is created are now
+`vector_db.index.hnsw_m` (32) and `vector_db.index.hnsw_ef_construct` (256) in
+`config/config.yaml`. They apply to new collections only. The payload field
+names that the indexes, the stored chunks and the search filters share are
+defined once, in `app/integrations/vector_store/payload_fields.py`.
+
 ---
 
 ## [4.0.0] - 2026-10-11 - Restructuring and bug fixes
