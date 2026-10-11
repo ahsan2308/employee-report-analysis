@@ -5,8 +5,10 @@ it: environment variable (after loading the project's .env) > config/config.yaml
 (through ConfigProvider) > code default. The modules that used these values
 re-export them under their original names.
 
-Celery settings stay in app/worker/celery_app.py, and the SQL Server
-connector reads its SQLSERVER_* variables when a connection is created.
+Celery settings stay in app/worker/celery_app.py (except the task time
+limit, which other modules need), and the SQL Server connector reads its
+SQLSERVER_* variables when a connection is created. The sync_* functions read
+their variables on each call, as their callers always have.
 """
 import os
 
@@ -78,3 +80,35 @@ MAX_CONTENT_ITEMS_PER_ENTITY_FOR_QUARTERLY_ANALYSIS = config.get("max_content_it
 MAX_CONTENT_ITEM_LENGTH_WEEKLY = config.get("max_content_item_length_weekly", 300, section="vector_db.search")
 MAX_CONTENT_ITEM_LENGTH_MONTHLY = config.get("max_content_item_length_monthly", 250, section="vector_db.search")
 MAX_CONTENT_ITEM_LENGTH_QUARTERLY = config.get("max_content_item_length_quarterly", 200, section="vector_db.search")
+
+# --- Celery task limits (app.worker.celery_app, app.services.task_service) ---
+CELERY_TASK_TIME_LIMIT = int(os.getenv("CELERY_TASK_TIME_LIMIT") or config.get("task_time_limit", 1800, section="celery"))
+
+# --- Sync (app.services.sync_service, app.api.sync_routes, app.worker.celery_app) ---
+SYNC_BATCH_SIZE = 1000  # rows read from SQL Server per batch
+SYNC_STALE_AFTER_MINUTES = 60  # a sync PENDING/RUNNING longer than this is marked failed
+
+# The weekly incremental sync run by Celery beat (crontab fields; day 0 is Sunday)
+SYNC_SCHEDULE_DAY_OF_WEEK = 1
+SYNC_SCHEDULE_HOUR = 2
+SYNC_SCHEDULE_MINUTE = 0
+_WEEKDAYS = ("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+SYNC_SCHEDULE_DESCRIPTION = (
+    f"{_WEEKDAYS[SYNC_SCHEDULE_DAY_OF_WEEK]} "
+    f"{(SYNC_SCHEDULE_HOUR % 12) or 12}:{SYNC_SCHEDULE_MINUTE:02d} {'AM' if SYNC_SCHEDULE_HOUR < 12 else 'PM'}"
+)
+
+
+def sync_enabled() -> bool:
+    """SYNC_ENABLED (default true): whether the weekly sync is scheduled."""
+    return os.getenv("SYNC_ENABLED", "true").lower() == "true"
+
+
+def sync_error_threshold_percent() -> float:
+    """SYNC_ERROR_THRESHOLD_PERCENT (default 10.0); raises ValueError when not a number."""
+    return float(os.getenv("SYNC_ERROR_THRESHOLD_PERCENT", "10.0"))
+
+
+# --- API (app.api.main) ---
+# Comma-separated origins allowed by CORS; "*" (the default) allows any origin
+CORS_ALLOW_ORIGINS = [origin.strip() for origin in os.getenv("CORS_ALLOW_ORIGINS", "*").split(",") if origin.strip()]

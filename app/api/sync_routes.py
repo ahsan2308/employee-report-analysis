@@ -10,7 +10,6 @@ from typing import Optional
 from datetime import datetime, timedelta
 from uuid import UUID
 import time
-import os
 
 from app.api.deps import get_db
 from app.models.sync_models import SyncHistory, SyncStatus, SyncType
@@ -29,6 +28,7 @@ from app.schemas.sync_schema import (
 )
 from app.integrations.sqlserver.connector import create_sqlserver_connector
 from app.services.sync.sync_tracker import last_successful_sync
+from app.core import settings
 from app.core.logger import logger
 from app.worker.celery_app import celery_app 
 
@@ -36,7 +36,7 @@ from app.worker.celery_app import celery_app
 router = APIRouter(prefix="/sync", tags=["SQL Server Sync"])
 
 
-def _check_and_clear_stale_syncs(db: Session, sync_type: str, timeout_minutes: int = 60):
+def _check_and_clear_stale_syncs(db: Session, sync_type: str, timeout_minutes: int = settings.SYNC_STALE_AFTER_MINUTES):
     """
     Check for stale syncs and mark them as failed if they've been running too long.
     
@@ -77,7 +77,7 @@ def _trigger_sync(db: Session, is_full_sync: bool, sync_type: SyncType, task_nam
     
     try:
         # Clear stale syncs before checking for running syncs
-        _check_and_clear_stale_syncs(db, sync_type.value, timeout_minutes=60)
+        _check_and_clear_stale_syncs(db, sync_type.value)
         
         # Check if there's already a running sync of this type
         running_sync = db.query(SyncHistory).filter(
@@ -216,10 +216,10 @@ def trigger_full_sync(db: Session = Depends(get_db)):
     
     try:
         # Clear stale syncs for all four types
-        _check_and_clear_stale_syncs(db, SyncType.EMPLOYEE_REPORTS.value, timeout_minutes=60)
-        _check_and_clear_stale_syncs(db, SyncType.VISION_DATA.value, timeout_minutes=60)
-        _check_and_clear_stale_syncs(db, SyncType.JOB_DESCRIPTIONS.value, timeout_minutes=60)
-        _check_and_clear_stale_syncs(db, SyncType.SUPERVISOR_FEEDBACK.value, timeout_minutes=60)
+        _check_and_clear_stale_syncs(db, SyncType.EMPLOYEE_REPORTS.value)
+        _check_and_clear_stale_syncs(db, SyncType.VISION_DATA.value)
+        _check_and_clear_stale_syncs(db, SyncType.JOB_DESCRIPTIONS.value)
+        _check_and_clear_stale_syncs(db, SyncType.SUPERVISOR_FEEDBACK.value)
         
         # Check if any sync is already running
         running_syncs = db.query(SyncHistory).filter(
@@ -633,7 +633,7 @@ def get_sync_configuration():
         connection_status = "connected" if connector.test_connection() else "disconnected"
         
         # Get configuration
-        sync_enabled = os.getenv('SYNC_ENABLED', 'true').lower() == 'true'
+        sync_enabled = settings.sync_enabled()
         
         return SyncConfigResponse(
             sql_server={
@@ -645,13 +645,13 @@ def get_sync_configuration():
             allowed_timestamp_columns=list(connector.get_allowed_timestamp_columns()),
             sync_settings={
                 "max_batch_size": connector.max_batch_size,
-                "error_threshold_percent": float(os.getenv('SYNC_ERROR_THRESHOLD_PERCENT', '10.0')),
-                "default_chunk_size": 1000
+                "error_threshold_percent": settings.sync_error_threshold_percent(),
+                "default_chunk_size": settings.SYNC_BATCH_SIZE
             },
             sync_schedule={
                 "incremental_sync": {
                     "enabled": sync_enabled,
-                    "schedule": "Monday 2:00 AM",
+                    "schedule": settings.SYNC_SCHEDULE_DESCRIPTION,
                     "next_run": None  # Would need to query Celery beat for actual next run
                 },
                 "full_sync": {

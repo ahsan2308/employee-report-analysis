@@ -365,6 +365,9 @@ The pre-restructuring import paths (for example `app.database`, `app.model_host`
 
      # Logging (DEBUG, INFO, WARNING, ERROR or CRITICAL; default INFO)
      LOG_LEVEL=INFO
+
+     # API: comma-separated origins allowed by CORS (default "*", any origin)
+     CORS_ALLOW_ORIGINS=*
      ```
 
 4. **Set Up SQL Server Tables** (for sync functionality)
