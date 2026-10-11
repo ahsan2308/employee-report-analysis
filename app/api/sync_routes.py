@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from datetime import datetime
 from uuid import UUID
-import time
 
 from app.api.deps import get_db
 from app.models.sync_models import SyncStatus, SyncType
@@ -25,75 +24,23 @@ from app.schemas.sync_schema import (
     ConnectionTestResponse,
     SyncProgressMetrics
 )
-from app.integrations.sqlserver.connector import create_sqlserver_connector
 from app.repositories import sync_history
-from app.services.sync.sync_tracker import clear_stale_syncs
-from app.core import settings
+from app.services.sync import source as sync_source
+from app.services.sync import trigger as sync_trigger
 from app.core.logger import logger
-from app.worker.celery_app import celery_app 
 
 # Initialize Router
 router = APIRouter(prefix="/sync", tags=["SQL Server Sync"])
 
 
-def _fail_undispatched_syncs(db: Session, sync_tracker, sync_ids, dispatch_error: Exception) -> None:
-    """Mark sync rows FAILED when their Celery task could not be queued."""
-    for sync_id in sync_ids:
-        sync_tracker.mark_sync_failed(sync_id, f"Could not queue the sync task: {dispatch_error}", session=db)
-    db.commit()
-
-
-def _trigger_sync(db: Session, is_full_sync: bool, sync_type: SyncType, task_name: str, label: str):
+def _trigger_sync(db: Session, is_full_sync: bool, sync_type: SyncType, label: str):
     """Shared body of the four single-type trigger endpoints."""
     logger.info(f"Received request to trigger {label} sync (is_full_sync={is_full_sync})")
     
     try:
-        # Clear stale syncs before checking for running syncs
-        clear_stale_syncs(db, sync_type.value)
-        
-        # Check if there's already a running sync of this type
-        running_sync = next(iter(sync_history.find_active_syncs(db, [sync_type.value])), None)
-        
-        if running_sync:
-            raise HTTPException(
-                status_code=409,
-                detail=f"{label.capitalize()} sync already in progress (sync_id: {running_sync.sync_id})"
-            )
-        
-        # Create SyncHistory record HERE in the API endpoint
-        from app.services.sync.sync_tracker import SyncTracker
-        from app.db.database import get_database
-        
-        db_instance = get_database()
-        sync_tracker = SyncTracker(db_instance)
-        
-        # Create sync job record BEFORE queuing task
-        sync_job = sync_tracker.create_sync_job(
-            sync_type=sync_type,
-            session=db,
-            is_full_sync=is_full_sync
-        )
-        
-        # Get the real sync_id
-        real_sync_id = sync_job.sync_id
-        
-        # Trigger Celery task using registered task name
-        try:
-            task = celery_app.send_task(
-                task_name,
-                kwargs={
-                    'is_full_sync': is_full_sync,
-                    'sync_id': str(real_sync_id)
-                }
-            )
-        except Exception as dispatch_error:
-            # Without this the PENDING row would block new triggers until it goes stale
-            _fail_undispatched_syncs(db, sync_tracker, [real_sync_id], dispatch_error)
-            raise
-        
-        # Return REAL sync_id (no placeholder!)
+        sync_job, task = sync_trigger.trigger_sync(db, sync_type, is_full_sync, label)
         return SyncTriggerResponse(
-            sync_id=real_sync_id,
+            sync_id=sync_job.sync_id,
             task_id=str(task.id),
             sync_type=sync_type.value,
             status="pending",
@@ -101,9 +48,8 @@ def _trigger_sync(db: Session, is_full_sync: bool, sync_type: SyncType, task_nam
             triggered_at=datetime.now(),
             message=f"{label.capitalize()} sync {'(full)' if is_full_sync else '(incremental)'} started successfully"
         )
-        
-    except HTTPException:
-        raise
+    except sync_trigger.SyncAlreadyRunning as running:
+        raise HTTPException(status_code=409, detail=str(running))
     except Exception as e:
         logger.error(f"Error triggering {label} sync: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to trigger sync")
@@ -122,7 +68,7 @@ def trigger_employee_reports_sync(
     Trigger employee reports synchronization from SQL Server to PostgreSQL.
     
     """
-    return _trigger_sync(db, is_full_sync, SyncType.EMPLOYEE_REPORTS, 'sync.employee_reports', "employee reports")
+    return _trigger_sync(db, is_full_sync, SyncType.EMPLOYEE_REPORTS, "employee reports")
 
 
 @router.post("/trigger/vision_data", response_model=SyncTriggerResponse, status_code=202)
@@ -138,7 +84,7 @@ def trigger_vision_data_sync(
     
     - **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)
     """
-    return _trigger_sync(db, is_full_sync, SyncType.VISION_DATA, 'sync.vision_data', "vision data")
+    return _trigger_sync(db, is_full_sync, SyncType.VISION_DATA, "vision data")
 
 
 @router.post("/trigger/job_descriptions", response_model=SyncTriggerResponse, status_code=202)
@@ -154,7 +100,7 @@ def trigger_job_descriptions_sync(
     
     - **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)
     """
-    return _trigger_sync(db, is_full_sync, SyncType.JOB_DESCRIPTIONS, 'sync.job_descriptions', "job descriptions")
+    return _trigger_sync(db, is_full_sync, SyncType.JOB_DESCRIPTIONS, "job descriptions")
 
 
 @router.post("/trigger/supervisor_feedback", response_model=SyncTriggerResponse, status_code=202)
@@ -170,7 +116,7 @@ def trigger_supervisor_feedback_sync(
     
     - **is_full_sync**: False = incremental (only new/modified records), True = full sync (all records)
     """
-    return _trigger_sync(db, is_full_sync, SyncType.SUPERVISOR_FEEDBACK, 'sync.supervisor_feedback', "supervisor feedback")
+    return _trigger_sync(db, is_full_sync, SyncType.SUPERVISOR_FEEDBACK, "supervisor feedback")
 
 
 @router.post("/trigger/full", response_model=FullSyncTriggerResponse, status_code=202)
@@ -184,100 +130,20 @@ def trigger_full_sync(db: Session = Depends(get_db)):
     logger.info("Received request to trigger full sync (all four types)")
     
     try:
-        # Clear stale syncs for all four types
-        clear_stale_syncs(db, SyncType.EMPLOYEE_REPORTS.value)
-        clear_stale_syncs(db, SyncType.VISION_DATA.value)
-        clear_stale_syncs(db, SyncType.JOB_DESCRIPTIONS.value)
-        clear_stale_syncs(db, SyncType.SUPERVISOR_FEEDBACK.value)
-        
-        # Check if any sync is already running
-        running_syncs = sync_history.find_active_syncs(db, [
-            SyncType.EMPLOYEE_REPORTS.value,
-            SyncType.VISION_DATA.value,
-            SyncType.JOB_DESCRIPTIONS.value,
-            SyncType.SUPERVISOR_FEEDBACK.value
-        ])
-        
-        if running_syncs:
-            running_types = [s.sync_type for s in running_syncs]
-            raise HTTPException(
-                status_code=409,
-                detail=f"Sync already in progress for: {', '.join(running_types)}"
-            )
-        
-        # Create SyncHistory records for ALL THREE sync types
-        from app.services.sync.sync_tracker import SyncTracker
-        from app.db.database import get_database
-        
-        db_instance = get_database()
-        sync_tracker = SyncTracker(db_instance)
-        
-        # Create sync job for employee reports (full mode)
-        employee_sync_job = sync_tracker.create_sync_job(
-            sync_type=SyncType.EMPLOYEE_REPORTS,
-            session=db,
-            is_full_sync=True
-        )
-        
-        # Create sync job for vision data (full mode)
-        vision_sync_job = sync_tracker.create_sync_job(
-            sync_type=SyncType.VISION_DATA,
-            session=db,
-            is_full_sync=True
-        )
-        
-        # Create sync job for job descriptions (full mode)
-        jd_sync_job = sync_tracker.create_sync_job(
-            sync_type=SyncType.JOB_DESCRIPTIONS,
-            session=db,
-            is_full_sync=True
-        )
-
-        # Create sync job for supervisor feedback (full mode)
-        sf_sync_job = sync_tracker.create_sync_job(
-            sync_type=SyncType.SUPERVISOR_FEEDBACK,
-            session=db,
-            is_full_sync=True
-        )
-        
-        # Get the real sync_ids
-        employee_sync_id = employee_sync_job.sync_id
-        vision_sync_id = vision_sync_job.sync_id
-        jd_sync_id = jd_sync_job.sync_id
-        sf_sync_id = sf_sync_job.sync_id
-        
-        # Trigger full sync task with ALL THREE sync_ids
-        try:
-            task = celery_app.send_task(
-                'sync.full',
-                kwargs={
-                    'employee_sync_id': str(employee_sync_id),
-                    'vision_sync_id': str(vision_sync_id),
-                    'jd_sync_id': str(jd_sync_id),
-                    'sf_sync_id': str(sf_sync_id)
-                }
-            )
-        except Exception as dispatch_error:
-            _fail_undispatched_syncs(
-                db, sync_tracker, [employee_sync_id, vision_sync_id, jd_sync_id, sf_sync_id], dispatch_error
-            )
-            raise
-        
-        # Return ALL FOUR sync_ids
+        jobs, task = sync_trigger.trigger_full_sync(db)
         return FullSyncTriggerResponse(
             sync_type="full",
-            employee_reports_sync_id=employee_sync_id,
-            vision_data_sync_id=vision_sync_id,
-            job_descriptions_sync_id=jd_sync_id,
-            supervisor_feedback_sync_id=sf_sync_id,
+            employee_reports_sync_id=jobs[SyncType.EMPLOYEE_REPORTS].sync_id,
+            vision_data_sync_id=jobs[SyncType.VISION_DATA].sync_id,
+            job_descriptions_sync_id=jobs[SyncType.JOB_DESCRIPTIONS].sync_id,
+            supervisor_feedback_sync_id=jobs[SyncType.SUPERVISOR_FEEDBACK].sync_id,
             task_id=str(task.id),
             status="pending",
             triggered_at=datetime.now(),
             message="Full sync (employee reports, vision data, job descriptions, and supervisor feedback) started successfully"
         )
-        
-    except HTTPException:
-        raise
+    except sync_trigger.SyncAlreadyRunning as running:
+        raise HTTPException(status_code=409, detail=str(running))
     except Exception as e:
         logger.error(f"Error triggering full sync: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to trigger full sync")
@@ -571,40 +437,7 @@ def get_sync_configuration():
     - Scheduled sync information
     """
     try:
-        connector = create_sqlserver_connector()
-        
-        # Test connection status
-        connection_status = "connected" if connector.test_connection() else "disconnected"
-        
-        # Get configuration
-        sync_enabled = settings.sync_enabled()
-        
-        return SyncConfigResponse(
-            sql_server={
-                "host": connector.server,
-                "database": connector.database,
-                "connection_status": connection_status
-            },
-            allowed_tables=list(connector.get_allowed_tables()),
-            allowed_timestamp_columns=list(connector.get_allowed_timestamp_columns()),
-            sync_settings={
-                "max_batch_size": connector.max_batch_size,
-                "error_threshold_percent": settings.sync_error_threshold_percent(),
-                "default_chunk_size": settings.SYNC_BATCH_SIZE
-            },
-            sync_schedule={
-                "incremental_sync": {
-                    "enabled": sync_enabled,
-                    "schedule": settings.SYNC_SCHEDULE_DESCRIPTION,
-                    "next_run": None  # Would need to query Celery beat for actual next run
-                },
-                "full_sync": {
-                    "enabled": False,
-                    "schedule": "Manual trigger only"
-                }
-            },
-            sync_enabled=sync_enabled
-        )
+        return SyncConfigResponse(**sync_source.sync_configuration())
         
     except Exception as e:
         logger.error(f"Error retrieving sync configuration: {str(e)}")
@@ -618,42 +451,4 @@ def test_sql_server_connection():
     
     Useful for diagnosing connection issues before attempting a sync.
     """
-    try:
-        connector = create_sqlserver_connector()
-        
-        start_time = time.time()
-        connection_successful = connector.test_connection()
-        connection_time = int((time.time() - start_time) * 1000)  # Convert to milliseconds
-        
-        if not connection_successful:
-            return ConnectionTestResponse(
-                status="disconnected",
-                server=connector.server,
-                database=connector.database,
-                available_tables=[],
-                connection_time_ms=connection_time,
-                message="Failed to connect to SQL Server"
-            )
-        
-        # Get available tables
-        available_tables = list(connector.get_allowed_tables())
-        
-        return ConnectionTestResponse(
-            status="connected",
-            server=connector.server,
-            database=connector.database,
-            available_tables=available_tables,
-            connection_time_ms=connection_time,
-            message="Successfully connected to SQL Server"
-        )
-        
-    except Exception as e:
-        logger.error(f"Error testing SQL Server connection: {str(e)}")
-        return ConnectionTestResponse(
-            status="error",
-            server="unknown",
-            database="unknown",
-            available_tables=[],
-            connection_time_ms=0,
-            message=f"Error: {str(e)}"
-        )
+    return ConnectionTestResponse(**sync_source.check_connection())

@@ -93,7 +93,7 @@ def test_upload_missing_file_422(api, db_session, snap, dispatch):
 def test_upload_dispatch_failure_marks_job_failed(api, db_session, snap, dispatch):
     from unittest import mock
 
-    with mock.patch("app.api.imports.process_csv_import") as broken:
+    with mock.patch("app.tasks.dispatch.process_csv_import") as broken:
         broken.delay.side_effect = RuntimeError("broker unreachable")
         resp = _upload(api, "file.csv")
     snap("imports_upload_dispatch_failure", resp, db=_jobs(db_session))

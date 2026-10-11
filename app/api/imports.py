@@ -10,7 +10,6 @@ from app.schemas.csv_import_schema import (
     ImportErrorsResponse
 )
 from app.services.csv_import_service import get_csv_import_service, list_import_jobs as list_jobs
-from app.tasks.import_tasks import process_csv_import
 from app.core.logger import logger
 
 # Initialize Router
@@ -105,30 +104,14 @@ async def upload_csv_file(
             encoding=encoding
         )
         
-        # Create import job with optional CSV type
-        import_service = get_csv_import_service()
-        job = import_service.create_import_job(
-            filename=file.filename, 
+        # Record the job and queue its processing
+        file_content = await file.read()
+        job = get_csv_import_service().submit_import(
+            filename=file.filename,
+            file_content=file_content,
             options=options,
             csv_type=csv_type
         )
-        
-        # Read file content
-        file_content = await file.read()
-        
-        # Queue the task to process the file using Celery, passing csv_type
-        try:
-            process_csv_import.delay(
-                job_id=str(job.job_id),
-                file_content=file_content,
-                filename=file.filename,
-                options=options.model_dump(),
-                csv_type=csv_type
-            )
-        except Exception as dispatch_error:
-            # Without this the job would stay PENDING forever
-            import_service.mark_job_failed(str(job.job_id), f"Could not queue the import task: {dispatch_error}")
-            raise
         
         # Return job info
         return job

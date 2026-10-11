@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.models.task_models import BackgroundTask, TaskStatus, TaskType
 from app.models.db_models import Employee, EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
-from app.tasks.analysis_tasks import analyze_report_task
+from app.tasks import dispatch
 from app.core import settings
 from app.core.logger import logger
 from app.repositories import tasks as task_repo
@@ -148,7 +148,7 @@ def create_task_for_analysis(
     
     # Submit to Celery if it's a new task
     if not existing_analysis:
-        analyze_report_task.delay(str(task.task_id))
+        dispatch.queue_report_analysis(str(task.task_id))
         
     return task
 
@@ -218,11 +218,9 @@ def create_task_for_monthly_analysis(
     # Save to database
     task_repo.save_task(db, task)
     
-    # Submit to Celery if it's a new task - will add analyze_monthly_reports_task
+    # Submit to Celery if it's a new task
     if not existing_analysis:
-        # Will add this task when we create analysis_tasks.py
-        from app.tasks.analysis_tasks import analyze_monthly_reports_task
-        analyze_monthly_reports_task.delay(str(task.task_id))
+        dispatch.queue_monthly_analysis(str(task.task_id))
         
     return task
 
@@ -294,9 +292,7 @@ def create_task_for_quarterly_analysis(
     
     # Submit to Celery if it's a new task
     if not existing_analysis:
-        # Import will be at the top of this file
-        from app.tasks.analysis_tasks import analyze_quarterly_reports_task
-        analyze_quarterly_reports_task.delay(str(task.task_id))
+        dispatch.queue_quarterly_analysis(str(task.task_id))
         
     return task
 

@@ -5,7 +5,7 @@ Qdrant, Ollama or SQL Server:
 
 * Celery dispatch is patched where each router/service looks it up and every
   call is recorded, in order, in ``dispatch.calls``.
-* ``add_report_to_vector_store`` is patched in ``app.api.reports``.
+* ``add_report_to_vector_store`` is patched in ``app.services.report_service``.
 * The visualization service's in-process cache is cleared around each test.
 """
 from types import SimpleNamespace
@@ -55,10 +55,10 @@ def dispatch():
     recorder = DispatchRecorder()
     patches = []
     for target, name in [
-        ("app.services.task_service.analyze_report_task", "analyze_report_task"),
-        ("app.tasks.analysis_tasks.analyze_monthly_reports_task", "analyze_monthly_reports_task"),
-        ("app.tasks.analysis_tasks.analyze_quarterly_reports_task", "analyze_quarterly_reports_task"),
-        ("app.api.imports.process_csv_import", "process_csv_import"),
+        ("app.tasks.dispatch.analyze_report_task", "analyze_report_task"),
+        ("app.tasks.dispatch.analyze_monthly_reports_task", "analyze_monthly_reports_task"),
+        ("app.tasks.dispatch.analyze_quarterly_reports_task", "analyze_quarterly_reports_task"),
+        ("app.tasks.dispatch.process_csv_import", "process_csv_import"),
     ]:
         fake = mock.MagicMock(name=name)
         fake.delay.side_effect = recorder.delay_for(name)
@@ -67,7 +67,7 @@ def dispatch():
 
     fake_celery_app = mock.MagicMock(name="celery_app")
     fake_celery_app.send_task.side_effect = recorder.send_task
-    patches.append(mock.patch("app.api.sync_routes.celery_app", fake_celery_app))
+    patches.append(mock.patch("app.tasks.dispatch.celery_app", fake_celery_app))
 
     for patcher in patches:
         patcher.start()
@@ -86,7 +86,7 @@ def vector_store():
     def _record(**kwargs):
         calls.append(kwargs)
 
-    with mock.patch("app.api.reports.add_report_to_vector_store", side_effect=_record) as patched:
+    with mock.patch("app.services.report_service.add_report_to_vector_store", side_effect=_record) as patched:
         patched.calls = calls
         yield patched
 
