@@ -6,6 +6,17 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased - Restructuring and bug fixes
 
+### Changed: log level
+
+The log level is now set by the `LOG_LEVEL` environment variable and defaults
+to `INFO`; it was always `DEBUG` before. Set `LOG_LEVEL=DEBUG` for the old
+output.
+
+### Fixed: report form "nothing to report"
+
+`POST /reports/form` rejected every submission without `key_tasks_completed`,
+even when `nothing_to_report_reason` was given. A reason alone is now accepted.
+
 ### Removed: old import paths
 
 The modules moved during the restructuring no longer have compatibility

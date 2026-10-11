@@ -531,7 +531,7 @@ class JobDescriptionCSVRow(BaseModel):
         ...,
         description="Employee identifier. Accepts integer or string format.",
         gt=0,
-        example=101
+        examples=[101]
     )
     
     # Field 2: JD_ID (always numeric, but can come as int or string)
@@ -540,7 +540,7 @@ class JobDescriptionCSVRow(BaseModel):
         description="Job Description identifier from SQL Server. Always numeric (e.g., 1001, 1002) but may be provided as integer or string. Will be stored as string.",
         min_length=1,
         max_length=50,
-        example="1001"
+        examples=["1001"]
     )
     
     # Field 3: Job_Description (minimum 50 characters for meaningful content)
@@ -548,28 +548,28 @@ class JobDescriptionCSVRow(BaseModel):
         ...,
         description="Full text of the job description. Must be at least 50 characters to ensure meaningful content.",
         min_length=50,
-        example="Responsible for analyzing employee performance data, generating insights, and presenting findings to management. Requires proficiency in data analysis tools and strong communication skills."
+        examples=["Responsible for analyzing employee performance data, generating insights, and presenting findings to management. Requires proficiency in data analysis tools and strong communication skills."]
     )
     
     # Field 4: Assigned_Date (REQUIRED - no default, must be provided)
     Assigned_Date: Union[str, date, datetime] = Field(
         ...,
         description="Date when this JD was assigned to the employee in YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format. REQUIRED field - rows without this date will be rejected.",
-        example="2024-01-15"
+        examples=["2024-01-15"]
     )
     
     # Field 5: is_current (REQUIRED - tracks if this is current JD)
     Is_Current: bool = Field(
         ...,
         description="Whether this is the employee's current job description. TRUE if current, FALSE if ended.",
-        example=True
+        examples=[True]
     )
     
     # Field 6: end_date (OPTIONAL - only set if JD assignment has ended)
     End_Date: Optional[Union[str, date, datetime]] = Field(
         default=None,
         description="Date when this JD assignment ended. NULL if this is still the current role. Format: YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY.",
-        example=None
+        examples=[None]
     )
     
     # Model configuration

@@ -362,6 +362,9 @@ The pre-restructuring import paths (for example `app.database`, `app.model_host`
      # Sync Settings
      SYNC_ENABLED=true
      SYNC_ERROR_THRESHOLD_PERCENT=10.0
+
+     # Logging (DEBUG, INFO, WARNING, ERROR or CRITICAL; default INFO)
+     LOG_LEVEL=INFO
      ```
 
 4. **Set Up SQL Server Tables** (for sync functionality)

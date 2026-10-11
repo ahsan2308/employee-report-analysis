@@ -13,9 +13,12 @@
       "date_trunc('year', public.reports.report_date)"
     ],
     [
-      "values",
+      "with_entities",
       "date_trunc('year', public.reports.report_date)",
       "avg(public.employee_analyses.sentiment_score)"
+    ],
+    [
+      "all"
     ]
   ],
   "day": [
@@ -28,9 +31,12 @@
       "date_trunc('day', public.reports.report_date)"
     ],
     [
-      "values",
+      "with_entities",
       "date_trunc('day', public.reports.report_date)",
       "avg(public.employee_analyses.sentiment_score)"
+    ],
+    [
+      "all"
     ]
   ],
   "month": [
@@ -43,9 +49,12 @@
       "date_trunc('month', public.reports.report_date)"
     ],
     [
-      "values",
+      "with_entities",
       "date_trunc('month', public.reports.report_date)",
       "avg(public.employee_analyses.sentiment_score)"
+    ],
+    [
+      "all"
     ]
   ],
   "quarter": [
@@ -58,9 +67,12 @@
       "date_trunc('quarter', public.reports.report_date)"
     ],
     [
-      "values",
+      "with_entities",
       "date_trunc('quarter', public.reports.report_date)",
       "avg(public.employee_analyses.sentiment_score)"
+    ],
+    [
+      "all"
     ]
   ],
   "week": [
@@ -73,9 +85,12 @@
       "date_trunc('week', public.reports.report_date)"
     ],
     [
-      "values",
+      "with_entities",
       "date_trunc('week', public.reports.report_date)",
       "avg(public.employee_analyses.sentiment_score)"
+    ],
+    [
+      "all"
     ]
   ],
   "year": [
@@ -88,9 +103,12 @@
       "date_trunc('year', public.reports.report_date)"
     ],
     [
-      "values",
+      "with_entities",
       "date_trunc('year', public.reports.report_date)",
       "avg(public.employee_analyses.sentiment_score)"
+    ],
+    [
+      "all"
     ]
   ]
 }

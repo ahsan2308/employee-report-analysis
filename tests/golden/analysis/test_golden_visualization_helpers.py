@@ -160,8 +160,12 @@ class RecordingQuery:
         self.ops.append(["order_by"] + [self._sql(c) for c in clauses])
         return self
 
-    def values(self, *clauses):
-        self.ops.append(["values"] + [self._sql(c) for c in clauses])
+    def with_entities(self, *clauses):
+        self.ops.append(["with_entities"] + [self._sql(c) for c in clauses])
+        return self
+
+    def all(self):
+        self.ops.append(["all"])
         return self
 
 

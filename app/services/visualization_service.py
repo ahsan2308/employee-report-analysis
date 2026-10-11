@@ -128,16 +128,16 @@ def _group_by_time_interval(query, interval: str, date_column_name: str):
         date_column_name: Name of the date column to use for grouping
         
     Returns:
-        Query with appropriate grouping applied
+        List of (period, average sentiment) rows
     """
     date_column = getattr(Report, date_column_name)
     unit = interval if interval in ('day', 'week', 'month', 'quarter') else 'year'
     period = func.date_trunc(unit, date_column)
     # Ordered by period, so the trend reads chronologically
-    return query.group_by(period).order_by(period).values(
+    return query.group_by(period).order_by(period).with_entities(
         period,
         func.avg(EmployeeAnalysis.sentiment_score)
-    )
+    ).all()
 
 def _build_trend_response(labels: List[str], data: List[float], dataset_label: str) -> Dict[str, Any]:
     """Build a standardized trend response object."""
