@@ -38,7 +38,7 @@
             "chunk_index": 0,
             "employee_id": 101,
             "report_date": "14/03/2025",
-            "report_date_ts": "<now>",
+            "report_date_ts": 1741910400.0,
             "report_id": "00000000-0000-4000-8000-0000000000a2",
             "text": "Short report."
           },
@@ -50,11 +50,21 @@
           ]
         }
       ]
+    },
+    {
+      "call": "vs.get_collection_info",
+      "collection_name": "employee_reports"
+    },
+    {
+      "call": "embed",
+      "input": "Test text",
+      "is_query": false
     }
   ],
   "outcome": {
-    "bad_date": true,
-    "empty_text": false
+    "bad_date": false,
+    "day_first_date": true,
+    "empty_text": true
   },
   "qdrant_mappings": [
     {

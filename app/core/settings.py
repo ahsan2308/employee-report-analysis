@@ -68,10 +68,11 @@ VECTOR_STORE_PATH = os.getenv("VECTOR_STORE_PATH", config.get("storage_path", ".
 VECTOR_STORE_MODE = os.getenv("VECTOR_STORE_MODE", config.get("mode", "local", section="vector_db"))
 
 COLLECTION_NAME = config.get("collection_name", "employee_reports", section="vector_db")
-VECTOR_BATCH_MODE = config.get("enabled", True, section="vector_db.batch_processing")
 VECTOR_EMBEDDING_BATCH_SIZE = config.get("embedding_batch_size", 256, section="vector_db.batch_processing")
 VECTOR_UPSERT_BATCH_SIZE = config.get("upsert_batch_size", 1000, section="vector_db.batch_processing")
 VECTOR_BATCH_MAX_RETRIES = config.get("max_attempts", 3, section="vector_db.batch_processing.retry")
+VECTOR_BATCH_RETRY_INITIAL_WAIT_MS = config.get("initial_wait_ms", 100, section="vector_db.batch_processing.retry")
+VECTOR_BATCH_RETRY_BACKOFF_FACTOR = config.get("backoff_factor", 2, section="vector_db.batch_processing.retry")
 
 # Index build parameters, applied when a collection is created (not to existing ones)
 VECTOR_HNSW_M = config.get("hnsw_m", 32, section="vector_db.index")

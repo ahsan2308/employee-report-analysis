@@ -66,25 +66,17 @@ def test_add_single_report_batch_mode(reports, ext, snapshot):
     _snap(snapshot, "vector__add_single_batch_mode", reports, ext, outcome)
 
 
-def test_add_single_report_legacy_mode(reports, ext, snapshot, monkeypatch):
-    monkeypatch.setattr(vss, "VECTOR_BATCH_MODE", False)
-    outcome = vss.add_report_to_vector_store(report_id=str(R1), employee_id=EMP_ID, report_date=date(2025, 3, 7),
-                                             report_text=LONG_TEXT)
-    _snap(snapshot, "vector__add_single_legacy_mode", reports, ext, outcome)
-
-
 def test_add_single_report_bad_date_and_empty_text(reports, ext, snapshot):
     outcomes = {
         "empty_text": vss.add_report_to_vector_store(report_id=str(R1), employee_id=EMP_ID,
                                                      report_date="2025-03-07", report_text=""),
-        # Unparseable date string -> report_date_ts falls back to datetime.now(); only its presence is snapshotted.
-        "bad_date": vss.add_report_to_vector_store(report_id=str(R2), employee_id=EMP_ID,
-                                                   report_date="14/03/2025", report_text="Short report."),
+        # Day-first dates are read as the rest of the app reads them (14/03/2025 is 14 March)
+        "day_first_date": vss.add_report_to_vector_store(report_id=str(R2), employee_id=EMP_ID,
+                                                         report_date="14/03/2025", report_text="Short report."),
+        # An unreadable date fails the call instead of being stored as "now"
+        "bad_date": vss.add_report_to_vector_store(report_id=str(R3), employee_id=EMP_ID,
+                                                   report_date="soon", report_text="Short report."),
     }
-    for call in ext.calls:
-        for point in call.get("points", []):
-            ts = point["payload"]["report_date_ts"]
-            point["payload"]["report_date_ts"] = "<now>" if ts > datetime(2026, 1, 1).timestamp() else ts
     _snap(snapshot, "vector__add_single_edge_cases", reports, ext, outcomes)
 
 
