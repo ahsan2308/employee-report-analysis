@@ -10,7 +10,7 @@ Design:
 - Uses DELETE+INSERT strategy for responses (cleaner than individual upserts)
 - Generates JSONB cache for form-level aggregations
 """
-from typing import Dict, Any, Tuple, List, Set
+from typing import Dict, Any, Tuple, List
 from datetime import datetime, timezone
 import pandas as pd
 from sqlalchemy.orm import Session
@@ -20,7 +20,6 @@ from pydantic import ValidationError
 from app.services.csv.processors.base import BaseCSVProcessor
 from app.services.csv.row_models import SupervisorFeedbackCSVRow
 from app.models.db_models import (
-    Employee, 
     SupervisorFeedbackForm, 
     SupervisorFeedbackMetricDefinition, 
     SupervisorFeedbackResponse
@@ -77,26 +76,6 @@ class SupervisorFeedbackProcessor(BaseCSVProcessor):
             return False
         return True
 
-    def _get_existing_employee_ids(self) -> Set[int]:
-        """
-        Get a set of existing employee IDs for validation.
-        
-        Caches results to avoid repeated queries within the same import.
-        Pattern copied from VisionDataProcessor.
-        
-        Returns:
-            Set of existing employee IDs
-        """
-        if self._existing_employee_ids is None:
-            self._existing_employee_ids = set()
-            
-            # Query all employee IDs
-            employee_ids = self.db.query(Employee.id).all()
-            self._existing_employee_ids = {emp_id[0] for emp_id in employee_ids}
-            
-            logger.info(f"Cached {len(self._existing_employee_ids)} existing employee IDs for supervisor feedback validation")
-                
-        return self._existing_employee_ids
      
     def process_row(self, row_data: Dict[str, Any], row_number: int) -> bool:
         """

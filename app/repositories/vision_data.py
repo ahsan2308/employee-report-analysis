@@ -1,6 +1,9 @@
 """Vision system activity data queries."""
-from typing import Dict, Any
+from typing import Dict, Any, List, Set, Tuple
 from datetime import date, timedelta
+from sqlalchemy import tuple_
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.orm import Session
 from app.db.database import get_database
 from app.models.vision_data_models import EmployeeVisionData
 from app.core.logger import logger
@@ -182,3 +185,56 @@ def get_employee_vision_data_for_quarter(employee_id: int, year: int, quarter: i
         import traceback
         logger.error(traceback.format_exc())
         return result
+
+
+def upsert_vision_record(session: Session, employee_id: int, from_date, to_date, main_entity: str,
+                         sub_entities, sub_entities_content) -> bool:
+    """Set the sub-entities of an employee's main entity for a period, creating the record if needed.
+
+    Returns True when created (not flushed).
+    """
+    existing = session.query(EmployeeVisionData).filter(
+        EmployeeVisionData.employee_id == employee_id,
+        EmployeeVisionData.from_date == from_date,
+        EmployeeVisionData.to_date == to_date,
+        EmployeeVisionData.main_entity == main_entity
+    ).first()
+    if existing:
+        existing.sub_entities = sub_entities
+        existing.sub_entities_content = sub_entities_content
+        return False
+    session.add(EmployeeVisionData(
+        employee_id=employee_id,
+        from_date=from_date,
+        to_date=to_date,
+        main_entity=main_entity,
+        sub_entities=sub_entities,
+        sub_entities_content=sub_entities_content
+    ))
+    return True
+
+
+def existing_vision_keys(session: Session, keys: List[Tuple]) -> Set[Tuple]:
+    """The (employee_id, from_date, to_date, main_entity) keys among keys that already have a record."""
+    columns = (
+        EmployeeVisionData.employee_id,
+        EmployeeVisionData.from_date,
+        EmployeeVisionData.to_date,
+        EmployeeVisionData.main_entity
+    )
+    rows = session.query(*columns).filter(tuple_(*columns).in_(keys)).all()
+    return {tuple(row) for row in rows}
+
+
+def bulk_upsert_vision_records(session: Session, vision_data: List[Dict[str, Any]]) -> None:
+    """Insert vision records, replacing the sub-entities of those that exist; flushed."""
+    stmt = pg_insert(EmployeeVisionData.__table__).values(vision_data)
+    stmt = stmt.on_conflict_do_update(
+        index_elements=['employee_id', 'from_date', 'to_date', 'main_entity'],
+        set_={
+            'sub_entities': stmt.excluded.sub_entities,
+            'sub_entities_content': stmt.excluded.sub_entities_content
+        }
+    )
+    session.execute(stmt)
+    session.flush()

@@ -10,11 +10,17 @@ from pydantic import ValidationError
 
 from app.services.csv.processors.base import BaseCSVProcessor
 from app.services.csv.row_models import CombinedCSVRow
-from app.models.db_models import Employee, Report
 from app.services.csv.error_handler import ImportErrorHandler
 from app.services.vector_store_service import add_report_to_vector_store
 from app.core.logger import logger
 from app.domain.reports import compose_report_text
+from app.repositories.employees import upsert_employee
+from app.repositories.reports import bulk_upsert_reports, existing_report_keys, find_report_for_date, upsert_report
+
+
+def _position(row: Dict[str, Any]) -> str:
+    """An employee's position as stored: designation and pay scale, e.g. "Analyst (17)"."""
+    return row['Designation'] + f" ({row['BPS']})"
 
 
 class EmployeeReportProcessor(BaseCSVProcessor):
@@ -42,25 +48,6 @@ class EmployeeReportProcessor(BaseCSVProcessor):
         self.reports_created = 0
         self.reports_updated = 0
         self.vector_store_failures = 0  # reports saved but not added to the vector store
-        self._existing_employee_ids = None
-    
-    def _get_existing_employee_id_map(self) -> Dict[str, int]:
-        """
-        Build a map of employee names to IDs for existing employees.
-        Used for efficient lookups during processing.
-        
-        Returns:
-            Dictionary mapping employee names to their IDs
-        """
-        if self._existing_employee_ids is None:
-            self._existing_employee_ids = {}
-            
-            # Query all employees to build the map
-            employees = self.db.query(Employee.id, Employee.name).all()
-            for emp_id, emp_name in employees:
-                self._existing_employee_ids[emp_name.lower()] = emp_id
-                
-        return self._existing_employee_ids
     
     def process_row(self, row_data: Dict[str, Any], row_number: int) -> bool:
         """
@@ -81,23 +68,12 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             # Process employee using the same approach as bulk processing
             emp_id = row_dict.get('Employee_ID')
             if emp_id:
-                # Update existing employee by ID
-                existing_emp = self.db.query(Employee).filter(Employee.id == emp_id).first()
-                if existing_emp:
-                    existing_emp.position = row_dict['Designation'] + f" ({row_dict['BPS']})"
-                    existing_emp.wing = row_dict['Office_Hierarchy']
-                    self.employees_updated += 1
-                else:
-                    # Employee ID provided but not found - create new employee with specified ID
-                    new_employee = Employee(
-                        id=emp_id,
-                        name=row_dict['Name'],
-                        position=row_dict['Designation'] + f" ({row_dict['BPS']})", 
-                        wing=row_dict['Office_Hierarchy']
-                    )
-                    self.db.add(new_employee)
-                    self.db.flush()
+                # Update the employee by ID, or create it with that ID
+                if upsert_employee(self.db, emp_id, row_dict['Name'],
+                                   _position(row_dict), row_dict['Office_Hierarchy']):
                     self.employees_created += 1
+                else:
+                    self.employees_updated += 1
             else:
                 # Missing employee ID - cannot process
                 self.error_handler.add_validation_error(
@@ -124,28 +100,13 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                     period=f"{start_date} to {report_date}"
                 )
                 
-                # Check for existing report
-                existing_report = self.db.query(Report).filter(
-                    Report.employee_id == emp_id,
-                    Report.report_date == report_date
-                ).first()
-                
-                if existing_report:
-                    # Update existing report
-                    existing_report.report_text = report_text
-                    self.reports_updated += 1
-                    report_id = existing_report.report_id
-                else:
-                    # Create new report
-                    new_report = Report(
-                        employee_id=emp_id,
-                        report_date=report_date,
-                        report_text=report_text
-                    )
-                    self.db.add(new_report)
-                    self.db.flush()  # Need to flush to get the report_id
+                # Update the report for this date, or create it
+                report, created = upsert_report(self.db, emp_id, report_date, report_text)
+                if created:
                     self.reports_created += 1
-                    report_id = new_report.report_id
+                else:
+                    self.reports_updated += 1
+                report_id = report.report_id
                 
                 # Add to vector store
                 try:
@@ -270,23 +231,11 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                     logger.warning(f"Row missing Employee_ID: {row['Name']}. Skipping employee update.")
                     continue
                 
-                # Update existing employee by ID
-                existing_emp = self.db.query(Employee).filter(Employee.id == emp_id).first()
-                if existing_emp:
-                    existing_emp.position = row['Designation'] + f" ({row['BPS']})"
-                    existing_emp.wing = row['Office_Hierarchy']
-                    self.employees_updated += 1
-                else:
-                    # Employee ID provided but not found - create new employee with specified ID
-                    new_employee = Employee(
-                        id=emp_id,
-                        name=row['Name'],
-                        position=row['Designation'] + f" ({row['BPS']})",
-                        wing=row['Office_Hierarchy']
-                    )
-                    self.db.add(new_employee)
-                    self.db.flush()
+                # Update the employee by ID, or create it with that ID
+                if upsert_employee(self.db, emp_id, row['Name'], _position(row), row['Office_Hierarchy']):
                     self.employees_created += 1
+                else:
+                    self.employees_updated += 1
             
             self.db.flush()
             return True
@@ -298,9 +247,6 @@ class EmployeeReportProcessor(BaseCSVProcessor):
     def _bulk_process_reports(self, validated_rows: List[Dict[str, Any]]) -> bool:
         """Process reports in bulk using SQLAlchemy core operations."""
         try:
-            from sqlalchemy.dialects.postgresql import insert as pg_insert
-            from sqlalchemy import tuple_
-            
             report_data = []
             # Track seen (employee_id, report_date) combinations to avoid duplicates
             seen_combinations = set()
@@ -355,16 +301,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             
             # Query for existing reports BEFORE upsert
             report_keys = [(r['employee_id'], r['report_date']) for r in report_data]
-            existing_reports = self.db.query(
-                Report.employee_id,
-                Report.report_date
-            ).filter(
-                tuple_(Report.employee_id, Report.report_date).in_(report_keys)
-            ).all()
-            
-            # Convert to set for fast lookup
-            existing_set = {(emp_id, rep_date) for emp_id, rep_date in existing_reports}
-            existing_count = len(existing_set)
+            existing_count = len(existing_report_keys(self.db, report_keys))
             new_count = len(report_data) - existing_count
             
             logger.info(f"Pre-upsert check: {existing_count} existing reports, {new_count} new reports")
@@ -375,17 +312,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             if original_count > deduplicated_count:
                 logger.info(f"Removed {original_count - deduplicated_count} duplicate reports from batch (kept latest occurrence)")
                 
-            stmt = pg_insert(Report.__table__).values(report_data)
-            stmt = stmt.on_conflict_do_update(
-                index_elements=['employee_id', 'report_date'],
-                set_={
-                    'report_text': stmt.excluded.report_text
-                }
-            )
-            
-            result = self.db.execute(stmt)
-            # Flush to get IDs for newly created reports
-            self.db.flush()
+            bulk_upsert_reports(self.db, report_data)
             
             # Accurately track created vs updated
             self.reports_created += new_count
@@ -396,10 +323,7 @@ class EmployeeReportProcessor(BaseCSVProcessor):
             
             # Query for all the reports we just inserted/updated
             for data in report_data:
-                report = self.db.query(Report).filter(
-                    Report.employee_id == data['employee_id'],
-                    Report.report_date == data['report_date']
-                ).first()
+                report = find_report_for_date(self.db, data['employee_id'], data['report_date'])
                 
                 if report:
                     reports_for_vector_store.append({

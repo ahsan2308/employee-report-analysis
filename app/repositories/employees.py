@@ -1,5 +1,5 @@
 """Employee queries."""
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Set
 from sqlalchemy.orm import Session
 from app.db.database import get_database
 from app.models.db_models import Employee
@@ -55,3 +55,22 @@ def add_employee(session: Session, employee: Employee) -> Employee:
         raise
     session.refresh(employee)
     return employee
+
+
+def all_employee_ids(session: Session) -> Set[int]:
+    return {employee_id for (employee_id,) in session.query(Employee.id).all()}
+
+
+def upsert_employee(session: Session, employee_id: int, name: str, position: str, wing: str) -> bool:
+    """Update an employee's position and wing, or create the employee with this id.
+
+    The name of an existing employee is kept. Returns True when the employee was created.
+    """
+    existing = get_employee(session, employee_id)
+    if existing:
+        existing.position = position
+        existing.wing = wing
+        return False
+    session.add(Employee(id=employee_id, name=name, position=position, wing=wing))
+    session.flush()
+    return True

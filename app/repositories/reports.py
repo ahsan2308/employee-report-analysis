@@ -1,5 +1,7 @@
 """Report queries."""
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Set, Tuple
+from sqlalchemy import tuple_
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 from uuid import UUID
 from datetime import date, timedelta
@@ -204,3 +206,45 @@ def add_report(session: Session, report: Report) -> Report:
     session.commit()
     session.refresh(report)
     return report
+
+
+def find_report_for_date(session: Session, employee_id: int, report_date) -> Optional[Report]:
+    """An employee's report for a report date (there is at most one)."""
+    return session.query(Report).filter(
+        Report.employee_id == employee_id,
+        Report.report_date == report_date
+    ).first()
+
+
+def upsert_report(session: Session, employee_id: int, report_date, report_text: str) -> Tuple[Report, bool]:
+    """Set the text of the employee's report for the date, creating it if needed (flushed, so it has an id).
+
+    Returns the report and whether it was created.
+    """
+    existing = find_report_for_date(session, employee_id, report_date)
+    if existing:
+        existing.report_text = report_text
+        return existing, False
+    report = Report(employee_id=employee_id, report_date=report_date, report_text=report_text)
+    session.add(report)
+    session.flush()
+    return report, True
+
+
+def existing_report_keys(session: Session, keys: List[Tuple[int, Any]]) -> Set[Tuple[int, Any]]:
+    """The (employee_id, report_date) pairs among keys that already have a report."""
+    rows = session.query(Report.employee_id, Report.report_date).filter(
+        tuple_(Report.employee_id, Report.report_date).in_(keys)
+    ).all()
+    return {(employee_id, report_date) for employee_id, report_date in rows}
+
+
+def bulk_upsert_reports(session: Session, report_data: List[Dict[str, Any]]) -> None:
+    """Insert reports, replacing the text of those that exist (one per employee and date); flushed."""
+    stmt = pg_insert(Report.__table__).values(report_data)
+    stmt = stmt.on_conflict_do_update(
+        index_elements=['employee_id', 'report_date'],
+        set_={'report_text': stmt.excluded.report_text}
+    )
+    session.execute(stmt)
+    session.flush()

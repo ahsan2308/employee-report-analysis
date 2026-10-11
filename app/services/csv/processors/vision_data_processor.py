@@ -3,7 +3,7 @@ Vision Data Processor
 
 Handles the transformation and processing of Vision system data CSV rows into database operations.
 """
-from typing import Dict, Any, Tuple, List, Set, Union
+from typing import Dict, Any, Tuple, List, Union
 import pandas as pd
 import json
 from sqlalchemy.orm import Session
@@ -11,10 +11,9 @@ from pydantic import ValidationError
 
 from app.services.csv.processors.base import BaseCSVProcessor
 from app.services.csv.row_models import VisionDataCSVRow
-from app.models.db_models import Employee
-from app.models.vision_data_models import EmployeeVisionData
 from app.services.csv.error_handler import ImportErrorHandler
 from app.core.logger import logger
+from app.repositories.vision_data import bulk_upsert_vision_records, existing_vision_keys, upsert_vision_record
 
 
 class VisionDataProcessor(BaseCSVProcessor):
@@ -52,21 +51,6 @@ class VisionDataProcessor(BaseCSVProcessor):
             return False
         return True
 
-    def _get_existing_employee_ids(self) -> Set[int]:
-        """
-        Get a set of existing employee IDs for validation.
-        
-        Returns:
-            Set of existing employee IDs
-        """
-        if self._existing_employee_ids is None:
-            self._existing_employee_ids = set()
-            
-            # Query all employee IDs
-            employee_ids = self.db.query(Employee.id).all()
-            self._existing_employee_ids = {emp_id[0] for emp_id in employee_ids}
-                
-        return self._existing_employee_ids
     
     def process_row(self, row_data: Dict[str, Any], row_number: int) -> bool:
         """
@@ -120,30 +104,19 @@ class VisionDataProcessor(BaseCSVProcessor):
             sub_entities_content = self._parse_sub_entities_content(sub_entities_content_json)
 
             # Check for existing record
-            existing_record = self.db.query(EmployeeVisionData).filter(
-                EmployeeVisionData.employee_id == employee_id,
-                EmployeeVisionData.from_date == row_dict.get('From_Date'),
-                EmployeeVisionData.to_date == row_dict.get('To_Date'),
-                EmployeeVisionData.main_entity == row_dict.get('Main_Entity')
-            ).first()
-
-            if existing_record:
-                # Update existing record
-                existing_record.sub_entities = sub_entities
-                existing_record.sub_entities_content = sub_entities_content
-                self.vision_records_updated += 1
-            else:
-                # Create new record
-                new_record = EmployeeVisionData(
-                    employee_id=employee_id,
-                    from_date=row_dict.get('From_Date'),
-                    to_date=row_dict.get('To_Date'),
-                    main_entity=row_dict.get('Main_Entity'),
-                    sub_entities=sub_entities,
-                    sub_entities_content=sub_entities_content
-                )
-                self.db.add(new_record)
+            created = upsert_vision_record(
+                self.db,
+                employee_id=employee_id,
+                from_date=row_dict.get('From_Date'),
+                to_date=row_dict.get('To_Date'),
+                main_entity=row_dict.get('Main_Entity'),
+                sub_entities=sub_entities,
+                sub_entities_content=sub_entities_content
+            )
+            if created:
                 self.vision_records_created += 1
+            else:
+                self.vision_records_updated += 1
 
             self.db.commit()
             self.successful_rows += 1
@@ -291,8 +264,6 @@ class VisionDataProcessor(BaseCSVProcessor):
     def _bulk_process_vision_data(self, validated_rows: List[Dict[str, Any]]) -> bool:
         """Process vision data records in bulk using SQLAlchemy core operations."""
         try:
-            from sqlalchemy.dialects.postgresql import insert as pg_insert
-            from sqlalchemy import tuple_
             
             # Prepare data for bulk insert
             vision_data = []
@@ -332,42 +303,13 @@ class VisionDataProcessor(BaseCSVProcessor):
                 (v['employee_id'], v['from_date'], v['to_date'], v['main_entity']) 
                 for v in vision_data
             ]
-            existing_vision = self.db.query(
-                EmployeeVisionData.employee_id,
-                EmployeeVisionData.from_date,
-                EmployeeVisionData.to_date,
-                EmployeeVisionData.main_entity
-            ).filter(
-                tuple_(
-                    EmployeeVisionData.employee_id,
-                    EmployeeVisionData.from_date,
-                    EmployeeVisionData.to_date,
-                    EmployeeVisionData.main_entity
-                ).in_(vision_keys)
-            ).all()
-            
-            # Convert to set for fast lookup
-            existing_set = {
-                (emp_id, from_date, to_date, main_entity) 
-                for emp_id, from_date, to_date, main_entity in existing_vision
-            }
-            existing_count = len(existing_set)
+            existing_count = len(existing_vision_keys(self.db, vision_keys))
             new_count = len(vision_data) - existing_count
             
             logger.info(f"Pre-upsert check: {existing_count} existing vision records, {new_count} new vision records")
             
             # Perform bulk upsert
-            stmt = pg_insert(EmployeeVisionData.__table__).values(vision_data)
-            stmt = stmt.on_conflict_do_update(
-                index_elements=['employee_id', 'from_date', 'to_date', 'main_entity'],
-                set_={
-                    'sub_entities': stmt.excluded.sub_entities,
-                    'sub_entities_content': stmt.excluded.sub_entities_content
-                }
-            )
-            
-            result = self.db.execute(stmt)
-            self.db.flush()
+            bulk_upsert_vision_records(self.db, vision_data)
             
             # Accurately track created vs updated
             self.vision_records_created += new_count
