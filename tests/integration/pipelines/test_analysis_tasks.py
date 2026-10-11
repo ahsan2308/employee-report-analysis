@@ -258,17 +258,17 @@ def test_quarterly_analysis_wrong_task_type(db_session, ext, snapshot):
 
 @pytest.mark.parametrize("kind, task, task_type, fields, first_lookup", [
     ("weekly", analyze_report_task, TaskType.REPORT_ANALYSIS,
-     {"report_id": REPORT_IDS[CURRENT_REPORT_DATE], "employee_id": EMP_ID}, "get_recent_employee_reports"),
+     {"report_id": REPORT_IDS[CURRENT_REPORT_DATE], "employee_id": EMP_ID}, "app.services.analysis.runner.get_recent_employee_reports"),
     ("monthly", analyze_monthly_reports_task, TaskType.MONTHLY_ANALYSIS,
-     {"employee_id": EMP_ID, "year": 2025, "month": 3}, "get_monthly_analysis_by_params"),
+     {"employee_id": EMP_ID, "year": 2025, "month": 3}, "app.tasks.analysis_tasks.get_monthly_analysis_by_params"),
     ("quarterly", analyze_quarterly_reports_task, TaskType.QUARTERLY_ANALYSIS,
-     {"employee_id": EMP_ID, "year": 2025, "quarter": 1}, "get_quarterly_analysis_by_params"),
+     {"employee_id": EMP_ID, "year": 2025, "quarter": 1}, "app.tasks.analysis_tasks.get_quarterly_analysis_by_params"),
 ])
 def test_soft_time_limit_marks_task_failed(db_session, ext, kind, task, task_type, fields, first_lookup):
     """B11: the soft limit fires inside the task, which records the failure instead of staying RUNNING."""
     seed_analysis_world(db_session)
     task_id = add_task(db_session, kind, task_type, **fields)
-    with mock.patch(f"app.tasks.analysis_tasks.{first_lookup}", side_effect=SoftTimeLimitExceeded()):
+    with mock.patch(first_lookup, side_effect=SoftTimeLimitExceeded()):
         result = task.apply(args=[str(task_id)], task_id=f"celery-{kind}")
     assert result.state == "FAILURE"
     db_session.expire_all()

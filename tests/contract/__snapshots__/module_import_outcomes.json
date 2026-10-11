@@ -63,6 +63,7 @@
   "app.services.analysis": "ok",
   "app.services.analysis.jd_formatting": "ok",
   "app.services.analysis.jd_mapping": "ok",
+  "app.services.analysis.runner": "ok",
   "app.services.analysis.vision_formatting": "ok",
   "app.services.csv": "ok",
   "app.services.csv.csv_reader": "ok",
