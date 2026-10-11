@@ -17,7 +17,7 @@
         "row_number": 3
       },
       {
-        "category": "validation",
+        "category": "missing_employee",
         "error_message": "Employee ID 555 does not exist in the database. Please ensure the employee is created before importing their job description.",
         "exception": null,
         "field_name": "Employee_ID",
@@ -84,7 +84,7 @@
   "vision_unknown_employee": {
     "errors": [
       {
-        "category": "validation",
+        "category": "missing_employee",
         "error_message": "Employee ID 999 does not exist in the database. Please ensure the employee is created before importing Vision data.",
         "exception": null,
         "field_name": "Employee_ID",

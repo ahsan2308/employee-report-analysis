@@ -100,6 +100,9 @@ SQLSERVER_TABLE_SUPERVISOR_FEEDBACK = os.getenv("SQLSERVER_TABLE_SUPERVISOR_FEED
 
 SYNC_BATCH_SIZE = 1000  # rows read from SQL Server per batch
 SYNC_STALE_AFTER_MINUTES = 60  # a sync PENDING/RUNNING longer than this is marked failed
+# A synced row for an employee not in the database yet is read again by later
+# syncs, until its source timestamp is this many days old
+SYNC_MISSING_EMPLOYEE_RETRY_DAYS = int(os.getenv("SYNC_MISSING_EMPLOYEE_RETRY_DAYS", "14"))
 
 # The weekly incremental sync run by Celery beat (crontab fields; day 0 is Sunday)
 SYNC_SCHEDULE_DAY_OF_WEEK = 1
