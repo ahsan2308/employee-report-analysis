@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, Dict, Any
 from datetime import datetime
 from uuid import UUID
@@ -27,8 +27,7 @@ class TaskStatusResponse(BaseModel):
     duration: Optional[float] = None  
     is_complete: bool
     
-    class Config:
-        from_attributes = True  
+    model_config = ConfigDict(from_attributes=True)
 
 class TaskResultResponse(BaseModel):
     """Schema for returning task results"""
@@ -37,5 +36,4 @@ class TaskResultResponse(BaseModel):
     result: Optional[Dict[str, Any]] = None
     error_message: Optional[str] = None
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

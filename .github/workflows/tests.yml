@@ -24,6 +24,21 @@ jobs:
       - name: Run tests (integration tests skip without a database)
         run: python -m pytest
 
+  audit:
+    name: Dependency vulnerability audit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pip-audit
+        run: pip install pip-audit==2.10.1
+      # Every package is pinned, so audit the pins as written instead of
+      # resolving them again; any known vulnerability fails the job.
+      - name: Audit pinned requirements
+        run: pip-audit -r requirements.txt -r requirements-dev.txt --no-deps --disable-pip --progress-spinner off
+
   integration:
     name: Integration tests (Postgres)
     runs-on: ubuntu-24.04

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, Dict, Any, List
 from datetime import date
 
@@ -44,8 +44,7 @@ class AnalysisResponse(BaseModel):
     credibility_assessment: Optional[CredibilityAssessment] = None
     performance_assessment: Optional[PerformanceAssessment] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # New schemas for monthly analysis
 class MonthlyAchievement(BaseModel):
@@ -128,8 +127,7 @@ class MonthlyAnalysisResponse(BaseModel):
     # Summary
     monthly_summary: str
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class MonthlyAnalysisSummary(BaseModel):
     """Schema for summarized monthly analysis in list responses."""
@@ -146,8 +144,7 @@ class MonthlyAnalysisSummary(BaseModel):
     challenge_count: int
     monthly_summary: str
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # Schemas for quarterly analysis
 class Recommendation(BaseModel):
@@ -308,5 +305,4 @@ class QuarterlyAnalysisResponse(BaseModel):
     # Summary
     quarterly_summary: str
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

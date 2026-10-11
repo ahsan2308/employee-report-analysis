@@ -6,7 +6,7 @@ generation with LLM services. Import these models when you need to
 define a structured output format for LLM responses.
 """
 from typing import List, Optional, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 # More detailed models commented out for future use
 class Achievement(BaseModel):
@@ -28,8 +28,7 @@ class Achievement(BaseModel):
         description="If vision data confirms this achievement, set to 'supported'. If vision data contradicts it, set to 'contradicted'. If NO vision data appears in your prompt or it does not exist for the specific achievement, set the key to 'none'"
     )
 
-    class Config:
-        from_attributes = True  
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Challenge(BaseModel):
@@ -42,8 +41,7 @@ class Challenge(BaseModel):
         description="How severe the challenge is (low, medium, high)"
     )
 
-    class Config:
-        from_attributes = True 
+    model_config = ConfigDict(from_attributes=True)
 
 class CredibilityAssessment(BaseModel):
     # Model representing a credibility assessment for an employee report
@@ -60,8 +58,7 @@ class CredibilityAssessment(BaseModel):
         description="How well the various sections of the report align with each other"
     )
 
-    class Config:
-        from_attributes = True 
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PerformanceAssessment(BaseModel):
@@ -79,8 +76,7 @@ class PerformanceAssessment(BaseModel):
         description="Specific areas where performance could be enhanced"
     )
 
-    class Config:
-        from_attributes = True 
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EmployeeAnalysis(BaseModel):
@@ -113,8 +109,7 @@ class EmployeeAnalysis(BaseModel):
         description="Assessment of the employee's overall performance based on the report"
     )
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # Models for Monthly Analysis
 class MonthlyAchievement(BaseModel):
@@ -257,8 +252,7 @@ class MonthlyAnalysis(BaseModel):
         description="Comprehensive summary of the employee's monthly performance"
     )
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # Models for Quarterly Analysis
 class KeyInitiative(BaseModel):
@@ -533,8 +527,7 @@ class QuarterlyAnalysis(BaseModel):
         description="Executive summary of quarterly performance"
     )
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 
