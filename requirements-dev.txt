@@ -3,3 +3,4 @@
 pytest==9.0.3
 pytest-timeout==2.4.0
 ruff==0.8.4
+httpx2==2.13.1  # the HTTP client Starlette's TestClient uses (plain httpx is deprecated there)
