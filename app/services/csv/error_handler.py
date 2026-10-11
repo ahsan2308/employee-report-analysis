@@ -3,6 +3,7 @@ Error Handler Component
 """
 from typing import List, Dict, Any, Optional, Tuple
 from enum import Enum
+import numbers
 from dataclasses import dataclass
 import json
 import traceback
@@ -65,7 +66,8 @@ class ImportErrorHandler:
             exception: Original exception, if applicable
         """
         error = ErrorInfo(
-            row_number=row_number,
+            # A pandas index can yield numpy integers, which JSON cannot store
+            row_number=int(row_number) if isinstance(row_number, numbers.Integral) else row_number,
             field_name=field_name,
             error_message=error_message,
             row_data=row_data,

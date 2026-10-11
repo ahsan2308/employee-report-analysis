@@ -14,7 +14,7 @@ from app.integrations.sqlserver import connector as connector_module
 from app.services import sync_service as sync_module
 from app.services.csv.error_handler import ImportErrorHandler
 from app.services.sync_service import SyncService, create_sync_service
-from tests.golden.imports_sync.helpers import df_snapshot, handler_errors, outcome, tag
+from tests.golden.imports_sync.helpers import df_snapshot, handler_errors, outcome
 
 
 def _service(tables=None, ts_columns=None, threshold=10.0):
@@ -98,10 +98,10 @@ SF_ROW = {
 }
 
 BULK = {
-    "employee": ("_process_employee_report_batches_bulk", EMP_ROW, "LastModifiedDate"),
-    "vision": ("_process_vision_data_batches_bulk", VISION_ROW, "ModifiedDate"),
-    "job_description": ("_process_job_description_batches_bulk", JD_ROW, "LastModifiedDate"),
-    "supervisor": ("_process_supervisor_feedback_batches_bulk", SF_ROW, "LastModifiedDate"),
+    "employee": (sync_module._EMPLOYEE_REPORTS.transformer, EMP_ROW, "LastModifiedDate"),
+    "vision": (sync_module._VISION_DATA.transformer, VISION_ROW, "ModifiedDate"),
+    "job_description": (sync_module._JOB_DESCRIPTIONS.transformer, JD_ROW, "LastModifiedDate"),
+    "supervisor": (sync_module._SUPERVISOR_FEEDBACK.transformer, SF_ROW, "LastModifiedDate"),
 }
 
 
@@ -118,13 +118,9 @@ class RecordingRowProcessor:
         return max(len(df) - 1, 0), len(df)
 
 
-def _ts_attrs(svc):
-    return {k: tag(v) for k, v in sorted(vars(svc).items()) if k.startswith("_max_modified_date")}
-
-
 @pytest.mark.parametrize("kind", sorted(BULK))
 def test_bulk_batch_processing(kind, snapshot):
-    method, row, ts_col = BULK[kind]
+    transformer, row, ts_col = BULK[kind]
     later = dict(row, **{ts_col: datetime(2025, 1, 1, 0, 0)})
     sparse = {k: (None if k not in ("Employee_ID", ts_col) else v) for k, v in row.items()}
     sparse[ts_col] = None
@@ -139,17 +135,18 @@ def test_bulk_batch_processing(kind, snapshot):
     svc = _service()
     handler = ImportErrorHandler()
     rp = RecordingRowProcessor(fail_on_call=4)
-    result = outcome(lambda: getattr(svc, method)(iter(batches), "sync-1", rp, handler, ts_col))
+    result = outcome(lambda: svc._process_batches(iter(batches), transformer, rp, handler, ts_col))
     snapshot(f"sync_bulk_batches__{kind}", {
-        "result": result, "frames": rp.frames, "errors": handler_errors(handler), "max_modified": _ts_attrs(svc)})
+        "result": result, "frames": rp.frames, "errors": handler_errors(handler)})
 
 
 def test_bulk_batch_no_timestamps_and_abort(snapshot):
     svc = _service()
     rp = RecordingRowProcessor()
-    no_ts = outcome(lambda: svc._process_employee_report_batches_bulk(
-        [[dict(EMP_ROW, LastModifiedDate=None)]], "s", rp, ImportErrorHandler(), "LastModifiedDate"))
-    out = {"no_timestamps": {"result": no_ts, "max_modified": _ts_attrs(svc)}}
+    no_ts = outcome(lambda: svc._process_batches(
+        [[dict(EMP_ROW, LastModifiedDate=None)]], sync_module._EMPLOYEE_REPORTS.transformer, rp,
+        ImportErrorHandler(), "LastModifiedDate"))
+    out = {"no_timestamps": {"result": no_ts}}
 
     class ErroringProcessor:
         def __init__(self, handler):
@@ -165,10 +162,67 @@ def test_bulk_batch_no_timestamps_and_abort(snapshot):
         svc = _service(threshold=10.0)
         handler = ImportErrorHandler()
         batches = [[dict(VISION_ROW) for _ in range(n_rows)]]
-        res = outcome(lambda: svc._process_vision_data_batches_bulk(
-            batches, "s", ErroringProcessor(handler), handler, "ModifiedDate"))
-        out[label] = {"result": res, "error_count": handler.get_error_count(), "max_modified": _ts_attrs(svc)}
+        res = outcome(lambda: svc._process_batches(
+            batches, sync_module._VISION_DATA.transformer, ErroringProcessor(handler), handler, "ModifiedDate"))
+        out[label] = {"result": res, "error_count": handler.get_error_count()}
     snapshot("sync_bulk_no_ts_and_abort", out)
+
+
+class OutcomeProcessor:
+    """Saves each frame, except that it records the given error for rows whose Employee_ID is listed."""
+
+    def __init__(self, handler, failures):
+        self.handler = handler
+        self.failures = failures  # Employee_ID -> "validation" | "database" | "silent"
+
+    def process_dataframe(self, df, start_row_number=1, pre_cleaned=True):
+        saved = 0
+        for offset, (_, row) in enumerate(df.iterrows()):
+            kind = self.failures.get(row["Employee_ID"])
+            if kind == "validation":
+                self.handler.add_validation_error(start_row_number + offset, "bad value")
+            elif kind == "database":
+                self.handler.add_database_error(start_row_number + offset, "write failed")
+            elif kind is None:
+                saved += 1
+        return saved, len(df)
+
+
+def _vision_row(employee_id, day):
+    return dict(VISION_ROW, Employee_ID=employee_id, ModifiedDate=datetime(2025, 1, day, 12, 0))
+
+
+@pytest.mark.parametrize("failures, expected", [
+    # Every row saved: just past the newest row
+    ({}, datetime(2025, 1, 4, 12, 0, 0, 1000)),
+    # Invalid data does not hold the sync back: correcting it at the source gives it a newer timestamp
+    ({2: "validation"}, datetime(2025, 1, 4, 12, 0, 0, 1000)),
+    # A failed write in the second batch: start again from that batch's oldest row
+    ({3: "database"}, datetime(2025, 1, 3, 12, 0)),
+    # Rows the processor neither saved nor reported count as unsaved too
+    ({4: "silent"}, datetime(2025, 1, 3, 12, 0)),
+    # Unsaved rows in both batches: the oldest of them
+    ({1: "database", 4: "database"}, datetime(2025, 1, 1, 12, 0)),
+])
+def test_next_sync_from(failures, expected):
+    svc = _service(threshold=100.0)
+    handler = ImportErrorHandler()
+    batches = [[_vision_row(1, 1), _vision_row(2, 2)], [_vision_row(4, 4), _vision_row(3, 3)]]
+    _, total, next_sync_from = svc._process_batches(
+        batches, sync_module._VISION_DATA.transformer, OutcomeProcessor(handler, failures), handler, "ModifiedDate")
+    assert total == 4
+    assert next_sync_from == expected
+
+
+def test_row_numbers_follow_source_order():
+    svc = _service(threshold=100.0)
+    handler = ImportErrorHandler()
+    rp = RecordingRowProcessor()
+    # The second row of the first batch fails to transform; the rows after it keep their own numbers
+    batches = [[EMP_ROW, "not-a-dict", EMP_ROW], ["not-a-dict", EMP_ROW]]
+    svc._process_batches(batches, sync_module._EMPLOYEE_REPORTS.transformer, rp, handler, "LastModifiedDate")
+    assert [e.row_number for e in handler.errors] == [2, 4]
+    assert [f["start_row_number"] for f in rp.frames] == [1, 5]
 
 
 def test_create_sync_service(monkeypatch, snapshot):

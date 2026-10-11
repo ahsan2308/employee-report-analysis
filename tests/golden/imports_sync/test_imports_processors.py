@@ -373,3 +373,44 @@ def test_row_processor_type_error_fanout(snapshot):
         "unbound_local_error": {"result": res2, "errors": handler_errors(rp2.error_handler)},
         "no_input": outcome(lambda: RowProcessor(_db(), ImportErrorHandler())._get_processor()),
     })
+
+
+@pytest.mark.parametrize("processor_cls, bulk_method", [
+    (VisionDataProcessor, "_bulk_process_vision_data"),
+    (JobDescriptionProcessor, "_bulk_process_job_descriptions"),
+])
+def test_failed_bulk_write_records_each_unsaved_row(processor_cls, bulk_method, monkeypatch):
+    rows = {
+        VisionDataProcessor: [
+            {"Employee_ID": "101", "From_Date": "2024-04-01", "To_Date": "2024-04-30", "Main_Entity": "Persons",
+             "Sub_Entities": "Persons:1", "Sub_Entities_Content": ""},
+            {"Employee_ID": "102", "From_Date": "2024-04-01", "To_Date": "2024-04-30", "Main_Entity": "Persons",
+             "Sub_Entities": "Persons:1", "Sub_Entities_Content": ""},
+        ],
+        JobDescriptionProcessor: [
+            {"Employee_ID": "101", "JD_ID": "1001", "Job_Description": "Leads the analysis team, prepares monthly performance summaries and coordinates.",
+             "Assigned_Date": "2024-01-15", "Is_Current": "1", "End_Date": None},
+            {"Employee_ID": "102", "JD_ID": "1002", "Job_Description": "Prepares monthly performance summaries and coordinates with the regional wings.",
+             "Assigned_Date": "2024-01-15", "Is_Current": "1", "End_Date": None},
+        ],
+    }[processor_cls]
+    handler = ImportErrorHandler()
+    proc = processor_cls(_db(), handler)
+    monkeypatch.setattr(proc, bulk_method, lambda *a, **kw: False)
+
+    assert proc.process_dataframe(_rows_df(rows), start_row_number=3) == (0, 2)
+    assert [(e.row_number, e.category.value) for e in handler.errors] == [(3, "database"), (4, "database")]
+
+
+def test_failed_employee_report_write_records_each_unsaved_row(monkeypatch):
+    handler = ImportErrorHandler()
+    proc = EmployeeReportProcessor(_db(), handler)
+    monkeypatch.setattr(proc, "_bulk_process_reports", lambda rows: False)
+    df = _read_df("employee_reports_bom.csv")
+
+    assert proc.process_dataframe(df, start_row_number=1) == (0, len(df))
+    unsaved = {e.row_number for e in handler.errors if e.category.value == "database"}
+    invalid = {e.row_number for e in handler.errors if e.category.value == "validation"}
+    # Every row is accounted for: rejected as invalid, or reported as not saved
+    assert unsaved and unsaved.isdisjoint(invalid)
+    assert unsaved | invalid == set(range(1, len(df) + 1))

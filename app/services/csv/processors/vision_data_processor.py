@@ -222,6 +222,8 @@ class VisionDataProcessor(BaseCSVProcessor):
             return 0, total_rows
         
         # Check employee existence BEFORE bulk processing
+        # Every validated row counts as unsaved until the employee check narrows the list
+        valid_rows = validated_rows
         try:
             # Get set of existing employee IDs
             existing_employees = self._get_existing_employee_ids()
@@ -253,12 +255,15 @@ class VisionDataProcessor(BaseCSVProcessor):
             if bulk_success:
                 successful_rows = len(valid_rows)
                 self.successful_rows += successful_rows
+            else:
+                self._record_unsaved_rows(valid_rows)
             
             return successful_rows, total_rows
             
         except Exception as e:
             logger.error(f"Bulk Vision data processing failed: {str(e)}")
             self.db.rollback()
+            self._record_unsaved_rows(valid_rows, e)
             return 0, total_rows
 
     def _bulk_process_vision_data(self, validated_rows: List[Dict[str, Any]]) -> bool:

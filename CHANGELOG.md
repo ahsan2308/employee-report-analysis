@@ -6,6 +6,21 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased
 
+### Fixed: rows a sync could not save are read again
+
+A failed database write in an import or sync batch (or a failed vector store
+write for reports) left its rows unsaved without reporting them: the processors
+returned "0 saved" with no error, so a sync could finish as `completed`. Each
+unsaved row is now reported as a database error, and the sync ends as `partial`
+or `failed`. The next incremental sync starts again from the oldest of those
+rows, instead of from just after the newest row read, so they are retried
+rather than skipped for good. Rows rejected as invalid data still let the sync
+move on: correcting one at the source gives it a newer timestamp.
+
+Sync row numbers now follow the order SQL Server returned the rows. A row that
+cannot be transformed is reported as a validation error under its own number
+and counts toward the error threshold.
+
 ### Changed: SQL Server source tables are settings
 
 Each sync reads the table named by its own setting:
