@@ -7,12 +7,12 @@ import os
 import tempfile
 from typing import Dict, Any, Optional
 from celery import shared_task, Task
-from datetime import datetime
 
 from app.core.logger import logger
+from app.repositories import import_jobs
 from app.worker.celery_app import celery_app  # noqa: F401  (Celery app must exist before @shared_task binds)
 from app.db.database import get_database
-from app.models.import_models import CSVImportJob, ImportStatus, ImportError
+from app.models.import_models import ImportStatus
 from app.services.csv_import_service import get_csv_import_service
 from app.schemas.csv_import_schema import CSVImportOptions
 
@@ -44,30 +44,14 @@ class ImportTask(Task):
             return
             
         try:
-            # Get job directly from database to ensure we have latest state
-            job = self.db.query(CSVImportJob).filter(CSVImportJob.job_id == job_id).first()
+            job = import_jobs.get_job(self.db, job_id)
             if not job:
                 logger.error(f"Could not find import job {job_id} when handling failure")
                 return
                 
-            # Update job status if not already failed
+            # Record the failure (and why) unless the import already did
             if job.status != ImportStatus.FAILED.value:
-                job.status = ImportStatus.FAILED.value
-                
-                # Check for existing errors in database first
-                actual_error_count = self.db.query(ImportError).filter(ImportError.job_id == job_id).count()
-                if actual_error_count > 0:
-                    # Use the actual count of row-level errors
-                    job.error_count = actual_error_count
-                    logger.info(f"Job {job_id} failed with {actual_error_count} existing row-level errors")
-                else:
-                    # No row-level errors, so this is a task-level failure
-                    job.error_count = job.error_count + 1 if job.error_count else 1
-                    logger.info(f"Job {job_id} failed at task level, setting error_count to {job.error_count}")
-                
-                # Use datetime object instead of timestamp
-                job.completed_at = datetime.now()
-                self.db.commit()
+                self.import_service.mark_job_failed(job_id, f"Import task failed: {exc}")
                 logger.info(f"Updated job {job_id} status to FAILED due to task error")
                 
         except Exception as e:

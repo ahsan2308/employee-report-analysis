@@ -113,7 +113,7 @@ def test_mark_sync_failed_and_save_errors(tracker, db_session, database, snapsho
 
 
 def test_check_and_clear_stale_syncs(db_session, database, snapshot):
-    from app.api.sync_routes import _check_and_clear_stale_syncs
+    from app.services.sync.sync_tracker import clear_stale_syncs
 
     s = db_session
     now = datetime.now()
@@ -125,11 +125,11 @@ def test_check_and_clear_stale_syncs(db_session, database, snapshot):
     make_sync(s, 5, rt, "partial", now - timedelta(minutes=300))
     make_sync(s, 6, vt, "running", now - timedelta(minutes=300))
     s.commit()
-    _check_and_clear_stale_syncs(s, rt, timeout_minutes=60)
+    clear_stale_syncs(s, rt, timeout_minutes=60)
     after_60 = [(r["sync_id"], r["status"], r["error_message"], r["completed_at"] is not None)
                 for r in dump_rows(database, SyncHistory)]
-    _check_and_clear_stale_syncs(s, vt, timeout_minutes=5)
-    _check_and_clear_stale_syncs(s, rt, timeout_minutes=0)
+    clear_stale_syncs(s, vt, timeout_minutes=5)
+    clear_stale_syncs(s, rt, timeout_minutes=0)
     final = [(r["sync_id"], r["status"], r["error_message"], r["completed_at"] is not None)
              for r in dump_rows(database, SyncHistory)]
     snapshot("sync_stale_sweep", normalize({"after_60": after_60, "final": final}))

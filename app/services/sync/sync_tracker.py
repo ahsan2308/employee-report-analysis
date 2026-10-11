@@ -5,28 +5,29 @@ Manages SyncHistory database records for tracking sync operations.
 Provides CRUD operations for sync job lifecycle management.
 """
 from typing import Optional, Dict, Any, List
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 import json
 import math
 
 from app.models.sync_models import SyncHistory, SyncType, SyncStatus
+from app.core import settings
 from app.core.logger import logger
+from app.repositories import sync_history
 
 
-def last_successful_sync(session: Session, sync_type: SyncType) -> Optional[SyncHistory]:
-    """
-    The most recent successful sync of a type: the row incremental syncs start from.
+def clear_stale_syncs(session: Session, sync_type: str, timeout_minutes: int = settings.SYNC_STALE_AFTER_MINUTES) -> None:
+    """Mark FAILED the syncs of a type that have been PENDING/RUNNING longer than the timeout."""
+    cutoff_time = datetime.now() - timedelta(minutes=timeout_minutes)
+    stale_syncs = sync_history.find_stale_syncs(session, sync_type, cutoff_time)
     
-    Partial syncs count: they still synced some records, so their timestamp is used.
-    """
-    return session.query(SyncHistory).filter(
-        SyncHistory.sync_type == sync_type.value,
-        SyncHistory.status.in_([SyncStatus.COMPLETED.value, SyncStatus.PARTIAL.value]),
-        SyncHistory.last_sync_timestamp.isnot(None)
-    ).order_by(
-        SyncHistory.last_sync_timestamp.desc()
-    ).first()
+    for sync in stale_syncs:
+        logger.warning(f"Clearing stale sync {sync.sync_id} (started at {sync.started_at})")
+        sync_history.mark_failed(sync, f"Sync timed out after {timeout_minutes} minutes")
+    
+    if stale_syncs:
+        session.commit()
+        logger.info(f"Cleared {len(stale_syncs)} stale {sync_type} syncs")
 
 
 class SyncTracker:
@@ -73,9 +74,7 @@ class SyncTracker:
             sync_options={"is_full_sync": is_full_sync}
         )
         
-        session.add(sync_job)
-        session.commit()
-        session.refresh(sync_job)
+        sync_history.add_sync(session, sync_job)
         
         logger.info(f"Created sync job {sync_job.sync_id} (type: {sync_type.value}, full_sync: {is_full_sync})")
         return sync_job
@@ -91,7 +90,7 @@ class SyncTracker:
         Returns:
             Datetime of last successful sync, or None if no successful sync exists
         """
-        last_sync = last_successful_sync(session, sync_type)
+        last_sync = sync_history.last_successful_sync(session, sync_type)
         
         if last_sync:
             logger.info(f"Last successful {sync_type.value} sync: {last_sync.last_sync_timestamp}")
@@ -119,9 +118,7 @@ class SyncTracker:
             metrics: Optional metrics dictionary to store
             session: Database session (REQUIRED)
         """
-        sync_job = session.query(SyncHistory).filter(
-            SyncHistory.sync_id == sync_id
-        ).first()
+        sync_job = sync_history.get_sync(session, sync_id)
         
         if not sync_job:
             logger.error(f"Sync job {sync_id} not found")
@@ -171,17 +168,13 @@ class SyncTracker:
             error_message: Error message to store
             session: Database session (REQUIRED)
         """
-        sync_job = session.query(SyncHistory).filter(
-            SyncHistory.sync_id == sync_id
-        ).first()
+        sync_job = sync_history.get_sync(session, sync_id)
         
         if not sync_job:
             logger.error(f"Sync job {sync_id} not found")
             return
         
-        sync_job.status = SyncStatus.FAILED.value
-        sync_job.error_message = error_message
-        sync_job.completed_at = datetime.now()
+        sync_history.mark_failed(sync_job, error_message)
         
         # Explicitly mark the object as dirty to ensure SQLAlchemy tracks changes
         session.add(sync_job)
@@ -200,9 +193,7 @@ class SyncTracker:
             errors: List of error dictionaries with row_number, error_message, etc.
             session: Database session (REQUIRED)
         """
-        sync_job = session.query(SyncHistory).filter(
-            SyncHistory.sync_id == sync_id
-        ).first()
+        sync_job = sync_history.get_sync(session, sync_id)
         
         if not sync_job:
             logger.error(f"Sync job {sync_id} not found")

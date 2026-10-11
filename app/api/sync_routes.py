@@ -4,15 +4,14 @@ Sync API Routes
 Endpoints for triggering and monitoring SQL Server to PostgreSQL synchronization.
 """
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
-from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import Optional
-from datetime import datetime, timedelta
+from datetime import datetime
 from uuid import UUID
 import time
 
 from app.api.deps import get_db
-from app.models.sync_models import SyncHistory, SyncStatus, SyncType
+from app.models.sync_models import SyncStatus, SyncType
 from app.schemas.sync_schema import (
     SyncTriggerResponse,
     FullSyncTriggerResponse,
@@ -27,41 +26,14 @@ from app.schemas.sync_schema import (
     SyncProgressMetrics
 )
 from app.integrations.sqlserver.connector import create_sqlserver_connector
-from app.services.sync.sync_tracker import last_successful_sync
+from app.repositories import sync_history
+from app.services.sync.sync_tracker import clear_stale_syncs
 from app.core import settings
 from app.core.logger import logger
 from app.worker.celery_app import celery_app 
 
 # Initialize Router
 router = APIRouter(prefix="/sync", tags=["SQL Server Sync"])
-
-
-def _check_and_clear_stale_syncs(db: Session, sync_type: str, timeout_minutes: int = settings.SYNC_STALE_AFTER_MINUTES):
-    """
-    Check for stale syncs and mark them as failed if they've been running too long.
-    
-    Args:
-        db: Database session
-        sync_type: Type of sync to check
-        timeout_minutes: Maximum time a sync can run before being marked stale
-    """
-    cutoff_time = datetime.now() - timedelta(minutes=timeout_minutes)
-    
-    stale_syncs = db.query(SyncHistory).filter(
-        SyncHistory.sync_type == sync_type,
-        SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value]),
-        SyncHistory.started_at < cutoff_time
-    ).all()
-    
-    for sync in stale_syncs:
-        logger.warning(f"Clearing stale sync {sync.sync_id} (started at {sync.started_at})")
-        sync.status = SyncStatus.FAILED.value
-        sync.error_message = f"Sync timed out after {timeout_minutes} minutes"
-        sync.completed_at = datetime.now()
-    
-    if stale_syncs:
-        db.commit()
-        logger.info(f"Cleared {len(stale_syncs)} stale {sync_type} syncs")
 
 
 def _fail_undispatched_syncs(db: Session, sync_tracker, sync_ids, dispatch_error: Exception) -> None:
@@ -77,13 +49,10 @@ def _trigger_sync(db: Session, is_full_sync: bool, sync_type: SyncType, task_nam
     
     try:
         # Clear stale syncs before checking for running syncs
-        _check_and_clear_stale_syncs(db, sync_type.value)
+        clear_stale_syncs(db, sync_type.value)
         
         # Check if there's already a running sync of this type
-        running_sync = db.query(SyncHistory).filter(
-            SyncHistory.sync_type == sync_type.value,
-            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
-        ).first()
+        running_sync = next(iter(sync_history.find_active_syncs(db, [sync_type.value])), None)
         
         if running_sync:
             raise HTTPException(
@@ -216,21 +185,18 @@ def trigger_full_sync(db: Session = Depends(get_db)):
     
     try:
         # Clear stale syncs for all four types
-        _check_and_clear_stale_syncs(db, SyncType.EMPLOYEE_REPORTS.value)
-        _check_and_clear_stale_syncs(db, SyncType.VISION_DATA.value)
-        _check_and_clear_stale_syncs(db, SyncType.JOB_DESCRIPTIONS.value)
-        _check_and_clear_stale_syncs(db, SyncType.SUPERVISOR_FEEDBACK.value)
+        clear_stale_syncs(db, SyncType.EMPLOYEE_REPORTS.value)
+        clear_stale_syncs(db, SyncType.VISION_DATA.value)
+        clear_stale_syncs(db, SyncType.JOB_DESCRIPTIONS.value)
+        clear_stale_syncs(db, SyncType.SUPERVISOR_FEEDBACK.value)
         
         # Check if any sync is already running
-        running_syncs = db.query(SyncHistory).filter(
-            SyncHistory.sync_type.in_([
-                SyncType.EMPLOYEE_REPORTS.value, 
-                SyncType.VISION_DATA.value,
-                SyncType.JOB_DESCRIPTIONS.value,
-                SyncType.SUPERVISOR_FEEDBACK.value
-            ]),
-            SyncHistory.status.in_([SyncStatus.PENDING.value, SyncStatus.RUNNING.value])
-        ).all()
+        running_syncs = sync_history.find_active_syncs(db, [
+            SyncType.EMPLOYEE_REPORTS.value,
+            SyncType.VISION_DATA.value,
+            SyncType.JOB_DESCRIPTIONS.value,
+            SyncType.SUPERVISOR_FEEDBACK.value
+        ])
         
         if running_syncs:
             running_types = [s.sync_type for s in running_syncs]
@@ -333,7 +299,7 @@ def get_sync_status(
     or to retrieve final results after completion.
     """
     try:
-        sync_job = db.query(SyncHistory).filter(SyncHistory.sync_id == sync_id).first()
+        sync_job = sync_history.get_sync(db, sync_id)
         
         if not sync_job:
             raise HTTPException(status_code=404, detail=f"Sync job {sync_id} not found")
@@ -410,7 +376,7 @@ def get_last_successful_sync(
             )
         
         # The same rule incremental syncs use to pick their starting point
-        last_sync = last_successful_sync(db, SyncType(sync_type))
+        last_sync = sync_history.last_successful_sync(db, SyncType(sync_type))
         
         if not last_sync:
             return LastSyncResponse(
@@ -459,55 +425,33 @@ def list_sync_history(
     Use this endpoint to view past sync operations and their results.
     """
     try:
-        # Build query
-        query = db.query(SyncHistory)
+        # Validate filters (sync_type covers all four types)
+        if sync_type and sync_type not in [
+            SyncType.EMPLOYEE_REPORTS.value,
+            SyncType.VISION_DATA.value,
+            SyncType.JOB_DESCRIPTIONS.value,
+            SyncType.SUPERVISOR_FEEDBACK.value
+        ]:
+            raise HTTPException(status_code=400, detail="Invalid sync_type")
         
-        # Apply filters
-        if sync_type:
-            # Validate sync_type includes all four types
-            if sync_type not in [
-                SyncType.EMPLOYEE_REPORTS.value, 
-                SyncType.VISION_DATA.value,
-                SyncType.JOB_DESCRIPTIONS.value,
-                SyncType.SUPERVISOR_FEEDBACK.value
-            ]:
-                raise HTTPException(status_code=400, detail=f"Invalid sync_type")
-            query = query.filter(SyncHistory.sync_type == sync_type)
+        if status and status not in [s.value for s in SyncStatus]:
+            raise HTTPException(status_code=400, detail="Invalid status")
         
-        if status:
-            valid_statuses = [s.value for s in SyncStatus]
-            if status not in valid_statuses:
-                raise HTTPException(status_code=400, detail=f"Invalid status")
-            query = query.filter(SyncHistory.status == status)
+        if sort_by not in sync_history.SORTABLE_FIELDS:
+            raise HTTPException(status_code=400, detail=f"Invalid sort_by. Valid fields: {', '.join(sync_history.SORTABLE_FIELDS)}")
         
-        if start_date:
-            query = query.filter(SyncHistory.started_at >= start_date)
-        
-        if end_date:
-            query = query.filter(SyncHistory.started_at <= end_date)
-        
-        if is_full_sync is not None:
-            # Filter by sync_options JSONB field; a missing flag counts as incremental, as in the response
-            query = query.filter(
-                func.coalesce(SyncHistory.sync_options['is_full_sync'].as_boolean(), False) == is_full_sync
-            )
-        
-        sortable = sorted(SyncHistory.__mapper__.columns.keys())
-        if sort_by not in sortable:
-            raise HTTPException(status_code=400, detail=f"Invalid sort_by. Valid fields: {', '.join(sortable)}")
-
-        # Count total before pagination
-        total = query.count()
-        
-        # Apply sorting
-        if sort_order.lower() == 'desc':
-            query = query.order_by(getattr(SyncHistory, sort_by).desc())
-        else:
-            query = query.order_by(getattr(SyncHistory, sort_by).asc())
-        
-        # Apply pagination
-        offset = (page - 1) * page_size
-        items = query.offset(offset).limit(page_size).all()
+        items, total = sync_history.list_sync_history(
+            db,
+            sync_type=sync_type,
+            status=status,
+            start_date=start_date,
+            end_date=end_date,
+            is_full_sync=is_full_sync,
+            sort_by=sort_by,
+            descending=sort_order.lower() == 'desc',
+            offset=(page - 1) * page_size,
+            limit=page_size
+        )
         
         # Calculate total pages
         pages = (total + page_size - 1) // page_size
@@ -568,7 +512,7 @@ def get_sync_errors(
     Useful for debugging failed or partial syncs.
     """
     try:
-        sync_job = db.query(SyncHistory).filter(SyncHistory.sync_id == sync_id).first()
+        sync_job = sync_history.get_sync(db, sync_id)
         
         if not sync_job:
             raise HTTPException(status_code=404, detail=f"Sync job {sync_id} not found")
