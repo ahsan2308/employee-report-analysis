@@ -30,7 +30,7 @@ CONFIG_MODULES = [
     "app.services.llm_service",
     "app.services.embedding_service",
     "app.db.database",
-    "app.tasks.analysis_tasks",
+    "app.services.analysis.runner",
     "app.worker.celery_app",
 ]
 
