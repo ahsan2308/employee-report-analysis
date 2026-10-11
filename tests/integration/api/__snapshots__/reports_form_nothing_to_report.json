@@ -8,7 +8,7 @@
       "employee_id": 2,
       "report_date": "2025-03-14",
       "report_id": "<uuid:1>",
-      "report_text": "Key Tasks: None\nImpact: None\nChallenges: None\nSupport: None\nPlanned Tasks: None\nConfidence Level: None\nNothing to Report Reason: On leave"
+      "report_text": "Tasks Completed: N/A\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: N/A\n\nNothing to Report Reason: On leave"
     }
   ],
   "status": 200,
@@ -17,7 +17,7 @@
       "employee_id": 2,
       "report_date": "2025-03-14",
       "report_id": "<uuid:1>",
-      "report_text": "Key Tasks: None\nImpact: None\nChallenges: None\nSupport: None\nPlanned Tasks: None\nConfidence Level: None\nNothing to Report Reason: On leave"
+      "report_text": "Tasks Completed: N/A\n\nImpact: N/A\n\nChallenges: N/A\n\nSupport Required: N/A\n\nTasks Planned: N/A\n\nConfidence Level: N/A\n\nNothing to Report Reason: On leave"
     }
   ]
 }

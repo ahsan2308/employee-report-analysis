@@ -28,6 +28,7 @@ from app.schemas.sync_schema import (
     SyncProgressMetrics
 )
 from app.integrations.sqlserver.connector import create_sqlserver_connector
+from app.services.sync.sync_tracker import last_successful_sync
 from app.core.logger import logger
 from app.worker.celery_app import celery_app 
 
@@ -408,14 +409,8 @@ def get_last_successful_sync(
                 detail=f"Invalid sync_type. Must be 'employee_reports', 'vision_data', 'job_descriptions', or 'supervisor_feedback'"
             )
         
-        # Query for last successful sync
-        last_sync = db.query(SyncHistory).filter(
-            SyncHistory.sync_type == sync_type,
-            SyncHistory.status == SyncStatus.COMPLETED.value,
-            SyncHistory.last_sync_timestamp.isnot(None)
-        ).order_by(
-            SyncHistory.last_sync_timestamp.desc()
-        ).first()
+        # The same rule incremental syncs use to pick their starting point
+        last_sync = last_successful_sync(db, SyncType(sync_type))
         
         if not last_sync:
             return LastSyncResponse(

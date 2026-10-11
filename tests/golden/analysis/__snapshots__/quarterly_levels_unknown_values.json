@@ -1,5 +1,5 @@
 {
-  "performance_stability": "low",
+  "performance_stability": "medium",
   "quality_consistency_trend": "stable",
   "risk_levels": {
     "MEDIUM": 1,

@@ -14,6 +14,7 @@ from app.models.db_models import Employee, Report
 from app.services.csv.error_handler import ImportErrorHandler
 from app.services.vector_store_service import add_report_to_vector_store
 from app.core.logger import logger
+from app.domain.reports import compose_report_text
 
 
 class EmployeeReportProcessor(BaseCSVProcessor):
@@ -113,15 +114,15 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                 report_date = row_dict.get('To') or row_dict.get('to')
                 
                 # Construct report text
-                report_text = "\n\n".join([
-                    f"Tasks Completed: {row_dict.get('Tasks_Completed') or row_dict.get('tasks_completed', 'N/A')}",
-                    f"Impact: {row_dict.get('Impact') or row_dict.get('impact', 'N/A')}",
-                    f"Challenges: {row_dict.get('Challenges') or row_dict.get('challenges', 'N/A')}",
-                    f"Support Required: {row_dict.get('Support_Required') or row_dict.get('support_required', 'N/A')}",
-                    f"Tasks Planned: {row_dict.get('Tasks_Planned') or row_dict.get('tasks_planned', 'N/A')}",
-                    f"Confidence Level: {row_dict.get('Confidence_Level') or row_dict.get('confidence_level', 'N/A')}",
-                    f"Report Period: {start_date} to {report_date}"
-                ])
+                report_text = compose_report_text(
+                    tasks_completed=row_dict.get('Tasks_Completed') or row_dict.get('tasks_completed'),
+                    impact=row_dict.get('Impact') or row_dict.get('impact'),
+                    challenges=row_dict.get('Challenges') or row_dict.get('challenges'),
+                    support_required=row_dict.get('Support_Required') or row_dict.get('support_required'),
+                    tasks_planned=row_dict.get('Tasks_Planned') or row_dict.get('tasks_planned'),
+                    confidence_level=row_dict.get('Confidence_Level') or row_dict.get('confidence_level'),
+                    period=f"{start_date} to {report_date}"
+                )
                 
                 # Check for existing report
                 existing_report = self.db.query(Report).filter(
@@ -331,15 +332,15 @@ class EmployeeReportProcessor(BaseCSVProcessor):
                 seen_combinations.add(combination_key)
                 
                 # Construct report text from fields - check both naming conventions
-                report_text = "\n\n".join([             
-                    f"Tasks Completed: {row.get('Tasks_Completed') or row.get('tasks_completed', 'N/A')}",
-                    f"Impact: {row.get('Impact') or row.get('impact', 'N/A')}",
-                    f"Challenges: {row.get('Challenges') or row.get('challenges', 'N/A')}",
-                    f"Support Required: {row.get('Support_Required') or row.get('support_required', 'N/A')}",
-                    f"Tasks Planned: {row.get('Tasks_Planned') or row.get('tasks_planned', 'N/A')}",
-                    f"Confidence Level: {row.get('Confidence_Level') or row.get('confidence_level', 'N/A')}",
-                    f"Report Period: {start_date} to {report_date}"
-                ])
+                report_text = compose_report_text(
+                    tasks_completed=row.get('Tasks_Completed') or row.get('tasks_completed'),
+                    impact=row.get('Impact') or row.get('impact'),
+                    challenges=row.get('Challenges') or row.get('challenges'),
+                    support_required=row.get('Support_Required') or row.get('support_required'),
+                    tasks_planned=row.get('Tasks_Planned') or row.get('tasks_planned'),
+                    confidence_level=row.get('Confidence_Level') or row.get('confidence_level'),
+                    period=f"{start_date} to {report_date}"
+                )
                 
                 # Add report data directly using emp_id we already extracted
                 report_data.append({

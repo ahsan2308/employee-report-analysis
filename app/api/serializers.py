@@ -17,7 +17,7 @@ def task_status_response(task):
 def weekly_analysis_response(analysis, employee):
     return {
         "report_id": str(analysis.report_id),
-        "employee_name": employee.name,
+        "employee_name": employee.name if employee else None,
         "sentiment": analysis.sentiment_score if analysis.sentiment_score is not None else 0.5,
         "sentiment_score": analysis.sentiment_score,
         "risk_level": analysis.risk_level,
@@ -46,7 +46,7 @@ def monthly_analysis_response(analysis, employee):
     return {
         "analysis_id": analysis.analysis_id,
         "employee_id": analysis.employee_id,
-        "employee_name": employee.name,
+        "employee_name": employee.name if employee else None,
         "year": analysis.year,
         "month": analysis.month,
         "period_start": analysis.period_start,
@@ -97,7 +97,7 @@ def quarterly_analysis_response(analysis, employee):
     return {
         "analysis_id": analysis.analysis_id,
         "employee_id": analysis.employee_id,
-        "employee_name": employee.name,
+        "employee_name": employee.name if employee else None,
         "year": analysis.year,
         "quarter": analysis.quarter,
         "period_start": analysis.period_start,
@@ -145,4 +145,30 @@ def quarterly_analysis_response(analysis, employee):
 
         # Summary
         "quarterly_summary": analysis.quarterly_summary
+    }
+
+
+_ANALYSIS_RESPONSES = {
+    "weekly": weekly_analysis_response,
+    "monthly": monthly_analysis_response,
+    "quarterly": quarterly_analysis_response,
+}
+
+
+def task_result_response(task_id, result):
+    """GET /tasks/{id}/result: an analysis in its /analyses shape, else the task's stored result."""
+    payload = result.result_data
+    if result.analysis is not None:
+        analysis = result.analysis
+        payload = _ANALYSIS_RESPONSES[result.analysis_kind](analysis, result.employee)
+        # Also kept from the task endpoint's earlier payload
+        payload["analysis_id"] = analysis.analysis_id
+        payload["full_analysis_json"] = analysis.full_analysis_json
+        if result.analysis_kind == "quarterly":
+            payload["analysis_date"] = analysis.analysis_date
+    return {
+        "task_id": task_id,
+        "status": result.status,
+        "result": payload,
+        "error_message": result.error_message
     }

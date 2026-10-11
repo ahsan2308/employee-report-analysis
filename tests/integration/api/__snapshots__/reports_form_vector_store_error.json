@@ -8,7 +8,7 @@
       "employee_id": 1,
       "report_date": "2025-03-14",
       "report_id": "<uuid:1>",
-      "report_text": "Key Tasks: Closed 5 tickets\nImpact: Faster support\nChallenges: None\nSupport: No\nPlanned Tasks: Refactor\nConfidence Level: 4\nNothing to Report Reason: None"
+      "report_text": "Tasks Completed: Closed 5 tickets\n\nImpact: Faster support\n\nChallenges: None\n\nSupport Required: No\n\nTasks Planned: Refactor\n\nConfidence Level: 4"
     }
   ],
   "status": 200

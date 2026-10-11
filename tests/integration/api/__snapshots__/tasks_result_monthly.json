@@ -3,6 +3,7 @@
     "error_message": null,
     "result": {
       "analysis_id": 1,
+      "avg_sentiment_score": 0.71,
       "consistency_assessment": {
         "notable_strengths": [
           "on time"

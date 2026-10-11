@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 
 from app.models.task_models import BackgroundTask
+from app.api.serializers import task_result_response
 from app.services import task_service
 from tests.integration.services.seed import (
     dump_rows,
@@ -287,7 +288,8 @@ def result_seed(seeded):
 def test_get_task_result(result_seed, snapshot):
     results = {}
     for n in range(1, 13):
-        results[f"task_{n}"] = task_service.get_task_result(result_seed, uid(n))
+        # Shaped as GET /tasks/{id}/result returns it
+        results[f"task_{n}"] = task_result_response(uid(n), task_service.get_task_result(result_seed, uid(n)))
     errors = {}
     for n in (13, 14, 99):
         with pytest.raises(ValueError) as exc:

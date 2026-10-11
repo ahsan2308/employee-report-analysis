@@ -29,7 +29,16 @@
         "total_rows": 4
       }
     ],
-    "import_errors": []
+    "import_errors": [
+      {
+        "error_id": 1,
+        "error_message": "No suitable processor found for the provided CSV format. Available processor types: EmployeeReportProcessor, VisionDataProcessor, JobDescriptionProcessor, SupervisorFeedbackProcessor. CSV headers: Employee_ID,Name,Designation,BPS,Office_Hierarchy,From,To,Draft,Tasks_Completed,Impact,Challenges,Support_Required,Tasks_Planned,Confidence_Level,NTR",
+        "field_name": null,
+        "job_id": "<uuid:1>",
+        "row_data": null,
+        "row_number": 0
+      }
+    ]
   },
   "outcomes": [
     {

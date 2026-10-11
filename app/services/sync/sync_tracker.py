@@ -14,6 +14,21 @@ from app.models.sync_models import SyncHistory, SyncType, SyncStatus
 from app.core.logger import logger
 
 
+def last_successful_sync(session: Session, sync_type: SyncType) -> Optional[SyncHistory]:
+    """
+    The most recent successful sync of a type: the row incremental syncs start from.
+    
+    Partial syncs count: they still synced some records, so their timestamp is used.
+    """
+    return session.query(SyncHistory).filter(
+        SyncHistory.sync_type == sync_type.value,
+        SyncHistory.status.in_([SyncStatus.COMPLETED.value, SyncStatus.PARTIAL.value]),
+        SyncHistory.last_sync_timestamp.isnot(None)
+    ).order_by(
+        SyncHistory.last_sync_timestamp.desc()
+    ).first()
+
+
 class SyncTracker:
     """
     Tracks sync operations in the SyncHistory table.
@@ -76,15 +91,7 @@ class SyncTracker:
         Returns:
             Datetime of last successful sync, or None if no successful sync exists
         """
-        # Query for the most recent completed OR partial sync of this type
-        # Partial syncs still successfully sync SOME records, so we use their timestamp
-        last_sync = session.query(SyncHistory).filter(
-            SyncHistory.sync_type == sync_type.value,
-            SyncHistory.status.in_([SyncStatus.COMPLETED.value, SyncStatus.PARTIAL.value]),  
-            SyncHistory.last_sync_timestamp.isnot(None)
-        ).order_by(
-            SyncHistory.last_sync_timestamp.desc()
-        ).first()
+        last_sync = last_successful_sync(session, sync_type)
         
         if last_sync:
             logger.info(f"Last successful {sync_type.value} sync: {last_sync.last_sync_timestamp}")

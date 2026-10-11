@@ -12,6 +12,30 @@ The log level is now set by the `LOG_LEVEL` environment variable and defaults
 to `INFO`; it was always `DEBUG` before. Set `LOG_LEVEL=DEBUG` for the old
 output.
 
+### Fixed: behaviour that differed between duplicated code
+
+- `GET /sync/last-successful/{sync_type}` now counts partial syncs, as the
+  incremental sync does when it picks its starting point. It could show an
+  older sync than the one actually used.
+- `GET /imports/` reports each job's error count from its stored errors, as
+  `GET /imports/{job_id}` does; the two could disagree.
+- An import that fails as a whole (for example, columns that match no CSV
+  type) now stores the reason as a job-level error (row 0) instead of failing
+  with no errors listed.
+- The CSV type chosen at upload is used. It was stored but ignored: the type
+  was always detected from the headers. A file without the chosen type's
+  columns fails with a clear error.
+- A job description dry run reports unknown employees, like a real import.
+- `POST /reports/form` stores report text in the same format as CSV imports
+  and syncs ("Tasks Completed: ...", "N/A" for blank fields).
+- `GET /tasks/{task_id}/result` returns analyses in the same shape as the
+  `/analyses` endpoints (it lacked `avg_sentiment_score` and the defaults for
+  empty lists and missing sentiment), keeping `analysis_id`,
+  `full_analysis_json` and, for quarterly analyses, `analysis_date`.
+- Quarterly metrics score high/medium/low ratings one way everywhere: 3/2/1,
+  any letter case, with unrecognised values left out. The three copies
+  treated unknown values as 1, as 2, or skipped them.
+
 ### Fixed: report form "nothing to report"
 
 `POST /reports/form` rejected every submission without `key_tasks_completed`,

@@ -6,6 +6,7 @@
   },
   "results": {
     "task_1": {
+      "error_message": null,
       "result": {
         "achievements_json": null,
         "action_items": null,
@@ -34,27 +35,35 @@
         "sentiment_score": 0.3,
         "topics": null
       },
-      "status": "completed"
+      "status": "completed",
+      "task_id": "00000000-0000-0000-0000-000000000001"
     },
     "task_10": {
+      "error_message": null,
       "result": {
         "analysis_id": 1
       },
-      "status": "completed"
+      "status": "completed",
+      "task_id": "00000000-0000-0000-0000-000000000010"
     },
     "task_11": {
+      "error_message": null,
       "result": {
         "no_analysis_id": true
       },
-      "status": "completed"
+      "status": "completed",
+      "task_id": "00000000-0000-0000-0000-000000000011"
     },
     "task_12": {
+      "error_message": null,
       "result": {
         "x": 1
       },
-      "status": "completed"
+      "status": "completed",
+      "task_id": "00000000-0000-0000-0000-000000000012"
     },
     "task_2": {
+      "error_message": null,
       "result": {
         "achievements_json": [
           {
@@ -101,38 +110,49 @@
           "t"
         ]
       },
-      "status": "completed"
+      "status": "completed",
+      "task_id": "00000000-0000-0000-0000-000000000002"
     },
     "task_3": {
+      "error_message": null,
       "result": {
         "analysis_id": 1,
         "extra": 1,
         "report_id": "x"
       },
-      "status": "completed"
+      "status": "completed",
+      "task_id": "00000000-0000-0000-0000-000000000003"
     },
     "task_4": {
+      "error_message": null,
       "result": {
         "analysis_id": 9999
       },
-      "status": "completed"
+      "status": "completed",
+      "task_id": "00000000-0000-0000-0000-000000000004"
     },
     "task_5": {
+      "error_message": null,
       "result": null,
-      "status": "completed"
+      "status": "completed",
+      "task_id": "00000000-0000-0000-0000-000000000005"
     },
     "task_6": {
       "error_message": "boom",
-      "status": "failed"
+      "result": null,
+      "status": "failed",
+      "task_id": "00000000-0000-0000-0000-000000000006"
     },
     "task_7": {
+      "error_message": null,
       "result": {
         "analysis_id": 1,
+        "avg_sentiment_score": 0.6,
         "consistency_assessment": {
           "notable_strengths": [
             "str"
           ],
-          "notable_weaknesses": null,
+          "notable_weaknesses": [],
           "performance_stability": null,
           "task_completion_reliability": null,
           "work_quality_consistency": null
@@ -154,15 +174,15 @@
           "skill_development_evidence": null
         },
         "month": 1,
-        "monthly_achievements": null,
+        "monthly_achievements": [],
         "monthly_risk_assessment": {
           "escalating_risks": [
             "esc"
           ],
           "overall_risk_level": "low",
           "risk_explanation": null,
-          "risk_mitigation_recommendations": null,
-          "significant_risks": null
+          "risk_mitigation_recommendations": [],
+          "significant_risks": []
         },
         "monthly_summary": "summary 2025-1",
         "period_end": "2025-01-31",
@@ -173,20 +193,24 @@
           "risk_level_pattern": null,
           "sentiment_trend": null
         },
-        "recurring_challenges": null,
-        "strategic_recommendations": null,
+        "recurring_challenges": [],
+        "strategic_recommendations": [],
         "year": 2025
       },
-      "status": "completed"
+      "status": "completed",
+      "task_id": "00000000-0000-0000-0000-000000000007"
     },
     "task_8": {
+      "error_message": null,
       "result": {
         "analysis_id": 1,
         "cached": "kept because no analysis for month 2"
       },
-      "status": "completed"
+      "status": "completed",
+      "task_id": "00000000-0000-0000-0000-000000000008"
     },
     "task_9": {
+      "error_message": null,
       "result": {
         "achievement_themes": null,
         "adaptation_effectiveness": null,
@@ -233,7 +257,8 @@
         "work_quality_consistency": null,
         "year": 2025
       },
-      "status": "completed"
+      "status": "completed",
+      "task_id": "00000000-0000-0000-0000-000000000009"
     }
   }
 }

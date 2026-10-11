@@ -4,7 +4,7 @@ from app.api.deps import get_db
 from app.api.serializers import monthly_analysis_response, quarterly_analysis_response, task_status_response, weekly_analysis_response
 from app.models.db_models import EmployeeAnalysis, Report, Employee, MonthlyAnalysis, QuarterlyAnalysis
 from app.schemas.analysis_schema import AnalysisResponse, MonthlyAnalysisResponse, MonthlyAnalysisSummary, QuarterlyAnalysisResponse
-from app.repositories.analyses import get_monthly_analysis_by_params, get_quarterly_analysis_by_params
+from app.repositories.analyses import find_monthly_analysis, find_quarterly_analysis, get_monthly_analysis_by_params, get_quarterly_analysis_by_params
 from app.core.logger import logger
 from uuid import UUID
 from typing import List
@@ -285,11 +285,7 @@ def get_employee_monthly_analysis_by_period(
             raise HTTPException(status_code=404, detail="Employee not found")
             
         # Get the specific monthly analysis
-        analysis = db.query(MonthlyAnalysis).filter(
-            MonthlyAnalysis.employee_id == employee_id,
-            MonthlyAnalysis.year == year,
-            MonthlyAnalysis.month == month
-        ).first()
+        analysis = find_monthly_analysis(db, employee_id, year, month)
         
         if not analysis:
             raise HTTPException(status_code=404, detail=f"Monthly analysis not found for {year}-{month}")
@@ -386,11 +382,7 @@ def get_employee_quarterly_analysis_by_period(
             raise HTTPException(status_code=404, detail="Employee not found")
             
         # Get the specific quarterly analysis
-        analysis = db.query(QuarterlyAnalysis).filter(
-            QuarterlyAnalysis.employee_id == employee_id,
-            QuarterlyAnalysis.year == year,
-            QuarterlyAnalysis.quarter == quarter
-        ).first()
+        analysis = find_quarterly_analysis(db, employee_id, year, quarter)
         
         if not analysis:
             raise HTTPException(status_code=404, detail=f"Quarterly analysis not found for {year}-Q{quarter}")

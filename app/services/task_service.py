@@ -3,6 +3,7 @@ Service for managing background tasks.
 Handles task creation, status tracking, and result retrieval.
 """
 import uuid
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 from uuid import UUID
@@ -14,7 +15,7 @@ from app.models.db_models import Employee, Report, EmployeeAnalysis
 from app.tasks.analysis_tasks import analyze_report_task
 from app.worker.celery_app import celery_app
 from app.core.logger import logger
-from app.repositories.analyses import get_monthly_analysis_by_params, get_quarterly_analysis_by_params
+from app.repositories.analyses import find_monthly_analysis, find_quarterly_analysis
 
 def _now() -> datetime:
     return datetime.now()
@@ -328,14 +329,27 @@ def get_task_status(db: Session, task_id: UUID) -> Optional[BackgroundTask]:
     """Get a task by ID."""
     return db.query(BackgroundTask).filter(BackgroundTask.task_id == task_id).first()
 
-def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
+@dataclass
+class TaskResult:
+    """A finished task: the analysis row it produced, or else its stored result data."""
+    status: str
+    error_message: Optional[str] = None
+    result_data: Optional[Dict[str, Any]] = None
+    analysis_kind: Optional[str] = None  # "weekly", "monthly" or "quarterly" when analysis is set
+    analysis: Any = None
+    employee: Optional[Employee] = None
+
+
+def get_task_result(db: Session, task_id: UUID) -> TaskResult:
     """
     Get task result, including error message if task failed.
     
-    For tasks with existing analyses, this will automatically look up the full analysis data.
+    For tasks with existing analyses, this looks up the analysis row so the API
+    can return it in the same shape as the /analyses endpoints.
     
     Raises:
-        ValueError: If the task is not in a terminal state or doesn't exist
+        TaskNotFoundError: If the task doesn't exist
+        ValueError: If the task is not in a terminal state
     """
     task = get_task_status(db, task_id)
     
@@ -346,217 +360,32 @@ def get_task_result(db: Session, task_id: UUID) -> Dict[str, Any]:
         raise ValueError(f"Task is not complete: {task.status}")
     
     if task.status == TaskStatus.FAILED.value:
-        return {
-            "status": task.status,
-            "error_message": task.error_message
-        }
+        return TaskResult(status=task.status, error_message=task.error_message)
     
-    # Get the task result data
     result_data = task.result_data
+    if not result_data or "analysis_id" not in result_data:
+        return TaskResult(status=task.status, result_data=result_data)
     
-    # Check task type and handle appropriately
     if task.task_type == TaskType.REPORT_ANALYSIS.value:
-        # Weekly report analysis task
-        if result_data and "analysis_id" in result_data and len(result_data) <= 2:
-            # This looks like a reference, fetch the full analysis
-            analysis_id = result_data["analysis_id"]
+        # Only a bare reference ({"analysis_id": ...}) is expanded; a full stored payload is returned as is
+        if len(result_data) <= 2:
             analysis = db.query(EmployeeAnalysis).filter(
-                EmployeeAnalysis.analysis_id == analysis_id
+                EmployeeAnalysis.analysis_id == result_data["analysis_id"]
             ).first()
-            
-            if analysis:
-                # Get the report to find employee info
-                report = db.query(Report).filter(
-                    Report.report_id == analysis.report_id
-                ).first()
-                
-                if report:
-                    employee = db.query(Employee).filter(
-                        Employee.id == report.employee_id
-                    ).first()
-                    
-                    # Construct full result data
-                    result_data = {
-                        "analysis_id": analysis.analysis_id,
-                        "report_id": str(analysis.report_id),
-                        "employee_name": employee.name if employee else None,
-                        "sentiment": analysis.sentiment_score,
-                        "sentiment_score": analysis.sentiment_score,
-                        "risk_level": analysis.risk_level,
-                        "risk_explanation": analysis.risk_explanation,
-                        "full_analysis_json": analysis.full_analysis_json,
-                        "achievements_json": analysis.achievements_json,
-                        "challenges_json": analysis.challenges_json,
-                        "topics": analysis.topics,
-                        "action_items": analysis.action_items,
-                        "credibility_assessment": {
-                            "rating": analysis.credibility_rating or "medium",
-                            "explanation": analysis.credibility_explanation or "No credibility assessment was performed for this analysis.",
-                            "exaggeration_flags": analysis.exaggeration_flags or [],
-                            "consistency_score": analysis.consistency_score or "medium"
-                        },
-                        "performance_assessment": {
-                            "rating": analysis.performance_rating or "medium",
-                            "summary": analysis.performance_summary or "No performance assessment was performed for this analysis.",
-                            "key_strengths": analysis.performance_strengths or [],
-                            "improvement_areas": analysis.performance_improvement_areas or []
-                        }
-                    }
-    elif task.task_type == TaskType.MONTHLY_ANALYSIS.value:
-        # Monthly analysis task - always fetch from database for complete data
-        if result_data and "analysis_id" in result_data:
-            # Always fetch complete data from database, don't use cached result_data
-            employee_id = task.employee_id
-            year = task.year
-            month = task.month
-            
-            # Use db_service function to get full analysis data
-            monthly_analysis = get_monthly_analysis_by_params(employee_id, year, month)
-            
-            if monthly_analysis:
-                # Get employee info for the result
-                employee = db.query(Employee).filter(
-                    Employee.id == employee_id
-                ).first()
-                
-                # Format the result data with updated field structure
-                result_data = {
-                    "analysis_id": monthly_analysis["analysis_id"],
-                    "employee_id": employee_id,
-                    "employee_name": employee.name if employee else None,
-                    "year": year,
-                    "month": month,
-                    "period_start": monthly_analysis["period_start"],
-                    "period_end": monthly_analysis["period_end"],
-                    
-                    # Progress trends (aligned with new structure)
-                    "progress_trends": {
-                        "performance_trend": monthly_analysis["performance_trend"],
-                        "sentiment_trend": monthly_analysis["sentiment_trend"],
-                        "risk_level_pattern": monthly_analysis["risk_level_pattern"],
-                        "challenge_resolution_progress": monthly_analysis["challenge_resolution_progress"]
-                    },
-                    
-                    # Monthly achievements
-                    "monthly_achievements": monthly_analysis["monthly_achievements"],
-                    
-                    # Recurring challenges with status field
-                    "recurring_challenges": monthly_analysis["recurring_challenges"],
-                    
-                    # Consistency assessment (detailed fields)
-                    "consistency_assessment": {
-                        "task_completion_reliability": monthly_analysis["task_completion_reliability"],
-                        "work_quality_consistency": monthly_analysis["work_quality_consistency"],
-                        "performance_stability": monthly_analysis["performance_stability"],
-                        "notable_strengths": monthly_analysis["consistency_notable_strengths"],
-                        "notable_weaknesses": monthly_analysis["consistency_notable_weaknesses"]
-                    },
-                    
-                    # Growth indicators (detailed fields)
-                    "growth_indicators": {
-                        "complexity_of_tasks": monthly_analysis["complexity_of_tasks"],
-                        "skill_development_evidence": monthly_analysis["skill_development_evidence"],
-                        "confidence_level_change": monthly_analysis["confidence_level_change"],
-                        "approach_to_challenges": monthly_analysis["approach_to_challenges"]
-                    },
-                    
-                    # Focus areas
-                    "focus_areas": monthly_analysis["focus_areas"],
-                    
-                    # Risk assessment (nested structure)
-                    "monthly_risk_assessment": {
-                        "overall_risk_level": monthly_analysis["risk_level"],
-                        "risk_explanation": monthly_analysis["risk_explanation"],
-                        "significant_risks": monthly_analysis.get("significant_risks", []),
-                        "escalating_risks": monthly_analysis.get("escalating_risks", []),
-                        "risk_mitigation_recommendations": monthly_analysis.get("risk_mitigation_recommendations", [])
-                    },
-                    
-                    # Strategic recommendations
-                    "strategic_recommendations": monthly_analysis["strategic_recommendations"],
-                    
-                    # Monthly summary
-                    "monthly_summary": monthly_analysis["monthly_summary"],
-                    
-                    # Full analysis for reference
-                    "full_analysis_json": monthly_analysis["full_analysis_json"]
-                }
-    elif task.task_type == TaskType.QUARTERLY_ANALYSIS.value:
-        # Quarterly analysis task - always fetch from database for complete data
-        if result_data and "analysis_id" in result_data:
-            # Always fetch complete data from database, don't use cached result_data
-            employee_id = task.employee_id
-            year = task.year
-            quarter = task.quarter
-            
-            # Use db_service function to get full analysis data
-            quarterly_analysis = get_quarterly_analysis_by_params(employee_id, year, quarter)
-            
-            if quarterly_analysis:
-                # Get employee info for the result
-                employee = db.query(Employee).filter(
-                    Employee.id == employee_id
-                ).first()
-                
-                # Format the result data with updated field structure
-                result_data = {
-                    "analysis_id": quarterly_analysis["analysis_id"],
-                    "employee_id": employee_id,
-                    "employee_name": employee.name if employee else None,
-                    "year": year,
-                    "quarter": quarter,
-                    "period_start": quarterly_analysis["period_start"],
-                    "period_end": quarterly_analysis["period_end"],
-                    "monthly_analysis_ids": quarterly_analysis["monthly_analysis_ids"],
-                    "analysis_date": quarterly_analysis["analysis_date"],
-                    
-                    # Strategic alignment
-                    "organizational_impact": quarterly_analysis["organizational_impact"],
-                    "strategic_alignment": quarterly_analysis["strategic_alignment_json"],
-                    
-                    # Performance assessment
-                    "performance_trend": quarterly_analysis["performance_trend"],
-                    "task_completion_reliability": quarterly_analysis["task_completion_reliability"],
-                    "work_quality_consistency": quarterly_analysis["work_quality_consistency"],
-                    "performance_stability": quarterly_analysis["performance_stability"],
-                    "achievement_themes": quarterly_analysis["achievement_themes_json"],
-                    "performance_trajectory": quarterly_analysis["performance_trajectory_json"],
-                    
-                    # Cross-functional and challenge data
-                    "collaboration_effectiveness": quarterly_analysis["collaboration_effectiveness"],
-                    "stakeholder_count": quarterly_analysis["stakeholder_count"],
-                    "challenge_patterns": quarterly_analysis["challenge_patterns_json"],
-                    "cross_functional_impact": quarterly_analysis["cross_functional_impact_json"],
-                    "adaptation_effectiveness": quarterly_analysis["adaptation_effectiveness"],
-                    
-                    # Risk assessment
-                    "risk_level": quarterly_analysis["risk_level"],
-                    "risk_trend": quarterly_analysis["risk_trend"],
-                    "risk_assessment": quarterly_analysis["risk_assessment_json"],
-                    
-                    # Skills and development
-                    "learning_agility": quarterly_analysis["learning_agility"],
-                    "autonomy_level": quarterly_analysis["autonomy_level"],
-                    "development_focus": quarterly_analysis["development_focus"],
-                    "skill_development": quarterly_analysis["skill_development_json"],
-                    "behavioral_assessment": quarterly_analysis["behavioral_assessment_json"],
-                    
-                    # Credibility assessment
-                    "credibility_rating": quarterly_analysis["credibility_rating"],
-                    "vision_data_alignment": quarterly_analysis["vision_data_alignment"],
-                    "credibility_assessment": quarterly_analysis["credibility_assessment_json"],
-                    
-                    # Forward planning
-                    "forward_planning": quarterly_analysis["forward_planning_json"],
-                    
-                    # Summary
-                    "quarterly_summary": quarterly_analysis["quarterly_summary"],
-                    
-                    # Full analysis for reference
-                    "full_analysis_json": quarterly_analysis["full_analysis_json"]
-                }
+            report = analysis and db.query(Report).filter(Report.report_id == analysis.report_id).first()
+            if report:
+                employee = db.query(Employee).filter(Employee.id == report.employee_id).first()
+                return TaskResult(status=task.status, result_data=result_data,
+                                  analysis_kind="weekly", analysis=analysis, employee=employee)
+    elif task.task_type in (TaskType.MONTHLY_ANALYSIS.value, TaskType.QUARTERLY_ANALYSIS.value):
+        # Looked up by period: the stored analysis_id may be stale after a re-run
+        if task.task_type == TaskType.MONTHLY_ANALYSIS.value:
+            kind, analysis = "monthly", find_monthly_analysis(db, task.employee_id, task.year, task.month)
+        else:
+            kind, analysis = "quarterly", find_quarterly_analysis(db, task.employee_id, task.year, task.quarter)
+        if analysis:
+            employee = db.query(Employee).filter(Employee.id == task.employee_id).first()
+            return TaskResult(status=task.status, result_data=result_data,
+                              analysis_kind=kind, analysis=analysis, employee=employee)
     
-    return {
-        "status": task.status,
-        "result": result_data
-    }
+    return TaskResult(status=task.status, result_data=result_data)

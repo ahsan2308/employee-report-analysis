@@ -76,7 +76,9 @@ def test_factory_detection_matrix(snapshot):
 def test_factory_explicit_type_and_mapping(snapshot):
     out = {
         "explicit_matching": _factory(SF, "SupervisorFeedbackProcessor"),
-        "explicit_overrides_headers": _factory(["anything"], "VisionDataProcessor"),
+        "explicit_with_wrong_headers_raises": _factory(["anything"], "VisionDataProcessor"),
+        "explicit_csv_type_value": _factory(VISION, "vision_data"),
+        "explicit_csv_type_value_wrong_headers": _factory(SF, "vision_data"),
         "explicit_unknown_falls_back": _factory(VISION, "NoSuchProcessor"),
         "explicit_unknown_unmatched_headers": _factory(["x"], "NoSuchProcessor"),
         "explicit_wrong_case": _factory(VISION, "visiondataprocessor"),

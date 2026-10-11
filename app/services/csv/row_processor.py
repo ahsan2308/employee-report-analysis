@@ -4,7 +4,7 @@ Row Processor Component
 This module provides a compatibility layer for the existing code,
 delegating to the appropriate specialized processor via the factory.
 """
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Optional, Tuple
 import pandas as pd
 from sqlalchemy.orm import Session
 import traceback
@@ -24,16 +24,18 @@ class RowProcessor:
     actual processing to the appropriate specialized processor.
     """
     
-    def __init__(self, db: Session, error_handler: ImportErrorHandler):
+    def __init__(self, db: Session, error_handler: ImportErrorHandler, csv_type: Optional[str] = None):
         """
         Initialize with a database session and error handler.
         
         Args:
             db: SQLAlchemy database session
             error_handler: Error handler for collecting errors
+            csv_type: Optional CSVImportType value; None detects the type from the headers
         """
         self.db = db
         self.error_handler = error_handler
+        self.requested_csv_type = csv_type
         self._processor = None
         self._csv_type = None
         self._known_headers = None
@@ -70,7 +72,8 @@ class RowProcessor:
         self._processor, self._csv_type = ProcessorFactory.get_processor(
             headers=headers,
             db=self.db,
-            error_handler=self.error_handler
+            error_handler=self.error_handler,
+            processor_type=self.requested_csv_type
         )
         
         self._known_headers = headers
