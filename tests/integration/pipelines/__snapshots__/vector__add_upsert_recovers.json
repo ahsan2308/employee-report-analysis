@@ -43,6 +43,10 @@
       ]
     },
     {
+      "call": "sleep",
+      "seconds": 0.1
+    },
+    {
       "call": "vs.add_documents_batch",
       "collection_name": "employee_reports",
       "points": [
@@ -64,6 +68,10 @@
           ]
         }
       ]
+    },
+    {
+      "call": "sleep",
+      "seconds": 0.2
     },
     {
       "call": "vs.add_documents_batch",

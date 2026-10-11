@@ -5,6 +5,7 @@ vector store, SQL Server connector) with recording fakes. The database is real.
 """
 import os
 import time
+from types import SimpleNamespace
 
 import pytest
 
@@ -63,6 +64,9 @@ def ext(monkeypatch):
     monkeypatch.setattr(ollama_host.ollama, "Client", external.llm)
     monkeypatch.setattr(embedding_service, "get_embedding_provider", lambda *a, **k: external.embedder)
     monkeypatch.setattr(vector_store_service, "get_vector_store", lambda *a, **k: external.vector_store)
+    # Retry waits are recorded instead of slept
+    monkeypatch.setattr(vector_store_service, "time", SimpleNamespace(
+        time=time.time, sleep=lambda seconds: external.recorder.record("sleep", seconds=seconds)))
 
     def _connector():
         assert external.sqlserver is not None, "test did not configure ext.sqlserver"

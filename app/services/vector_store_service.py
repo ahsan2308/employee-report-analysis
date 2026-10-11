@@ -16,8 +16,11 @@ from app.repositories import vector_mappings
 
 from app.core.settings import COLLECTION_NAME
 
-# Get batch processing configuration using the config provider pattern
-from app.core.settings import VECTOR_BATCH_MAX_RETRIES, VECTOR_BATCH_MODE, VECTOR_EMBEDDING_BATCH_SIZE, VECTOR_UPSERT_BATCH_SIZE  # noqa: F401  (module attributes kept for compatibility)
+from app.core.settings import (
+    VECTOR_BATCH_MAX_RETRIES, VECTOR_BATCH_RETRY_BACKOFF_FACTOR, VECTOR_BATCH_RETRY_INITIAL_WAIT_MS,
+    VECTOR_UPSERT_BATCH_SIZE,
+)
+from app.domain.periods import parse_period_date
 
 def chunk_text(text: str, max_chunk_size: int = 500) -> List[str]:
     """
@@ -230,327 +233,134 @@ def _remove_stale_report_vectors(vector_store, report_ids, keep_ids, session=Non
             session.close()
 
 
+def _report_date_timestamp(report_date) -> float:
+    """The timestamp the date filters compare, for a date, datetime or date string."""
+    if isinstance(report_date, datetime):
+        report_date = report_date.date()
+    elif isinstance(report_date, str):
+        report_date = parse_period_date(report_date)  # raises ValueError for an unreadable date
+    elif not isinstance(report_date, date):
+        raise ValueError(f"Unreadable report date: {report_date!r}")
+    return datetime.combine(report_date, datetime.min.time()).timestamp()
+
+
+def _build_points(reports: List[Dict[str, Any]]):
+    """
+    Chunk and embed reports.
+
+    Returns (points, mappings): one vector store point and one database mapping
+    per chunk. A report without text is skipped. Returns None when the embedding
+    provider fails; raises ValueError for an unreadable report date.
+    """
+    chunks = []
+    chunk_reports = []  # (report, its date timestamp, chunk index) of each chunk
+    for report in reports:
+        report_chunks = chunk_text(report["report_text"])
+        if not report_chunks:
+            logger.warning(f"No chunks were generated from report text for report {report['report_id']}")
+            continue
+        # Read the date before embedding anything, so an unreadable one costs no embedding calls
+        date_ts = _report_date_timestamp(report["report_date"])
+        chunks.extend(report_chunks)
+        chunk_reports.extend((report, date_ts, index) for index in range(len(report_chunks)))
+
+    if not chunks:
+        return [], []
+
+    start_time = time.time()
+    logger.info(f"Generating embeddings for {len(chunks)} chunks in batch")
+    embeddings = get_embeddings(chunks)
+    logger.info(f"Batch embedding generation completed in {time.time() - start_time:.2f}s")
+    if not embeddings or len(embeddings) != len(chunks):
+        logger.error(f"Failed to generate embeddings: expected {len(chunks)}, got {len(embeddings) if embeddings else 0}")
+        return None
+
+    points, mappings = [], []
+    for chunk, embedding, (report, date_ts, chunk_index) in zip(chunks, embeddings, chunk_reports):
+        report_id = str(report["report_id"])
+        # Point ID derived from (report, chunk), so a re-import overwrites it
+        document_id = report_chunk_point_id(report_id, chunk_index)
+        points.append({
+            "document_id": document_id,
+            "vector": embedding,
+            "payload": {
+                fields.REPORT_ID: report_id,
+                fields.EMPLOYEE_ID: report["employee_id"],
+                fields.CHUNK_INDEX: chunk_index,
+                fields.REPORT_DATE: report["report_date"],  # Keep original date for display
+                fields.REPORT_DATE_TS: date_ts,  # For date filters
+                fields.TEXT: chunk,
+            },
+        })
+        mappings.append({"document_id": document_id, "report_id": report_id, "chunk_index": chunk_index})
+    return points, mappings
+
+
+def _upsert_with_retry(vector_store, points: List[Dict[str, Any]]) -> bool:
+    """Upsert points in batches, retrying a failed batch with a growing wait between attempts."""
+    attempts = max(1, VECTOR_BATCH_MAX_RETRIES)
+    for i in range(0, len(points), VECTOR_UPSERT_BATCH_SIZE):
+        batch = points[i:i + VECTOR_UPSERT_BATCH_SIZE]
+        wait_seconds = VECTOR_BATCH_RETRY_INITIAL_WAIT_MS / 1000
+        for attempt in range(1, attempts + 1):
+            if vector_store.add_documents_batch(collection_name=COLLECTION_NAME, points=batch):
+                break
+            if attempt == attempts:
+                logger.error(f"Failed to add batch {i // VECTOR_UPSERT_BATCH_SIZE + 1} after {attempts} attempts")
+                return False
+            logger.warning(f"Batch insert failed, attempt {attempt}/{attempts}; retrying in {wait_seconds:.1f}s")
+            time.sleep(wait_seconds)
+            wait_seconds *= VECTOR_BATCH_RETRY_BACKOFF_FACTOR
+    return True
+
+
 def add_report_to_vector_store(report_id=None, employee_id=None, report_date=None, report_text=None, reports=None, session=None) -> bool:
     """
-    Adds a report or multiple reports to the vector store.
-    
+    Add reports to the vector store and record their chunk mappings.
+
     Args:
-        report_id: ID of the report (for single report mode)
-        employee_id: Employee ID (for single report mode)
-        report_date: Report date as string (for single report mode)
-        report_text: Report text content (for single report mode)
-        reports: List of report dictionaries for batch mode, each containing:
-            - report_id: ID of the report
-            - employee_id: Employee ID
-            - report_date: Report date as string
-            - report_text: Report text content
-        session: Optional SQLAlchemy session to use for database operations
-            
-    Returns:
-        True if all operations were successful, False otherwise
+        report_id, employee_id, report_date, report_text: one report
+        reports: or a list of report dicts with those four keys
+        session: Optional SQLAlchemy session for the mapping writes
+
+    A report without text is skipped. Returns True when every report with text
+    was added, False otherwise (including an unreadable report date).
     """
+    if reports is None:
+        reports = [{"report_id": report_id, "employee_id": employee_id,
+                    "report_date": report_date, "report_text": report_text}]
     try:
-        # Helper function to convert date to timestamp for Qdrant storage
-        def date_to_timestamp(date_str):
-            if isinstance(date_str, str):
-                try:
-                    # Convert ISO format string to timestamp
-                    return datetime.strptime(date_str, "%Y-%m-%d").timestamp()
-                except:
-                    logger.warning(f"Could not parse date string: {date_str}, using current time")
-                    return datetime.now().timestamp()
-            elif isinstance(date_str, (datetime, date)):
-                # Convert date/datetime object to timestamp
-                return datetime.combine(date_str, datetime.min.time()).timestamp()
-            else:
-                logger.warning(f"Unknown date format: {date_str}, using current time")
-                return datetime.now().timestamp()
-            
-        # Check if we're in batch mode
-        if reports:
-            logger.info(f"Adding {len(reports)} reports to vector store in batch")
-            
-            # Get vector store and use context manager for proper cleanup
-            vector_store = get_vector_store()
-            
-            # Use context manager pattern for automatic cleanup
-            with vector_store:
-                # Ensure collection exists
-                if not setup_collection():
-                    logger.error("Failed to setup vector collection")
-                    return False
-                    
-                # Pre-process all reports to generate chunks and embeddings
-                all_points = []
-                all_mappings = []
-                all_chunks = []
-                chunk_metadata = []  # Track which report/index each chunk belongs to
-                
-                # First, collect all chunks and their metadata
-                for report_idx, report in enumerate(reports):
-                    report_id = report["report_id"]
-                    employee_id = report["employee_id"]
-                    report_date = report["report_date"]
-                    report_text = report["report_text"]
-                    
-                    # Chunk the text
-                    chunks = chunk_text(report_text)
-                    if not chunks:
-                        logger.warning(f"No chunks were generated from report text for report {report_id}")
-                        continue
-                    
-                    # Add chunks to the batch list
-                    for chunk_idx, chunk in enumerate(chunks):
-                        all_chunks.append(chunk)
-                        chunk_metadata.append({
-                            "report_idx": report_idx,
-                            "report_id": report_id,
-                            "employee_id": employee_id,
-                            "chunk_idx": chunk_idx,
-                            "report_date": report_date
-                        })
-                
-                if not all_chunks:
-                    logger.warning("No chunks were generated from any reports")
-                    return True  # Not a failure, just nothing to do
-                
-                # Generate all embeddings in a single batch operation
-                start_time = time.time()
-                logger.info(f"Generating embeddings for {len(all_chunks)} chunks in batch")
-                all_embeddings = get_embeddings(all_chunks)
-                logger.info(f"Batch embedding generation completed in {time.time() - start_time:.2f}s")
-                
-                if not all_embeddings or len(all_embeddings) != len(all_chunks):
-                    logger.error(f"Failed to generate embeddings: expected {len(all_chunks)}, got {len(all_embeddings) if all_embeddings else 0}")
-                    return False
-                
-                # Create points and mappings using the generated embeddings
-                for i, embedding in enumerate(all_embeddings):
-                    chunk = all_chunks[i]
-                    meta = chunk_metadata[i]
-                    
-                    # Point ID derived from (report, chunk), so a re-import overwrites it
-                    document_id = report_chunk_point_id(meta["report_id"], meta["chunk_idx"])
-                    
-                    # Create payload - convert date to timestamp
-                    payload = {
-                        fields.REPORT_ID: str(meta["report_id"]),
-                        fields.EMPLOYEE_ID: meta["employee_id"],
-                        fields.CHUNK_INDEX: meta["chunk_idx"],
-                        fields.REPORT_DATE: meta["report_date"],  # Keep original date for display
-                        fields.REPORT_DATE_TS: date_to_timestamp(meta["report_date"]),  # Add timestamp for filtering
-                        fields.TEXT: chunk
-                    }
-                    
-                    # Add to points batch
-                    all_points.append({
-                        "document_id": document_id,
-                        "vector": embedding,
-                        "payload": payload
-                    })
-                    
-                    # Collect mapping for database
-                    all_mappings.append({
-                        "document_id": document_id,
-                        "report_id": str(meta["report_id"]),
-                        "chunk_index": meta["chunk_idx"]
-                    })
-                
-                # Process in sub-batches if necessary
-                if not all_points:
-                    logger.warning("No points to add to vector store")
-                    return True  # Not a failure, just nothing to do
-                    
-                # Process points in batches
-                for i in range(0, len(all_points), VECTOR_UPSERT_BATCH_SIZE):
-                    batch = all_points[i:i + VECTOR_UPSERT_BATCH_SIZE]
-                    
-                    # Try to add the batch with retries
-                    success = False
-                    retries = 0
-                    
-                    while not success and retries < VECTOR_BATCH_MAX_RETRIES:
-                        success = vector_store.add_documents_batch(
-                            collection_name=COLLECTION_NAME,
-                            points=batch
-                        )
-                        
-                        if not success:
-                            retries += 1
-                            logger.warning(f"Batch insert failed, retry {retries}/{VECTOR_BATCH_MAX_RETRIES}")
-                    
-                    if not success:
-                        logger.error(f"Failed to add batch {i//VECTOR_UPSERT_BATCH_SIZE + 1} after {VECTOR_BATCH_MAX_RETRIES} retries")
-                        return False
-                
-                # Store all mappings in database
-                if not store_mappings_batch(all_mappings, session):
-                    logger.error("Failed to store vector mappings in database")
-                    return False
+        logger.info(f"Adding {len(reports)} report(s) to vector store")
+        vector_store = get_vector_store()
+        with vector_store:
+            if not setup_collection():
+                logger.error("Failed to setup vector collection")
+                return False
 
-                if not _remove_stale_report_vectors(
-                    vector_store, {m["report_id"] for m in all_mappings}, {m["document_id"] for m in all_mappings}, session
-                ):
-                    return False
-                    
-                logger.info(f"Successfully added {len(reports)} reports with total {len(all_points)} vectors")
-                return True
-                
-        else:
-            # Original single-report mode
-            logger.info(f"Adding report to vector store: {report_id}")
-            
-            # Get vector store and use context manager for proper cleanup
-            vector_store = get_vector_store()
-            
-            # Use context manager pattern for automatic cleanup
-            with vector_store:
-                # Ensure collection exists
-                if not setup_collection():
-                    logger.error("Failed to setup vector collection")
-                    return False
-                    
-                # Chunk the text
-                chunks = chunk_text(report_text)
-                if not chunks:
-                    logger.warning("No chunks were generated from the report text")
-                    return False
-                    
-                logger.info(f"Generated {len(chunks)} chunks from report text")
-                
-                # Batch process mode
-                if VECTOR_BATCH_MODE:
-                    # Prepare batches for processing
-                    points = []
-                    mappings = []
-                    
-                    # Generate all embeddings in a single batch operation
-                    start_time = time.time()
-                    logger.debug(f"Generating embeddings for {len(chunks)} chunks in batch")
-                    chunk_embeddings = get_embeddings(chunks)
-                    logger.debug(f"Batch embedding generation completed in {time.time() - start_time:.2f}s")
-                    
-                    if not chunk_embeddings or len(chunk_embeddings) != len(chunks):
-                        logger.error(f"Failed to generate embeddings: expected {len(chunks)}, got {len(chunk_embeddings) if chunk_embeddings else 0}")
-                        return False
-                    
-                    # Create points and mappings using the generated embeddings
-                    for chunk_index, (chunk, embedding) in enumerate(zip(chunks, chunk_embeddings)):
-                        # Point ID derived from (report, chunk), so re-adding the report overwrites it
-                        document_id = report_chunk_point_id(report_id, chunk_index)
-                        
-                        # Create payload with timestamp for filtering
-                        payload = {
-                            fields.REPORT_ID: str(report_id),
-                            fields.EMPLOYEE_ID: employee_id,
-                            fields.CHUNK_INDEX: chunk_index,
-                            fields.REPORT_DATE: report_date,  # Keep original date for display
-                            fields.REPORT_DATE_TS: date_to_timestamp(report_date),  # Add timestamp for filtering
-                            fields.TEXT: chunk
-                        }
-                        
-                        # Add to points batch
-                        points.append({
-                            "document_id": document_id,
-                            "vector": embedding,
-                            "payload": payload
-                        })
-                        
-                        # Collect mapping for database
-                        mappings.append({
-                            "document_id": document_id,
-                            "report_id": str(report_id),
-                            "chunk_index": chunk_index
-                        })
-                    
-                    # Process in sub-batches if necessary
-                    for i in range(0, len(points), VECTOR_UPSERT_BATCH_SIZE):
-                        batch = points[i:i + VECTOR_UPSERT_BATCH_SIZE]
-                        
-                        # Try to add the batch with retries
-                        success = False
-                        retries = 0
-                        
-                        while not success and retries < VECTOR_BATCH_MAX_RETRIES:
-                            success = vector_store.add_documents_batch(
-                                collection_name=COLLECTION_NAME,
-                                points=batch
-                            )
-                            
-                            if not success:
-                                retries += 1
-                                logger.warning(f"Batch insert failed, retry {retries}/{VECTOR_BATCH_MAX_RETRIES}")
-                        
-                        if not success:
-                            logger.error(f"Failed to add batch {i//VECTOR_UPSERT_BATCH_SIZE + 1} after {VECTOR_BATCH_MAX_RETRIES} retries")
-                            return False
-                    
-                    # Store all mappings in one database operation
-                    if not store_mappings_batch(mappings, session):
-                        logger.error("Failed to store vector mappings in database")
-                        return False
+            built = _build_points(reports)
+            if built is None:
+                return False
+            points, mappings = built
+            if not points:
+                logger.warning("No chunks were generated from any reports")
+                return True  # Not a failure, just nothing to do
 
-                    if not _remove_stale_report_vectors(
-                        vector_store, [str(report_id)], {m["document_id"] for m in mappings}, session
-                    ):
-                        return False
-                    
-                    logger.info(f"Successfully added report {report_id} with {len(chunks)} chunks in batch mode")
-                    
-                else:
-                    # Legacy non-batch mode - process each chunk individually
-                    mappings = []
-                    
-                    for chunk_index, chunk in enumerate(chunks):
-                        # Point ID derived from (report, chunk), so re-adding the report overwrites it
-                        document_id = report_chunk_point_id(report_id, chunk_index)
-                        
-                        # Generate embedding
-                        embedding = get_embedding(chunk)
-                        
-                        # Create payload with timestamp for filtering
-                        payload = {
-                            fields.REPORT_ID: str(report_id),
-                            fields.EMPLOYEE_ID: employee_id,
-                            fields.CHUNK_INDEX: chunk_index,
-                            fields.REPORT_DATE: report_date,  # Keep original date for display
-                            fields.REPORT_DATE_TS: date_to_timestamp(report_date),  # Add timestamp for filtering
-                            fields.TEXT: chunk
-                        }
-                        
-                        # Add to vector store
-                        success = vector_store.add_document(
-                            collection_name=COLLECTION_NAME,
-                            document_id=document_id,
-                            vector=embedding,
-                            payload=payload
-                        )
-                        
-                        if success:
-                            # Collect mapping for batch insert
-                            mappings.append({
-                                "document_id": document_id,
-                                "report_id": str(report_id),
-                                "chunk_index": chunk_index
-                            })
-                        else:
-                            logger.error(f"Failed to add chunk {chunk_index} to vector store")
-                            return False
-                    
-                    # Store mappings in batch
-                    store_mappings_batch(mappings, session)
-                    if not _remove_stale_report_vectors(
-                        vector_store, [str(report_id)], {m["document_id"] for m in mappings}, session
-                    ):
-                        return False
-                    
-                    logger.info(f"Report added with {len(chunks)} chunks in single mode")
-            
+            if not _upsert_with_retry(vector_store, points):
+                return False
+            if not store_mappings_batch(mappings, session):
+                logger.error("Failed to store vector mappings in database")
+                return False
+            if not _remove_stale_report_vectors(
+                vector_store, {m["report_id"] for m in mappings}, {m["document_id"] for m in mappings}, session
+            ):
+                return False
+
+            logger.info(f"Successfully added {len(reports)} report(s) with {len(points)} vectors")
             return True
-            
     except Exception as e:
         logger.error(f"Failed to add report to vector store: {str(e)}")
         return False
+
 
 def search_reports(query: str, employee_id: int, top_k: int = 5, score_threshold: float = 0.3, 
                    bypass_threshold: bool = False, group_by_report: bool = False,

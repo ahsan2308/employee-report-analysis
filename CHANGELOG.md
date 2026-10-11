@@ -6,6 +6,23 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased
 
+### Changed: one way to add reports to the vector store
+
+`add_report_to_vector_store` adds a single report and a list of reports the
+same way. The one-chunk-at-a-time mode and its switch,
+`vector_db.batch_processing.enabled`, are removed. Behaviour changes:
+
+- A failed upsert batch is retried after a growing wait instead of
+  immediately: `vector_db.batch_processing.retry.initial_wait_ms` (100) and
+  `backoff_factor` (2), which `config.yaml` already listed, are now read.
+  `max_attempts` (3) counts every attempt, the first one included.
+- A report date is read like other report dates (`2025-03-07`, `03/07/2025`,
+  `14/03/2025`, a trailing time). An unreadable date fails the call; it used to
+  be stored as the current time, which put the report in the wrong week for
+  date-filtered searches.
+- A single report with no text is skipped and the call succeeds, as a report
+  without text in a list already was; it used to fail the call.
+
 ### Fixed: rows a sync could not save are read again
 
 A failed database write in an import or sync batch (or a failed vector store

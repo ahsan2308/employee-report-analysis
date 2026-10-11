@@ -30,11 +30,10 @@ vector_db:
     hnsw_ef_construct: 256  # Search depth while building the graph
 
   batch_processing:
-    enabled: true
     embedding_batch_size: 50     # Maximum number of chunks to embed in one call
     upsert_batch_size: 100       # Maximum number of vectors to upsert in one call
     retry:
-      max_attempts: 3            # Maximum number of retry attempts for failed batches
+      max_attempts: 3            # Attempts per upsert batch, the first one included
       backoff_factor: 2          # Multiplicative factor for successive backoff delays
       initial_wait_ms: 100       # Initial wait time before first retry (milliseconds)
     
