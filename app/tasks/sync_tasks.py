@@ -5,11 +5,11 @@ This module contains Celery tasks for synchronizing data from SQL Server to Post
 """
 from typing import Dict, Any, Optional
 from celery import shared_task, Task
-from datetime import datetime
 
 from app.core.logger import logger
+from app.repositories import sync_history
 from app.db.database import get_database
-from app.models.sync_models import SyncHistory, SyncStatus
+from app.models.sync_models import SyncStatus
 from app.services.sync_service import create_sync_service
 
 
@@ -42,16 +42,14 @@ class SyncTask(Task):
             
         try:
             # Get sync job directly from database
-            sync_job = self.db.query(SyncHistory).filter(SyncHistory.sync_id == sync_id).first()
+            sync_job = sync_history.get_sync(self.db, sync_id)
             if not sync_job:
                 logger.error(f"Could not find sync job {sync_id} when handling failure")
                 return
                 
             # Update sync job status if not already failed
             if sync_job.status != SyncStatus.FAILED.value:
-                sync_job.status = SyncStatus.FAILED.value
-                sync_job.error_message = str(exc)
-                sync_job.completed_at = datetime.now()
+                sync_history.mark_failed(sync_job, str(exc))
                 self.db.commit()
                 logger.info(f"Updated sync job {sync_id} status to FAILED due to task error")
                 

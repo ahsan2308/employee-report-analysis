@@ -16,6 +16,7 @@ from app.services.csv.row_processor import RowProcessor
 from app.services.csv.error_handler import ImportErrorHandler
 from app.models.sync_models import SyncHistory, SyncType, SyncStatus
 from app.core import settings
+from app.repositories import sync_history
 from app.core.logger import logger
 from app.db.database import get_database
 
@@ -240,9 +241,7 @@ class SyncService:
                 if existing_sync_id:
                     # Use existing sync job created by API endpoint
                     logger.info(f"Using existing sync job: {existing_sync_id}")
-                    sync_job = session.query(SyncHistory).filter(
-                        SyncHistory.sync_id == existing_sync_id
-                    ).first()
+                    sync_job = sync_history.get_sync(session, existing_sync_id)
                     
                     if not sync_job:
                         raise ValueError(f"Sync job {existing_sync_id} not found")

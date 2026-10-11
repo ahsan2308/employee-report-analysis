@@ -8,11 +8,11 @@ from datetime import datetime
 import traceback
 from contextlib import contextmanager
 import pandas as pd
-from sqlalchemy import func
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.logger import logger
+from app.repositories import import_jobs
 from app.db.database import get_database
 from app.services.csv.csv_reader import PandasCSVReader
 from app.services.csv.row_processor import RowProcessor
@@ -49,19 +49,8 @@ def list_import_jobs(session: Session,
                      limit: int = 50,
                      offset: int = 0) -> List[Dict[str, Any]]:
     """Import jobs, newest first, counting errors the same way as get_import_job."""
-    query = session.query(CSVImportJob)
-    if status:
-        query = query.filter(CSVImportJob.status == status)
-    if csv_type:
-        query = query.filter(CSVImportJob.csv_type == csv_type)
-    jobs = query.order_by(CSVImportJob.submitted_at.desc()).offset(offset).limit(limit).all()
-
-    error_counts = dict(
-        session.query(ImportError.job_id, func.count(ImportError.error_id))
-        .filter(ImportError.job_id.in_([job.job_id for job in jobs]))
-        .group_by(ImportError.job_id)
-        .all()
-    ) if jobs else {}
+    jobs = import_jobs.list_jobs(session, status=status, csv_type=csv_type, limit=limit, offset=offset)
+    error_counts = import_jobs.error_counts(session, [job.job_id for job in jobs])
     return [import_job_response(job, error_counts.get(job.job_id, 0)) for job in jobs]
 
 
@@ -128,7 +117,7 @@ class CSVImportService:
             job.error_count = error_count
         elif status == ImportStatus.FAILED:
             # If status is FAILED and no error_count is provided, get the actual count from the database
-            actual_error_count = session.query(ImportError).filter(ImportError.job_id == job.job_id).count()
+            actual_error_count = import_jobs.count_errors(session, job.job_id)
             if actual_error_count > 0:
                 job.error_count = actual_error_count
             elif job.error_count == 0:
@@ -160,9 +149,7 @@ class CSVImportService:
                 options=options.model_dump() if options else None
             )
             
-            session.add(job)
-            session.commit()
-            session.refresh(job)
+            import_jobs.add_job(session, job)
             
             logger.info(f"Created import job {job.job_id} for file {filename}, type: {csv_type or 'auto-detect'}")
             
@@ -194,7 +181,7 @@ class CSVImportService:
         
         with self._transaction_context() as session:
             # Get the job
-            job = session.query(CSVImportJob).filter(CSVImportJob.job_id == job_id).first()
+            job = import_jobs.get_job(session, job_id)
             if not job:
                 raise ValueError(f"Import job {job_id} not found")
             
@@ -663,15 +650,13 @@ class CSVImportService:
         Save errors to the database and update job's error count.
         """
         error_models = error_handler.to_db_models(job_id)
-        for error in error_models:
-            session.add(error)
-        session.commit()
+        import_jobs.add_errors(session, error_models)
         
         # Update the job's error_count directly
-        job = session.query(CSVImportJob).filter(CSVImportJob.job_id == job_id).first()
+        job = import_jobs.get_job(session, job_id)
         if job:
             # Get total error count for this job
-            actual_error_count = session.query(ImportError).filter(ImportError.job_id == job_id).count()
+            actual_error_count = import_jobs.count_errors(session, job_id)
             if job.error_count != actual_error_count:
                 job.error_count = actual_error_count
                 session.commit()
@@ -682,11 +667,10 @@ class CSVImportService:
     def mark_job_failed(self, job_id: str, message: str) -> None:
         """Mark a job FAILED with one job-level error (row 0), e.g. when its task could not be queued."""
         with self._transaction_context() as session:
-            job = session.query(CSVImportJob).filter(CSVImportJob.job_id == job_id).first()
+            job = import_jobs.get_job(session, job_id)
             if not job:
                 return
-            session.add(ImportError(job_id=job.job_id, row_number=0, error_message=message))
-            session.flush()
+            import_jobs.add_errors(session, [ImportError(job_id=job.job_id, row_number=0, error_message=message)])
             self._update_job_status(session, job, ImportStatus.FAILED)
 
     def get_import_job(self, job_id: str) -> Dict[str, Any]:
@@ -696,13 +680,13 @@ class CSVImportService:
         Returns a dictionary of job attributes rather than the SQLAlchemy model to avoid session binding issues.
         """
         with self._transaction_context() as session:
-            job = session.query(CSVImportJob).filter(CSVImportJob.job_id == job_id).first()
+            job = import_jobs.get_job(session, job_id)
             
             if not job:
                 return None
             
             # Report the stored errors; reading a job never writes to it
-            actual_error_count = session.query(ImportError).filter(ImportError.job_id == job_id).count()
+            actual_error_count = import_jobs.count_errors(session, job_id)
             
             return import_job_response(job, actual_error_count)
         
@@ -717,14 +701,8 @@ class CSVImportService:
         """
         with self._transaction_context() as session:
             
-            total = int(session.query(ImportError).filter(ImportError.job_id == job_id).count())
-            offset = (page - 1) * page_size
-            
-            errors = session.query(ImportError).filter(
-                ImportError.job_id == job_id
-            ).order_by(
-                ImportError.row_number
-            ).offset(offset).limit(page_size).all()
+            total = import_jobs.count_errors(session, job_id)
+            errors = import_jobs.page_errors(session, job_id, offset=(page - 1) * page_size, limit=page_size)
             
 
             error_dicts = []
