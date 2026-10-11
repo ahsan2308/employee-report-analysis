@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.api.serializers import monthly_analysis_response, quarterly_analysis_response, task_status_response, weekly_analysis_response
-from app.models.db_models import EmployeeAnalysis, Report, Employee, MonthlyAnalysis, QuarterlyAnalysis
 from app.schemas.analysis_schema import AnalysisResponse, MonthlyAnalysisResponse, MonthlyAnalysisSummary, QuarterlyAnalysisResponse
-from app.repositories.analyses import find_monthly_analysis, find_quarterly_analysis, get_monthly_analysis_by_params, get_quarterly_analysis_by_params
+from app.repositories import analyses as analysis_repo
+from app.repositories.employees import get_employee
+from app.repositories.reports import get_report
 from app.core.logger import logger
 from uuid import UUID
 from typing import List
@@ -26,19 +27,17 @@ def analyze_report(report_id: str, db: Session = Depends(get_db)):
         report_uuid = UUID(report_id) if not isinstance(report_id, UUID) else report_id
         
         # Check if report exists
-        report = db.query(Report).filter(Report.report_id == report_uuid).first()
+        report = get_report(db, report_uuid)
         if not report:
             raise HTTPException(status_code=404, detail="Report not found")
         
         # Check if employee exists
-        employee = db.query(Employee).filter(Employee.id == report.employee_id).first()
+        employee = get_employee(db, report.employee_id)
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
             
         # Check if analysis already exists - reuse it if it does
-        existing_analysis = db.query(EmployeeAnalysis).filter(
-            EmployeeAnalysis.report_id == report_uuid
-        ).first()
+        existing_analysis = analysis_repo.find_weekly_analysis(db, report_uuid)
         
         # Create task (either with existing analysis or as a new task)
         task = create_task_for_analysis(db, report_uuid, employee, existing_analysis)
@@ -61,25 +60,19 @@ def get_analysis_by_report(report_id: str, db: Session = Depends(get_db)):
         report_uuid = UUID(report_id)
         
         # Get the analysis
-        analysis = db.query(EmployeeAnalysis).filter(
-            EmployeeAnalysis.report_id == report_uuid
-        ).first()
+        analysis = analysis_repo.find_weekly_analysis(db, report_uuid)
         
         if not analysis:
             raise HTTPException(status_code=404, detail="Analysis not found")
             
         # Get the report to find employee
-        report = db.query(Report).filter(
-            Report.report_id == report_uuid
-        ).first()
+        report = get_report(db, report_uuid)
         
         if not report:
             raise HTTPException(status_code=404, detail="Report not found")
             
         # Get employee details
-        employee = db.query(Employee).filter(
-            Employee.id == report.employee_id
-        ).first()
+        employee = get_employee(db, report.employee_id)
         
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
@@ -99,31 +92,22 @@ def get_analysis_by_report(report_id: str, db: Session = Depends(get_db)):
 def get_employee_analyses(employee_id: int, db: Session = Depends(get_db)):
     try:
         # Check if employee exists
-        employee = db.query(Employee).filter(Employee.id == employee_id).first()
+        employee = get_employee(db, employee_id)
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
             
-        # Get analyses for employee
-        analyses = db.query(EmployeeAnalysis).filter(
-            EmployeeAnalysis.employee_id == employee_id
-        ).all()
-        
-        analyses_list = []
-        for analysis in analyses:
-            # Get report for this analysis
-            report = db.query(Report).filter(
-                Report.report_id == analysis.report_id
-            ).first()
-            
-            if report:
-                analyses_list.append({
-                    "analysis_id": analysis.analysis_id,
-                    "report_id": str(analysis.report_id),
-                    "report_date": report.report_date,
-                    "sentiment_score": analysis.sentiment_score,
-                    "risk_level": analysis.risk_level,
-                    "performance_rating": analysis.performance_rating
-                })
+        # Analyses with their reports (an analysis whose report is gone is left out)
+        analyses_list = [
+            {
+                "analysis_id": analysis.analysis_id,
+                "report_id": str(analysis.report_id),
+                "report_date": report.report_date,
+                "sentiment_score": analysis.sentiment_score,
+                "risk_level": analysis.risk_level,
+                "performance_rating": analysis.performance_rating
+            }
+            for analysis, report in analysis_repo.list_weekly_analyses_with_reports(db, employee_id)
+        ]
             
         return {"employee_id": employee_id, "employee_name": employee.name, "analyses": analyses_list}
     except HTTPException:
@@ -137,25 +121,19 @@ def get_employee_analyses(employee_id: int, db: Session = Depends(get_db)):
 def get_analysis_by_id(analysis_id: int, db: Session = Depends(get_db)):
     try:
         # Get the analysis
-        analysis = db.query(EmployeeAnalysis).filter(
-            EmployeeAnalysis.analysis_id == analysis_id
-        ).first()
+        analysis = analysis_repo.get_weekly_analysis(db, analysis_id)
         
         if not analysis:
             raise HTTPException(status_code=404, detail="Analysis not found")
             
         # Get report to find employee
-        report = db.query(Report).filter(
-            Report.report_id == analysis.report_id
-        ).first()
+        report = get_report(db, analysis.report_id)
         
         if not report:
             raise HTTPException(status_code=404, detail="Report not found")
             
         # Get employee details
-        employee = db.query(Employee).filter(
-            Employee.id == report.employee_id
-        ).first()
+        employee = get_employee(db, report.employee_id)
         
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
@@ -185,12 +163,12 @@ def analyze_monthly_reports(
     logger.info(f"Request received to analyze monthly reports for employee {employee_id}, period {year}-{month}")
     try:
         # Check if employee exists
-        employee = db.query(Employee).filter(Employee.id == employee_id).first()
+        employee = get_employee(db, employee_id)
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
             
         # Check if analysis already exists - if so, return reference to it
-        existing_analysis = get_monthly_analysis_by_params(employee_id, year, month)
+        existing_analysis = analysis_repo.find_monthly_analysis(db, employee_id, year, month)
         
         # Create task (either with existing analysis or as a new task)
         task = create_task_for_monthly_analysis(db, employee_id, year, month, existing_analysis)
@@ -209,17 +187,13 @@ def analyze_monthly_reports(
 def get_monthly_analysis(analysis_id: int, db: Session = Depends(get_db)):
     """Get a specific monthly analysis by ID."""
     try:
-        analysis = db.query(MonthlyAnalysis).filter(
-            MonthlyAnalysis.analysis_id == analysis_id
-        ).first()
+        analysis = analysis_repo.get_monthly_analysis(db, analysis_id)
         
         if not analysis:
             raise HTTPException(status_code=404, detail="Monthly analysis not found")
             
         # Get employee details
-        employee = db.query(Employee).filter(
-            Employee.id == analysis.employee_id
-        ).first()
+        employee = get_employee(db, analysis.employee_id)
         
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
@@ -238,14 +212,12 @@ def get_employee_monthly_analyses(employee_id: int, db: Session = Depends(get_db
     """Get all monthly analyses for an employee."""
     try:
         # Check if employee exists
-        employee = db.query(Employee).filter(Employee.id == employee_id).first()
+        employee = get_employee(db, employee_id)
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
             
         # Get all monthly analyses for this employee
-        analyses = db.query(MonthlyAnalysis).filter(
-            MonthlyAnalysis.employee_id == employee_id
-        ).order_by(MonthlyAnalysis.year.desc(), MonthlyAnalysis.month.desc()).all()
+        analyses = analysis_repo.list_monthly_analyses(db, employee_id)
         
         return [
             {
@@ -280,12 +252,12 @@ def get_employee_monthly_analysis_by_period(
     """Get a specific monthly analysis by employee, year and month."""
     try:
         # Check if employee exists
-        employee = db.query(Employee).filter(Employee.id == employee_id).first()
+        employee = get_employee(db, employee_id)
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
             
         # Get the specific monthly analysis
-        analysis = find_monthly_analysis(db, employee_id, year, month)
+        analysis = analysis_repo.find_monthly_analysis(db, employee_id, year, month)
         
         if not analysis:
             raise HTTPException(status_code=404, detail=f"Monthly analysis not found for {year}-{month}")
@@ -316,12 +288,12 @@ def analyze_quarterly_reports(
     logger.info(f"Request received to analyze quarterly performance for employee {employee_id}, period {year}-Q{quarter}")
     try:
         # Check if employee exists
-        employee = db.query(Employee).filter(Employee.id == employee_id).first()
+        employee = get_employee(db, employee_id)
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
             
         # Check if analysis already exists
-        existing_analysis = get_quarterly_analysis_by_params(employee_id, year, quarter)
+        existing_analysis = analysis_repo.find_quarterly_analysis(db, employee_id, year, quarter)
         
         # Create task (either with existing analysis or as a new task)
         task = create_task_for_quarterly_analysis(db, employee_id, year, quarter, existing_analysis)
@@ -343,17 +315,13 @@ def get_quarterly_analysis(
 ):
     """Get a specific quarterly analysis by ID."""
     try:
-        analysis = db.query(QuarterlyAnalysis).filter(
-            QuarterlyAnalysis.analysis_id == analysis_id
-        ).first()
+        analysis = analysis_repo.get_quarterly_analysis(db, analysis_id)
         
         if not analysis:
             raise HTTPException(status_code=404, detail="Quarterly analysis not found")
             
         # Get employee details
-        employee = db.query(Employee).filter(
-            Employee.id == analysis.employee_id
-        ).first()
+        employee = get_employee(db, analysis.employee_id)
         
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
@@ -377,12 +345,12 @@ def get_employee_quarterly_analysis_by_period(
     """Get a specific quarterly analysis by employee, year and quarter."""
     try:
         # Check if employee exists
-        employee = db.query(Employee).filter(Employee.id == employee_id).first()
+        employee = get_employee(db, employee_id)
         if not employee:
             raise HTTPException(status_code=404, detail="Employee not found")
             
         # Get the specific quarterly analysis
-        analysis = find_quarterly_analysis(db, employee_id, year, quarter)
+        analysis = analysis_repo.find_quarterly_analysis(db, employee_id, year, quarter)
         
         if not analysis:
             raise HTTPException(status_code=404, detail=f"Quarterly analysis not found for {year}-Q{quarter}")

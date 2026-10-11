@@ -11,11 +11,14 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.models.task_models import BackgroundTask, TaskStatus, TaskType
-from app.models.db_models import Employee, Report, EmployeeAnalysis
+from app.models.db_models import Employee, EmployeeAnalysis, MonthlyAnalysis, QuarterlyAnalysis
 from app.tasks.analysis_tasks import analyze_report_task
 from app.core import settings
 from app.core.logger import logger
-from app.repositories.analyses import find_monthly_analysis, find_quarterly_analysis
+from app.repositories import tasks as task_repo
+from app.repositories.analyses import find_monthly_analysis, find_quarterly_analysis, get_weekly_analysis
+from app.repositories.employees import get_employee
+from app.repositories.reports import get_report
 
 def _now() -> datetime:
     return datetime.now()
@@ -39,10 +42,7 @@ def _reuse_unless_stale(db: Session, active_task: Optional[BackgroundTask], desc
     if last_activity is None or _now() - last_activity < _stale_after():
         return active_task
     logger.warning(f"Task {active_task.task_id} for {description} has been {active_task.status} since {last_activity}. Marking as failed.")
-    active_task.status = TaskStatus.FAILED.value
-    active_task.error_message = "Task did not finish; the worker running it was stopped or lost"
-    active_task.completed_at = _now()
-    db.commit()
+    task_repo.mark_failed(db, active_task, "Task did not finish; the worker running it was stopped or lost", at=_now())
     return None
 
 
@@ -54,10 +54,7 @@ def find_active_task_for_report(db: Session, report_id: UUID) -> Optional[Backgr
     A task that has been active for longer than any run can take is marked
     FAILED and not returned, so a new one can be created.
     """
-    active_task = db.query(BackgroundTask).filter(
-        BackgroundTask.report_id == report_id,
-        BackgroundTask.status.in_([TaskStatus.PENDING.value, TaskStatus.RUNNING.value])
-    ).first()
+    active_task = task_repo.find_active_report_task(db, report_id)
 
     return _reuse_unless_stale(db, active_task, f"report {report_id}")
 
@@ -75,13 +72,7 @@ def find_active_task_for_monthly_analysis(db: Session, employee_id: int, year: i
     Returns:
         Active task if found, None otherwise
     """
-    active_task = db.query(BackgroundTask).filter(
-        BackgroundTask.employee_id == employee_id,
-        BackgroundTask.year == year,
-        BackgroundTask.month == month,
-        BackgroundTask.task_type == TaskType.MONTHLY_ANALYSIS.value,
-        BackgroundTask.status.in_([TaskStatus.PENDING.value, TaskStatus.RUNNING.value])
-    ).first()
+    active_task = task_repo.find_active_period_task(db, TaskType.MONTHLY_ANALYSIS, employee_id, year, month=month)
 
     return _reuse_unless_stale(db, active_task, f"monthly analysis ({employee_id}, {year}-{month})")
 
@@ -99,13 +90,7 @@ def find_active_task_for_quarterly_analysis(db: Session, employee_id: int, year:
     Returns:
         Active task if found, None otherwise
     """
-    active_task = db.query(BackgroundTask).filter(
-        BackgroundTask.employee_id == employee_id,
-        BackgroundTask.year == year,
-        BackgroundTask.quarter == quarter,
-        BackgroundTask.task_type == TaskType.QUARTERLY_ANALYSIS.value,
-        BackgroundTask.status.in_([TaskStatus.PENDING.value, TaskStatus.RUNNING.value])
-    ).first()
+    active_task = task_repo.find_active_period_task(db, TaskType.QUARTERLY_ANALYSIS, employee_id, year, quarter=quarter)
 
     return _reuse_unless_stale(db, active_task, f"quarterly analysis ({employee_id}, {year}-Q{quarter})")
 
@@ -159,9 +144,7 @@ def create_task_for_analysis(
         )
     
     # Save to database
-    db.add(task)
-    db.commit()
-    db.refresh(task)
+    task_repo.save_task(db, task)
     
     # Submit to Celery if it's a new task
     if not existing_analysis:
@@ -174,7 +157,7 @@ def create_task_for_monthly_analysis(
     employee_id: int,
     year: int,
     month: int,
-    existing_analysis: Optional[Dict[str, Any]] = None
+    existing_analysis: Optional[MonthlyAnalysis] = None
 ) -> BackgroundTask:
     """
     Create a background task for monthly analysis.
@@ -184,7 +167,7 @@ def create_task_for_monthly_analysis(
         employee_id: Employee ID
         year: Year for the analysis
         month: Month for the analysis
-        existing_analysis: Optional existing analysis data from get_monthly_analysis_by_params
+        existing_analysis: Optional existing analysis (find_monthly_analysis) to reference instead of running
         
     Returns:
         The created BackgroundTask instance
@@ -196,7 +179,7 @@ def create_task_for_monthly_analysis(
         return active_task
     
     # Check if the employee exists
-    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    employee = get_employee(db, employee_id)
     if not employee:
         logger.error(f"Employee with ID {employee_id} not found")
         raise ValueError(f"Employee with ID {employee_id} not found")
@@ -214,7 +197,7 @@ def create_task_for_monthly_analysis(
             started_at=datetime.now(),
             completed_at=datetime.now(),
             result_data={
-                "analysis_id": existing_analysis["analysis_id"],
+                "analysis_id": existing_analysis.analysis_id,
                 "employee_id": employee_id,
                 "year": year,
                 "month": month
@@ -233,9 +216,7 @@ def create_task_for_monthly_analysis(
         )
     
     # Save to database
-    db.add(task)
-    db.commit()
-    db.refresh(task)
+    task_repo.save_task(db, task)
     
     # Submit to Celery if it's a new task - will add analyze_monthly_reports_task
     if not existing_analysis:
@@ -250,7 +231,7 @@ def create_task_for_quarterly_analysis(
     employee_id: int,
     year: int,
     quarter: int,
-    existing_analysis: Optional[Dict[str, Any]] = None
+    existing_analysis: Optional[QuarterlyAnalysis] = None
 ) -> BackgroundTask:
     """
     Create a background task for quarterly analysis.
@@ -260,7 +241,7 @@ def create_task_for_quarterly_analysis(
         employee_id: Employee ID
         year: Year for the analysis
         quarter: Quarter for the analysis (1-4)
-        existing_analysis: Optional existing analysis data from get_quarterly_analysis_by_params
+        existing_analysis: Optional existing analysis (find_quarterly_analysis) to reference instead of running
         
     Returns:
         The created BackgroundTask instance
@@ -272,7 +253,7 @@ def create_task_for_quarterly_analysis(
         return active_task
     
     # Check if the employee exists
-    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    employee = get_employee(db, employee_id)
     if not employee:
         logger.error(f"Employee with ID {employee_id} not found")
         raise ValueError(f"Employee with ID {employee_id} not found")
@@ -290,7 +271,7 @@ def create_task_for_quarterly_analysis(
             started_at=datetime.now(),
             completed_at=datetime.now(),
             result_data={
-                "analysis_id": existing_analysis["analysis_id"],
+                "analysis_id": existing_analysis.analysis_id,
                 "employee_id": employee_id,
                 "year": year,
                 "quarter": quarter
@@ -309,9 +290,7 @@ def create_task_for_quarterly_analysis(
         )
     
     # Save to database
-    db.add(task)
-    db.commit()
-    db.refresh(task)
+    task_repo.save_task(db, task)
     
     # Submit to Celery if it's a new task
     if not existing_analysis:
@@ -327,7 +306,7 @@ class TaskNotFoundError(ValueError):
 
 def get_task_status(db: Session, task_id: UUID) -> Optional[BackgroundTask]:
     """Get a task by ID."""
-    return db.query(BackgroundTask).filter(BackgroundTask.task_id == task_id).first()
+    return task_repo.get_task(db, task_id)
 
 @dataclass
 class TaskResult:
@@ -369,12 +348,10 @@ def get_task_result(db: Session, task_id: UUID) -> TaskResult:
     if task.task_type == TaskType.REPORT_ANALYSIS.value:
         # Only a bare reference ({"analysis_id": ...}) is expanded; a full stored payload is returned as is
         if len(result_data) <= 2:
-            analysis = db.query(EmployeeAnalysis).filter(
-                EmployeeAnalysis.analysis_id == result_data["analysis_id"]
-            ).first()
-            report = analysis and db.query(Report).filter(Report.report_id == analysis.report_id).first()
+            analysis = get_weekly_analysis(db, result_data["analysis_id"])
+            report = analysis and get_report(db, analysis.report_id)
             if report:
-                employee = db.query(Employee).filter(Employee.id == report.employee_id).first()
+                employee = get_employee(db, report.employee_id)
                 return TaskResult(status=task.status, result_data=result_data,
                                   analysis_kind="weekly", analysis=analysis, employee=employee)
     elif task.task_type in (TaskType.MONTHLY_ANALYSIS.value, TaskType.QUARTERLY_ANALYSIS.value):
@@ -384,7 +361,7 @@ def get_task_result(db: Session, task_id: UUID) -> TaskResult:
         else:
             kind, analysis = "quarterly", find_quarterly_analysis(db, task.employee_id, task.year, task.quarter)
         if analysis:
-            employee = db.query(Employee).filter(Employee.id == task.employee_id).first()
+            employee = get_employee(db, task.employee_id)
             return TaskResult(status=task.status, result_data=result_data,
                               analysis_kind=kind, analysis=analysis, employee=employee)
     

@@ -1,5 +1,6 @@
 """Employee queries."""
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional
+from sqlalchemy.orm import Session
 from app.db.database import get_database
 from app.models.db_models import Employee
 from app.core.logger import logger
@@ -33,3 +34,24 @@ def get_employee_info(employee_id: int) -> Dict[str, Any]:
     except Exception as e:
         logger.error(f"Error fetching employee info: {e}")
         return None
+
+
+def get_employee(session: Session, employee_id: int) -> Optional[Employee]:
+    """The employee row, in the caller's session."""
+    return session.query(Employee).filter(Employee.id == employee_id).first()
+
+
+def list_employees(session: Session) -> List[Employee]:
+    return session.query(Employee).all()
+
+
+def add_employee(session: Session, employee: Employee) -> Employee:
+    """Insert an employee; the session is rolled back if the insert fails."""
+    try:
+        session.add(employee)
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    session.refresh(employee)
+    return employee

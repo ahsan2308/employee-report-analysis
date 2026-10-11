@@ -53,6 +53,7 @@
   "app.repositories.employees": "ok",
   "app.repositories.job_descriptions": "ok",
   "app.repositories.reports": "ok",
+  "app.repositories.tasks": "ok",
   "app.repositories.vision_data": "ok",
   "app.services": "ok",
   "app.services.analysis": "ok",
