@@ -19,7 +19,6 @@ from app.services.csv.row_models import (
     _top_level_split,
 )
 from app.schemas.csv_import_schema import (
-    CSVImportJobCreate,
     CSVImportJobResponse,
     CSVImportOptions,
     ImportErrorResponse,
@@ -466,16 +465,6 @@ def test_import_options_and_job_models(snapshot):
     }
     out["options"] = {k: model_outcome(CSVImportOptions, v) for k, v in option_cases.items()}
 
-    job_create_cases = {
-        "csv": {"filename": "reports.csv"},
-        "upper_csv": {"filename": "REPORTS.CSV"},
-        "tsv": {"filename": "reports.tsv"},
-        "txt": {"filename": "reports.txt"},
-        "no_ext": {"filename": "reports"},
-        "with_options": {"filename": "a.csv", "options": {"chunk_size": 10}},
-        "bad_options": {"filename": "a.csv", "options": {"processing_mode": "nope"}},
-    }
-    out["job_create"] = {k: model_outcome(CSVImportJobCreate, v) for k, v in job_create_cases.items()}
 
     base = {
         "job_id": "job-1", "filename": "a.csv", "status": "processing",

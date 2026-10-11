@@ -95,17 +95,6 @@ def get_quarterly_data_for_analysis(employee_id: int, year: int, quarter: int) -
         result["weekly_analyses"] = weekly_analyses
         result["metrics"]["weekly_report_count"] = len(weekly_analyses)
         
-        # Create monthly-indexed weekly analyses for better pattern detection
-        monthly_indexed_weekly_analyses = {}
-        for week_analysis in weekly_analyses:
-            week_date = week_analysis.get("date")
-            if week_date:
-                month = week_date.month if hasattr(week_date, "month") else None
-                if month:
-                    if month not in monthly_indexed_weekly_analyses:
-                        monthly_indexed_weekly_analyses[month] = []
-                    monthly_indexed_weekly_analyses[month].append(week_analysis)
-        
         # Calculate metrics from monthly analyses (avoiding duplication and redundancy)
         monthly_report_counts = {}
         monthly_summaries = []

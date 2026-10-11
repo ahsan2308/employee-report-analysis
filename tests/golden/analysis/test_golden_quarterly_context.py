@@ -1,4 +1,4 @@
-"""Golden-master tests for app/services/quarterly_analysis_db_service.get_quarterly_data_for_analysis.
+"""Golden-master tests for app/services/analysis/quarterly_context.get_quarterly_data_for_analysis.
 
 Every db_service function is mocked where the module under test looks it up;
 get_quarter_date_range (pure) and map_reports_to_jds (pure) run for real.
@@ -8,10 +8,10 @@ from datetime import date
 
 import pytest
 
-from app.services import quarterly_analysis_db_service as svc
+from app.services.analysis import quarterly_context as svc
 from tests.golden.analysis.fixtures import EMPLOYEE, jd, monthly_analysis, weekly_analysis
 
-MOD = "app.services.quarterly_analysis_db_service"
+MOD = "app.services.analysis.quarterly_context"
 
 
 def run(capsys, employee=EMPLOYEE, monthly=(), weekly=(), jds=(), year=2025, quarter=1):

@@ -96,6 +96,11 @@ re-exports. Update imports as follows:
 | `app.model_host.ollama_embedding`, `app.model_host.vllm_embedding` | `app.integrations.embeddings.ollama`, `app.integrations.embeddings.vllm` |
 | `app.vector_store` | `app.integrations.vector_store` |
 | `app.vector_store.qdrant_provider` | `app.integrations.vector_store.qdrant` |
+| `app.services.monthly_analysis_db_service` | `app.services.analysis.monthly_context` |
+| `app.services.quarterly_analysis_db_service` | `app.services.analysis.quarterly_context` |
+| `app.services.analysis.jd_formatting` | `app.prompts.job_descriptions` |
+| `app.services.analysis.vision_formatting` (`filter_vision_data`) | `app.domain.vision_catalog` |
+| `app.services.analysis.vision_formatting` (`format_vision_data_for_*`) | `app.prompts.vision` |
 | `app.services.db_service` | `app.repositories.reports`, `.vision_data`, `.analyses`, `.employees`, `.job_descriptions`, and `app.domain.periods` |
 | `app.services.additional_services` | `app.services.analysis.vision_formatting`, `.jd_mapping`, `.jd_formatting` |
 | CSV row models in `app.schemas.csv_import_schema` | `app.services.csv.row_models` |

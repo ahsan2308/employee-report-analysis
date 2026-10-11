@@ -1,8 +1,6 @@
 {
   "combine_prompt": "(task_prompt: str, format_prompt: str) -> str",
   "employee_analysis_prompt": "(report_text: str, formatted_vision_data: str = None, recent_reports: List[Dict[str, Any]] = None, similar_reports: List[Dict[str, Any]] = None, formatted_jd_data: str = None, employee_info: Dict[str, Any] = None) -> str",
-  "exaggeration_prescreening_prompt": "(report_text: str) -> str",
-  "fallback_guidance": "() -> str",
   "format_schema_prompt": "(schema: Dict[str, Any], example_format: Dict[str, Any]) -> str",
   "format_simple_prompt": "(example_format: Dict[str, Any]) -> str",
   "general_json_instruction": "() -> str",

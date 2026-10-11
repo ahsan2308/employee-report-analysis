@@ -15,7 +15,7 @@ from pprint import pprint
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Import application modules
-from app.services.quarterly_analysis_db_service import get_quarterly_data_for_analysis
+from app.services.analysis.quarterly_context import get_quarterly_data_for_analysis
 from app.repositories.employees import get_employee_info
 from app.core.logger import logger
 

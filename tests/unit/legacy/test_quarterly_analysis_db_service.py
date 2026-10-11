@@ -7,15 +7,15 @@ import os
 # Add the project root directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app.services.quarterly_analysis_db_service import get_quarterly_data_for_analysis
+from app.services.analysis.quarterly_context import get_quarterly_data_for_analysis
 
 class TestQuarterlyAnalysisDBService(unittest.TestCase):
     """Comprehensive test cases for quarterly analysis database service functions."""
 
-    @patch('app.services.quarterly_analysis_db_service.get_quarter_date_range')
-    @patch('app.services.quarterly_analysis_db_service.get_employee_info')
-    @patch('app.services.quarterly_analysis_db_service.get_monthly_analyses_for_quarter')
-    @patch('app.services.quarterly_analysis_db_service.get_weekly_analyses_for_quarter')
+    @patch('app.services.analysis.quarterly_context.get_quarter_date_range')
+    @patch('app.services.analysis.quarterly_context.get_employee_info')
+    @patch('app.services.analysis.quarterly_context.get_monthly_analyses_for_quarter')
+    @patch('app.services.analysis.quarterly_context.get_weekly_analyses_for_quarter')
     def test_get_quarterly_data_for_analysis(self, mock_get_weekly, mock_get_monthly, mock_get_employee, mock_get_date_range):
         """Test that quarterly analysis data is correctly aggregated with all fields properly calculated."""
         # Set up date range mock
@@ -441,10 +441,10 @@ class TestQuarterlyAnalysisDBService(unittest.TestCase):
 
     def test_edge_cases(self):
         """Test handling of edge cases such as missing data."""
-        with patch('app.services.quarterly_analysis_db_service.get_quarter_date_range') as mock_get_date_range, \
-             patch('app.services.quarterly_analysis_db_service.get_employee_info') as mock_get_employee, \
-             patch('app.services.quarterly_analysis_db_service.get_monthly_analyses_for_quarter') as mock_get_monthly, \
-             patch('app.services.quarterly_analysis_db_service.get_weekly_analyses_for_quarter') as mock_get_weekly:
+        with patch('app.services.analysis.quarterly_context.get_quarter_date_range') as mock_get_date_range, \
+             patch('app.services.analysis.quarterly_context.get_employee_info') as mock_get_employee, \
+             patch('app.services.analysis.quarterly_context.get_monthly_analyses_for_quarter') as mock_get_monthly, \
+             patch('app.services.analysis.quarterly_context.get_weekly_analyses_for_quarter') as mock_get_weekly:
             
             # Set up basic mocks
             mock_get_date_range.return_value = (date(2023, 1, 1), date(2023, 3, 31))

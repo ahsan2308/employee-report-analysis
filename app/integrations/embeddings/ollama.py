@@ -1,5 +1,4 @@
-from typing import Dict, Any, List, Union, Optional, Sequence
-import numpy as np
+from typing import Dict, Any, List, Union, Optional
 import ollama
 
 from app.integrations.embeddings.base import EmbeddingProvider
@@ -32,23 +31,6 @@ class OllamaEmbeddingProvider(EmbeddingProvider):
         self.client = ollama.Client(host=self.base_url)
         
         logger.info(f"Initialized OllamaEmbeddingProvider with model {model} at {base_url}")
-    
-    def add_prefix(self, text: str, is_query: bool = False) -> str:
-        """
-        Add appropriate prefix to text for better embedding quality.
-        
-        Args:
-            text: Input text to prefix
-            is_query: Whether the text is a query (True) or passage (False)
-            
-        Returns:
-            Prefixed text
-        """
-        if not self.use_prefix:
-            return text
-            
-        prefix = "query" if is_query else "passage"
-        return f"{prefix}: {text}"
     
     def get_embedding(self, text: Union[str, List[str]], is_query: bool = False, **kwargs) -> Union[List[float], List[List[float]]]:
         """
@@ -102,50 +84,6 @@ class OllamaEmbeddingProvider(EmbeddingProvider):
         except Exception as e:
             logger.error(f"Error generating embedding with Ollama: {e}")
             return [] if isinstance(text, str) else [[]]
-    
-    def normalize_embedding(self, embedding: Union[Sequence[float], Sequence[Sequence[float]], np.ndarray], 
-                           as_numpy: bool = False) -> Union[List[float], List[List[float]], np.ndarray]:
-        """
-        Apply L2 normalization to embeddings.
-        
-        Args:
-            embedding: Single embedding vector or list of embedding vectors
-            as_numpy: If True, return numpy arrays directly (for compatibility with libraries like FAISS)
-            
-        Returns:
-            Normalized embedding vector(s)
-        """
-        try:
-            # Use asarray instead of array to avoid an extra copy if already ndarray
-            vectors = np.asarray(embedding, dtype=np.float32)
-            
-            # Validate dimensions
-            if vectors.ndim not in (1, 2):
-                logger.warning(f"Expected 1D or 2D array for normalization, got shape {vectors.shape}")
-                return embedding
-                
-            # Log shape info at debug level
-            logger.debug(f"Normalizing embeddings shape: {vectors.shape}, dtype: {vectors.dtype}")
-            
-            # Check if we have a single vector or multiple vectors
-            if vectors.ndim == 1:
-                # Single vector: normalize with L2 norm
-                norm = np.linalg.norm(vectors, ord=2)
-                # Add epsilon directly in division to avoid extra comparison
-                vectors = vectors / (norm + 1e-12)
-            else:
-                # Multiple vectors: normalize each vector with its L2 norm
-                norms = np.linalg.norm(vectors, ord=2, axis=1, keepdims=True)
-                # Avoid division by zero
-                vectors = vectors / np.maximum(norms, 1e-12)
-                
-            # Return numpy array or Python list based on caller's preference
-            return vectors if as_numpy else vectors.tolist()
-                
-        except (ValueError, TypeError) as e:
-            # More specific exception handling for better debugging
-            logger.error(f"Error normalizing embeddings ({type(e).__name__}): {e}")
-            return embedding
     
     def get_model_info(self) -> Dict[str, Any]:
         """

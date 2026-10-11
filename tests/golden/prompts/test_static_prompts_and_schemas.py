@@ -6,7 +6,6 @@ import pytest
 
 import app.models.structured_models_llm as llm_models
 from app.prompts.structured_prompts import StructuredPrompts
-from tests.golden.prompts.fixtures import REPORT_TEXT
 
 SIMPLE_EXAMPLE = {"summary": "example value", "tags": ["example item"], "score": 30}
 SCHEMA = {"type": "object", "properties": {"summary": {"type": "string"}, "score": {"type": "number"}}}
@@ -14,10 +13,6 @@ SCHEMA = {"type": "object", "properties": {"summary": {"type": "string"}, "score
 
 def test_general_json_instruction(snapshot):
     snapshot("static_general_json_instruction", StructuredPrompts.general_json_instruction())
-
-
-def test_fallback_guidance(snapshot):
-    snapshot("static_fallback_guidance", StructuredPrompts.fallback_guidance())
 
 
 def test_format_schema_prompt(snapshot):
@@ -30,10 +25,6 @@ def test_format_simple_prompt(snapshot):
 
 def test_combine_prompt():
     assert StructuredPrompts.combine_prompt("TASK", "FORMAT") == "TASK\n\nFORMAT"
-
-
-def test_exaggeration_prescreening_prompt(snapshot):
-    snapshot("static_exaggeration_prescreening", StructuredPrompts.exaggeration_prescreening_prompt(REPORT_TEXT))
 
 
 def test_public_prompt_api_surface(snapshot):

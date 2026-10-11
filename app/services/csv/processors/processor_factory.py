@@ -106,15 +106,3 @@ class ProcessorFactory:
         }
         
         return mapping.get(processor_name, "unknown")
-    
-    @classmethod
-    def register_processor(cls, processor_cls: Type[BaseCSVProcessor]) -> None:
-        """
-        Register a new processor type.
-        
-        Args:
-            processor_cls: Processor class to register
-        """
-        if processor_cls not in cls._processors:
-            cls._processors.append(processor_cls)
-            logger.info(f"Registered new processor: {processor_cls.__name__}")

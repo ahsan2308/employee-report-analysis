@@ -235,7 +235,7 @@ def test_get_task_status(seeded, snapshot):
     task = task_service.get_task_status(seeded, uid(80))
     snapshot("get_task_status", normalize({
         "found": _task_view(task),
-        "properties": {"duration": task.duration, "is_complete": task.is_complete, "is_active": task.is_active},
+        "properties": {"duration": task.duration, "is_complete": task.is_complete},
         "missing": _task_view(task_service.get_task_status(seeded, uid(81))),
     }))
 

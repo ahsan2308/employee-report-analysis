@@ -659,19 +659,6 @@ class SyncService:
         logger.info(f"Bulk processing completed: {successful}/{total} records synced")
         return successful, total
 
-    @contextmanager
-    def _session_context(self):
-        """Create isolated session for sync operations."""
-        session = self.db_instance.create_session()
-        try:
-            yield session
-            session.commit()
-        except Exception:
-            session.rollback()
-            raise
-        finally:
-            session.close()
-
     def _process_job_description_batches_bulk(self, batches, sync_id, row_processor, 
                                             error_handler, timestamp_column: str) -> tuple[int, int]:
         """

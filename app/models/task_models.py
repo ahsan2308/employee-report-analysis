@@ -74,7 +74,3 @@ class BackgroundTask(Base):
         """Check if task has completed (successfully or with failure)"""
         return TaskStatus(self.status).is_terminal
     
-    @property
-    def is_active(self):
-        """Check if task is still active"""
-        return self.status in (TaskStatus.PENDING.value, TaskStatus.RUNNING.value)

@@ -99,24 +99,6 @@ def test_factory_explicit_type_and_mapping(snapshot):
     snapshot("factory_explicit_and_mapping", out)
 
 
-def test_factory_register_processor(monkeypatch, snapshot):
-    monkeypatch.setattr(ProcessorFactory, "_processors", list(ProcessorFactory._processors))
-
-    class CustomProcessor(VisionDataProcessor):
-        @classmethod
-        def can_process(cls, headers):
-            return "custom" in headers
-
-    ProcessorFactory.register_processor(CustomProcessor)
-    ProcessorFactory.register_processor(CustomProcessor)  # second call is a no-op
-    out = {
-        "registry_order": [p.__name__ for p in ProcessorFactory._processors],
-        "detect_custom": _factory(["custom"]),
-        "detect_vision_still_first": _factory(VISION + ["custom"]),
-    }
-    snapshot("factory_register_processor", out)
-
-
 # ---------------------------------------------------------------------------
 # Processing with a mocked session
 # ---------------------------------------------------------------------------
