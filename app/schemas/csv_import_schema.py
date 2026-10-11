@@ -41,24 +41,6 @@ class CSVImportOptions(BaseModel):
     )
 
 
-class CSVImportJobCreate(BaseModel):
-    """Schema for creating a new CSV import job."""
-    filename: str = Field(
-        description="Original filename of the uploaded CSV"
-    )
-    options: Optional[CSVImportOptions] = Field(
-        default=None,
-        description="Import options controlling behavior"
-    )
-    
-    @field_validator('filename')
-    @classmethod
-    def validate_filename(cls, v):
-        """Check if filename has valid CSV extension."""
-        if not v.lower().endswith('.csv'):
-            raise ValueError("File must have a .csv extension")
-        return v
-
 class CSVImportJobResponse(BaseModel):
     """
     Schema for CSV import job response.

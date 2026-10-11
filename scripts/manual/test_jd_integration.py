@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 from app.repositories.job_descriptions import get_employee_job_descriptions_for_period
 from app.services.analysis.jd_mapping import map_reports_to_jds
-from app.services.analysis.jd_formatting import (
+from app.prompts.job_descriptions import (
     format_job_descriptions_for_weekly_prompt,
     format_job_descriptions_for_monthly_prompt,
     format_job_descriptions_for_quarterly_prompt,

@@ -7,7 +7,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from app.services.analysis.vision_formatting import (
+from app.prompts.vision import (
     _truncate_content_value,
     format_vision_data_for_weekly_analysis_prompt,
     format_vision_data_for_monthly_analysis_prompt,

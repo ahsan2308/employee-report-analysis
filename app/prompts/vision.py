@@ -1,7 +1,6 @@
-"""Filter vision system activity data and format it for analysis prompts."""
-from typing import Dict, Any, List, Optional
+"""Vision activity data written as prompt sections for the weekly, monthly and quarterly analyses."""
+from typing import Dict, Any
 from app.core.logger import logger
-from app.domain.vision_catalog import describe_sub_entity
 
 
 def _truncate_content_value(value: Any, max_length: int = 300) -> str:
@@ -25,128 +24,6 @@ def _truncate_content_value(value: Any, max_length: int = 300) -> str:
     
     # Truncate and add ellipsis
     return value_str[:max_length] + "..."
-
-
-
-def filter_vision_data(vision_data: Dict[str, Any], sub_entity_descriptions: Dict[str, str] = None) -> Dict[str, Any]:
-    """
-    Filter vision data to remove zero-value sub-entities and add descriptions.
-    
-    Args:
-        vision_data: The vision data as returned by get_employee_vision_data
-        sub_entity_descriptions: A dictionary mapping sub-entity names to their descriptions.
-            By default each sub-entity is described within its item's main entity.
-        
-    Returns:
-        Filtered vision data with descriptions added
-    """
-    if not vision_data:
-        return {}
-
-    result = {
-        "date_context": vision_data.get("date_context", {}),
-        "current_data": [],
-        "previous_data": [],
-        "weeks_data": [],
-        "months_data": []
-    }
-    
-    # Handle weekly format
-    if "current_data" in vision_data or "previous_data" in vision_data:
-        if "current_data" in vision_data:
-            result["current_data"] = _process_entity_data(vision_data["current_data"], sub_entity_descriptions)
-        if "previous_data" in vision_data:
-            result["previous_data"] = _process_entity_data(vision_data["previous_data"], sub_entity_descriptions)
-        return result
-
-    # Handle monthly format (weeks_data)
-    if "weeks_data" in vision_data:
-        processed_weeks = []
-        for week in vision_data["weeks_data"]:
-            processed_activities = _process_entity_data(week.get("activities", []), sub_entity_descriptions)
-            if processed_activities:
-                processed_weeks.append({
-                    "week_number": week.get("week_number"),
-                    "iso_week": week.get("iso_week"),
-                    "activities": processed_activities
-                })
-        result["weeks_data"] = processed_weeks
-        return result
-    
-    # Handle quarterly format (months_data with nested weeks_data)
-    if "months_data" in vision_data:
-        processed_months = []
-        for month in vision_data["months_data"]:
-            # Create a temporary structure for processing this month's weeks_data
-            month_data = {
-                "date_context": month.get("date_context", {}),
-                "weeks_data": month.get("weeks_data", [])
-            }
-            
-            # Process the month's weeks_data using the monthly format logic
-            filtered_month = filter_vision_data(month_data)
-            
-            # Only include months with non-empty weeks_data
-            if filtered_month.get("weeks_data"):
-                processed_months.append({
-                    "month_name": month.get("month_name", "Unknown"),
-                    "date_context": month.get("date_context", {}),
-                    "weeks_data": filtered_month.get("weeks_data", [])
-                })
-        
-        result["months_data"] = processed_months
-        return result
-
-    return result
-
-
-
-def _process_entity_data(entity_data: List[Dict[str, Any]], sub_entity_descriptions: Optional[Dict[str, str]]) -> List[Dict[str, Any]]:
-    """
-    Process a list of entity data items, filtering zero values and adding descriptions.
-    
-    Args:
-        entity_data: List of entity data items
-        sub_entity_descriptions: Dictionary mapping sub-entity names to descriptions,
-            or None to use the catalog entry for each item's main entity
-        
-    Returns:
-        Processed entity data list
-    """
-    processed_data = []
-    
-    for item in entity_data:
-        # Skip processing if no sub_entities
-        if not item.get("sub_entities"):
-            continue
-            
-        # Create a new sub_entities dict with only non-zero values and added descriptions
-        filtered_sub_entities = {}
-        has_non_zero = False
-        
-        for sub_entity, value in item["sub_entities"].items():
-            if value != 0:
-                has_non_zero = True
-                # Include sub-entity even if it doesn't have a description
-                if sub_entity_descriptions:
-                    description = sub_entity_descriptions.get(sub_entity, "")
-                else:
-                    description = describe_sub_entity(item.get("main_entity"), sub_entity)
-                filtered_sub_entities[sub_entity] = {
-                    "value": value,
-                    "description": description
-                }
-        
-        # Skip this entity if all values were zero
-        if not has_non_zero:
-            continue
-            
-        # Create new item with filtered sub_entities
-        new_item = item.copy()
-        new_item["sub_entities"] = filtered_sub_entities
-        processed_data.append(new_item)
-    
-    return processed_data
 
 
 

@@ -1,4 +1,4 @@
-"""Golden-master tests for app/services/monthly_analysis_db_service.get_monthly_data_for_analysis.
+"""Golden-master tests for app/services/analysis/monthly_context.get_monthly_data_for_analysis.
 
 Every db_service function is mocked where the module under test looks it up;
 get_month_date_range (pure) and map_reports_to_jds (pure) run for real.
@@ -7,10 +7,10 @@ from datetime import date
 
 import pytest
 
-from app.services import monthly_analysis_db_service as svc
+from app.services.analysis import monthly_context as svc
 from tests.golden.analysis.fixtures import EMPLOYEE, jd, report, weekly_analysis
 
-MOD = "app.services.monthly_analysis_db_service"
+MOD = "app.services.analysis.monthly_context"
 
 
 def run(employee=EMPLOYEE, reports=(), analyses=(), jds=(), year=2025, month=1):

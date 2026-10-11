@@ -1,4 +1,4 @@
-"""Golden-master tests for app.services.analysis (vision_formatting, jd_mapping, jd_formatting; formerly app/services/additional_services.py).
+"""Golden-master tests for vision filtering (app.domain.vision_catalog), the vision and JD prompt sections (app.prompts.vision, app.prompts.job_descriptions) and jd_mapping; formerly app/services/additional_services.py.
 
 These lock in today's behaviour (including bugs) of the vision-data filters,
 prompt formatters and the report -> job-description mapper.
@@ -8,9 +8,10 @@ from datetime import date, datetime
 
 import pytest
 
-from app.services.analysis import jd_formatting
+from app.prompts import job_descriptions as jd_formatting
 from app.services.analysis import jd_mapping
-from app.services.analysis import vision_formatting
+from app.domain import vision_catalog
+from app.prompts import vision as vision_prompts
 from tests.golden.analysis.fixtures import (
     DEFAULT_DESCRIPTION_KEYS,
     content_entries,
@@ -51,7 +52,7 @@ def test_truncate_content_value_table(snapshot):
     ]
     snapshot(
         "truncate_content_value_table",
-        {name: outcome(vision_formatting._truncate_content_value, value, **kw) for name, value, kw in cases},
+        {name: outcome(vision_prompts._truncate_content_value, value, **kw) for name, value, kw in cases},
     )
 
 
@@ -60,7 +61,7 @@ def test_truncate_content_value_table(snapshot):
 def test_default_descriptions_effective_mapping(snapshot):
     """An entity missing from the catalog gets the flat view (a repeated name takes its later entry)."""
     vision = {"current_data": [vision_item("All", {key: 1 for key in DEFAULT_DESCRIPTION_KEYS})]}
-    filtered = vision_formatting.filter_vision_data(vision)
+    filtered = vision_catalog.filter_vision_data(vision)
     subs = filtered["current_data"][0]["sub_entities"]
     snapshot("default_descriptions", {key: subs[key]["description"] for key in DEFAULT_DESCRIPTION_KEYS})
 
@@ -70,7 +71,7 @@ def test_default_descriptions_follow_the_main_entity():
     names = ["Groups", "Labels", "Lookup", "Special Reports", "Attachments", "Notings"]
     vision = {"current_data": [vision_item(entity, {name: 1 for name in names})
                                for entity in ("Persons", "Organizations", "Correspondence", "Events", "Nadra")]}
-    filtered = vision_formatting.filter_vision_data(vision)
+    filtered = vision_catalog.filter_vision_data(vision)
     described = {item["main_entity"]: {name: sub["description"] for name, sub in item["sub_entities"].items()}
                  for item in filtered["current_data"]}
     assert described["Persons"]["Groups"] == "Persons marked with specific groups (muli-level labeling)"
@@ -87,85 +88,85 @@ def test_default_descriptions_follow_the_main_entity():
 
 def test_filter_vision_data_empty_inputs(snapshot):
     snapshot("filter_vision_data_empty_inputs", {
-        "none": outcome(vision_formatting.filter_vision_data, None),
-        "empty_dict": outcome(vision_formatting.filter_vision_data, {}),
-        "only_date_context": outcome(vision_formatting.filter_vision_data, {"date_context": {"a": 1}}),
-        "unknown_shape": outcome(vision_formatting.filter_vision_data, {"foo": [1, 2]}),
-        "current_key_only_empty": outcome(vision_formatting.filter_vision_data, {"current_data": []}),
-        "previous_key_only": outcome(vision_formatting.filter_vision_data, {"previous_data": [
+        "none": outcome(vision_catalog.filter_vision_data, None),
+        "empty_dict": outcome(vision_catalog.filter_vision_data, {}),
+        "only_date_context": outcome(vision_catalog.filter_vision_data, {"date_context": {"a": 1}}),
+        "unknown_shape": outcome(vision_catalog.filter_vision_data, {"foo": [1, 2]}),
+        "current_key_only_empty": outcome(vision_catalog.filter_vision_data, {"current_data": []}),
+        "previous_key_only": outcome(vision_catalog.filter_vision_data, {"previous_data": [
             vision_item("Tasks", {"Tasks": 2})]}),
-        "weeks_data_empty": outcome(vision_formatting.filter_vision_data, {"weeks_data": []}),
-        "months_data_empty": outcome(vision_formatting.filter_vision_data, {"months_data": []}),
+        "weeks_data_empty": outcome(vision_catalog.filter_vision_data, {"weeks_data": []}),
+        "months_data_empty": outcome(vision_catalog.filter_vision_data, {"months_data": []}),
     })
 
 
 def test_filter_vision_data_weekly_default_descriptions(snapshot):
     raw = raw_weekly_vision()
     before = copy.deepcopy(raw)
-    result = vision_formatting.filter_vision_data(raw)
+    result = vision_catalog.filter_vision_data(raw)
     snapshot("filter_weekly_default", result)
     snapshot("filter_weekly_input_mutated", {"input_unchanged": raw == before})
 
 
 def test_filter_vision_data_weekly_custom_descriptions(snapshot):
     custom = {"Persons": "custom persons", "Tasks": "custom tasks"}
-    snapshot("filter_weekly_custom", vision_formatting.filter_vision_data(raw_weekly_vision(), custom))
+    snapshot("filter_weekly_custom", vision_catalog.filter_vision_data(raw_weekly_vision(), custom))
 
 
 def test_filter_vision_data_weekly_wins_over_other_shapes(snapshot):
     raw = raw_weekly_vision()
     raw["weeks_data"] = raw_monthly_vision()["weeks_data"]
     raw["months_data"] = raw_quarterly_vision()["months_data"]
-    snapshot("filter_mixed_shapes", vision_formatting.filter_vision_data(raw))
+    snapshot("filter_mixed_shapes", vision_catalog.filter_vision_data(raw))
 
 
 def test_filter_vision_data_monthly(snapshot):
-    snapshot("filter_monthly_default", vision_formatting.filter_vision_data(raw_monthly_vision()))
-    snapshot("filter_monthly_custom", vision_formatting.filter_vision_data(raw_monthly_vision(), {"Persons": "P!"}))
+    snapshot("filter_monthly_default", vision_catalog.filter_vision_data(raw_monthly_vision()))
+    snapshot("filter_monthly_custom", vision_catalog.filter_vision_data(raw_monthly_vision(), {"Persons": "P!"}))
 
 
 def test_filter_vision_data_quarterly(snapshot):
-    snapshot("filter_quarterly_default", vision_formatting.filter_vision_data(raw_quarterly_vision()))
+    snapshot("filter_quarterly_default", vision_catalog.filter_vision_data(raw_quarterly_vision()))
     # Custom descriptions are NOT propagated into the per-month recursion.
-    snapshot("filter_quarterly_custom", vision_formatting.filter_vision_data(raw_quarterly_vision(), {"Events": "E!"}))
+    snapshot("filter_quarterly_custom", vision_catalog.filter_vision_data(raw_quarterly_vision(), {"Events": "E!"}))
 
 
 def test_filter_vision_data_missing_sub_entities_raises(snapshot):
     weird = {"current_data": [{"main_entity": "X", "sub_entities": [("a", 1)]}]}
-    snapshot("filter_sub_entities_not_dict", outcome(vision_formatting.filter_vision_data, weird))
+    snapshot("filter_sub_entities_not_dict", outcome(vision_catalog.filter_vision_data, weird))
 
 
 # --------------------------------------------------------------------------- weekly prompt
 
 def test_weekly_prompt_empty(snapshot):
     snapshot("weekly_prompt_empty", {
-        "none": outcome(vision_formatting.format_vision_data_for_weekly_analysis_prompt, None),
-        "empty": outcome(vision_formatting.format_vision_data_for_weekly_analysis_prompt, {}),
-        "empty_lists": outcome(vision_formatting.format_vision_data_for_weekly_analysis_prompt,
+        "none": outcome(vision_prompts.format_vision_data_for_weekly_analysis_prompt, None),
+        "empty": outcome(vision_prompts.format_vision_data_for_weekly_analysis_prompt, {}),
+        "empty_lists": outcome(vision_prompts.format_vision_data_for_weekly_analysis_prompt,
                                {"current_data": [], "previous_data": []}),
-        "monthly_shape": outcome(vision_formatting.format_vision_data_for_weekly_analysis_prompt,
-                                 vision_formatting.filter_vision_data(raw_monthly_vision())),
+        "monthly_shape": outcome(vision_prompts.format_vision_data_for_weekly_analysis_prompt,
+                                 vision_catalog.filter_vision_data(raw_monthly_vision())),
     })
 
 
 def test_weekly_prompt_default_limits(snapshot):
-    filtered = vision_formatting.filter_vision_data(raw_weekly_vision())
-    snapshot("weekly_prompt_default", vision_formatting.format_vision_data_for_weekly_analysis_prompt(filtered))
+    filtered = vision_catalog.filter_vision_data(raw_weekly_vision())
+    snapshot("weekly_prompt_default", vision_prompts.format_vision_data_for_weekly_analysis_prompt(filtered))
 
 
 def test_weekly_prompt_custom_limits(snapshot):
-    filtered = vision_formatting.filter_vision_data(raw_weekly_vision())
+    filtered = vision_catalog.filter_vision_data(raw_weekly_vision())
     snapshot("weekly_prompt_limits_2_10",
-             vision_formatting.format_vision_data_for_weekly_analysis_prompt(filtered, 2, 10))
+             vision_prompts.format_vision_data_for_weekly_analysis_prompt(filtered, 2, 10))
     snapshot("weekly_prompt_limits_0_0",
-             vision_formatting.format_vision_data_for_weekly_analysis_prompt(filtered, 0, 0))
+             vision_prompts.format_vision_data_for_weekly_analysis_prompt(filtered, 0, 0))
 
 
 def test_weekly_prompt_current_only_and_previous_only(snapshot):
-    filtered = vision_formatting.filter_vision_data(raw_weekly_vision())
-    snapshot("weekly_prompt_current_only", vision_formatting.format_vision_data_for_weekly_analysis_prompt(
+    filtered = vision_catalog.filter_vision_data(raw_weekly_vision())
+    snapshot("weekly_prompt_current_only", vision_prompts.format_vision_data_for_weekly_analysis_prompt(
         {"current_data": filtered["current_data"]}))
-    snapshot("weekly_prompt_previous_only", vision_formatting.format_vision_data_for_weekly_analysis_prompt(
+    snapshot("weekly_prompt_previous_only", vision_prompts.format_vision_data_for_weekly_analysis_prompt(
         {"previous_data": filtered["previous_data"], "current_data": []}))
 
 
@@ -176,52 +177,52 @@ def test_weekly_prompt_item_limit_boundary(snapshot):
                          "Numbers": {"value": 6, "description": "e"}},
         "sub_entities_content": {"Persons": content_entries(5), "Numbers": content_entries(6)},
     }]}
-    snapshot("weekly_prompt_item_limit_boundary", vision_formatting.format_vision_data_for_weekly_analysis_prompt(data))
+    snapshot("weekly_prompt_item_limit_boundary", vision_prompts.format_vision_data_for_weekly_analysis_prompt(data))
 
 
 def test_weekly_prompt_unfiltered_item_raises(snapshot):
     data = {"current_data": [vision_item("Persons", {"Persons": 3})]}
-    snapshot("weekly_prompt_unfiltered", outcome(vision_formatting.format_vision_data_for_weekly_analysis_prompt, data))
+    snapshot("weekly_prompt_unfiltered", outcome(vision_prompts.format_vision_data_for_weekly_analysis_prompt, data))
 
 
 # --------------------------------------------------------------------------- monthly prompt
 
 def test_monthly_prompt_empty(snapshot):
     snapshot("monthly_prompt_empty", {
-        "none": outcome(vision_formatting.format_vision_data_for_monthly_analysis_prompt, None),
-        "empty": outcome(vision_formatting.format_vision_data_for_monthly_analysis_prompt, {}),
-        "weeks_empty": outcome(vision_formatting.format_vision_data_for_monthly_analysis_prompt, {"weeks_data": []}),
-        "week_without_activities": outcome(vision_formatting.format_vision_data_for_monthly_analysis_prompt,
+        "none": outcome(vision_prompts.format_vision_data_for_monthly_analysis_prompt, None),
+        "empty": outcome(vision_prompts.format_vision_data_for_monthly_analysis_prompt, {}),
+        "weeks_empty": outcome(vision_prompts.format_vision_data_for_monthly_analysis_prompt, {"weeks_data": []}),
+        "week_without_activities": outcome(vision_prompts.format_vision_data_for_monthly_analysis_prompt,
                                            {"weeks_data": [{"week_number": 1, "activities": []}]}),
-        "weekly_shape": outcome(vision_formatting.format_vision_data_for_monthly_analysis_prompt,
-                                vision_formatting.filter_vision_data(raw_weekly_vision())),
+        "weekly_shape": outcome(vision_prompts.format_vision_data_for_monthly_analysis_prompt,
+                                vision_catalog.filter_vision_data(raw_weekly_vision())),
     })
 
 
 def test_monthly_prompt_default_and_custom_limits(snapshot):
-    filtered = vision_formatting.filter_vision_data(raw_monthly_vision())
-    snapshot("monthly_prompt_default", vision_formatting.format_vision_data_for_monthly_analysis_prompt(filtered))
+    filtered = vision_catalog.filter_vision_data(raw_monthly_vision())
+    snapshot("monthly_prompt_default", vision_prompts.format_vision_data_for_monthly_analysis_prompt(filtered))
     snapshot("monthly_prompt_limits_1_12",
-             vision_formatting.format_vision_data_for_monthly_analysis_prompt(filtered, 1, 12))
+             vision_prompts.format_vision_data_for_monthly_analysis_prompt(filtered, 1, 12))
 
 
 # --------------------------------------------------------------------------- quarterly prompt
 
 def test_quarterly_prompt_empty(snapshot):
     snapshot("quarterly_prompt_empty", {
-        "none": outcome(vision_formatting.format_vision_data_for_quarterly_analysis_prompt, None),
-        "empty": outcome(vision_formatting.format_vision_data_for_quarterly_analysis_prompt, {}),
-        "months_empty": outcome(vision_formatting.format_vision_data_for_quarterly_analysis_prompt, {"months_data": []}),
-        "missing_date_context": outcome(vision_formatting.format_vision_data_for_quarterly_analysis_prompt,
+        "none": outcome(vision_prompts.format_vision_data_for_quarterly_analysis_prompt, None),
+        "empty": outcome(vision_prompts.format_vision_data_for_quarterly_analysis_prompt, {}),
+        "months_empty": outcome(vision_prompts.format_vision_data_for_quarterly_analysis_prompt, {"months_data": []}),
+        "missing_date_context": outcome(vision_prompts.format_vision_data_for_quarterly_analysis_prompt,
                                         {"months_data": [{"weeks_data": []}]}),
     })
 
 
 def test_quarterly_prompt_filtered(snapshot):
-    filtered = vision_formatting.filter_vision_data(raw_quarterly_vision())
-    snapshot("quarterly_prompt_filtered_default", vision_formatting.format_vision_data_for_quarterly_analysis_prompt(filtered))
+    filtered = vision_catalog.filter_vision_data(raw_quarterly_vision())
+    snapshot("quarterly_prompt_filtered_default", vision_prompts.format_vision_data_for_quarterly_analysis_prompt(filtered))
     snapshot("quarterly_prompt_filtered_limits_3_15",
-             vision_formatting.format_vision_data_for_quarterly_analysis_prompt(filtered, 3, 15))
+             vision_prompts.format_vision_data_for_quarterly_analysis_prompt(filtered, 3, 15))
 
 
 def test_quarterly_prompt_months_without_weeks(snapshot):
@@ -235,7 +236,7 @@ def test_quarterly_prompt_months_without_weeks(snapshot):
             {"month_name": "december", "weeks_data": [{"week_number": 5, "activities": []}]},
         ],
     }
-    snapshot("quarterly_prompt_months_without_weeks", vision_formatting.format_vision_data_for_quarterly_analysis_prompt(data))
+    snapshot("quarterly_prompt_months_without_weeks", vision_prompts.format_vision_data_for_quarterly_analysis_prompt(data))
 
 
 def test_quarterly_prompt_missing_main_entity(snapshot):
@@ -245,7 +246,7 @@ def test_quarterly_prompt_missing_main_entity(snapshot):
             {"sub_entities": {}}, {"main_entity": "Orgs", "sub_entities": {}}]}]}],
     }
     snapshot("quarterly_prompt_missing_main_entity",
-             outcome(vision_formatting.format_vision_data_for_quarterly_analysis_prompt, data))
+             outcome(vision_prompts.format_vision_data_for_quarterly_analysis_prompt, data))
 
 
 # --------------------------------------------------------------------------- map_reports_to_jds
