@@ -110,7 +110,7 @@
         },
         "processed_rows": 7,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "partial",
         "submitted_at": "<timestamp>",
         "successful_rows": 2,
         "total_rows": 7
@@ -258,7 +258,7 @@
         },
         "processed_rows": 7,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "partial",
         "submitted_at": "<timestamp>",
         "successful_rows": 2,
         "total_rows": 7

@@ -37,7 +37,7 @@
         "options": null,
         "processed_rows": 6,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "partial",
         "submitted_at": "<timestamp>",
         "successful_rows": 1,
         "total_rows": 6
@@ -179,7 +179,7 @@
         },
         "processed_rows": 6,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "partial",
         "submitted_at": "<timestamp>",
         "successful_rows": 1,
         "total_rows": 6

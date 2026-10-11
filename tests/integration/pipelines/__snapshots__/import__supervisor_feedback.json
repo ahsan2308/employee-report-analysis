@@ -19,7 +19,7 @@
         "options": null,
         "processed_rows": 5,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "partial",
         "submitted_at": "<timestamp>",
         "successful_rows": 4,
         "total_rows": 5
@@ -41,7 +41,7 @@
         "options": null,
         "processed_rows": 4,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "partial",
         "submitted_at": "<timestamp>",
         "successful_rows": 1,
         "total_rows": 4
@@ -63,7 +63,7 @@
         "options": null,
         "processed_rows": 5,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "partial",
         "submitted_at": "<timestamp>",
         "successful_rows": 4,
         "total_rows": 5
@@ -225,7 +225,7 @@
         },
         "processed_rows": 5,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "partial",
         "submitted_at": "<timestamp>",
         "successful_rows": 4,
         "total_rows": 5
@@ -249,7 +249,7 @@
         },
         "processed_rows": 4,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "partial",
         "submitted_at": "<timestamp>",
         "successful_rows": 1,
         "total_rows": 4
@@ -273,7 +273,7 @@
         },
         "processed_rows": 5,
         "started_at": "<timestamp>",
-        "status": "completed",
+        "status": "partial",
         "submitted_at": "<timestamp>",
         "successful_rows": 4,
         "total_rows": 5

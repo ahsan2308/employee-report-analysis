@@ -14,6 +14,7 @@ class ImportStatus(str, enum.Enum):
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
+    PARTIAL = "partial"      # finished, but some rows were not imported
     FAILED = "failed"
 
 # Define CSV import types

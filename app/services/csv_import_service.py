@@ -130,7 +130,7 @@ class CSVImportService:
         if status == ImportStatus.RUNNING and not job.started_at:
             job.started_at = datetime.now()
             
-        if status in (ImportStatus.COMPLETED, ImportStatus.FAILED):
+        if status in (ImportStatus.COMPLETED, ImportStatus.PARTIAL, ImportStatus.FAILED):
             job.completed_at = datetime.now()
             
         if metrics:
@@ -541,7 +541,13 @@ class CSVImportService:
         error_count = error_handler.get_error_count()
         if error_count > 0:
             self._save_errors(session, job.job_id, error_handler)
-        status = ImportStatus.FAILED if error_count > 0 and successful_rows == 0 else ImportStatus.COMPLETED
+        # Same rule as syncs: errors with nothing imported fail; errors alongside imported rows are partial
+        if error_count > 0 and successful_rows == 0:
+            status = ImportStatus.FAILED
+        elif error_count > 0:
+            status = ImportStatus.PARTIAL
+        else:
+            status = ImportStatus.COMPLETED
         
         metrics = {
             **row_processor.get_metrics(),

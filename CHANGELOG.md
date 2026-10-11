@@ -6,6 +6,15 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased
 
+### Changed: imports with some failed rows end as `partial`
+
+An import job that imported some rows but had errors on others now ends with
+status `partial`, as a sync in the same state does; it used to end as
+`completed`. `completed` now means no errors, and `failed` still means errors
+with nothing imported. `GET /imports/?status=partial` lists them. The database
+check on the status column allows the new value: run `alembic upgrade head`
+(revision `a7c3e91d4b52`).
+
 ### Fixed: synced rows for a new employee are no longer skipped
 
 Employees are created from their reports, so a vision, job description or
