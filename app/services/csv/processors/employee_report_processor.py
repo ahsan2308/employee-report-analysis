@@ -210,15 +210,14 @@ class EmployeeReportProcessor(BaseCSVProcessor):
         if not validated_rows:
             return 0, total_rows
             
-        # Process employees in bulk
-        emp_success = self._bulk_process_employees([row for _, row in validated_rows])
-        
-        # Process reports in bulk (for rows where employee processing succeeded)
-        if emp_success:
-            rep_success = self._bulk_process_reports([row for _, row in validated_rows])
-            successful_rows = len(validated_rows)
-            self.successful_rows += successful_rows
-            
+        # Process employees in bulk, then their reports
+        rows = [row for _, row in validated_rows]
+        if not (self._bulk_process_employees(rows) and self._bulk_process_reports(rows)):
+            self._record_unsaved_rows(validated_rows)
+            return 0, total_rows
+
+        successful_rows = len(validated_rows)
+        self.successful_rows += successful_rows
         return successful_rows, total_rows
     
     def _bulk_process_employees(self, validated_rows: List[Dict[str, Any]]) -> bool:

@@ -159,8 +159,7 @@ class JobDescriptionTransformer:
     - End_Date: pass through as date object or None (Pydantic accepts date/None)
     
     Note: LastModifiedDate from SQL Server is NOT included in the output dictionary.
-    It's tracked separately by sync service in _max_modified_date_jd instance variable
-    for incremental sync logic.
+    The sync service reads it from the source rows for incremental sync.
     """
     
     @staticmethod
@@ -204,7 +203,7 @@ class JobDescriptionTransformer:
             "Is_Current": sql_row.get("Is_Current"),  
             "End_Date": sql_row.get("End_Date")       
             # NOTE: LastModifiedDate is intentionally excluded
-            # It's tracked separately in _process_job_description_batches_bulk()
+            # The sync service reads it from the source rows
         }
 
 

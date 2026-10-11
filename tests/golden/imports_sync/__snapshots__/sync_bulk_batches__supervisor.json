@@ -1,20 +1,20 @@
 {
   "errors": [
     {
-      "category": "processing",
+      "category": "validation",
       "error_message": "Transformation error: 'str' object has no attribute 'get'",
-      "exception": "AttributeError",
+      "exception": null,
       "field_name": null,
       "row_data": "not-a-dict",
       "row_number": 5
     },
     {
-      "category": "processing",
+      "category": "validation",
       "error_message": "Transformation error: 'str' object has no attribute 'get'",
-      "exception": "AttributeError",
+      "exception": null,
       "field_name": null,
       "row_data": "only-bad",
-      "row_number": 6
+      "row_number": 7
     },
     {
       "category": "processing",
@@ -38,7 +38,7 @@
         "To": "<date 2024-11-30>",
         "Value": "A"
       },
-      "row_number": 6
+      "row_number": 8
     }
   ],
   "frames": [
@@ -269,7 +269,7 @@
           "Value": "object"
         },
         "index": [
-          0
+          1
         ],
         "records": [
           {
@@ -295,7 +295,7 @@
         ]
       },
       "pre_cleaned": true,
-      "start_row_number": 5
+      "start_row_number": 6
     },
     {
       "frame": {
@@ -366,16 +366,14 @@
         ]
       },
       "pre_cleaned": true,
-      "start_row_number": 6
+      "start_row_number": 8
     }
   ],
-  "max_modified": {
-    "_max_modified_date_sf": "<datetime 2025-01-01T00:00:00.001000>"
-  },
   "result": {
     "ok": [
       2,
-      7
+      8,
+      "<datetime 2024-12-01T00:00:00>"
     ]
   }
 }

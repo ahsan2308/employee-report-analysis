@@ -4,16 +4,16 @@ Sync Service
 Main orchestrator for SQL Server to PostgreSQL data synchronization.
 Coordinates SQL Server queries, data transformation, and processing through existing CSV import pipeline.
 """
-from typing import Any, Callable, Dict, NamedTuple, Optional
+from typing import Any, Callable, Dict, NamedTuple, Optional, Tuple
 from contextlib import contextmanager
 import pandas as pd
-from datetime import timedelta  # Add to imports at top
+from datetime import datetime, timedelta
 
 from app.integrations.sqlserver.connector import SQLServerConnector, create_sqlserver_connector
 from app.services.sync.transformers import EmployeeReportTransformer, VisionDataTransformer, JobDescriptionTransformer, SupervisorFeedbackTransformer
 from app.services.sync.sync_tracker import SyncTracker
 from app.services.csv.row_processor import RowProcessor
-from app.services.csv.error_handler import ImportErrorHandler
+from app.services.csv.error_handler import ErrorCategory, ImportErrorHandler
 from app.models.sync_models import SyncHistory, SyncType, SyncStatus
 from app.core import settings
 from app.repositories import sync_history
@@ -26,8 +26,7 @@ class _SyncSpec(NamedTuple):
     sync_type: SyncType
     label: str
     table_setting: str  # the app.core.settings name holding the source table
-    process_batches_method: str
-    max_modified_date_attribute: str  # set by the batch processor
+    transformer: Any  # SQL Server row -> row-model dict (app.services.sync.transformers)
     order_by: Callable[[str], str]  # timestamp column -> ORDER BY
     status_metrics: Callable[[Dict[str, Any]], Dict[str, Any]]  # processor metrics -> sync status metrics
 
@@ -36,8 +35,7 @@ _EMPLOYEE_REPORTS = _SyncSpec(
     sync_type=SyncType.EMPLOYEE_REPORTS,
     label="employee reports",
     table_setting="SQLSERVER_TABLE_EMPLOYEE_REPORTS",
-    process_batches_method="_process_employee_report_batches_bulk",
-    max_modified_date_attribute="_max_modified_date",
+    transformer=EmployeeReportTransformer,
     order_by=lambda timestamp_col: timestamp_col,
     status_metrics=lambda m: {
         "records_created": m.get('employees_created', 0) + m.get('reports_created', 0),
@@ -48,8 +46,7 @@ _VISION_DATA = _SyncSpec(
     sync_type=SyncType.VISION_DATA,
     label="vision data",
     table_setting="SQLSERVER_TABLE_VISION_DATA",
-    process_batches_method="_process_vision_data_batches_bulk",
-    max_modified_date_attribute="_max_modified_date_vision",
+    transformer=VisionDataTransformer,
     order_by=lambda timestamp_col: timestamp_col,
     status_metrics=lambda m: {
         "records_created": m.get('vision_records_created', 0),
@@ -60,8 +57,7 @@ _JOB_DESCRIPTIONS = _SyncSpec(
     sync_type=SyncType.JOB_DESCRIPTIONS,
     label="job descriptions",
     table_setting="SQLSERVER_TABLE_JOB_DESCRIPTIONS",
-    process_batches_method="_process_job_description_batches_bulk",
-    max_modified_date_attribute="_max_modified_date_jd",
+    transformer=JobDescriptionTransformer,
     order_by=lambda timestamp_col: timestamp_col,
     status_metrics=lambda m: {
         "records_created": m.get('jd_records_created', 0),
@@ -75,8 +71,7 @@ _SUPERVISOR_FEEDBACK = _SyncSpec(
     sync_type=SyncType.SUPERVISOR_FEEDBACK,
     label="supervisor feedback",
     table_setting="SQLSERVER_TABLE_SUPERVISOR_FEEDBACK",
-    process_batches_method="_process_supervisor_feedback_batches_bulk",
-    max_modified_date_attribute="_max_modified_date_sf",
+    transformer=SupervisorFeedbackTransformer,
     # Rows of one form must stay in one batch, so order by form first
     order_by=lambda timestamp_col: f"{_FEEDBACK_FORM_ID_COLUMN}, {timestamp_col}",
     status_metrics=lambda m: {
@@ -248,16 +243,13 @@ class SyncService:
                 row_processor = RowProcessor(session, error_handler)
                 
                 # Process batches using bulk operations
-                successful, total = getattr(self, spec.process_batches_method)(
+                successful, total, next_sync_from = self._process_batches(
                     batches=batches,
-                    sync_id=sync_job.sync_id,
+                    transformer=spec.transformer,
                     row_processor=row_processor,
                     error_handler=error_handler,
                     timestamp_column=timestamp_col
                 )
-                
-                # The newest source timestamp seen, set by the batch processor (for incremental sync)
-                max_modified_date = getattr(self, spec.max_modified_date_attribute, None)
                 
                 # Step 6: Save errors if any
                 self._save_collected_errors(sync_job.sync_id, error_handler, session)
@@ -282,7 +274,7 @@ class SyncService:
                         "records_skipped": total - successful,
                         "error_count": error_handler.get_error_count(),
                         "metrics": processor_metrics,
-                        "last_sync_timestamp": max_modified_date
+                        "last_sync_timestamp": next_sync_from
                     },
                     session=session
                 )
@@ -397,376 +389,87 @@ class SyncService:
         
         return None
     
-    def _process_employee_report_batches_bulk(self, batches, sync_id, row_processor, 
-                                             error_handler, timestamp_column: str) -> tuple[int, int]:
+    def _process_batches(self, batches, transformer, row_processor, error_handler,
+                         timestamp_column: str) -> Tuple[int, int, Optional[datetime]]:
         """
-        
-        
-        Process batches of employee report rows using BULK operations.
-        
-        OPTIMIZED: Converts SQL Server batch → DataFrame → process_dataframe()
-        This routes through EmployeeReportProcessor._bulk_process_reports()
-        which does bulk INSERT/UPDATE and batched vector store operations.
-        
-        Returns:
-            Tuple of (successful_count, total_count)
-        """
-        successful = 0
-        total = 0
-        start_row = 1
-        max_modified_date = None
-        
-        for batch in batches:
-            if not batch:
-                continue
-            
-            # Track maximum timestamp in this batch
-            for sql_row in batch:
-                if timestamp_column in sql_row and sql_row[timestamp_column]:
-                    row_modified_date = sql_row[timestamp_column]
-                    if max_modified_date is None or row_modified_date > max_modified_date:
-                        max_modified_date = row_modified_date
-            
-            try:
-                # Transform entire batch at once
-                transformed_rows = []
-                for sql_row in batch:
-                    try:
-                        pydantic_dict = EmployeeReportTransformer.transform(sql_row)
-                        transformed_rows.append(pydantic_dict)
-                    except Exception as e:
-                        logger.warning(f"Failed to transform row in batch: {str(e)}")
-                        # Add error for this row but continue with batch
-                        error_handler.add_processing_error(
-                            row_number=start_row + len(transformed_rows),
-                            row_data=sql_row,
-                            error_message=f"Transformation error: {str(e)}",
-                            exception=e
-                        )
-                
-                if not transformed_rows:
-                    logger.warning("No rows to process after transformation")
-                    total += len(batch)
-                    continue
-                
-                # Convert to pandas DataFrame
-                df = pd.DataFrame(transformed_rows)
-                
-                # Use bulk processing via process_dataframe
-                # This routes to EmployeeReportProcessor.process_dataframe()
-                # which calls _bulk_process_reports() for bulk SQL and vector operations
-                batch_successful, batch_total = row_processor.process_dataframe(
-                    df=df,
-                    start_row_number=start_row,
-                    pre_cleaned=True  # Already transformed, no NaN cleaning needed
-                )
-                
-                successful += batch_successful
-                total += batch_total
-                start_row += batch_total
-                
-                logger.info(f"Processed batch: {batch_successful}/{batch_total} successful (cumulative: {successful}/{total})")
-                
-            except Exception as e:
-                logger.error(f"Error processing batch: {str(e)}")
-                # Record error for entire batch
-                for i, sql_row in enumerate(batch):
-                    error_handler.add_processing_error(
-                        row_number=start_row + i,
-                        row_data=sql_row,
-                        error_message=f"Batch processing error: {str(e)}",
-                        exception=e
-                    )
-                total += len(batch)
-                start_row += len(batch)
-            
-            # Check error threshold
-            should_abort, reason = error_handler.should_abort(
-                total_rows=total,
-                error_threshold_percent=self.error_threshold_percent,  
-                stop_on_error=False
-            )
-            if should_abort:
-                logger.warning(f"Aborting sync: {reason}")
-                raise ValueError(f"Sync aborted: {reason}")
-        
-        # Store max_modified_date as instance attribute
-        if max_modified_date:
-            # Remove these debug logs in production:
-            # logger.info(f"🔍 DEBUG: Original max_modified_date from records: {max_modified_date}")
-            self._max_modified_date = max_modified_date + timedelta(milliseconds=1)
-            # logger.info(f"🔍 DEBUG: After adding +1 millisecond: {self._max_modified_date}")
-        else:
-            # logger.info(f"🔍 DEBUG: No max_modified_date found (no records synced)")
-            self._max_modified_date = None
-        
-        logger.info(f"Bulk processing completed: {successful}/{total} records synced")
-        return successful, total
-    
-    def _process_vision_data_batches_bulk(self, batches, sync_id, row_processor, 
-                                         error_handler, timestamp_column: str) -> tuple[int, int]:
-        """
-        Process batches of vision data rows using BULK operations.
-        
-        OPTIMIZED: Same as employee reports but uses VisionDataTransformer
-        and routes through VisionDataProcessor._bulk_process_vision_data().
-        
-        Returns:
-            Tuple of (successful_count, total_count)
-        """
-        successful = 0
-        total = 0
-        start_row = 1
-        max_modified_date = None
-        
-        for batch in batches:
-            if not batch:
-                continue
-            
-            # Track maximum timestamp in this batch
-            for sql_row in batch:
-                if timestamp_column in sql_row and sql_row[timestamp_column]:
-                    row_modified_date = sql_row[timestamp_column]
-                    if max_modified_date is None or row_modified_date > max_modified_date:
-                        max_modified_date = row_modified_date
-            
-            try:
-                # Transform entire batch at once
-                transformed_rows = []
-                for sql_row in batch:
-                    try:
-                        pydantic_dict = VisionDataTransformer.transform(sql_row)
-                        transformed_rows.append(pydantic_dict)
-                    except Exception as e:
-                        logger.warning(f"Failed to transform row in batch: {str(e)}")
-                        error_handler.add_processing_error(
-                            row_number=start_row + len(transformed_rows),
-                            row_data=sql_row,
-                            error_message=f"Transformation error: {str(e)}",
-                            exception=e
-                        )
-                
-                if not transformed_rows:
-                    logger.warning("No rows to process after transformation")
-                    total += len(batch)
-                    continue
-                
-                # Convert to pandas DataFrame
-                df = pd.DataFrame(transformed_rows)
-                
-                # Use bulk processing via process_dataframe
-                # This routes to VisionDataProcessor.process_dataframe()
-                # which calls _bulk_process_vision_data() for bulk SQL operations
-                batch_successful, batch_total = row_processor.process_dataframe(
-                    df=df,
-                    start_row_number=start_row,
-                    pre_cleaned=True
-                )
-                
-                successful += batch_successful
-                total += batch_total
-                start_row += batch_total
-                
-                logger.info(f"Processed batch: {batch_successful}/{batch_total} successful (cumulative: {successful}/{total})")
-                
-            except Exception as e:
-                logger.error(f"Error processing batch: {str(e)}")
-                for i, sql_row in enumerate(batch):
-                    error_handler.add_processing_error(
-                        row_number=start_row + i,
-                        row_data=sql_row,
-                        error_message=f"Batch processing error: {str(e)}",
-                        exception=e
-                    )
-                total += len(batch)
-                start_row += len(batch)
-            
-            # Check error threshold
-            should_abort, reason = error_handler.should_abort(
-                total_rows=total,
-                error_threshold_percent=self.error_threshold_percent,
-                stop_on_error=False
-            )
-            if should_abort:
-                logger.warning(f"Aborting sync: {reason}")
-                raise ValueError(f"Sync aborted: {reason}")
-        
-        # Store max_modified_date as instance attribute
-        # Add 1 MILLISECOND for SQL Server datetime precision
-        if max_modified_date:
-            self._max_modified_date_vision = max_modified_date + timedelta(milliseconds=1)
-        else:
-            self._max_modified_date_vision = None
-        
-        logger.info(f"Bulk processing completed: {successful}/{total} records synced")
-        return successful, total
+        Transform batches of SQL Server rows and save them in bulk.
 
-    def _process_job_description_batches_bulk(self, batches, sync_id, row_processor, 
-                                            error_handler, timestamp_column: str) -> tuple[int, int]:
-        """
-        Process batches of job description rows using BULK operations.
-        
-        Returns:
-            Tuple of (successful_count, total_count)
-        """
-        successful = 0
-        total = 0
-        start_row = 1
-        max_modified_date = None
-        
-        for batch in batches:
-            if not batch:
-                continue
-            
-            # Track maximum timestamp in this batch
-            for sql_row in batch:
-                if timestamp_column in sql_row and sql_row[timestamp_column]:
-                    row_modified_date = sql_row[timestamp_column]
-                    if max_modified_date is None or row_modified_date > max_modified_date:
-                        max_modified_date = row_modified_date
-            
-            try:
-                # Transform entire batch at once                
-                transformed_rows = []
-                for sql_row in batch:
-                    try:
-                        pydantic_dict = JobDescriptionTransformer.transform(sql_row)
-                        transformed_rows.append(pydantic_dict)
-                    except Exception as e:
-                        logger.warning(f"Failed to transform row in batch: {str(e)}")
-                        error_handler.add_processing_error(
-                            row_number=start_row + len(transformed_rows),
-                            row_data=sql_row,
-                            error_message=f"Transformation error: {str(e)}",
-                            exception=e
-                        )
-                
-                if not transformed_rows:
-                    logger.warning("No rows to process after transformation")
-                    total += len(batch)
-                    continue
-                
-                # Convert to pandas DataFrame
-                df = pd.DataFrame(transformed_rows)
-                
-                # Use bulk processing via process_dataframe
-                batch_successful, batch_total = row_processor.process_dataframe(
-                    df=df,
-                    start_row_number=start_row,
-                    pre_cleaned=True
-                )
-                
-                successful += batch_successful
-                total += batch_total
-                start_row += batch_total
-                
-                logger.info(f"Processed batch: {batch_successful}/{batch_total} successful (cumulative: {successful}/{total})")
-                
-            except Exception as e:
-                logger.error(f"Error processing batch: {str(e)}")
-                for i, sql_row in enumerate(batch):
-                    error_handler.add_processing_error(
-                        row_number=start_row + i,
-                        row_data=sql_row,
-                        error_message=f"Batch processing error: {str(e)}",
-                        exception=e
-                    )
-                total += len(batch)
-                start_row += len(batch)
-            
-            # Check error threshold
-            should_abort, reason = error_handler.should_abort(
-                total_rows=total,
-                error_threshold_percent=self.error_threshold_percent,
-                stop_on_error=False
-            )
-            if should_abort:
-                logger.warning(f"Aborting sync: {reason}")
-                raise ValueError(f"Sync aborted: {reason}")
-        
-        # Store max_modified_date as instance attribute
-        if max_modified_date:
-            self._max_modified_date_jd = max_modified_date + timedelta(milliseconds=1)
-        else:
-            self._max_modified_date_jd = None
-        
-        logger.info(f"Bulk processing completed: {successful}/{total} records synced")
-        return successful, total
+        Each batch is transformed row by row, then saved through the row
+        processor's process_dataframe, the same bulk path CSV imports use. Rows
+        are numbered in the order SQL Server returned them.
 
-    def _process_supervisor_feedback_batches_bulk(self, batches, sync_id, row_processor, 
-                                                error_handler, timestamp_column: str) -> tuple[int, int]:
-        """
-        Process batches of supervisor feedback rows using BULK operations.
-        
-        Returns:
-            Tuple of (successful_count, total_count)
+        Returns (successful, total, next_sync_from). next_sync_from is where the
+        next incremental sync starts reading (inclusive):
+        - just after the newest timestamp seen, when every row was either saved
+          or rejected as invalid data (correcting such a row at the source gives
+          it a newer timestamp, so it is read again);
+        - otherwise the oldest timestamp of the batches that left rows unsaved
+          for another reason (a failed database or vector store write), so those
+          rows are read again instead of being skipped for good;
+        - None when no row had a timestamp.
         """
         successful = 0
         total = 0
         start_row = 1
-        max_modified_date = None
-        
+        newest = None
+        retry_from = None
+
         for batch in batches:
             if not batch:
                 continue
-            
-            # Track maximum timestamp in this batch
-            for sql_row in batch:
-                if timestamp_column in sql_row and sql_row[timestamp_column]:
-                    row_modified_date = sql_row[timestamp_column]
-                    if max_modified_date is None or row_modified_date > max_modified_date:
-                        max_modified_date = row_modified_date
-            
-            try:
-                # Transform entire batch at once                
-                transformed_rows = []
-                for sql_row in batch:
-                    try:
-                        pydantic_dict = SupervisorFeedbackTransformer.transform(sql_row)
-                        transformed_rows.append(pydantic_dict)
-                    except Exception as e:
-                        logger.warning(f"Failed to transform row in batch: {str(e)}")
+
+            errors_before = len(error_handler.errors)
+            timestamps = [row[timestamp_column] for row in batch
+                          if isinstance(row, dict) and row.get(timestamp_column)]
+            if timestamps:
+                newest = max(timestamps) if newest is None else max(newest, *timestamps)
+
+            positions, transformed_rows = [], []
+            for position, sql_row in enumerate(batch):
+                try:
+                    transformed_rows.append(transformer.transform(sql_row))
+                    positions.append(position)
+                except Exception as e:
+                    logger.warning(f"Failed to transform row in batch: {str(e)}")
+                    error_handler.add_validation_error(
+                        row_number=start_row + position,
+                        row_data=sql_row,
+                        error_message=f"Transformation error: {str(e)}"
+                    )
+
+            batch_successful = 0
+            if transformed_rows:
+                try:
+                    # Indexed by position, so the processors number each row by its place in the batch
+                    df = pd.DataFrame(transformed_rows, index=positions)
+                    batch_successful, _ = row_processor.process_dataframe(
+                        df=df,
+                        start_row_number=start_row + positions[0],
+                        pre_cleaned=True  # Already transformed, no NaN cleaning needed
+                    )
+                except Exception as e:
+                    logger.error(f"Error processing batch: {str(e)}")
+                    for position in positions:
                         error_handler.add_processing_error(
-                            row_number=start_row + len(transformed_rows),
-                            row_data=sql_row,
-                            error_message=f"Transformation error: {str(e)}",
+                            row_number=start_row + position,
+                            row_data=batch[position],
+                            error_message=f"Batch processing error: {str(e)}",
                             exception=e
                         )
-                
-                if not transformed_rows:
-                    logger.warning("No rows to process after transformation")
-                    total += len(batch)
-                    continue
-                
-                # Convert to pandas DataFrame
-                df = pd.DataFrame(transformed_rows)
-                
-                # Use bulk processing via process_dataframe
-                batch_successful, batch_total = row_processor.process_dataframe(
-                    df=df,
-                    start_row_number=start_row,
-                    pre_cleaned=True
-                )
-                
-                successful += batch_successful
-                total += batch_total
-                start_row += batch_total
-                
-                logger.info(f"Processed batch: {batch_successful}/{batch_total} successful (cumulative: {successful}/{total})")
-                
-            except Exception as e:
-                logger.error(f"Error processing batch: {str(e)}")
-                for i, sql_row in enumerate(batch):
-                    error_handler.add_processing_error(
-                        row_number=start_row + i,
-                        row_data=sql_row,
-                        error_message=f"Batch processing error: {str(e)}",
-                        exception=e
-                    )
-                total += len(batch)
-                start_row += len(batch)
-            
-            # Check error threshold
+
+            # Rows neither saved nor rejected as invalid data are read again by the next sync
+            batch_errors = error_handler.errors[errors_before:]
+            invalid_rows = {err.row_number for err in batch_errors if err.category == ErrorCategory.VALIDATION}
+            left_unsaved = (any(err.category != ErrorCategory.VALIDATION for err in batch_errors)
+                            or batch_successful + len(invalid_rows) < len(batch))
+            if left_unsaved and timestamps:
+                retry_from = min(timestamps) if retry_from is None else min(retry_from, *timestamps)
+
+            successful += batch_successful
+            total += len(batch)
+            start_row += len(batch)
+            logger.info(f"Processed batch: {batch_successful}/{len(batch)} successful (cumulative: {successful}/{total})")
+
             should_abort, reason = error_handler.should_abort(
                 total_rows=total,
                 error_threshold_percent=self.error_threshold_percent,
@@ -775,15 +478,13 @@ class SyncService:
             if should_abort:
                 logger.warning(f"Aborting sync: {reason}")
                 raise ValueError(f"Sync aborted: {reason}")
-        
-        # Store max_modified_date as instance attribute
-        if max_modified_date:
-            self._max_modified_date_sf = max_modified_date + timedelta(milliseconds=1)
-        else:
-            self._max_modified_date_sf = None
-        
+
         logger.info(f"Bulk processing completed: {successful}/{total} records synced")
-        return successful, total
+        if retry_from is not None:
+            logger.warning(f"Some rows were not saved; the next incremental sync starts again from {retry_from}")
+            return successful, total, retry_from
+        # 1 millisecond past the newest row: SQL Server datetime precision
+        return successful, total, (newest + timedelta(milliseconds=1) if newest else None)
 
 
 def create_sync_service(error_threshold_percent: float = None) -> SyncService:

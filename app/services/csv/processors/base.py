@@ -42,6 +42,17 @@ class BaseCSVProcessor(ABC):
             logger.info(f"Cached {len(self._existing_employee_ids)} existing employee IDs for {self.__class__.__name__}")
         return self._existing_employee_ids
 
+    def _record_unsaved_rows(self, rows: List[Tuple[int, Dict[str, Any]]], exception: Exception = None) -> None:
+        """Record a database error for each (row_number, row) a failed bulk write did not save."""
+        for row_number, row_data in rows:
+            self.error_handler.add_database_error(
+                row_number=row_number,
+                error_message="Not saved: the database write for its batch failed (see the server logs). "
+                              "Importing or syncing it again retries it.",
+                row_data=row_data,
+                exception=exception,
+            )
+
     def _initialize_metrics(self):
         """Initialize processing metrics. Override as needed in subclasses."""
         # Base metrics that all processors should track
