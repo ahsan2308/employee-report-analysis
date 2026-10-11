@@ -6,6 +6,22 @@ All notable changes to the Employee Report Analysis System are documented in thi
 
 ## Unreleased
 
+---
+
+## [4.1.0] - 2026-10-11 - Sync reliability and deploy migrations
+
+### Upgrading from 4.0.0
+
+- One database migration (`a7c3e91d4b52`, the `partial` import status). The
+  Docker image applies it on start; otherwise run `python -m app.db.migrate`
+  (or `alembic upgrade head`) before starting the API.
+- An import job's `status` can now be `partial`. API clients that treat
+  `completed` as the only successful end state should accept it too.
+- New optional settings, with defaults that keep current behaviour:
+  `SQLSERVER_TABLE_*` (source table names), `SYNC_MISSING_EMPLOYEE_RETRY_DAYS`
+  (14), `RUN_MIGRATIONS` (true), and in `config/config.yaml`
+  `vector_db.index.hnsw_m` / `hnsw_ef_construct`.
+
 ### Fixed: dates given as timestamps
 
 A supervisor feedback row whose `From` or `To` was a timestamp (as a SQL Server
