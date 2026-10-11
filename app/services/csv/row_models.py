@@ -1,6 +1,7 @@
 """Pydantic models that validate one CSV row for each import type."""
 from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
-from typing import Optional, Any, Union
+from typing import Optional, Any, Dict, Union
+from pydantic_core import PydanticCustomError
 from datetime import date, datetime
 import re
 from app.core.logger import logger
@@ -37,8 +38,17 @@ def _assignment_date(v, label: str, format_label: str) -> str:
     return parsed.isoformat()
 
 
+def _not_a_string():
+    """The error a str field gives for a value of another type (kept for fields that parse strings)."""
+    return PydanticCustomError('string_type', 'Input should be a valid string')
+
+
 def check_period_date(v):
-    """Field check shared by the report-period models (From/To, From_Date/To_Date)."""
+    """Field check shared by the report-period models (From/To, From_Date/To_Date).
+
+    A date must not be in the future; a string must also be in a format
+    parse_period_date reads, and is returned as that date.
+    """
     if isinstance(v, date):
         if v > date.today():
             raise ValueError(f"Date cannot be in the future: {v}")
@@ -53,8 +63,15 @@ def check_period_date(v):
             raise ValueError(f"Invalid date format: {v}. Please use YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY format.")
         if parsed > date.today():
             raise ValueError(f"Date cannot be in the future: {parsed}")
-        return v
+        return parsed
     return v
+
+
+def read_period_date_string(v):
+    """Before-validator for a date field given as a string: only strings are accepted, as for a str field."""
+    if not isinstance(v, str):
+        raise _not_a_string()
+    return check_period_date(v)
 
 
 class CombinedCSVRow(BaseModel):
@@ -94,10 +111,10 @@ class CombinedCSVRow(BaseModel):
     )
     
     # Date range fields 
-    From: str = Field(
+    From: date = Field(
         description="Start date of the reporting period (YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY)"
     )
-    To: str = Field(
+    To: date = Field(
         description="End date of the reporting period (YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY)"
     )
     
@@ -128,7 +145,7 @@ class CombinedCSVRow(BaseModel):
         default=None,
         description="Tasks planned for next period"
     )
-    Confidence_Level: Optional[str] = Field(
+    Confidence_Level: Optional[int] = Field(
         default=None,
         description="Confidence level (1-5, possibly with text like '3 - Moderate')"
     )
@@ -174,19 +191,21 @@ class CombinedCSVRow(BaseModel):
             raise ValueError("BPS should be in format 'BS-XX' or 'TS-XX' where XX is a number (e.g., BS-21)")
         return v
     
-    @field_validator('From', 'To')
+    @field_validator('From', 'To', mode='before')
     @classmethod
     def validate_dates(cls, v, info):
-        """Check a report-period date: not in the future, in a format parse_period_date accepts.
-
-        Strings are returned as given and converted in convert_date_strings.
-        """
-        return check_period_date(v)
+        """Read a report-period date: not in the future, in a format parse_period_date accepts."""
+        return read_period_date_string(v)
     
-    @field_validator('Confidence_Level')
+    @field_validator('Confidence_Level', mode='before')
     @classmethod
     def extract_confidence_number(cls, v):
         """Extract numeric confidence level from text like '3 - Moderately confident'."""
+        if v is None:
+            return None
+        if not isinstance(v, str):
+            raise _not_a_string()
+        v = v.strip()
         if not v:
             return None
             
@@ -211,14 +230,6 @@ class CombinedCSVRow(BaseModel):
         except (ValueError, AttributeError) as e:
             raise ValueError(f"Invalid confidence level format. Expected number between 1-5, got '{v}'")
     
-    @model_validator(mode='after')
-    def convert_date_strings(self):
-        """Convert the validated date strings to date objects."""
-        for date_field in ['From', 'To']:
-            value = getattr(self, date_field)
-            if isinstance(value, str):
-                setattr(self, date_field, parse_period_date(value))
-        return self
 
     @model_validator(mode='after')
     def validate_date_range(self):
@@ -356,10 +367,10 @@ class VisionDataCSVRow(BaseModel):
     )
     
     # Date range fields
-    From_Date: str = Field(
+    From_Date: date = Field(
         description="Start date of the reporting period (YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY)"
     )
-    To_Date: str = Field(
+    To_Date: date = Field(
         description="End date of the reporting period (YYYY-MM-DD, MM/DD/YYYY, or DD/MM/YYYY)"
     )
     
@@ -370,7 +381,7 @@ class VisionDataCSVRow(BaseModel):
     Sub_Entities: str = Field(
         description="Quantitative data about sub-entities in format 'Name1:Count1, Name2:Count2, ...'"
     )
-    Sub_Entities_Content: str = Field(
+    Sub_Entities_Content: Dict[str, list] = Field(
         description="Content for each sub-entity as a string: 'Cases:[], Activities:[{...}], ...'. Not a full JSON object, but a comma-separated list of key:list pairs."
     )
     
@@ -392,14 +403,11 @@ class VisionDataCSVRow(BaseModel):
             raise ValueError("Employee ID must be a positive integer")
         return v
     
-    @field_validator('From_Date', 'To_Date')
+    @field_validator('From_Date', 'To_Date', mode='before')
     @classmethod
     def validate_dates(cls, v, info):
-        """Check a report-period date: not in the future, in a format parse_period_date accepts.
-
-        Strings are returned as given and converted in convert_date_strings.
-        """
-        return check_period_date(v)
+        """Read a report-period date: not in the future, in a format parse_period_date accepts."""
+        return read_period_date_string(v)
     
     @field_validator('Main_Entity')
     @classmethod
@@ -454,7 +462,7 @@ class VisionDataCSVRow(BaseModel):
         # Return the string representation for downstream processing
         return json.dumps(sub_entities_dict)
     
-    @field_validator('Sub_Entities_Content')
+    @field_validator('Sub_Entities_Content', mode='before')
     @classmethod
     def validate_sub_entities_content(cls, v):
         """
@@ -463,7 +471,10 @@ class VisionDataCSVRow(BaseModel):
         Input format: 'Cases:[], Activities:[{...}], ...'
         Output format: {"Cases": [], "Activities": [{...}], ...}
         """
-        if not v or not v.strip():
+        if not isinstance(v, str):
+            raise _not_a_string()
+        v = v.strip()
+        if not v:
             return {}  # Return empty dict instead of empty string
 
         parts = _top_level_split(v, delimiter=',')
@@ -495,14 +506,6 @@ class VisionDataCSVRow(BaseModel):
 
         # Return the dictionary instead of the string
         return content_dict
-    @model_validator(mode='after')
-    def convert_date_strings(self):
-        """Convert the validated date strings to date objects."""
-        for date_field in ['From_Date', 'To_Date']:
-            value = getattr(self, date_field)
-            if isinstance(value, str):
-                setattr(self, date_field, parse_period_date(value))
-        return self
     
     @model_validator(mode='after')
     def validate_date_range(self):

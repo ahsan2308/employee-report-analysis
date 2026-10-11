@@ -435,9 +435,6 @@ class TestQuarterlyAnalysisDBService(unittest.TestCase):
             self.assertIn(field, metrics, f"Metrics should include '{field}'")
         
         print("\nAll tests passed successfully! Function is working correctly.")
-        
-        # Return the result for potential further tests
-        return result
 
     def test_edge_cases(self):
         """Test handling of edge cases such as missing data."""

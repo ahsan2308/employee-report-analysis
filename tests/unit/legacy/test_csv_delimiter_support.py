@@ -19,6 +19,7 @@ from app.services.csv.csv_reader import PandasCSVReader
 
 class TestRunner:
     """Simple test runner that mimics pytest output."""
+    __test__ = False  # a helper, not a test class
     
     def __init__(self):
         self.passed = 0
